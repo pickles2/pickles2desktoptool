@@ -1,8 +1,17 @@
 new (function($, window){
 	window.px = $.px = this;
-	var _fs = require('fs');
+	this.debugMode = true;
+	var _fs = {};
 	var _db = {};
 	var _current_project_num = null;
+
+	try{
+		this.debugMode = !!!process;
+		_fs = require('fs');
+	}catch(e){
+		console.log(e);
+	}
+	// console.log(this.debugMode);
 
 	/**
 	 * DBをロードする
@@ -12,7 +21,7 @@ new (function($, window){
 		_db = {
 			"projects":[
 				{
-					"path": _fs.realpathSync('../../github/pickles2/.px_execute.php')
+					"path": '../../github/pickles2/.px_execute.php'
 				}
 			]
 		};
@@ -45,6 +54,24 @@ new (function($, window){
 	}
 
 	this.load();
+
+	/**
+	 * サブアプリケーション
+	 */
+	this.subapp = function(appName){
+		if( appName ){
+			alert('開発中');
+		}else{
+			var list = this.getProjectList();
+			var $ul = $('<ul>');
+			$('.contents').html('');
+			for( var i = 0; i < list.length; i++ ){
+				var $li = $('<li>').append($('<a>').attr('href', 'javascript:alert(123);').text(list[i].path));
+				$ul.append($li);
+			}
+			$('.contents').append($ul);
+		}
+	}
 
 	return this;
 })(jQuery, window);

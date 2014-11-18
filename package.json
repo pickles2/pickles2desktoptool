@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/index.html",
   "scripts": {
-    "start" : "node_modules/nodewebkit/bin/nodewebkit"
+    "start" : "node dev_server.js; node_modules/nodewebkit/bin/nodewebkit;"
   },
   "author": "Tomoya Koyanagi",
   "license": "BSD",

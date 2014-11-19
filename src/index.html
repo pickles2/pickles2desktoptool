@@ -9,36 +9,39 @@
 		<meta name="description" content="" />
 
 		<!-- jQuery -->
-		<script src="./common/scripts/jquery-1.10.1.min.js" type="text/javascript"></script>
+		<script src="./common/scripts/jquery-1.11.1.min.js" type="text/javascript"></script>
+
+		<!-- jQuery UI -->
+		<link rel="stylesheet" href="./common/jquery-ui/jquery-ui.min.css">
+		<script src="./common/jquery-ui/jquery-ui.min.js"></script>
+
+		<!-- jQuery mobile -->
+		<link rel="stylesheet" href="./common/jquery.mobile/jquery.mobile-1.4.5.min.css" />
+		<script src="./common/jquery.mobile/jquery.mobile-1.4.5.min.js"></script>
 
 		<!-- Bootstrap -->
-		<link rel="stylesheet" href="./common/styles/bootstrap/css/bootstrap.min.css">
-		<script src="./common/styles/bootstrap/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="./common/bootstrap/css/bootstrap.min.css">
+		<script src="./common/bootstrap/js/bootstrap.min.js"></script>
 
-		<!-- FESS -->
+		<!-- normalize & FESS -->
 		<link rel="stylesheet" href="./common/styles/contents.css" type="text/css" />
-
-		<!-- Application Library -->
-		<script src="./common/scripts/pickles.js" type="text/javascript"></script>
 
 		<!-- Local Resources -->
 		<link rel="stylesheet" href="./index_files/style.css" type="text/css" />
 
+		<!-- Application Library -->
+		<script src="./common/scripts/pickles.js" type="text/javascript"></script>
+
 	</head>
 	<body>
-		<header>
+		<header class="theme_header">
 			<p>Pickles 2 Desktop Tool</p>
+			<p>[<a href="javascript:window.location.href='index.html?';">Reload(dev)</a> | <a href="javascript:px.deselectProject();px.subapp();">SELECT PROJ</a> | <a href="javascript:px.subapp();">HOME</a> | <a href="javascript:px.exit();">閉じる</a>]</p>
 		</header>
-		<div class="container">
-			<div class="contents">
-				<ul>
-					<li><a href="javascript:console.log(px);">px</a></li>
-					<li><a href="javascript:console.log(px.getProjectList());">px.getProjectList()</a></li>
-				</ul>
-			</div>
+		<div class="contents">
 		</div>
-		<footer>
-			<p style="text-align:center;"><a href="javascript:px.subapp();">HOME</a> | <a href="javascript:px.exit();">閉じる</a></p>
+		<footer class="theme_footer">
+			<p>Pickles 2 (C)Tomoya Koyanagi.</p>
 		</footer>
 	</body>
 </html>

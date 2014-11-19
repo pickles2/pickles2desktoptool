@@ -8,6 +8,11 @@ new (function($, window){
 	var _selectedProject = null;
 	var $header, $footer, $main, $contents;
 
+	// var findpath = require('nodewebkit').findpath;
+	// var nwpath = findpath();
+	// console.log(findpath);
+	// alert(nwpath);
+
 	try{
 		this.debugMode = !!!process;
 		_fs = require('fs');

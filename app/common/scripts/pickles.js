@@ -1,8 +1,8 @@
 new (function($, window){
 	window.px = $.px = this;
 	this.debugMode = true;
-	var _fs = {};
-	var _utils = {};
+	var _fs = require('fs');
+	var _utils = require('./common/scripts/_utils.node.js');
 	var _db = {};
 	var _current_project_num = null;
 	var _selectedProject = null;
@@ -109,7 +109,7 @@ new (function($, window){
 						.append(
 							$('<a>')
 								.attr('href', 'javascript:;')
-								.attr('data-path', _fs.realpathSync(list[i].path))
+								.attr('data-path', list[i].path)
 								.attr('data-num', i)
 								.click(function(){ if( !px.selectProject( $(this).data('num') ) ){alert('ERROR');return false;} px.subapp(); })
 								.text(list[i].name)

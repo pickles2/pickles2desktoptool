@@ -3,6 +3,7 @@
  */
 (function(exports){
 	var _fs = require('fs');
+	var _child_process = require('child_process');
 
 	/**
 	 * ディレクトリ名を得る

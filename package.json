@@ -2,7 +2,7 @@
   "name": "pickles2desktoptool",
   "version": "0.1.0",
   "description": "",
-  "main": "src/index.html",
+  "main": "app/index.html",
   "scripts": {
     "start" : "node_modules/nodewebkit/bin/nodewebkit"
   },
@@ -12,10 +12,13 @@
     "nodewebkit": "*"
   },
   "window":{
+    "title": "pickles2desktoptool",
     "toolbar":false,
     "frame":true,
     "width":960,
     "height":480,
-    "fullscreen":false
+    "fullscreen":false,
+    "icon": "app/common/images/icon.png",
+    "position": "mouse"
   }
 }

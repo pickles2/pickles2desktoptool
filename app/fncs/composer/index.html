@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>composer - Pickles 2 Desktop Tool</title>
+
+		<meta name="viewport" content="width=device-width" />
+		<meta name="keywords" content="" />
+		<meta name="description" content="" />
+
+		<!-- jQuery -->
+		<script src="../../common/scripts/jquery-1.11.1.min.js" type="text/javascript"></script>
+
+		<!-- jQuery UI -->
+		<link rel="stylesheet" href="../../common/jquery-ui/jquery-ui.min.css">
+		<script src="../../common/jquery-ui/jquery-ui.min.js"></script>
+
+		<!-- jQuery mobile -->
+		<link rel="stylesheet" href="../../common/jquery.mobile/jquery.mobile-1.4.5.min.css" />
+		<script src="../../common/jquery.mobile/jquery.mobile-1.4.5.min.js"></script>
+
+		<!-- Bootstrap -->
+		<link rel="stylesheet" href="../../common/bootstrap/css/bootstrap.min.css">
+		<script src="../../common/bootstrap/js/bootstrap.min.js"></script>
+
+		<!-- normalize & FESS -->
+		<link rel="stylesheet" href="../../common/styles/contents.css" type="text/css" />
+
+		<!-- Local Resources -->
+		<link rel="stylesheet" href="./index_files/style.css" type="text/css" />
+
+		<script>
+			window.px = $.px = window.parent.px;
+
+			function cont_update_conposer(btn){
+				$(btn).attr('disabled', 'disabled');
+				var pj = px.getCurrentProject();
+				window.px.utils.spawn('composer',
+					['self-update'],
+					{
+						success: function(data){
+							$('.cont_console').text(
+								$('.cont_console').text() + data
+							);
+						} ,
+						error: function(data){
+							$('.cont_console').text(
+								$('.cont_console').text() + data
+							);
+						} ,
+						complete: function(code){
+							// $('.cont_console').text(
+							// 	$('.cont_console').text() + code
+							// );
+							$(btn).removeAttr('disabled');
+						}
+					}
+				);
+			}
+
+			function cont_update_proj(btn){
+				$(btn).attr('disabled', 'disabled');
+				var pj = px.getCurrentProject();
+				window.px.utils.spawn('composer',
+					['update'],
+					{
+						success: function(data){
+							$('.cont_console').text(
+								$('.cont_console').text() + data
+							);
+						} ,
+						error: function(data){
+							$('.cont_console').text(
+								$('.cont_console').text() + data
+							);
+						} ,
+						complete: function(code){
+							// $('.cont_console').text(
+							// 	$('.cont_console').text() + code
+							// );
+							$(btn).removeAttr('disabled');
+						}
+					}
+				);
+			}
+
+			function cont_install_proj(btn){
+				$(btn).attr('disabled', 'disabled');
+				var pj = px.getCurrentProject();
+				window.px.utils.spawn('composer',
+					['install'],
+					{
+						success: function(data){
+							$('.cont_console').text(
+								$('.cont_console').text() + data
+							);
+						} ,
+						error: function(data){
+							$('.cont_console').text(
+								$('.cont_console').text() + data
+							);
+						} ,
+						complete: function(code){
+							// $('.cont_console').text(
+							// 	$('.cont_console').text() + code
+							// );
+							$(btn).removeAttr('disabled');
+						}
+					}
+				);
+			}
+
+			$(function(){
+			});
+		</script>
+	</head>
+	<body>
+		<div class="contents">
+			<div class="container">
+
+				<p><button onclick="cont_update_conposer(this); return false;">composer を更新 (self-update)</button></p>
+				<p><button onclick="cont_update_proj(this); return false;">composer プロジェクト を更新 (update)</button></p>
+				<p><button onclick="cont_install_proj(this); return false;">composer プロジェクト をインストール (install)</button></p>
+				<pre class="cont_console" style="max-height:360px;">console:
+</pre>
+
+			</div>
+		</div>
+	</body>
+</html>

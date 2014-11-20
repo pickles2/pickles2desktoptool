@@ -88,14 +88,14 @@ new (function($, window){
 	this.subapp = function(appName){
 		var $cont = $('.contents').eq(0);
 		if( !appName && typeof(_selectedProject) == typeof(0) ){
-			appName = 'home';
+			appName = 'home.html';
 		}
 		if( appName ){
 			$cont
 				.html('')
 				.append(
 					$('<iframe>')
-						.attr('src', './app_'+appName+'.html')
+						.attr('src', './'+appName)
 				)
 			;
 			// alert(appName+': 開発中');

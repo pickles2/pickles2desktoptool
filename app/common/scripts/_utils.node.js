@@ -3,15 +3,25 @@
  */
 (function(exports){
 	var _fs = require('fs');
-	var _child_process = require('child_process');
 
 	/**
 	 * システムコマンドを実行する
 	 */
 	exports.exec = function(cmd, fnc){
-		var exec = require('child_process').exec;
-		exec(cmd, fnc);
-		return true;
+		return require('child_process').exec(cmd, fnc);
+	}
+
+	/**
+	 * システムコマンドを実行する
+	 */
+	exports.spawn = function(cmd, cliOpts, opts){
+		opts = opts||{};
+		var proc = require('child_process').spawn(cmd, cliOpts);
+		if( opts.success ){ proc.stdout.on('data', opts.success); }
+		if( opts.error ){ proc.stderr.on('data', opts.error); }
+		if( opts.complete ){ proc.on('close', opts.complete); }
+
+		return proc;
 	}
 
 	/**

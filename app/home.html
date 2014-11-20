@@ -27,7 +27,7 @@
 		<link rel="stylesheet" href="./common/styles/contents.css" type="text/css" />
 
 		<!-- Local Resources -->
-		<link rel="stylesheet" href="./app_home_files/style.css" type="text/css" />
+		<link rel="stylesheet" href="./home_files/style.css" type="text/css" />
 
 		<script>
 			window.px = $.px = window.parent.px;
@@ -57,25 +57,11 @@
 									.css({"overflow":"auto","white-space":"pre"})
 								)
 							);
-							// $(data.cls).text( stdout );
 							it.next();
 						}
 					);
 				} );
-				// for(var i in cmds){
-				// 	(function(cmd){
-				// 		px.utils.exec(cmd.cmd, function(err,stdout,stderr){
-				// 			$('.tpl_sys_table').append($('<tr>')
-				// 				.append($('<th>').text(cmd.title))
-				// 				.append($('<td>')
-				// 					.text(stdout)
-				// 					.css({"overflow":"auto","white-space":"pre"})
-				// 				)
-				// 			);
-				// 			// $(cmd.cls).text( stdout );
-				// 		});
-				// 	})(cmds[i]);
-				// }
+
 			});
 		</script>
 	</head>

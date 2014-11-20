@@ -159,7 +159,26 @@
 	/**
 	 * 直列処理
 	 */
-	exports.iterate = function(aryFuncs){
+	exports.iterate = function(ary, fnc){
+		new (function( ary, fnc ){
+			this.idx = 0;
+			this.ary = ary;
+			this.fnc = fnc;
+
+			this.next = function(){
+				if( this.idx >= this.ary.length ){return this;}
+				this.fnc( this.ary[this.idx], this.idx, this );
+				this.idx ++;
+				return this;
+			}
+			this.next();
+		})(ary, fnc);
+	}
+
+	/**
+	 * 関数の直列処理
+	 */
+	exports.iterateFnc = function(aryFuncs){
 		function iterator( aryFuncs ){
 			aryFuncs = aryFuncs||[];
 

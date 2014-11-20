@@ -173,7 +173,7 @@ new (function($, window){
 	});
 	process.on( 'uncaughtException', function(e){
 		alert('uncaughtException;');
-		console.log(e);
+		console.log('uncaughtException;', e);
 	} )
 	$(window).on( 'resize', function(e){
 		layoutReset();

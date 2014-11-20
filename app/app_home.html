@@ -30,7 +30,7 @@
 		<link rel="stylesheet" href="./app_home_files/style.css" type="text/css" />
 
 		<script>
-			px = $.px = window.parent.px;
+			window.px = $.px = window.parent.px;
 		</script>
 		<script>
 			$(function(){
@@ -41,27 +41,41 @@
 				$('.tpl_entry_script').text( pj.get('entry_script') );
 				$('.tpl_vcs').text( pj.get('vcs') );
 
-				var cmds = [
+				px.utils.iterate( [
 					{"title":"PHP version", "cmd": 'php -v'},
 					{"title":"PHP path", "cmd": 'which php'},
 					{"title":"composer version", "cmd": 'composer --version'},
 					{"title":"node version", "cmd": 'node -v'},
-					{"title":"git version", "cmd": 'git --version'},
-				];
-				for(var i in cmds){
-					(function(cmd){
-						px.utils.exec(cmd.cmd, function(err,stdout,stderr){
+					{"title":"git version", "cmd": 'git --version'}
+				], function(data, idx, it){
+					window.px.utils.exec(data.cmd,
+						function(err,stdout,stderr){
 							$('.tpl_sys_table').append($('<tr>')
-								.append($('<th>').text(cmd.title))
+								.append($('<th>').text(data.title))
 								.append($('<td>')
 									.text(stdout)
 									.css({"overflow":"auto","white-space":"pre"})
 								)
 							);
-							// $(cmd.cls).text( stdout );
-						});
-					})(cmds[i]);
-				}
+							// $(data.cls).text( stdout );
+							it.next();
+						}
+					);
+				} );
+				// for(var i in cmds){
+				// 	(function(cmd){
+				// 		px.utils.exec(cmd.cmd, function(err,stdout,stderr){
+				// 			$('.tpl_sys_table').append($('<tr>')
+				// 				.append($('<th>').text(cmd.title))
+				// 				.append($('<td>')
+				// 					.text(stdout)
+				// 					.css({"overflow":"auto","white-space":"pre"})
+				// 				)
+				// 			);
+				// 			// $(cmd.cls).text( stdout );
+				// 		});
+				// 	})(cmds[i]);
+				// }
 			});
 		</script>
 	</head>

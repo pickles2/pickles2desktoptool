@@ -17,22 +17,7 @@ new (function($, window){
 	 */
 	this.load = function(){
 		// UTODO: スタブ実装
-		_db = {
-			"projects":[
-				{
-					"name": '[stub] PxFW-2.x',
-					"path": '../../github/PxFW-2.x/',
-					"entry_script":'.px_execute.php',
-					"vcs":'git'
-				} ,
-				{
-					"name": '[stub] pickles2',
-					"path": '../../github/pickles2/',
-					"entry_script":'.px_execute.php',
-					"vcs":'git'
-				}
-			]
-		};
+		_db = require('./_stub.json');
 		return true;
 	}
 

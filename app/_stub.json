@@ -1,0 +1,16 @@
+{
+	"projects":[
+		{
+			"name": "[stub] PxFW-2.x",
+			"path": "../../github/PxFW-2.x/",
+			"entry_script":".px_execute.php",
+			"vcs":"git"
+		} ,
+		{
+			"name": "[stub] pickles2 テスト",
+			"path": "../../github/pickles2/",
+			"entry_script":".px_execute.php",
+			"vcs":"git"
+		}
+	]
+}

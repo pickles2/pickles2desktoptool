@@ -1,9 +1,18 @@
 /**
- * utilities
+ * node utilities
  */
 (function(exports){
 	var _fs = require('fs');
 	var _child_process = require('child_process');
+
+	/**
+	 * システムコマンドを実行する
+	 */
+	exports.exec = function(cmd, fnc){
+		var exec = require('child_process').exec;
+		exec(cmd, fnc);
+		return true;
+	}
 
 	/**
 	 * ディレクトリ名を得る
@@ -144,6 +153,29 @@
 		_fs.closeSync(fd);
 
 		return rtn;
+	}
+
+
+	/**
+	 * 直列処理
+	 */
+	exports.iterate = function(aryFuncs){
+		function iterator( aryFuncs ){
+			aryFuncs = aryFuncs||[];
+
+			var idx = 0;
+			var funcs = aryFuncs;
+
+			this.start = function(arg){
+				arg = arg||{};
+				if(funcs.length <= idx){return this;}
+				(funcs[idx++])(this, arg);
+				return this;
+			}
+
+			this.next = this.start;
+		}
+		return new iterator(aryFuncs);
 	}
 
 })(exports);

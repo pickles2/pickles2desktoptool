@@ -29,51 +29,78 @@
 		<!-- Local Resources -->
 		<link rel="stylesheet" href="./app_home_files/style.css" type="text/css" />
 
+		<script>
+			px = $.px = window.parent.px;
+		</script>
+		<script>
+			$(function(){
+				var pj = px.getCurrentProject();
+
+				$('.tpl_name').text( pj.get('name') );
+				$('.tpl_path').text( pj.get('path') );
+				$('.tpl_entry_script').text( pj.get('entry_script') );
+				$('.tpl_vcs').text( pj.get('vcs') );
+
+				var cmds = [
+					{"title":"PHP version", "cmd": 'php -v'},
+					{"title":"PHP path", "cmd": 'which php'},
+					{"title":"composer version", "cmd": 'composer --version'},
+					{"title":"node version", "cmd": 'node -v'},
+					{"title":"git version", "cmd": 'git --version'},
+				];
+				for(var i in cmds){
+					(function(cmd){
+						px.utils.exec(cmd.cmd, function(err,stdout,stderr){
+							$('.tpl_sys_table').append($('<tr>')
+								.append($('<th>').text(cmd.title))
+								.append($('<td>')
+									.text(stdout)
+									.css({"overflow":"auto","white-space":"pre"})
+								)
+							);
+							// $(cmd.cls).text( stdout );
+						});
+					})(cmds[i]);
+				}
+			});
+		</script>
 	</head>
 	<body style="background-color:#eee;">
 		<div class="contents">
 			<div class="container">
-				<p>
-					app_home.html<br />
-					app_home.html<br />
-					app_home.html<br />
-					app_home.html<br />
-					app_home.html<br />
-					app_home.html<br />
-					app_home.html<br />
-					app_home.html<br />
-				</p>
-				<ul>
-					<li><a href="javascript:window.parent.px.deselectProject();window.parent.px.subapp();">戻る</a></li>
-				</ul>
-				<p>
-					app_home.html<br />
-					app_home.html<br />
-					app_home.html<br />
-					app_home.html<br />
-					app_home.html<br />
-					app_home.html<br />
-					app_home.html<br />
-					app_home.html<br />
-					app_home.html<br />
-					app_home.html<br />
-					app_home.html<br />
-					app_home.html<br />
-					app_home.html<br />
-					app_home.html<br />
-					app_home.html<br />
-				</p>
-				<ul>
-					<li><a href="javascript:window.parent.px.deselectProject();window.parent.px.subapp();">戻る</a></li>
-				</ul>
-				<p>
-				</p>
-				<ul>
-					<li><a href="javascript:window.parent.px.deselectProject();window.parent.px.subapp();">戻る</a></li>
-				</ul>
-				<p>
-					app_home.html<br />
-				</p>
+				<h1 class="tpl_name">...</h1>
+				<div class="unit">
+					<table class="def" style="width:100%; table-layout: fixed;">
+						<colgroup><col width="30%" /><col width="70%" /></colgroup>
+						<tr>
+							<th>name</th>
+							<td class="tpl_name">...</td>
+						</tr>
+						<tr>
+							<th>path</th>
+							<td class="tpl_path">...</td>
+						</tr>
+						<tr>
+							<th>entry_script</th>
+							<td class="tpl_entry_script">...</td>
+						</tr>
+						<tr>
+							<th>vcs</th>
+							<td class="tpl_vcs">...</td>
+						</tr>
+					</table>
+				</div><!-- /.unit -->
+
+				<div class="unit">
+					<h2>system info</h2>
+					<table class="def tpl_sys_table" style="width:100%; table-layout: fixed;">
+						<colgroup><col width="30%" /><col width="70%" /></colgroup>
+					</table>
+				</div><!-- /.unit -->
+
+				<p><button onclick="px.deselectProject(); px.subapp(); return false;">プロジェクト選択へ戻る</button></p>
+				<p><button onclick="alert('開発中'); return false;">このプロジェクトを削除</button></p>
+
 			</div>
 		</div>
 	</body>

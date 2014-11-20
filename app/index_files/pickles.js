@@ -1,26 +1,16 @@
 new (function($, window){
 	window.px = $.px = this;
-	this.debugMode = true;
 	var _fs = require('fs');
-	var _utils = require('./common/scripts/_utils.node.js');
 	var _db = {};
 	var _current_project_num = null;
 	var _selectedProject = null;
 	var $header, $footer, $main, $contents;
+	this.utils = require('./common/scripts/_utils.node.js');
 
 	// var findpath = require('nodewebkit').findpath;
 	// var nwpath = findpath();
 	// console.log(findpath);
 	// alert(nwpath);
-
-	try{
-		this.debugMode = !!!process;
-		_fs = require('fs');
-		_utils = require('./common/scripts/_utils.node.js');
-	}catch(e){
-		console.log(e);
-	}
-	// console.log(this.debugMode);
 
 	/**
 	 * DBをロードする
@@ -31,11 +21,15 @@ new (function($, window){
 			"projects":[
 				{
 					"name": '[stub] PxFW-2.x',
-					"path": '../../github/PxFW-2.x/.px_execute.php'
+					"path": '../../github/PxFW-2.x/',
+					"entry_script":'.px_execute.php',
+					"vcs":'git'
 				} ,
 				{
 					"name": '[stub] pickles2',
-					"path": '../../github/pickles2/.px_execute.php'
+					"path": '../../github/pickles2/',
+					"entry_script":'.px_execute.php',
+					"vcs":'git'
 				}
 			]
 		};
@@ -85,6 +79,22 @@ new (function($, window){
 	this.deselectProject = function(){
 		_selectedProject = null;
 		return true;
+	}
+
+	/**
+	 * 選択中のプロジェクトの情報を得る
+	 */
+	this.getCurrentProject = function(){
+		return new (function(projectInfo){
+			this.projectInfo = projectInfo;
+			this.get = function(key){
+				return this.projectInfo[key];
+			}
+			this.exec_px2 = function( cmd, fnc ){
+			}
+			this.exec_git = function( cmd, fnc ){
+			}
+		})( _db.projects[_selectedProject] );
 	}
 
 	/**

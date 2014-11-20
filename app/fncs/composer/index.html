@@ -64,6 +64,7 @@
 				window.px.utils.spawn('composer',
 					['update'],
 					{
+						cd: pj.get('path'),
 						success: function(data){
 							$('.cont_console').text(
 								$('.cont_console').text() + data
@@ -90,6 +91,7 @@
 				window.px.utils.spawn('composer',
 					['install'],
 					{
+						cd: pj.get('path'),
 						success: function(data){
 							$('.cont_console').text(
 								$('.cont_console').text() + data

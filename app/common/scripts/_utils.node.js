@@ -3,23 +3,44 @@
  */
 (function(exports){
 	var _fs = require('fs');
+	var _path = require('path'); // see: http://nodejs.jp/nodejs.org_ja/docs/v0.4/api/path.html
+	var _pathCurrentDir = process.cwd();
 
 	/**
-	 * システムコマンドを実行する
+	 * システムコマンドを実行する(exec)
 	 */
-	exports.exec = function(cmd, fnc){
-		return require('child_process').exec(cmd, fnc);
+	exports.exec = function(cmd, fnc, opts){
+		opts = opts||{};
+		if( opts.cd ){
+			process.chdir( opts.cd );
+		}
+		var proc = require('child_process').exec(cmd, fnc);
+		if( opts.cd ){
+			process.chdir( _pathCurrentDir );
+		}
+		return proc;
 	}
 
 	/**
-	 * システムコマンドを実行する
+	 * システムコマンドを実行する(spawn)
 	 */
 	exports.spawn = function(cmd, cliOpts, opts){
 		opts = opts||{};
+		if( opts.cd ){
+			process.chdir( opts.cd );
+		}
+		// console.log( opts.cd );
+		// console.log( process.cwd() );
+
 		var proc = require('child_process').spawn(cmd, cliOpts);
 		if( opts.success ){ proc.stdout.on('data', opts.success); }
 		if( opts.error ){ proc.stderr.on('data', opts.error); }
 		if( opts.complete ){ proc.on('close', opts.complete); }
+
+		if( opts.cd ){
+			process.chdir( _pathCurrentDir );
+		}
+		// console.log( process.cwd() );
 
 		return proc;
 	}

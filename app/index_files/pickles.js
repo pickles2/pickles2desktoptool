@@ -47,6 +47,30 @@ new (function($, window){
 	}
 
 	/**
+	 * プロジェクトを追加する
+	 */
+	this.createProject = function(projectInfo){
+		projectInfo = projectInfo||{};
+		if( typeof(projectInfo.name) != typeof('') || !projectInfo.name.length ){
+			return false;
+		}
+		if( typeof(projectInfo.path) != typeof('') || !projectInfo.path.length ){
+			return false;
+		}
+		if( typeof(projectInfo.entry_script) != typeof('') || !projectInfo.entry_script.length ){
+			return false;
+		}
+		if( typeof(projectInfo.vcs) != typeof('') || !projectInfo.vcs.length ){
+			return false;
+		}
+
+
+		_db.projects.push(projectInfo);
+		this.save();
+		return true;
+	}
+
+	/**
 	 * プロジェクトを選択する
 	 */
 	this.selectProject = function(num){
@@ -87,7 +111,9 @@ new (function($, window){
 	 */
 	this.subapp = function(appName){
 		var $cont = $('.contents').eq(0);
-		if( !appName && typeof(_selectedProject) == typeof(0) ){
+		if( typeof(_selectedProject) != typeof(0) ){
+			appName = '';
+		}else if( !appName && typeof(_selectedProject) == typeof(0) ){
 			appName = 'home.html';
 		}
 		if( appName ){
@@ -100,9 +126,23 @@ new (function($, window){
 			;
 			// alert(appName+': 開発中');
 		}else{
+			// プロジェクト選択画面を描画
+			$cont.html('<div class="container">'
+				+'<h1>Select Project</h1>'
+				+'<div class="cont_project_list unit"></div>'
+				+'<div class="cont_project_form unit">'
+					+'<form action="javascript:;" onsubmit="cont_createProject(this);return false;" class="inline">'
+						+'name: <input type="text" name="pj_name" value="" /><br />'
+						+'path: <input type="text" name="pj_path" value="" /><br />'
+						+'entry script: <input type="text" name="pj_entry_script" value=".px_execute.php" /><br />'
+						+'vcs: <input type="text" name="pj_vcs" value="" /><br />'
+						+'<p><button>新規プロジェクト作成</button></p>'
+					+'</form>'
+				+'</div>'
+			+'</div>');
+
 			var list = this.getProjectList();
 			var $ul = $('<ul data-inset="true"></ul>');
-			$cont.html('');
 			for( var i = 0; i < list.length; i++ ){
 				$ul.append(
 					$('<li>')
@@ -117,34 +157,45 @@ new (function($, window){
 				);
 			}
 			$ul.listview(); // ← jQuery mobile の data-role="listview" を動的に適用
-			$cont
+			$('.cont_project_list', $cont)
 				.html('')
-				.append(
-					$('<div class="container">')
-						.append($ul)
-				);
+				.append($ul)
+			;
 		}
+		layoutReset();
 	}
 
 	/**
 	 * レイアウトをリセット
 	 */
 	function layoutReset(){
-		$('body').css({
-			'width':'auto',
-			'height':'auto',
-			'min-height':0,
-			'max-height':10000,
-			'overflow':'hidden'
-		});
-		$contents.css({
-			'margin':'0 0 0 0' ,
-			'position':'fixed' ,
-			'left':0 ,
-			'top': $header.height()+25 ,
-			'right': 0 ,
-			'height': $(window).height() - $header.height() - $footer.height() - 50 ,
-		})
+		$('body')
+			.css({
+				'margin':'0 0 0 0' ,
+				'padding':'0 0 0 0' ,
+				'width':'auto',
+				'height':'auto',
+				'min-height':0,
+				'max-height':10000,
+				'overflow':'hidden'
+			})
+		;
+		$contents
+			.css({
+				'margin':'0 0 0 0' ,
+				'padding':'0 0 0 0' ,
+				'position':'fixed' ,
+				'left':0 ,
+				'top': $header.height()+25 ,
+				'right': 0 ,
+				'height': $(window).height() - $header.height() - $footer.height() - 50
+			})
+		;
+		$contents.find('>iframe')
+			.css({
+				'height': $contents.height() - 10
+			})
+		;
 	}
 
 	/**

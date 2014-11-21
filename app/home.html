@@ -36,7 +36,7 @@
 			window.px = $.px = window.parent.px;
 			$(function(){
 				var pj = px.getCurrentProject();
-				// console.log( pj.status() );
+				var status = pj.status();
 
 				$('.tpl_name').text( pj.get('name') );
 				$('.tpl_path').text( pj.get('path') );
@@ -68,11 +68,9 @@
 					}
 				);
 
-
 				px.utils.iterate(
-					_.keys( pj.status() ) ,
+					_.keys( status ) ,
 					function(data, idx, it){
-						var status = pj.status();
 						$('.tpl_status_table').append($('<tr>')
 							.append($('<th>').text(data))
 							.append($('<td>')
@@ -83,7 +81,42 @@
 					}
 				);
 
+				// インストールボタン
+				if( status.pathExists && !status.composerJsonExists ){
+					$('.cont_install_ui')
+						.html('<p class="center"><button onclick="cont_install(this); return false;">Pickles 2 をインストールする</button></p>')
+					;
+				}
+
 			});
+
+			/**
+			 * Pickles2 インストール
+			 */
+			function cont_install(btn){
+				$(btn).attr('disabled','disabled');
+				var pj = px.getCurrentProject();
+				window.px.utils.spawn('composer',
+					[
+						'create-project',
+						'tomk79/pickles2',
+						'./',
+						'dev-master'
+					],
+					{
+						cd: pj.get('path'),
+						success: function(data){
+						} ,
+						error: function(data){
+							alert('ERROR: '+data);
+						} ,
+						complete: function(code){
+							$(btn).removeAttr('disabled');
+							px.subapp('home.html');
+						}
+					}
+				);
+			}
 		</script>
 	</head>
 	<body style="background-color:#eee;">
@@ -121,10 +154,11 @@
 					<table class="def tpl_status_table" style="width:100%; table-layout: fixed;">
 						<colgroup><col width="30%" /><col width="70%" /></colgroup>
 					</table>
+					<div class="cont_install_ui"></div>
 				</div><!-- /.unit -->
 
 				<div class="unit">
-					<h2>system info</h2>
+					<h2>System info</h2>
 					<table class="def tpl_sys_table" style="width:100%; table-layout: fixed;">
 						<colgroup><col width="30%" /><col width="70%" /></colgroup>
 					</table>

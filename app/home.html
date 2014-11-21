@@ -99,7 +99,7 @@
 				</div><!-- /.unit -->
 
 				<p><button onclick="px.deselectProject(); px.subapp(); return false;">プロジェクト選択へ戻る</button></p>
-				<p><button onclick="alert('開発中'); return false;">このプロジェクトを削除</button></p>
+				<p><button onclick="if(confirm('このプロジェクトを削除してよろしいですか？')){px.deleteProject( px.getCurrentProject().projectId );} return false;">このプロジェクトを削除</button></p>
 
 			</div>
 		</div>

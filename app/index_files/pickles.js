@@ -1,23 +1,44 @@
 new (function($, window){
 	window.px = $.px = this;
+
+	this.utils = require('./common/scripts/_utils.node.js');
 	var _fs = require('fs');
 	var _db = {};
+	var _path_db = process.env.HOME + '/.pickles2desktoptool.json';
+	// _path_db = './_stab.json';
 	var _current_project_num = null;
 	var _selectedProject = null;
+	if( !_fs.existsSync( _path_db ) ){
+		_fs.writeFileSync( _path_db, JSON.stringify( {"projects":[]} ), {"encoding":"utf8","mode":436,"flag":"w"} );
+	}
+	_path_db = _fs.realpathSync( _path_db );
 	var $header, $footer, $main, $contents;
-	this.utils = require('./common/scripts/_utils.node.js');
 
 	// var findpath = require('nodewebkit').findpath;
 	// var nwpath = findpath();
 	// console.log(findpath);
 	// alert(nwpath);
 
+	(function(){
+		// node-webkit の標準的なメニューを出す
+		var gui = require('nw.gui');
+		win = gui.Window.get();
+		var nativeMenuBar = new gui.Menu({ type: "menubar" });
+		try {
+			nativeMenuBar.createMacBuiltin("My App");
+			win.menu = nativeMenuBar;
+		} catch (ex) {
+			console.log(ex.message);
+		}
+	})();
+
+
 	/**
 	 * DBをロードする
 	 */
 	this.load = function(){
-		// UTODO: スタブ実装
-		_db = require('./_stub.json');
+		_db = require( _path_db );
+		_db.projects = _db.projects||[];
 		return true;
 	}
 
@@ -25,8 +46,8 @@ new (function($, window){
 	 * DBを保存する
 	 */
 	this.save = function(){
-		// UTODO: 開発中
-		alert('データ保存は開発中です。');
+		var data = JSON.stringify( _db );
+		_fs.writeFileSync( _path_db, data, {"encoding":"utf8","mode":436,"flag":"w"} );
 		return true;
 	}
 
@@ -71,6 +92,17 @@ new (function($, window){
 	}
 
 	/**
+	 * プロジェクトを削除する
+	 */
+	this.deleteProject = function(projectId){
+		_db.projects.splice(projectId, 1)
+		this.deselectProject();
+		this.save();
+		this.subapp();
+		return true;
+	}
+
+	/**
 	 * プロジェクトを選択する
 	 */
 	this.selectProject = function(num){
@@ -94,8 +126,9 @@ new (function($, window){
 	 * 選択中のプロジェクトの情報を得る
 	 */
 	this.getCurrentProject = function(){
-		return new (function(projectInfo){
+		return new (function(projectInfo, _selectedProject){
 			this.projectInfo = projectInfo;
+			this.projectId = _selectedProject;
 			this.get = function(key){
 				return this.projectInfo[key];
 			}
@@ -103,7 +136,9 @@ new (function($, window){
 			}
 			this.exec_git = function( cmd, fnc ){
 			}
-		})( _db.projects[_selectedProject] );
+			this.remove = function(){
+			}
+		})( _db.projects[_selectedProject], _selectedProject );
 	}
 
 	/**
@@ -132,10 +167,10 @@ new (function($, window){
 				+'<div class="cont_project_list unit"></div>'
 				+'<div class="cont_project_form unit">'
 					+'<form action="javascript:;" onsubmit="cont_createProject(this);return false;" class="inline">'
-						+'name: <input type="text" name="pj_name" value="" /><br />'
+						+'name: <input type="text" name="pj_name" value="Your Project Name" /><br />'
 						+'path: <input type="text" name="pj_path" value="" /><br />'
 						+'entry script: <input type="text" name="pj_entry_script" value=".px_execute.php" /><br />'
-						+'vcs: <input type="text" name="pj_vcs" value="" /><br />'
+						+'vcs: <input type="text" name="pj_vcs" value="git" /><br />'
 						+'<p><button>新規プロジェクト作成</button></p>'
 					+'</form>'
 				+'</div>'

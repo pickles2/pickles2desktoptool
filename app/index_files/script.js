@@ -1,5 +1,7 @@
 
-
+/**
+ * プロジェクト設定を追加する
+ */
 function cont_createProject(form){
 	var pj = {};
 	pj.name = $(form).find('[name=pj_name]').val();

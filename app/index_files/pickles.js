@@ -39,6 +39,15 @@ new (function($, window){
 	this.load = function(){
 		_db = require( _path_db );
 		_db.projects = _db.projects||[];
+		_db.projects.sort( function(a, b){
+			if (a.name < b.name){
+				return -1;
+			}
+			if (a.name > b.name){
+				return 1;
+			}
+			return 0;
+		} );
 		return true;
 	}
 
@@ -156,6 +165,18 @@ new (function($, window){
 		return new (function(projectInfo, _selectedProject){
 			this.projectInfo = projectInfo;
 			this.projectId = _selectedProject;
+			this.status = function(){
+				var status = {};
+				status.pathExists = px.utils.isDirectory( this.get('path') );
+				status.entryScriptExists = (status.pathExists && px.utils.isFile( this.get('path')+'/'+this.get('entry_script') ) ? true : false);
+				var homeDir = this.get('path')+'/'+this.get('home_dir');
+				status.homeDirExists = (status.pathExists && px.utils.isDirectory( homeDir ) ? true : false);
+				status.confFileExists = (status.homeDirExists && (px.utils.isFile( homeDir+'/config.php'||px.utils.isFile( homeDir+'/config.json') ) ) ? true : false);
+				status.composerJsonExists = (status.pathExists && px.utils.isFile( this.get('path')+'/composer.json' ) ? true : false);
+				status.vendorDirExists = (status.pathExists && px.utils.isDirectory( this.get('path')+'/vendor/' ) ? true : false);
+				status.gitDirExists = (status.pathExists && px.utils.isDirectory( this.get('path')+'/.git/' ) ? true : false);
+				return status;
+			}
 			this.get = function(key){
 				return this.projectInfo[key];
 			}

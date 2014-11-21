@@ -12,7 +12,7 @@ function cont_createProject(form){
 
 	var _fs = require('fs');
 	if( !px.utils.isDirectory(pj.path) ){
-		alert('存在しないディレクトリです。');
+		alert('存在するディレクトリを選択してください。');
 		return false;
 	}
 

@@ -192,14 +192,14 @@
 	 */
 	exports.iterate = function(ary, fnc){
 		new (function( ary, fnc ){
-			this.idx = 0;
+			this.idx = -1;
 			this.ary = ary;
 			this.fnc = fnc;
 
 			this.next = function(){
-				if( this.idx >= this.ary.length ){return this;}
-				this.fnc( this.ary[this.idx], this.idx, this );
+				if( this.idx+1 >= this.ary.length ){return this;}
 				this.idx ++;
+				this.fnc( this.ary[this.idx], this.idx, this );
 				return this;
 			}
 			this.next();

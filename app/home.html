@@ -19,6 +19,9 @@
 		<link rel="stylesheet" href="./common/jquery.mobile/jquery.mobile-1.4.5.min.css" />
 		<script src="./common/jquery.mobile/jquery.mobile-1.4.5.min.js"></script>
 
+		<!-- underscore -->
+		<script src="./common/underscore/underscore-min.js" type="text/javascript"></script>
+
 		<!-- Bootstrap -->
 		<link rel="stylesheet" href="./common/bootstrap/css/bootstrap.min.css">
 		<script src="./common/bootstrap/js/bootstrap.min.js"></script>
@@ -31,10 +34,9 @@
 
 		<script>
 			window.px = $.px = window.parent.px;
-		</script>
-		<script>
 			$(function(){
 				var pj = px.getCurrentProject();
+				// console.log( pj.status() );
 
 				$('.tpl_name').text( pj.get('name') );
 				$('.tpl_path').text( pj.get('path') );
@@ -42,26 +44,44 @@
 				$('.tpl_entry_script').text( pj.get('entry_script') );
 				$('.tpl_vcs').text( pj.get('vcs') );
 
-				px.utils.iterate( [
-					{"title":"PHP version", "cmd": 'php -v'},
-					{"title":"PHP path", "cmd": 'which php'},
-					{"title":"composer version", "cmd": 'composer --version'},
-					{"title":"node version", "cmd": 'node -v'},
-					{"title":"git version", "cmd": 'git --version'}
-				], function(data, idx, it){
-					window.px.utils.exec(data.cmd,
-						function(err,stdout,stderr){
-							$('.tpl_sys_table').append($('<tr>')
-								.append($('<th>').text(data.title))
-								.append($('<td>')
-									.text(stdout)
-									.css({"overflow":"auto","white-space":"pre"})
-								)
-							);
-							it.next();
-						}
-					);
-				} );
+				px.utils.iterate(
+					[
+						{"title":"PHP version", "cmd": 'php -v'},
+						{"title":"PHP path", "cmd": 'which php'},
+						{"title":"composer version", "cmd": 'composer --version'},
+						{"title":"node version", "cmd": 'node -v'},
+						{"title":"git version", "cmd": 'git --version'}
+					],
+					function(data, idx, it){
+						window.px.utils.exec(data.cmd,
+							function(err,stdout,stderr){
+								$('.tpl_sys_table').append($('<tr>')
+									.append($('<th>').text(data.title))
+									.append($('<td>')
+										.text(stdout)
+										.css({"overflow":"auto","white-space":"pre"})
+									)
+								);
+								it.next();
+							}
+						);
+					}
+				);
+
+
+				px.utils.iterate(
+					_.keys( pj.status() ) ,
+					function(data, idx, it){
+						var status = pj.status();
+						$('.tpl_status_table').append($('<tr>')
+							.append($('<th>').text(data))
+							.append($('<td>')
+								.text((status[data]?'true':'false'))
+							)
+						);
+						it.next();
+					}
+				);
 
 			});
 		</script>
@@ -74,25 +94,32 @@
 					<table class="def" style="width:100%; table-layout: fixed;">
 						<colgroup><col width="30%" /><col width="70%" /></colgroup>
 						<tr>
-							<th>name</th>
+							<th>Name</th>
 							<td class="tpl_name">...</td>
 						</tr>
 						<tr>
-							<th>path</th>
+							<th>Path</th>
 							<td class="tpl_path">...</td>
 						</tr>
 						<tr>
-							<th>home directory</th>
+							<th>HOME Directory</th>
 							<td class="tpl_home_dir">...</td>
 						</tr>
 						<tr>
-							<th>entry script</th>
+							<th>Entry script</th>
 							<td class="tpl_entry_script">...</td>
 						</tr>
 						<tr>
-							<th>vcs</th>
+							<th>VCS</th>
 							<td class="tpl_vcs">...</td>
 						</tr>
+					</table>
+				</div><!-- /.unit -->
+
+				<div class="unit">
+					<h2>Status</h2>
+					<table class="def tpl_status_table" style="width:100%; table-layout: fixed;">
+						<colgroup><col width="30%" /><col width="70%" /></colgroup>
 					</table>
 				</div><!-- /.unit -->
 

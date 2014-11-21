@@ -53,5 +53,39 @@
 		<footer class="theme_footer">
 			<p>Pickles 2 (C)Tomoya Koyanagi.</p>
 		</footer>
+		<script id="template-selectProject-page" type="text/template">
+			<div class="container">
+				<h1>Select Project</h1>
+				<div class="cont_project_list unit"><p>...</p></div>
+				<h2>Or create new Project</h2>
+				<div class="cont_project_form unit">
+					<form action="javascript:;" onsubmit="cont_createProject(this);return false;" class="inline">
+						<table class="def" style="width:100%;">
+							<tr>
+								<th>name <span class="must">必須</span></th>
+								<td><input type="text" name="pj_name" value="Your Project Name" /></td>
+							</tr>
+							<tr>
+								<th>path <span class="must">必須</span></th>
+								<td><input type="file" name="pj_path" value="" webkitdirectory /></td>
+							</tr>
+							<tr>
+								<th>home directory</th>
+								<td><input type="text" name="pj_home_dir" value="" placeholder="px-files/" /></td>
+							</tr>
+							<tr>
+								<th>entry script</th>
+								<td><input type="text" name="pj_entry_script" value="" placeholder=".px_execute.php" /></td>
+							</tr>
+							<tr>
+								<th>vcs</th>
+								<td><label><input type="radio" name="pj_vcs" value="git" checked="checked" /> git</label></td>
+							</tr>
+						</table>
+						<p class="center"><button>新規プロジェクト作成</button></p>
+					</form>
+				</div>
+			</div>
+		</script>
 	</body>
 </html>

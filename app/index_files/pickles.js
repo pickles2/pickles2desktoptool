@@ -70,24 +70,51 @@ new (function($, window){
 	/**
 	 * プロジェクトを追加する
 	 */
-	this.createProject = function(projectInfo){
+	this.createProject = function(projectInfo, opt){
 		projectInfo = projectInfo||{};
+		opt = opt||{};
+		opt.success = opt.success||function(){};
+		opt.error = opt.error||function(){};
+		opt.complete = opt.complete||function(){};
+
+		var isError = false;
+		var errorMsg = {};
 		if( typeof(projectInfo.name) != typeof('') || !projectInfo.name.length ){
-			return false;
+			errorMsg.name = 'name is required.';
+			isError = true;
 		}
 		if( typeof(projectInfo.path) != typeof('') || !projectInfo.path.length ){
-			return false;
+			errorMsg.path = 'path is required.';
+			isError = true;
+		}else if( !_fs.existsSync(projectInfo.path) ){
+			errorMsg.path = 'path is required as a existed directory path.';
+			isError = true;
+		}
+		if( typeof(projectInfo.home_dir) != typeof('') || !projectInfo.home_dir.length ){
+			projectInfo.home_dir = 'px-files/'
+			// errorMsg.home_dir = 'home directory is required.';
+			// isError = true;
 		}
 		if( typeof(projectInfo.entry_script) != typeof('') || !projectInfo.entry_script.length ){
-			return false;
+			projectInfo.entry_script = '.px_execute.php'
+			// errorMsg.entry_script = 'entry_script is required.';
+			// isError = true;
 		}
 		if( typeof(projectInfo.vcs) != typeof('') || !projectInfo.vcs.length ){
-			return false;
+			errorMsg.vcs = 'vcs is required.';
+			isError = true;
 		}
 
+		if(isError){
+			opt.error(errorMsg);
+			opt.complete();
+			return false;
+		}
 
 		_db.projects.push(projectInfo);
 		this.save();
+		opt.success();
+		opt.complete();
 		return true;
 	}
 
@@ -154,11 +181,14 @@ new (function($, window){
 	 */
 	this.subapp = function(appName){
 		var $cont = $('.contents').eq(0);
+		$cont.html('<p>Loading...</p>');
+
 		if( typeof(_selectedProject) != typeof(0) ){
 			appName = '';
 		}else if( !appName && typeof(_selectedProject) == typeof(0) ){
 			appName = 'home.html';
 		}
+
 		if( appName ){
 			$cont
 				.html('')
@@ -170,43 +200,38 @@ new (function($, window){
 			// alert(appName+': 開発中');
 		}else{
 			// プロジェクト選択画面を描画
-			$cont.html('<div class="container">'
-				+'<h1>Select Project</h1>'
-				+'<div class="cont_project_list unit"><p>...</p></div>'
-				+'<h2>Or create new Project</h2>'
-				+'<div class="cont_project_form unit">'
-					+'<form action="javascript:;" onsubmit="cont_createProject(this);return false;" class="inline">'
-						+'name: <input type="text" name="pj_name" value="Your Project Name" /><br />'
-						+'path: <input type="text" name="pj_path" value="" /><br />'
-						+'entry script: <input type="text" name="pj_entry_script" value=".px_execute.php" /><br />'
-						+'vcs: <input type="text" name="pj_vcs" value="git" /><br />'
-						+'<p><button>新規プロジェクト作成</button></p>'
-					+'</form>'
-				+'</div>'
-			+'</div>');
+			$cont.html( $('script#template-selectProject-page').html() );
 
 			var list = this.getProjectList();
-			var $ul = $('<ul data-inset="true"></ul>');
-			for( var i = 0; i < list.length; i++ ){
-				$ul.append(
-					$('<li>')
-						.append(
-							$('<a>')
-								.attr('href', 'javascript:;')
-								.attr('data-path', list[i].path)
-								.attr('data-num', i)
-								.click(function(){ if( !px.selectProject( $(this).data('num') ) ){alert('ERROR');return false;} px.subapp(); })
-								.text(list[i].name)
-							)
-				);
+			if( list.length ){
+				var $ul = $('<ul data-inset="true"></ul>');
+				for( var i = 0; i < list.length; i++ ){
+					$ul.append(
+						$('<li>')
+							.append(
+								$('<a>')
+									.attr('href', 'javascript:;')
+									.attr('data-path', list[i].path)
+									.attr('data-num', i)
+									.click(function(){ if( !px.selectProject( $(this).data('num') ) ){alert('ERROR');return false;} px.subapp(); })
+									.text(list[i].name)
+								)
+					);
+				}
+				$ul.listview(); // ← jQuery mobile の data-role="listview" を動的に適用
+				$('.cont_project_list', $cont)
+					.html('')
+					.append($ul)
+				;
+
+			}else{
+				$('.cont_project_list', $cont)
+					.html('<p>プロジェクトは登録されていません。</p>')
+				;
 			}
-			$ul.listview(); // ← jQuery mobile の data-role="listview" を動的に適用
-			$('.cont_project_list', $cont)
-				.html('')
-				.append($ul)
-			;
 		}
 		layoutReset();
+		$contents.scrollTop(0);
 	}
 
 	/**

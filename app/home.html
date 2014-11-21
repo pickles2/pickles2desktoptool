@@ -38,6 +38,7 @@
 
 				$('.tpl_name').text( pj.get('name') );
 				$('.tpl_path').text( pj.get('path') );
+				$('.tpl_home_dir').text( pj.get('home_dir') );
 				$('.tpl_entry_script').text( pj.get('entry_script') );
 				$('.tpl_vcs').text( pj.get('vcs') );
 
@@ -81,7 +82,11 @@
 							<td class="tpl_path">...</td>
 						</tr>
 						<tr>
-							<th>entry_script</th>
+							<th>home directory</th>
+							<td class="tpl_home_dir">...</td>
+						</tr>
+						<tr>
+							<th>entry script</th>
 							<td class="tpl_entry_script">...</td>
 						</tr>
 						<tr>

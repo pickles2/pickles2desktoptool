@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8" />
-		<title>publish - Pickles 2 Desktop Tool</title>
+		<title>preview - Pickles 2 Desktop Tool</title>
 
 		<meta name="viewport" content="width=device-width" />
 		<meta name="keywords" content="" />
@@ -32,60 +32,34 @@
 		<script>
 			window.px = $.px = window.parent.px;
 
-			function cont_publish(btn){
+			function cont_start_preview(btn){
 				$(btn).attr('disabled', 'disabled');
-				var pj = px.getCurrentProject();
-				$('.cont_console').text('');
-				pj.execPx2(
-					'/?PX=publish.run',
-					{
-						success: function(data){
-							$('.cont_console').text(
-								$('.cont_console').text() + data
-							);
-						} ,
-						error: function(data){
-							$('.cont_console').text(
-								$('.cont_console').text() + data
-							);
-						} ,
-						complete: function(code){
-							// $('.cont_console').text(
-							// 	$('.cont_console').text() + code
-							// );
-							$(btn).removeAttr('disabled');
-						}
-					}
-				);
+				px.getCurrentProject().serverStandby( function(){
+					$('.cont_preview_frame').attr('src','http://127.0.0.1:8080/');
+					$(btn).removeAttr('disabled');
+				} );
 			}
-
-			function cont_open_publish_dir(btn){
+			function cont_stop_preview(btn){
 				$(btn).attr('disabled', 'disabled');
-				var pj = px.getCurrentProject();
-				window.px.utils.spawn('open',
-					[pj.get('path')+'/px-files/_sys/ram/publish/'],
-					{
-						complete: function(code){
-							$(btn).removeAttr('disabled');
-						}
-					}
-				);
+				px.server.stop( function(){
+					$('.cont_preview_frame').attr('src', 'about:blank');
+					$(btn).removeAttr('disabled');
+				} );
 			}
-
 		</script>
 	</head>
 	<body>
 		<div class="container">
-			<h1>publish</h1>
+			<h1>preview</h1>
 		</div>
 		<div class="contents">
 			<div class="container">
-
-				<p><button onclick="cont_publish(this); return false;">パブリッシュする</button></p>
-				<pre class="cont_console" style="max-height:360px;">console:
-</pre>
-				<p><button onclick="cont_open_publish_dir(this); return false;">パブリッシュディレクトリを開く</button></p>
-
+				<p>開発中です。</p>
+				<p><button onclick="cont_start_preview(this); return false;">start preview</button></p>
+				<p><button onclick="cont_stop_preview(this); return false;">stop preview</button></p>
+				<div class="unit">
+					<iframe src="about:blank" class="cont_preview_frame" style="width:100%; height:500px;"></iframe>
+				</div>
 			</div>
 		</div>
 	</body>

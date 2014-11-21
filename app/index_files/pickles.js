@@ -14,6 +14,8 @@ new (function($, window){
 	_path_db = _fs.realpathSync( _path_db );
 	var $header, $footer, $main, $contents;
 
+	this.server = require('./index_files/px_server_emurator.node.js');
+
 	// var findpath = require('nodewebkit').findpath;
 	// var nwpath = findpath();
 	// console.log(findpath);
@@ -180,7 +182,7 @@ new (function($, window){
 			this.get = function(key){
 				return this.projectInfo[key];
 			}
-			this.exec_px2 = function( cmd, fnc ){
+			this.execPx2 = function( cmd, fnc ){
 				var _pjInfo = this.projectInfo;
 				window.px.utils.spawn('php',
 					[
@@ -191,8 +193,14 @@ new (function($, window){
 				);
 				return this;
 			}
-			this.exec_git = function( cmd, fnc ){
+			this.execGit = function( cmd, fnc ){
 				return this;
+			}
+			this.serverStandby = function(cb){
+				px.server.start(8080, this.get('path'), cb);
+			}
+			this.serverStop = function(cb){
+				px.server.stop(cb);
 			}
 		})( _db.projects[_selectedProject], _selectedProject );
 	}

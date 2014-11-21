@@ -25,7 +25,7 @@ new (function($, window){
 		win = gui.Window.get();
 		var nativeMenuBar = new gui.Menu({ type: "menubar" });
 		try {
-			nativeMenuBar.createMacBuiltin("My App");
+			nativeMenuBar.createMacBuiltin("Pickles 2 Desktop Tool");
 			win.menu = nativeMenuBar;
 		} catch (ex) {
 			console.log(ex.message);
@@ -133,10 +133,18 @@ new (function($, window){
 				return this.projectInfo[key];
 			}
 			this.exec_px2 = function( cmd, fnc ){
+				var _pjInfo = this.projectInfo;
+				window.px.utils.spawn('php',
+					[
+						_pjInfo.path + '/' + _pjInfo.entry_script,
+						cmd
+					],
+					fnc
+				);
+				return this;
 			}
 			this.exec_git = function( cmd, fnc ){
-			}
-			this.remove = function(){
+				return this;
 			}
 		})( _db.projects[_selectedProject], _selectedProject );
 	}
@@ -164,7 +172,8 @@ new (function($, window){
 			// プロジェクト選択画面を描画
 			$cont.html('<div class="container">'
 				+'<h1>Select Project</h1>'
-				+'<div class="cont_project_list unit"></div>'
+				+'<div class="cont_project_list unit"><p>...</p></div>'
+				+'<h2>Or create new Project</h2>'
 				+'<div class="cont_project_form unit">'
 					+'<form action="javascript:;" onsubmit="cont_createProject(this);return false;" class="inline">'
 						+'name: <input type="text" name="pj_name" value="Your Project Name" /><br />'

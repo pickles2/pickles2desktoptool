@@ -14,7 +14,7 @@ new (function($, window){
 	_path_db = _fs.realpathSync( _path_db );
 	var $header, $footer, $main, $contents;
 
-	this.server = require('./index_files/px_server_emurator.node.js');
+	this.server = require('./index_files/px_server_emurator.node.js').init(this,$);
 
 	// var findpath = require('nodewebkit').findpath;
 	// var nwpath = findpath();
@@ -197,7 +197,7 @@ new (function($, window){
 				return this;
 			}
 			this.serverStandby = function(cb){
-				px.server.start(8080, this.get('path'), cb);
+				px.server.start(8080, cb);
 			}
 			this.serverStop = function(cb){
 				px.server.stop(cb);

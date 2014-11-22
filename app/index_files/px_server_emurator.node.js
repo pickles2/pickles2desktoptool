@@ -5,7 +5,14 @@
 	var url = require('url');
 	var fs = require('fs');
 	var _server;
-	var _port, _pathDocumentRoot;
+	var _port;
+	var px;
+	var $, jQuery;
+	exports.init = function(_px, _jQuery){
+		px = _px;
+		jQuery = $ = _jQuery;
+		return this;
+	}
 
 	_server = http.createServer(function(request, response) {
 		// アクセスされたURLを解析してパスを抽出
@@ -13,6 +20,7 @@
 		var params = parsedUrl.query;
 		var path = parsedUrl.pathname;
 
+		var pj = px.getCurrentProject();
 
 		// ディレクトリトラバーサル防止
 		if (path.indexOf("..") != -1) {
@@ -22,55 +30,90 @@
 			// リクエストが「/」で終わっている場合、index.htmlをつける。
 			path += 'index.html';
 		}
-		fs.readFile(_pathDocumentRoot + path, function(error, bin){
-			if(error) {
-				response.writeHead(404, 'NotFound', {'Content-Type': 'text/html'});
-				response.write('<!DOCTYPE html>');
-				response.write('<html>');
-				response.write('<head>');
-				response.write('<title>Not found.</title>');
-				response.write('</head>');
-				response.write('<body>');
-				response.write('<h1>404 Not found.</h1>');
-				response.write('<p>File NOT found.</p>');
-				response.write('</body>');
-				response.write('</html>');
-				response.end();
-			} else {
-				var pathExt = (function (path) {
-					var i = path.lastIndexOf('.');
-					return (i < 0) ? '' : path.substr(i + 1);
-				})(path);
-				var mime = 'text/html';
-				switch( pathExt ){
-					case 'html': case 'htm':             mime = 'text/html';break;
-					case 'js':                           mime = 'text/javascript';break;
-					case 'css':                          mime = 'text/css';break;
-					case 'gif':                          mime = 'image/gif';break;
-					case 'jpg': case 'jpeg': case 'jpe': mime = 'image/jpeg';break;
-					case 'png':                          mime = 'image/png';break;
-					case 'svg':                          mime = 'image/svg+xml';break;
+		var _cmdData = '';
+
+		var pathExt = (function (path) {
+			var i = path.lastIndexOf('.');
+			return (i < 0) ? '' : path.substr(i + 1);
+		})(path);
+		var mime = 'text/html';
+		var applyPx = false;
+		switch( pathExt ){
+			case 'html': case 'htm':             mime = 'text/html'; applyPx = true; break;
+			case 'js':                           mime = 'text/javascript'; applyPx = true; break;
+			case 'css':                          mime = 'text/css'; applyPx = true; break;
+			case 'gif':                          mime = 'image/gif';break;
+			case 'jpg': case 'jpeg': case 'jpe': mime = 'image/jpeg';break;
+			case 'png':                          mime = 'image/png';break;
+			case 'svg':                          mime = 'image/svg+xml';break;
+		}
+
+		if( applyPx ){
+			px.utils.spawn('php',
+				[
+					pj.get('path')+'/'+pj.get('entry_script') ,
+					'-o', 'json',
+					path
+				],
+				{
+					success: function(data){
+						_cmdData += data;
+					},
+					complete: function(code){
+						var dataDecoded = JSON.parse(_cmdData);
+						// console.log(dataDecoded);
+						var document_body = dataDecoded.body_base64;
+						try{
+							// console.log('Trying to decoding Base64 on node.js...');
+							// console.log(path);
+							document_body = (new Buffer(document_body, 'base64')).toString();
+						}catch(e){
+							// console.log('disabled to decode Base64 data.');
+						}
+						// console.log(document_body);
+
+						response.writeHead(dataDecoded.status, 'OK', {'Content-Type': mime});
+						response.write(document_body);
+						// response.write(''+dataDecoded.relatedlinks.length);
+						response.end();
+						// console.log('done.');
+
+					}
 				}
-
-				response.writeHead(200, 'OK', { 'Content-Type': mime });
-				response.write(bin);
-				response.end();
-			}
-		});
-
+			);
+		}else{
+			fs.readFile(pj.get('path') + path, function(error, bin){
+				if(error) {
+					response.writeHead(404, 'NotFound', {'Content-Type': 'text/html'});
+					response.write('<!DOCTYPE html>');
+					response.write('<html>');
+					response.write('<head>');
+					response.write('<title>Not found.</title>');
+					response.write('</head>');
+					response.write('<body>');
+					response.write('<h1>404 Not found.</h1>');
+					response.write('<p>File NOT found.</p>');
+					response.write('</body>');
+					response.write('</html>');
+					response.end();
+				} else {
+					response.writeHead(200, 'OK', { 'Content-Type': mime });
+					response.write(bin);
+					response.end();
+				}
+			});
+		}
 	});
 
 
-	exports.start = function(port, pathDocumentRoot, cb){
+	exports.start = function(port, cb){
 		cb = cb||function(){};
 		_port = port;
-		_pathDocumentRoot = pathDocumentRoot;
 
 		// 指定ポートでLISTEN状態にする
 		_server.listen(_port, function(){
 			console.log('Pickles2 server emurator started;');
 			console.log('port: '+_port);
-			console.log('documentRoot: '+_pathDocumentRoot);
 			console.log('standby;');
 			cb();
 		});

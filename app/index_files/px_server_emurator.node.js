@@ -6,9 +6,16 @@
 	var fs = require('fs');
 	var _server;
 	var _port;
+	var _running = false;
 	var px;
 	var $, jQuery;
+
+	/**
+	 * 初期化
+	 */
 	exports.init = function(_px, _jQuery){
+		if(px){ return this; }
+
 		px = _px;
 		jQuery = $ = _jQuery;
 		return this;
@@ -105,22 +112,34 @@
 		}
 	});
 
-
+	/**
+	 * サーバーを起動
+	 */
 	exports.start = function(port, cb){
 		cb = cb||function(){};
 		_port = port;
 
+		if( _running ){
+			cb(true);
+			return this;
+		}
+
 		// 指定ポートでLISTEN状態にする
 		_server.listen(_port, function(){
+			_running = true;
 			console.log('Pickles2 server emurator started;');
 			console.log('port: '+_port);
 			console.log('standby;');
-			cb();
+			cb(true);
 		});
 
-		return true;
+		return this;
 	}// start();
 
+
+	/**
+	 * サーバーを停止
+	 */
 	exports.stop = function(cb){
 		cb = cb||function(){};
 		var _this = this;
@@ -133,13 +152,27 @@
 		// console.log(_server);
 		// console.log(_port);
 		// console.log(_pathDocumentRoot);
+		if( !_running ){
+			cb(true);
+			return this;
+		}
 		_server.close(function(){
 			// delete __server;
+			_running = false;
 			console.log('Pickles2 server emurator stopped;');
 			console.log('bye!');
-			cb();
+			cb(true);
 		});
-		return true;
+		return this;
 	}//stop();
+
+	/**
+	 * サーバーが起動中か確認
+	 */
+	exports.isRunning = function(cb){
+		cb = cb||function(){};
+		cb(_running);
+		return this;
+	}//isRunning();
 
 })(exports);

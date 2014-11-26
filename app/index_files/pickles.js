@@ -202,6 +202,16 @@ new (function($, window){
 			this.serverStop = function(cb){
 				px.server.stop(cb);
 			}
+			this.open = function(){
+				var _pjInfo = this.projectInfo;
+				// Finderで開く(Mac)
+				window.px.utils.spawn('open',
+					[
+						_pjInfo.path
+					],
+					function(){}
+				);
+			}
 		})( _db.projects[_selectedProject], _selectedProject );
 	}
 

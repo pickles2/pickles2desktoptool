@@ -13,6 +13,18 @@ new (function($, window){
 	}
 	_path_db = _fs.realpathSync( _path_db );
 	var $header, $footer, $main, $contents;
+	var _menu = [
+		// {"label":"Reload(dev)", "cond":"always", "cb": function(){window.location.href='index.html?';}} ,
+		{"label":"SELECT PROJ", "cond":"projectSelected", "cb": function(){px.deselectProject();px.subapp();}} ,
+		{"label":"HOME", "cond":"pxStandby", "cb": function(){px.subapp();}} ,
+		{"label":"preview", "cond":"pxStandby", "cb": function(){px.subapp('fncs/preview/index.html');}} ,
+		{"label":"clearcache", "cond":"pxStandby", "cb": function(){px.subapp('fncs/clearcache/index.html');}} ,
+		{"label":"publish", "cond":"pxStandby", "cb": function(){px.subapp('fncs/publish/index.html');}} ,
+		{"label":"composer", "cond":"pxStandby", "cb": function(){px.subapp('fncs/composer/index.html');}} ,
+		{"label":"git", "cond":"pxStandby", "cb": function(){px.subapp('fncs/git/index.html');}} ,
+		{"label":"Finderで開く", "cond":"pxStandby", "cb": function(){px.getCurrentProject().open();}} ,
+		{"label":"閉じる", "cond":"always", "cb": function(){px.exit();}}
+	];
 
 	this.server = require('./index_files/px_server_emurator.node.js').init(this,$);
 
@@ -164,6 +176,9 @@ new (function($, window){
 	 * 選択中のプロジェクトの情報を得る
 	 */
 	this.getCurrentProject = function(){
+		if( _selectedProject === null ){
+			return null;
+		}
 		return new (function(projectInfo, _selectedProject){
 			this.projectInfo = projectInfo;
 			this.projectId = _selectedProject;
@@ -176,6 +191,7 @@ new (function($, window){
 				status.confFileExists = (status.homeDirExists && (px.utils.isFile( homeDir+'/config.php'||px.utils.isFile( homeDir+'/config.json') ) ) ? true : false);
 				status.composerJsonExists = (status.pathExists && px.utils.isFile( this.get('path')+'/composer.json' ) ? true : false);
 				status.vendorDirExists = (status.pathExists && px.utils.isDirectory( this.get('path')+'/vendor/' ) ? true : false);
+				status.isPxStandby = ( status.pathExists && status.entryScriptExists && status.homeDirExists && status.confFileExists && status.composerJsonExists && status.vendorDirExists ? true : false );
 				status.gitDirExists = (status.pathExists && px.utils.isDirectory( this.get('path')+'/.git/' ) ? true : false);
 				return status;
 			}
@@ -277,6 +293,12 @@ new (function($, window){
 	 * レイアウトをリセット
 	 */
 	function layoutReset(){
+		var cpj = px.getCurrentProject();
+		var cpj_s = null;
+		if( cpj !== null ){
+			cpj_s = cpj.status()
+		}
+
 		$('body')
 			.css({
 				'margin':'0 0 0 0' ,
@@ -304,6 +326,29 @@ new (function($, window){
 				'height': $contents.height() - 10
 			})
 		;
+
+		$('.theme_gmenu').html('');
+		for( var i in _menu ){
+			if( _menu[i].cond == 'projectSelected' ){
+				if( cpj === null ){
+					continue;
+				}
+			}else if( _menu[i].cond == 'pxStandby' ){
+				if( cpj === null || !cpj_s.isPxStandby ){
+					continue;
+				}
+			}else if( _menu[i].cond != 'always' ){
+				continue;
+			}
+			$('.theme_gmenu').append( $('<li>')
+				.append( $('<a>')
+					.attr({"href":"javascript:;"})
+					.click(_menu[i].cb)
+					.text(_menu[i].label)
+				)
+			);
+			var $li = $('<li>')
+		}
 	}
 
 	/**

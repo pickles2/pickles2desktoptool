@@ -44,15 +44,6 @@
 		<header class="theme_header">
 			<p>Pickles 2 Desktop Tool</p>
 			<ul class="theme_gmenu">
-				<!-- <li><a href="javascript:window.location.href='index.html?';">Reload(dev)</a></li> -->
-				<li><a href="javascript:px.deselectProject();px.subapp();">SELECT PROJ</a></li>
-				<li><a href="javascript:px.subapp();">HOME</a></li>
-				<li><a href="javascript:px.subapp('fncs/preview/index.html');">preview</a></li>
-				<li><a href="javascript:px.subapp('fncs/clearcache/index.html');">clearcache</a></li>
-				<li><a href="javascript:px.subapp('fncs/publish/index.html');">publish</a></li>
-				<li><a href="javascript:px.subapp('fncs/composer/index.html');">composer</a></li>
-				<li><a href="javascript:px.subapp('fncs/git/index.html');">git</a></li>
-				<li><a href="javascript:px.getCurrentProject().open();">Finderで開く</a></li>
 				<li><a href="javascript:px.exit();">閉じる</a></li>
 			</ul>
 		</header>
@@ -73,7 +64,7 @@
 						<table class="def" style="width:100%;">
 							<tr>
 								<th>Name <span class="must">必須</span></th>
-								<td><input type="text" name="pj_name" value="Your Project Name" /></td>
+								<td><input type="text" name="pj_name" value="" placeholder="Your Project Name" /></td>
 							</tr>
 							<tr>
 								<th>Path <span class="must">必須</span></th>

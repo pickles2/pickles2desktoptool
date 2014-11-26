@@ -1,4 +1,11 @@
 @charset "utf-8";
+body{
+	/* http://www.softel.co.jp/blogs/tech/archives/2909 */
+	user-select: none; /* CSS3 */
+	-moz-user-select: none; /* Firefox */
+	-webkit-user-select: none; /* Safari、Chromeなど */
+	-ms-user-select: none; /* IE10かららしい */
+}
 header{
 	background-color: #eee;
 	padding: 10px;
@@ -21,7 +28,10 @@ ul.theme_gmenu li a{
 	margin:0; padding:0.2em 1em;
 	background-color: #ddd;
 	color: #000;
-	font-weight:normal;
+	font-weight: normal;
+}
+ul.theme_gmenu li a.current{
+	font-weight: bold;
 }
 footer{
 	background-color: #eee;

@@ -6,7 +6,7 @@ new (function($, window){
 	var _db = {};
 	var _path_db = process.env.HOME + '/.pickles2desktoptool.json';
 	// _path_db = './_stab.json';
-	var _current_project_num = null;
+	var _current_app = null;
 	var _selectedProject = null;
 	if( !_fs.existsSync( _path_db ) ){
 		_fs.writeFileSync( _path_db, JSON.stringify( {"projects":[]} ), {"encoding":"utf8","mode":436,"flag":"w"} );
@@ -15,15 +15,15 @@ new (function($, window){
 	var $header, $footer, $main, $contents;
 	var _menu = [
 		// {"label":"Reload(dev)", "cond":"always", "cb": function(){window.location.href='index.html?';}} ,
-		{"label":"SELECT PROJ", "cond":"projectSelected", "cb": function(){px.deselectProject();px.subapp();}} ,
-		{"label":"HOME", "cond":"pxStandby", "cb": function(){px.subapp();}} ,
-		{"label":"preview", "cond":"pxStandby", "cb": function(){px.subapp('fncs/preview/index.html');}} ,
-		{"label":"clearcache", "cond":"pxStandby", "cb": function(){px.subapp('fncs/clearcache/index.html');}} ,
-		{"label":"publish", "cond":"pxStandby", "cb": function(){px.subapp('fncs/publish/index.html');}} ,
-		{"label":"composer", "cond":"pxStandby", "cb": function(){px.subapp('fncs/composer/index.html');}} ,
-		{"label":"git", "cond":"pxStandby", "cb": function(){px.subapp('fncs/git/index.html');}} ,
-		{"label":"Finderで開く", "cond":"pxStandby", "cb": function(){px.getCurrentProject().open();}} ,
-		{"label":"閉じる", "cond":"always", "cb": function(){px.exit();}}
+		{"label":"SELECT PROJ", "cond":"projectSelected", "app":"index.html", "cb": function(){px.deselectProject();px.subapp();}} ,
+		{"label":"HOME", "cond":"pxStandby", "app":"home.html", "cb": function(){px.subapp();}} ,
+		{"label":"preview", "cond":"pxStandby", "app":"fncs/preview/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"clearcache", "cond":"pxStandby", "app":"fncs/clearcache/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"publish", "cond":"pxStandby", "app":"fncs/publish/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"composer", "cond":"pxStandby", "app":"fncs/composer/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"git", "cond":"pxStandby", "app":"fncs/git/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"Finderで開く", "cond":"pxStandby", "app":null, "cb": function(){px.getCurrentProject().open();}} ,
+		{"label":"閉じる", "cond":"always", "app":null, "cb": function(){px.exit();}}
 	];
 
 	this.server = require('./index_files/px_server_emurator.node.js').init(this,$);
@@ -285,6 +285,7 @@ new (function($, window){
 				;
 			}
 		}
+		_current_app = appName;
 		layoutReset();
 		$contents.scrollTop(0);
 	}
@@ -345,6 +346,8 @@ new (function($, window){
 					.attr({"href":"javascript:;"})
 					.click(_menu[i].cb)
 					.text(_menu[i].label)
+					.data('app', _menu[i].app)
+					.addClass( (_current_app==_menu[i].app ? 'current' : '') )
 				)
 			);
 			var $li = $('<li>')
@@ -367,6 +370,11 @@ new (function($, window){
 	$(window).on( 'resize', function(e){
 		layoutReset();
 	} )
+	// $(document).on( 'dblclick', function(e){
+	// 	e.stopPropagation();
+	// 	e.preventDefault();
+	// 	return false;
+	// } )
 
 
 	$(function(){

@@ -1,8 +1,10 @@
 new (function($, window){
 	window.px = $.px = this;
 
-	this.utils = require('./common/scripts/_utils.node.js');
+	var _utils = require('./common/scripts/_utils.node.js');
+	this.utils = _utils;
 	var _fs = require('fs');
+	this.fs = _fs;
 	var _db = {};
 	var _path_db = process.env.HOME + '/.pickles2desktoptool.json';
 	// _path_db = './_stab.json';
@@ -17,7 +19,8 @@ new (function($, window){
 		// {"label":"Reload(dev)", "cond":"always", "cb": function(){window.location.href='index.html?';}} ,
 		{"label":"SELECT PROJ", "cond":"projectSelected", "app":"index.html", "cb": function(){px.deselectProject();px.subapp();}} ,
 		{"label":"HOME", "cond":"pxStandby", "app":"home.html", "cb": function(){px.subapp();}} ,
-		{"label":"preview", "cond":"pxStandby", "app":"fncs/preview/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"Filelist", "cond":"pxStandby", "app":"fncs/filelist/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"Preview", "cond":"pxStandby", "app":"fncs/preview/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"clearcache", "cond":"pxStandby", "app":"fncs/clearcache/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"publish", "cond":"pxStandby", "app":"fncs/publish/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"composer", "cond":"pxStandby", "app":"fncs/composer/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
@@ -198,6 +201,11 @@ new (function($, window){
 			this.get = function(key){
 				return this.projectInfo[key];
 			}
+			this.getSitemapFilelist = function(){
+				var pathDir = this.get('path')+'/'+this.get('home_dir')+'/sitemaps/';
+				var filelist = _fs.readdirSync( pathDir );
+				return filelist;
+			}
 			this.execPx2 = function( cmd, fnc ){
 				var _pjInfo = this.projectInfo;
 				window.px.utils.spawn('php',
@@ -266,8 +274,8 @@ new (function($, window){
 							.append(
 								$('<a>')
 									.attr('href', 'javascript:;')
-									.attr('data-path', list[i].path)
-									.attr('data-num', i)
+									.data('path', list[i].path)
+									.data('num', i)
 									.click(function(){ if( !px.selectProject( $(this).data('num') ) ){alert('ERROR');return false;} px.subapp(); })
 									.text(list[i].name)
 								)

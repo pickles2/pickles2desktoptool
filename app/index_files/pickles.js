@@ -19,14 +19,15 @@ new (function($, window){
 		// {"label":"Reload(dev)", "cond":"always", "cb": function(){window.location.href='index.html?';}} ,
 		{"label":"SELECT PROJ", "cond":"projectSelected", "app":"index.html", "cb": function(){px.deselectProject();px.subapp();}} ,
 		{"label":"HOME", "cond":"pxStandby", "app":"home.html", "cb": function(){px.subapp();}} ,
+		{"label":"Config", "cond":"pxStandby", "app":"fncs/config/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"Filelist", "cond":"pxStandby", "app":"fncs/filelist/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"Preview", "cond":"pxStandby", "app":"fncs/preview/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"clearcache", "cond":"pxStandby", "app":"fncs/clearcache/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"publish", "cond":"pxStandby", "app":"fncs/publish/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"composer", "cond":"pxStandby", "app":"fncs/composer/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"git", "cond":"pxStandby", "app":"fncs/git/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"Finderで開く", "cond":"pxStandby", "app":null, "cb": function(){px.getCurrentProject().open();}} ,
-		{"label":"閉じる", "cond":"always", "app":null, "cb": function(){px.exit();}}
+		{"label":"Finderで開く", "cond":"pxStandby", "app":null, "cb": function(){px.getCurrentProject().open();}}
+		// {"label":"閉じる", "cond":"always", "app":null, "cb": function(){px.exit();}}
 	];
 
 	this.server = require('./index_files/px_server_emurator.node.js').init(this,$);
@@ -206,14 +207,25 @@ new (function($, window){
 				var filelist = _fs.readdirSync( pathDir );
 				return filelist;
 			}
+			this.getConfig = function( cb ){
+				return this.execPx2( '/?PX=api.get.config', cb );
+			}
 			this.execPx2 = function( cmd, fnc ){
-				var _pjInfo = this.projectInfo;
+				var data_memo = '';
 				window.px.utils.spawn('php',
 					[
-						_pjInfo.path + '/' + _pjInfo.entry_script,
+						'./' + this.get('entry_script'),
 						cmd
-					],
-					fnc
+					] ,
+					{
+						cd: this.get('path') ,
+						success: function( data ){
+							data_memo += data;
+						} ,
+						complete: function(code){
+							fnc( data_memo );
+						}
+					}
 				);
 				return this;
 			}
@@ -227,13 +239,14 @@ new (function($, window){
 				px.server.stop(cb);
 			}
 			this.open = function(){
-				var _pjInfo = this.projectInfo;
 				// Finderで開く(Mac)
 				window.px.utils.spawn('open',
 					[
-						_pjInfo.path
-					],
-					function(){}
+						this.get('path')
+					] ,
+					{
+						complete: function(){}
+					}
 				);
 			}
 		})( _db.projects[_selectedProject], _selectedProject );
@@ -308,6 +321,31 @@ new (function($, window){
 			cpj_s = cpj.status()
 		}
 
+		$('.theme_gmenu').html('');
+		for( var i in _menu ){
+			if( _menu[i].cond == 'projectSelected' ){
+				if( cpj === null ){
+					continue;
+				}
+			}else if( _menu[i].cond == 'pxStandby' ){
+				if( cpj === null || !cpj_s.isPxStandby ){
+					continue;
+				}
+			}else if( _menu[i].cond != 'always' ){
+				continue;
+			}
+			$('.theme_gmenu').append( $('<li>')
+				.append( $('<a>')
+					.attr({"href":"javascript:;"})
+					.click(_menu[i].cb)
+					.text(_menu[i].label)
+					.data('app', _menu[i].app)
+					.addClass( (_current_app==_menu[i].app ? 'current' : '') )
+				)
+			);
+			var $li = $('<li>')
+		}
+
 		$('body')
 			.css({
 				'margin':'0 0 0 0' ,
@@ -335,54 +373,27 @@ new (function($, window){
 				'height': $contents.height() - 10
 			})
 		;
-
-		$('.theme_gmenu').html('');
-		for( var i in _menu ){
-			if( _menu[i].cond == 'projectSelected' ){
-				if( cpj === null ){
-					continue;
-				}
-			}else if( _menu[i].cond == 'pxStandby' ){
-				if( cpj === null || !cpj_s.isPxStandby ){
-					continue;
-				}
-			}else if( _menu[i].cond != 'always' ){
-				continue;
-			}
-			$('.theme_gmenu').append( $('<li>')
-				.append( $('<a>')
-					.attr({"href":"javascript:;"})
-					.click(_menu[i].cb)
-					.text(_menu[i].label)
-					.data('app', _menu[i].app)
-					.addClass( (_current_app==_menu[i].app ? 'current' : '') )
-				)
-			);
-			var $li = $('<li>')
-		}
 	}
 
 	/**
 	 * イベントセット
 	 */
 	process.on( 'exit', function(e){
-		// console.log(e);
-		// e.preventDefault();
 		px.save();
-		// return false;
 	});
 	process.on( 'uncaughtException', function(e){
-		alert('uncaughtException;');
-		console.log('uncaughtException;', e);
-	} )
+		alert('Uncaught Exception;');
+		console.log('Uncaught Exception;');
+		console.log(e);
+	} );
 	$(window).on( 'resize', function(e){
 		layoutReset();
-	} )
+	} );
 	// $(document).on( 'dblclick', function(e){
 	// 	e.stopPropagation();
 	// 	e.preventDefault();
 	// 	return false;
-	// } )
+	// } );
 
 
 	$(function(){

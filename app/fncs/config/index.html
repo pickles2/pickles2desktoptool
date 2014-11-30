@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8" />
-		<title>preview - Pickles 2 Desktop Tool</title>
+		<title>Config - Pickles 2 Desktop Tool</title>
 
 		<meta name="viewport" content="width=device-width" />
 		<meta name="keywords" content="" />
@@ -31,37 +31,27 @@
 
 		<script>
 			window.px = $.px = window.parent.px;
-
-			function cont_start_preview(btn){
-				$(btn).attr('disabled', 'disabled');
-				px.getCurrentProject().serverStandby( function(){
-					$('.cont_preview_frame').attr('src','http://127.0.0.1:8080/');
-					$(btn).removeAttr('disabled');
-				} );
-			}
-			function cont_stop_preview(btn){
-				$(btn).attr('disabled', 'disabled');
-				px.server.stop( function(){
-					$('.cont_preview_frame').attr('src', 'about:blank');
-					$(btn).removeAttr('disabled');
-				} );
-			}
+			$(function(){
+				var pj = px.getCurrentProject();
+				pj.getConfig(function(data){
+					$('.cont_config_json_preview pre').text( data );
+					console.log( JSON.parse(data) );
+				});
+			});
 		</script>
 	</head>
 	<body>
 		<div class="container">
-			<h1>preview</h1>
+			<h1>Config</h1>
 		</div>
 		<div class="contents">
 			<div class="container">
-				<div class="row">
-					<div class="col-xs-8"><button onclick="cont_start_preview(this); return false;">start preview</button></div>
-					<div class="col-xs-4"><button onclick="cont_stop_preview(this); return false;">stop preview</button></div>
+				<h2>Config</h2>
+				<div class="unit cont_config_json_preview">
+					<pre></pre>
 				</div>
+
 			</div>
-				<div class="unit">
-					<iframe src="about:blank" class="cont_preview_frame" style="width:100%; height:500px;"></iframe>
-				</div>
 		</div>
 	</body>
 </html>

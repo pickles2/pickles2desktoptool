@@ -64,8 +64,9 @@
 				$(btn).attr('disabled', 'disabled');
 				var pj = px.getCurrentProject();
 				window.px.utils.spawn('open',
-					[pj.get('path')+'/px-files/_sys/ram/publish/'],
+					[pj.get('path')+'/'+pj.get('home_dir')+'/_sys/ram/publish/'],
 					{
+						cd: pj.get('path') ,
 						complete: function(code){
 							$(btn).removeAttr('disabled');
 						}

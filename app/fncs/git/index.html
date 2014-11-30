@@ -39,6 +39,7 @@
 				window.px.utils.spawn('git',
 					['status'],
 					{
+						cd: pj.get('path'),
 						success: function(data){
 							$('.cont_console').text(
 								$('.cont_console').text() + data
@@ -54,6 +55,7 @@
 							// 	$('.cont_console').text() + code
 							// );
 							$(btn).removeAttr('disabled');
+							px.message( 'gitのステータス表示を完了しました。' );
 						}
 					}
 				);

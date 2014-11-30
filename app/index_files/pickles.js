@@ -208,24 +208,24 @@ new (function($, window){
 				return filelist;
 			}
 			this.getConfig = function( cb ){
-				return this.execPx2( '/?PX=api.get.config', cb );
-			}
-			this.execPx2 = function( cmd, fnc ){
 				var data_memo = '';
+				return this.execPx2( '/?PX=api.get.config', {
+					cd: this.get('path') ,
+					success: function( data ){
+						data_memo += data;
+					} ,
+					complete: function(code){
+						cb( data_memo );
+					}
+				} );
+			}
+			this.execPx2 = function( cmd, opts ){
 				window.px.utils.spawn('php',
 					[
-						'./' + this.get('entry_script'),
+						this.get('path') + '/' + this.get('entry_script'),
 						cmd
 					] ,
-					{
-						cd: this.get('path') ,
-						success: function( data ){
-							data_memo += data;
-						} ,
-						complete: function(code){
-							fnc( data_memo );
-						}
-					}
+					opts
 				);
 				return this;
 			}

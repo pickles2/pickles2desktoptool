@@ -21,6 +21,7 @@ new (function($, window){
 		{"label":"HOME", "cond":"pxStandby", "app":"home.html", "cb": function(){px.subapp();}} ,
 		{"label":"Config", "cond":"pxStandby", "app":"fncs/config/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"Filelist", "cond":"pxStandby", "app":"fncs/filelist/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"Pages", "cond":"pxStandby", "app":"fncs/pages/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"Preview", "cond":"pxStandby", "app":"fncs/preview/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"clearcache", "cond":"pxStandby", "app":"fncs/clearcache/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"publish", "cond":"pxStandby", "app":"fncs/publish/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
@@ -104,36 +105,18 @@ new (function($, window){
 		opt.error = opt.error||function(){};
 		opt.complete = opt.complete||function(){};
 
-		var isError = false;
-		var errorMsg = {};
-		if( typeof(projectInfo.name) != typeof('') || !projectInfo.name.length ){
-			errorMsg.name = 'name is required.';
-			isError = true;
-		}
-		if( typeof(projectInfo.path) != typeof('') || !projectInfo.path.length ){
-			errorMsg.path = 'path is required.';
-			isError = true;
-		}else if( !_fs.existsSync(projectInfo.path) ){
-			errorMsg.path = 'path is required as a existed directory path.';
-			isError = true;
-		}
 		if( typeof(projectInfo.home_dir) != typeof('') || !projectInfo.home_dir.length ){
 			projectInfo.home_dir = 'px-files/'
-			// errorMsg.home_dir = 'home directory is required.';
-			// isError = true;
 		}
 		if( typeof(projectInfo.entry_script) != typeof('') || !projectInfo.entry_script.length ){
 			projectInfo.entry_script = '.px_execute.php'
-			// errorMsg.entry_script = 'entry_script is required.';
-			// isError = true;
-		}
-		if( typeof(projectInfo.vcs) != typeof('') || !projectInfo.vcs.length ){
-			errorMsg.vcs = 'vcs is required.';
-			isError = true;
 		}
 
-		if(isError){
-			opt.error(errorMsg);
+		var pj = new this.classProject( projectInfo );
+		var pjValidated = pj.validate();
+
+		if( pjValidated.isError ){
+			opt.error(pjValidated.errorMsg);
 			opt.complete();
 			return false;
 		}
@@ -142,6 +125,7 @@ new (function($, window){
 		this.save();
 		opt.success();
 		opt.complete();
+
 		return true;
 	}
 
@@ -183,73 +167,7 @@ new (function($, window){
 		if( _selectedProject === null ){
 			return null;
 		}
-		return new (function(projectInfo, _selectedProject){
-			this.projectInfo = projectInfo;
-			this.projectId = _selectedProject;
-			this.status = function(){
-				var status = {};
-				status.pathExists = px.utils.isDirectory( this.get('path') );
-				status.entryScriptExists = (status.pathExists && px.utils.isFile( this.get('path')+'/'+this.get('entry_script') ) ? true : false);
-				var homeDir = this.get('path')+'/'+this.get('home_dir');
-				status.homeDirExists = (status.pathExists && px.utils.isDirectory( homeDir ) ? true : false);
-				status.confFileExists = (status.homeDirExists && (px.utils.isFile( homeDir+'/config.php'||px.utils.isFile( homeDir+'/config.json') ) ) ? true : false);
-				status.composerJsonExists = (status.pathExists && px.utils.isFile( this.get('path')+'/composer.json' ) ? true : false);
-				status.vendorDirExists = (status.pathExists && px.utils.isDirectory( this.get('path')+'/vendor/' ) ? true : false);
-				status.isPxStandby = ( status.pathExists && status.entryScriptExists && status.homeDirExists && status.confFileExists && status.composerJsonExists && status.vendorDirExists ? true : false );
-				status.gitDirExists = (status.pathExists && px.utils.isDirectory( this.get('path')+'/.git/' ) ? true : false);
-				return status;
-			}
-			this.get = function(key){
-				return this.projectInfo[key];
-			}
-			this.getSitemapFilelist = function(){
-				var pathDir = this.get('path')+'/'+this.get('home_dir')+'/sitemaps/';
-				var filelist = _fs.readdirSync( pathDir );
-				return filelist;
-			}
-			this.getConfig = function( cb ){
-				var data_memo = '';
-				return this.execPx2( '/?PX=api.get.config', {
-					cd: this.get('path') ,
-					success: function( data ){
-						data_memo += data;
-					} ,
-					complete: function(code){
-						cb( data_memo );
-					}
-				} );
-			}
-			this.execPx2 = function( cmd, opts ){
-				window.px.utils.spawn('php',
-					[
-						this.get('path') + '/' + this.get('entry_script'),
-						cmd
-					] ,
-					opts
-				);
-				return this;
-			}
-			this.execGit = function( cmd, fnc ){
-				return this;
-			}
-			this.serverStandby = function(cb){
-				px.server.start(8080, cb);
-			}
-			this.serverStop = function(cb){
-				px.server.stop(cb);
-			}
-			this.open = function(){
-				// Finderで開く(Mac)
-				window.px.utils.spawn('open',
-					[
-						this.get('path')
-					] ,
-					{
-						complete: function(){}
-					}
-				);
-			}
-		})( _db.projects[_selectedProject], _selectedProject );
+		return new this.classProject( _db.projects[_selectedProject], _selectedProject );
 	}
 
 	/**

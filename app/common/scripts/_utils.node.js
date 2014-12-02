@@ -53,6 +53,20 @@
 		return path.replace(/\\/g, '/').replace(/\/[^\/]*\/?$/, '');
 	}
 
+	exports.escapeRegExp = function(str) {
+		return str.replace(/([.*+?^=!:${}()|[\]\/\\])/g, "\\$1");
+	}
+
+	exports.parsePath = function( path ){
+		var rtn = {};
+		rtn.path = path;
+		rtn.basename = rtn.path.replace( new RegExp('^.*\\/'), '' );
+		rtn.dirname = rtn.path.replace( new RegExp(this.escapeRegExp(rtn.basename)+'$'), '' );
+		rtn.ext = rtn.basename.replace( new RegExp('^.*\\.'), '' );
+		rtn.basenameExtless = rtn.basename.replace( new RegExp('\\.'+this.escapeRegExp(rtn.ext)+'$'), '' );
+		return rtn;
+	}
+
 	exports.mkdir = function(path){
 		if( _fs.existsSync(path) ){
 			return true;

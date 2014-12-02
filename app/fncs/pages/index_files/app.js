@@ -49,24 +49,12 @@ window.contApp = new (function( px ){
 		var pageInfo = _sitemap[pagePath];
 		if( !pageInfo ){ alert('ERROR: Undefined page path.'); return this; }
 
-		function parsePath( path ){
-			function escapeRegExp(str) {
-				return str.replace(/([.*+?^=!:${}()|[\]\/\\])/g, "\\$1");
-			}
-			var rtn = {};
-			rtn.contPath = path;
-			rtn.basename = rtn.contPath.replace( new RegExp('^.*\\/'), '' );
-			rtn.dirname = rtn.contPath.replace( new RegExp(escapeRegExp(rtn.basename)+'$'), '' );
-			rtn.ext = rtn.basename.replace( new RegExp('^.*\\.'), '' );
-			rtn.basenameExtless = rtn.basename.replace( new RegExp('\\.'+escapeRegExp(rtn.ext)+'$'), '' );
-			return rtn;
-		}
-		var pathInfo = parsePath(pageInfo.content);
-		var contRealpath = _pj.get('path')+'/'+pathInfo.contPath;
+		var pathInfo = px.utils.parsePath(pageInfo.content);
+		var contRealpath = _pj.get('path')+'/'+pathInfo.path;
 		for( var tmpExt in _config.funcs.processor ){
 			if( px.fs.existsSync( contRealpath+'.'+ tmpExt) ){
 				contRealpath = contRealpath+'.'+ tmpExt;
-				pathInfo = parsePath( pageInfo.content+'.'+ tmpExt );
+				pathInfo = px.utils.parsePath( pageInfo.content+'.'+ tmpExt );
 				break;
 			}
 		}
@@ -92,7 +80,7 @@ window.contApp = new (function( px ){
 					.attr( 'src', 'editor.html'
 						+'?page_id='+encodeURIComponent( pageInfo.id )
 						+'&page_path='+encodeURIComponent( pageInfo.path )
-						+'&page_content='+encodeURIComponent( pathInfo.contPath )
+						+'&page_content='+encodeURIComponent( pathInfo.path )
 					)
 					.css({
 						'border':'0px none',

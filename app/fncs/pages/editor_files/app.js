@@ -30,6 +30,11 @@ window.contApp = new (function( px ){
 		cb = cb || function(){};
 		var src = $('body textarea').val();
 
+		// 文字化け問題にたいそう苦しめられた。
+		// どういうわけか、一旦JSON文字列にしてからデコードすると、
+		// ちゃんと保存できた。
+		src = JSON.parse( JSON.stringify( src ) );
+
 		px.fs.writeFile( _contentsPath, src, {encoding:'utf8'}, function(err){
 			cb( !err );
 		} );

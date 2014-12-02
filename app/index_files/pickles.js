@@ -6,10 +6,13 @@ new (function($, window){
 	var _fs = require('fs');
 	this.fs = _fs;
 	var _db = {};
-	var _path_db = process.env.HOME + '/.pickles2desktoptool.json';
-	// _path_db = './_stab.json';
+	var _path_data_dir = process.env.HOME + '/.pickles2desktoptool/';
+	var _path_db = process.env.HOME + '/.pickles2desktoptool/db.json';
 	var _current_app = null;
 	var _selectedProject = null;
+	if( !_utils.isDirectory( _path_data_dir ) ){
+		_fs.mkdirSync( _path_data_dir );
+	}
 	if( !_fs.existsSync( _path_db ) ){
 		_fs.writeFileSync( _path_db, JSON.stringify( {"projects":[]} ), {"encoding":"utf8","mode":436,"flag":"w"} );
 	}

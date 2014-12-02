@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8" />
-		<title>Pages - Pickles 2 Desktop Tool</title>
+		<title>Editor - Pages - Pickles 2 Desktop Tool</title>
 
 		<meta name="viewport" content="width=device-width" />
 		<meta name="keywords" content="" />
@@ -28,16 +28,17 @@
 
 		<!-- Local Resources -->
 		<link rel="stylesheet" href="./index_files/style.css" type="text/css" />
-		<script src="./index_files/app.js"></script>
+		<script>
+			window.px = $.px = window.parent.px;
+		</script>
+		<script src="./editor_files/app.js"></script>
 	</head>
 	<body>
 		<div class="container">
-			<h1>Pages</h1>
+			<h1>Pages - Editor</h1>
 		</div>
 		<div class="contents">
-			<div class="cont_sitemap_parent"></div>
-			<div class="cont_sitemap_current_page"></div>
-			<div class="cont_sitemap_childlist"></div>
+			<p>開発中</p>
 		</div>
 	</body>
 </html>

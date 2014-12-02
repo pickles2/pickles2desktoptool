@@ -31,14 +31,53 @@
 
 		<script>
 			window.px = $.px = window.parent.px;
-			$(function(){
-				var pj = px.getCurrentProject();
+			var pj = px.getCurrentProject();
+			var configBasePath = pj.get('path')+'/'+pj.get('home_dir');
+			var confPath = configBasePath;
+			function cont_init(cb){
+				cb = cb||function(){};
 				pj.getConfig(function(data){
 					$('.cont_config_json_preview pre').text( data );
-					console.log( JSON.parse(data) );
+					// console.log( JSON.parse(data) );
 				});
+
+				var src = '';
+				if( px.utils.isFile(configBasePath+'/config.json') ){
+					confPath = configBasePath+'/config.json';
+				}else if( px.utils.isFile(configBasePath+'/config.php') ){
+					confPath = configBasePath+'/config.php';
+				}
+				src = px.fs.readFileSync(confPath);
+				$('.cont_config_edit').html('').append( $('<textarea>').val(src) );
+				cb();
+			}
+			function cont_save( btn ){
+				$(btn).attr('disabled', 'disabled');
+				var src = $('.cont_config_edit textarea').val();
+				src = JSON.parse( JSON.stringify( src ) );
+
+				px.fs.writeFile( confPath, src, {encoding:'utf8'}, function(err){
+					cont_init(function(){
+						$(btn).removeAttr('disabled');
+						px.message( 'コンフィグを保存しました。' );
+					});
+				} );
+
+			}
+			$(function(){
+				cont_init();
 			});
 		</script>
+		<style>
+			.cont_config_edit textarea{
+				width:100%;
+				height:24em;
+				resize: none;
+				overflow: auto;
+				color:#999;
+				background-color:#000;
+			}
+		</style>
 	</head>
 	<body>
 		<div class="container">
@@ -46,11 +85,14 @@
 		</div>
 		<div class="contents">
 			<div class="container">
-				<h2>Config</h2>
+				<div class="unit">
+					<div class="cont_config_edit">
+					</div>
+					<p><button onclick="cont_save(this); return false;" class="cont_btn_save">保存する</button></p>
+				</div>
 				<div class="unit cont_config_json_preview">
 					<pre></pre>
 				</div>
-
 			</div>
 		</div>
 	</body>

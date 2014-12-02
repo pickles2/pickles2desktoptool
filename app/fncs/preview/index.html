@@ -46,6 +46,9 @@
 					$(btn).removeAttr('disabled');
 				} );
 			}
+			$(function(){
+				cont_start_preview($('button'));
+			});
 		</script>
 	</head>
 	<body>
@@ -53,15 +56,15 @@
 			<h1>preview</h1>
 		</div>
 		<div class="contents">
+			<div class="unit">
+				<iframe src="about:blank" class="cont_preview_frame" style="width:100%; height:500px;"></iframe>
+			</div>
 			<div class="container">
 				<div class="row">
 					<div class="col-xs-8"><button onclick="cont_start_preview(this); return false;">start preview</button></div>
 					<div class="col-xs-4"><button onclick="cont_stop_preview(this); return false;">stop preview</button></div>
 				</div>
 			</div>
-				<div class="unit">
-					<iframe src="about:blank" class="cont_preview_frame" style="width:100%; height:500px;"></iframe>
-				</div>
 		</div>
 	</body>
 </html>

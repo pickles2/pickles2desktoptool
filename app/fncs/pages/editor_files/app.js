@@ -62,7 +62,11 @@ window.contApp = new (function( px ){
 					.text('保存する')
 					.click(function(){
 						save(function(result){
-							if(!result){ alert('ERROR'); }
+							if(!result){
+								px.message( 'ページの保存に失敗しました。' );
+							}else{
+								px.message( 'ページを保存しました。' );
+							}
 						});
 					})
 			)
@@ -71,7 +75,11 @@ window.contApp = new (function( px ){
 					.text('保存して閉じる')
 					.click(function(){
 						save(function(result){
-							if(!result){ alert('ERROR'); }
+							if(!result){
+								px.message( 'ページの保存に失敗しました。' );
+							}else{
+								px.message( 'ページを保存しました。' );
+							}
 							window.parent.contApp.closeEditor();
 						});
 					})

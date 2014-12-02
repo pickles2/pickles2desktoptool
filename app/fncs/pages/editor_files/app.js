@@ -30,10 +30,8 @@ window.contApp = new (function( px ){
 		cb = cb || function(){};
 		var src = $('body textarea').val();
 
-		px.fs.writeFile( _contentsPath, '', {encoding:'utf8'}, function(err){
-			px.fs.writeFile( _contentsPath, src, {encoding:'utf8'}, function(err){
-				cb( !err );
-			} );
+		px.fs.writeFile( _contentsPath, src, {encoding:'utf8'}, function(err){
+			cb( !err );
 		} );
 		return this;
 	}

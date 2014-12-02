@@ -4,27 +4,12 @@ window.contApp = new (function( px ){
 
 	var _this = this;
 	var _sitemap = null;
+	var _config = null;
 	var $parent, $current, $childList;
 	var $editor = $('<div>');
 
-	this.pj = px.getCurrentProject();
+	var _pj = this.pj = px.getCurrentProject();
 
-	$(function(){
-		$childList = $('.cont_sitemap_childlist');
-
-		px.utils.iterateFnc([
-			function(it, arg){
-				_this.pj.getSitemap(function(data){
-					_sitemap = JSON.parse(data);
-					it.next();
-				});
-			} ,
-			function(it, arg){
-				_this.redraw();
-				it.next();
-			}
-		]).start();
-	});
 
 	this.redraw = function( current ){
 		if( _sitemap === null ){ return; }
@@ -64,6 +49,35 @@ window.contApp = new (function( px ){
 		var pageInfo = _sitemap[pagePath];
 		if( !pageInfo ){ alert('ERROR: Undefined page path.'); return this; }
 
+		function parsePath( path ){
+			function escapeRegExp(str) {
+				return str.replace(/([.*+?^=!:${}()|[\]\/\\])/g, "\\$1");
+			}
+			var rtn = {};
+			rtn.contPath = path;
+			rtn.basename = rtn.contPath.replace( new RegExp('^.*\\/'), '' );
+			rtn.dirname = rtn.contPath.replace( new RegExp(escapeRegExp(rtn.basename)+'$'), '' );
+			rtn.ext = rtn.basename.replace( new RegExp('^.*\\.'), '' );
+			rtn.basenameExtless = rtn.basename.replace( new RegExp('\\.'+escapeRegExp(rtn.ext)+'$'), '' );
+			return rtn;
+		}
+		var pathInfo = parsePath(pageInfo.content);
+		var contRealpath = _pj.get('path')+'/'+pathInfo.contPath;
+		for( var tmpExt in _config.funcs.processor ){
+			if( px.fs.existsSync( contRealpath+'.'+ tmpExt) ){
+				contRealpath = contRealpath+'.'+ tmpExt;
+				pathInfo = parsePath( pageInfo.content+'.'+ tmpExt );
+				break;
+			}
+		}
+
+		if( !px.fs.existsSync( contRealpath ) ){
+			alert('ファイルが存在しません。');
+			return this;
+		}
+		contRealpath = px.fs.realpathSync( contRealpath );
+
+
 		$editor = $('<div>')
 			.css({
 				'position':'fixed',
@@ -74,7 +88,12 @@ window.contApp = new (function( px ){
 			})
 			.append(
 				$('<iframe>')
-					.attr( 'src', 'editor.html?page_path='+encodeURIComponent( pageInfo.path ) )//←エディタ自体は別のHTMLで実装
+					//↓エディタ自体は別のHTMLで実装
+					.attr( 'src', 'editor.html'
+						+'?page_id='+encodeURIComponent( pageInfo.id )
+						+'&page_path='+encodeURIComponent( pageInfo.path )
+						+'&page_content='+encodeURIComponent( pathInfo.contPath )
+					)
 					.css({
 						'border':'0px none',
 						'width':'100%',
@@ -86,9 +105,7 @@ window.contApp = new (function( px ){
 					.text('☓')
 					.attr('href', 'javascript:;')
 					.click( function(){
-						if(!confirm('編集中の内容は破棄されます。エディタを閉じますか？')){
-							return false;
-						}
+						// if(!confirm('編集中の内容は破棄されます。エディタを閉じますか？')){ return false; }
 						_this.closeEditor();
 					} )
 					.css({
@@ -122,6 +139,29 @@ window.contApp = new (function( px ){
 		;
 		return this;
 	}
+
+	$(function(){
+		$childList = $('.cont_sitemap_childlist');
+
+		px.utils.iterateFnc([
+			function(it, arg){
+				_this.pj.getConfig(function(data){
+					_config = JSON.parse(data);
+					it.next();
+				});
+			} ,
+			function(it, arg){
+				_this.pj.getSitemap(function(data){
+					_sitemap = JSON.parse(data);
+					it.next();
+				});
+			} ,
+			function(it, arg){
+				_this.redraw();
+				it.next();
+			}
+		]).start();
+	});
 
 	$(window).resize(function(){
 		// エディタのサイズ調整

@@ -1,7 +1,7 @@
 new (function($, window){
 	window.px = $.px = this;
 
-	var _utils = require('./common/scripts/_utils.node.js');
+	var _utils = require('./index_files/_utils.node.js');
 	this.utils = _utils;
 	var _fs = require('fs');
 	this.fs = _fs;

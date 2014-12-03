@@ -30,9 +30,6 @@ window.contApp = new (function( px ){
 					.data( 'content', _sitemap[idx].content )
 					.click( function(){
 						_this.openEditor( $(this).data('path') );
-						// alert( $(this).data('id') );
-						// alert( $(this).data('path') );
-						// alert( $(this).data('content') );
 					} )
 				)
 			);
@@ -98,14 +95,26 @@ window.contApp = new (function( px ){
 					} )
 					.css({
 						'position':'absolute',
-						'top':10,
-						'right':10,
-						'color':'#000',
+						'top':15,
+						'right':15,
+						'font-size':'18px',
+						'color':'#333',
 						'background-color':'#eee',
 						'border-radius':'0.5em',
+						'border':'1px solid #333',
 						'text-align':'center',
+						'opacity':0.4,
 						'width':'1.5em',
 						'height':'1.5em'
+					})
+					.hover(function(){
+						$(this).animate({
+							'opacity':1
+						});
+					}, function(){
+						$(this).animate({
+							'opacity':0.4
+						});
 					})
 			)
 		;

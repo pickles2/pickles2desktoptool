@@ -69,7 +69,7 @@ window.contApp = new (function( px ){
 				// .attr('id', 'cont_editor')
 				.css({
 					'width':'100%' ,
-					'height':'28em',
+					'border':'none',
 					'resize':'none'
 				})
 				.val( px.fs.readFileSync(_contentsPath) )
@@ -103,8 +103,8 @@ window.contApp = new (function( px ){
 		$html
 			.find('iframe.cont_preview')
 				.css({
-					'width':'100%' ,
-					'height':'28em'
+					'border':'none',
+					'width':'100%'
 				})
 		;
 		$('body')

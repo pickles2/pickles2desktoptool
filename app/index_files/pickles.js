@@ -23,7 +23,7 @@ new (function($, window){
 		{"label":"SELECT PROJ", "cond":"projectSelected", "app":"index.html", "cb": function(){px.deselectProject();px.subapp();}} ,
 		{"label":"HOME", "cond":"pxStandby", "app":"home.html", "cb": function(){px.subapp();}} ,
 		{"label":"Config", "cond":"pxStandby", "app":"fncs/config/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"Filelist", "cond":"pxStandby", "app":"fncs/filelist/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"Sitemap", "cond":"pxStandby", "app":"fncs/sitemap/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"Pages", "cond":"pxStandby", "app":"fncs/pages/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"Preview", "cond":"pxStandby", "app":"fncs/preview/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"clearcache", "cond":"pxStandby", "app":"fncs/clearcache/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,

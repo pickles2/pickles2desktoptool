@@ -43,18 +43,12 @@ window.contApp = new (function( px ){
 	this.openEditor = function( pagePath ){
 		this.closeEditor();//一旦閉じる
 
-		var pageInfo = _sitemap[pagePath];
+		var pageInfo = _pj.site.getPageInfo( pagePath );
 		if( !pageInfo ){ alert('ERROR: Undefined page path.'); return this; }
 
-		var pathInfo = px.utils.parsePath(pageInfo.content);
-		var contRealpath = _pj.get('path')+'/'+pathInfo.path;
-		for( var tmpExt in _config.funcs.processor ){
-			if( px.fs.existsSync( contRealpath+'.'+ tmpExt) ){
-				contRealpath = contRealpath+'.'+ tmpExt;
-				pathInfo = px.utils.parsePath( pageInfo.content+'.'+ tmpExt );
-				break;
-			}
-		}
+		var contPath = _pj.findPageContent(pagePath);
+		var contRealpath = _pj.get('path')+'/'+contPath;
+		var pathInfo = px.utils.parsePath(contPath);
 
 		if( !px.fs.existsSync( contRealpath ) ){
 			alert('ファイルが存在しません。');
@@ -140,24 +134,10 @@ window.contApp = new (function( px ){
 	$(function(){
 		$childList = $('.cont_sitemap_childlist');
 
-		px.utils.iterateFnc([
-			function(it, arg){
-				_this.pj.getConfig(function(data){
-					_config = JSON.parse(data);
-					it.next();
-				});
-			} ,
-			function(it, arg){
-				_this.pj.getSitemap(function(data){
-					_sitemap = JSON.parse(data);
-					it.next();
-				});
-			} ,
-			function(it, arg){
-				_this.redraw();
-				it.next();
-			}
-		]).start();
+		_config = _this.pj.getConfig();
+		_sitemap = _this.pj.site.getSitemap();
+		_this.redraw();
+
 	});
 
 	$(window).resize(function(){

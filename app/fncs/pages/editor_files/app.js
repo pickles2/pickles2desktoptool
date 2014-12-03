@@ -43,7 +43,7 @@ window.contApp = new (function( px ){
 
 	function preview(iframe){
 		$(iframe)
-			.attr('src', 'http://127.0.0.1:8080'+_param.page_content)
+			.attr('src', 'http://127.0.0.1:8080'+_param.page_path)
 		;
 		return true;
 	}

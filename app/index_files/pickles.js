@@ -10,6 +10,7 @@ new (function($, window){
 	var _path_db = process.env.HOME + '/.pickles2desktoptool/db.json';
 	var _current_app = null;
 	var _selectedProject = null;
+	var _pj = null;
 	if( !_utils.isDirectory( _path_data_dir ) ){
 		_fs.mkdirSync( _path_data_dir );
 	}
@@ -115,7 +116,7 @@ new (function($, window){
 			projectInfo.entry_script = '.px_execute.php'
 		}
 
-		var pj = new this.classProject( projectInfo );
+		var pj = new this.classProject( projectInfo, _db.projects.length );
 		var pjValidated = pj.validate();
 
 		if( pjValidated.isError ){
@@ -124,7 +125,7 @@ new (function($, window){
 			return false;
 		}
 
-		_db.projects.push(projectInfo);
+		_db.projects.push( projectInfo );
 		this.save();
 		opt.success();
 		opt.complete();
@@ -146,12 +147,14 @@ new (function($, window){
 	/**
 	 * プロジェクトを選択する
 	 */
-	this.selectProject = function(num){
+	this.selectProject = function(num, cb){
+		cb = cb||function(){}
 		if( typeof(num) != typeof(0) ){
 			return false;
 		}
 		_selectedProject = num;
 		// alert(num);
+		_pj = new this.classProject( _db.projects[_selectedProject], _selectedProject, cb );
 		return true;
 	}
 
@@ -160,6 +163,7 @@ new (function($, window){
 	 */
 	this.deselectProject = function(){
 		_selectedProject = null;
+		_pj = null;
 		return true;
 	}
 
@@ -170,7 +174,7 @@ new (function($, window){
 		if( _selectedProject === null ){
 			return null;
 		}
-		return new this.classProject( _db.projects[_selectedProject], _selectedProject );
+		return _pj;
 	}
 
 	/**

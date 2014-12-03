@@ -1,8 +1,11 @@
 (function(px, $, window){
 
-	px.classProject = function(projectInfo, projectId){
+	px.classProject = function(projectInfo, projectId, cbStandby){
 		this.projectInfo = projectInfo;
 		this.projectId = projectId;
+		cbStandby = cbStandby||function(){}
+
+		var _config = null;
 
 		this.validate = function(){
 			var isError = false;
@@ -57,28 +60,20 @@
 			return filelist;
 		}
 		this.getConfig = function( cb ){
-			var data_memo = '';
-			return this.execPx2( '/?PX=api.get.config', {
-				cd: this.get('path') ,
-				success: function( data ){
-					data_memo += data;
-				} ,
-				complete: function(code){
-					cb( data_memo );
-				}
-			} );
+			return _config;
 		}
 		this.getSitemap = function(cb){
-			var data_memo = '';
-			return this.execPx2( '/?PX=api.get.sitemap', {
-				cd: this.get('path') ,
-				success: function( data ){
-					data_memo += data;
-				} ,
-				complete: function(code){
-					cb( data_memo );
-				}
-			} );
+			return this.site.getSitemap();
+			// var data_memo = '';
+			// return this.execPx2( '/?PX=api.get.sitemap', {
+			// 	cd: this.get('path') ,
+			// 	success: function( data ){
+			// 		data_memo += data;
+			// 	} ,
+			// 	complete: function(code){
+			// 		cb( data_memo );
+			// 	}
+			// } );
 		}
 		this.execPx2 = function( cmd, opts ){
 			window.px.utils.spawn('php',
@@ -110,6 +105,99 @@
 				}
 			);
 		}
+		this.findPageContent = function( pagePath ){
+			var contLocalpath = pagePath;
+			var pageInfo = this.site.getPageInfo(pagePath);
+
+			for( var tmpExt in _config.funcs.processor ){
+				if( px.fs.existsSync( this.get('path')+'/'+contLocalpath+'.'+ tmpExt) ){
+					contLocalpath = contLocalpath+'.'+ tmpExt;
+					break;
+				}
+			}
+			return contLocalpath;
+		}
+
+
+		px.utils.iterateFnc([
+			function(itPj, pj){
+				var status = pj.status();
+				if( !status.entryScriptExists ){
+					itPj.next(pj);return;
+				}
+
+				var data_memo = '';
+				pj.execPx2( '/?PX=api.get.config', {
+					cd: pj.get('path') ,
+					success: function( data ){
+						data_memo += data;
+					} ,
+					complete: function(code){
+						_config = JSON.parse(data_memo);
+						itPj.next(pj);
+					}
+				} );
+
+			} ,
+			function(itPj, pj){
+				var status = pj.status();
+				if( !status.entryScriptExists ){
+					itPj.next(pj);return;
+				}
+
+				/**
+				 * px.site
+				 */
+				pj.site = new (function(pj){
+					var _this = this;
+					var _sitemap = null;
+					var _sitemap_id_map = null;
+					this.getPageInfo = function( pagePath ){
+						if( _sitemap && _sitemap[pagePath] ){
+							return _sitemap[pagePath];
+						}
+						if( _sitemap_id_map && _sitemap_id_map[pagePath] ){
+							return _sitemap_id_map[pagePath];
+						}
+						return null;
+					}
+					this.getSitemap = function(){
+						return _sitemap;
+					}
+
+					px.utils.iterateFnc([
+						function(it, arg){
+							var sitemap_data_memo = '';
+							pj.execPx2( '/?PX=api.get.sitemap', {
+								cd: pj.get('path') ,
+								success: function( data ){
+									sitemap_data_memo += data;
+								} ,
+								complete: function(code){
+									_sitemap = JSON.parse(sitemap_data_memo);
+									it.next(arg);
+								}
+							} );
+						} ,
+						function(it, arg){
+							_sitemap_id_map = {};
+							for( var i in _sitemap ){
+								_sitemap_id_map[_sitemap[i].id] = _sitemap[i];
+							}
+							itPj.next(pj);
+						}
+					]).start({});
+
+					return this;
+				})(pj);
+			} ,
+			function(itPj, pj){
+				cbStandby();
+				itPj.next();
+			}
+		]).start(this);
+
+
 	}
 
 })(px, jQuery, window);

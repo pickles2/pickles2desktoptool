@@ -36,10 +36,7 @@
 			var confPath = configBasePath;
 			function cont_init(cb){
 				cb = cb||function(){};
-				pj.getConfig(function(data){
-					$('.cont_config_json_preview pre').text( data );
-					// console.log( JSON.parse(data) );
-				});
+				$('.cont_config_json_preview pre').text( pj.getConfig() );
 
 				var src = '';
 				if( px.utils.isFile(configBasePath+'/config.json') ){

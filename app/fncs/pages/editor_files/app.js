@@ -41,54 +41,87 @@ window.contApp = new (function( px ){
 		return this;
 	}
 
-	function init(){
-		$('body')
-			.html('')
-			// .append($('<p>').text(_param.page_id))
-			// .append($('<p>').text(_param.page_path))
-			// .append($('<p>').text(_param.page_content))
-			// .append($('<p>').text(_contentsPath))
-			.append(
-				$('<textarea>')
-					// .attr('id', 'cont_editor')
-					.css({
-						'width':'100%' ,
-						'height':'28em'
-					})
-					.val( px.fs.readFileSync(_contentsPath) )
-			)
-			.append(
-				$('<button>')
-					.text('保存する')
-					.click(function(){
-						save(function(result){
-							if(!result){
-								px.message( 'ページの保存に失敗しました。' );
-							}else{
-								px.message( 'ページを保存しました。' );
-							}
-						});
-					})
-			)
-			.append(
-				$('<button>')
-					.text('保存して閉じる')
-					.click(function(){
-						save(function(result){
-							if(!result){
-								px.message( 'ページの保存に失敗しました。' );
-							}else{
-								px.message( 'ページを保存しました。' );
-							}
-							window.parent.contApp.closeEditor();
-						});
-					})
-			)
+	function preview(iframe){
+		$(iframe)
+			.attr('src', 'http://127.0.0.1:8080'+_param.page_content)
+		;
+		return true;
+	}
+
+	function resize(){
+		$('textarea')
+			.css({
+				'height':$(window).height() - $('.cont_btns').height() - 10
+			})
+		;
+		$('iframe.cont_preview')
+			.css({
+				'height':$(window).height() - 10
+			})
 		;
 	}
 
+	function init(){
+		var $html = $( $('#cont_tpl_editor').html() );
+
+		$html
+			.find('textarea')
+				// .attr('id', 'cont_editor')
+				.css({
+					'width':'100%' ,
+					'height':'28em',
+					'resize':'none'
+				})
+				.val( px.fs.readFileSync(_contentsPath) )
+		;
+		$html
+			.find('button.cont_btn_save')
+				.click(function(){
+					save(function(result){
+						if(!result){
+							px.message( 'ページの保存に失敗しました。' );
+						}else{
+							px.message( 'ページを保存しました。' );
+						}
+						preview('iframe.cont_preview');
+					});
+				})
+		;
+		$html
+			.find('button.cont_btn_save_and_close')
+				.click(function(){
+					save(function(result){
+						if(!result){
+							px.message( 'ページの保存に失敗しました。' );
+						}else{
+							px.message( 'ページを保存しました。' );
+						}
+						window.parent.contApp.closeEditor();
+					});
+				})
+		;
+		$html
+			.find('iframe.cont_preview')
+				.css({
+					'width':'100%' ,
+					'height':'28em'
+				})
+		;
+		$('body')
+			.html( '' )
+			.append($html)
+		;
+		preview('iframe.cont_preview');
+		resize();
+	}
+
 	$(function(){
-		init();
+		px.getCurrentProject().serverStandby( function(){
+			init();
+		} );
 	})
+	$(window).resize(function(){
+		resize();
+	});
 
 })( window.parent.px );

@@ -32,6 +32,32 @@
 			window.px = $.px = window.parent.px;
 		</script>
 		<script src="./editor_files/app.js"></script>
+		<script type="text/template" id="cont_tpl_editor">
+			<div class="row">
+				<div class="col-xs-6">
+					<div><textarea></textarea></div>
+					<div class="cont_btns">
+						<ul>
+							<li><button class="cont_btn_save">保存する</button></li>
+							<li><button class="cont_btn_save_and_close">保存して閉じる</button></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-xs-6"><iframe class="cont_preview"></iframe></div>
+			</div>
+		</script>
+		<style>
+			.cont_btns{}
+			.cont_btns ul,
+			.cont_btns ul li{
+				margin:0; padding:0 20px;
+				list-style-type: none;
+				text-align:center;
+			}
+			.cont_btns ul li{
+				display:inline-block;
+			}
+		</style>
 	</head>
 	<body class="contents">
 	</body>

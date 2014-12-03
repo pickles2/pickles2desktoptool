@@ -59,9 +59,10 @@
 			px.utils.spawn('php',
 				[
 					pj.get('path')+'/'+pj.get('entry_script') ,
-					'-o', 'json',
+					'-o', 'json' ,
+					'-u', 'Mozilla/5.0' ,
 					path
-				],
+				] ,
 				{
 					success: function(data){
 						_cmdData += data;

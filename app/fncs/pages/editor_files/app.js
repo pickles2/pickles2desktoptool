@@ -84,6 +84,7 @@ window.contApp = new (function( px ){
 							px.message( 'ページを保存しました。' );
 						}
 						preview('iframe.cont_preview');
+						$('textarea').focus();
 					});
 				})
 		;

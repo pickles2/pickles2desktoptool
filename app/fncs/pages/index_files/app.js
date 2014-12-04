@@ -68,7 +68,7 @@ window.contApp = new (function( px ){
 			.append(
 				$('<iframe>')
 					//↓エディタ自体は別のHTMLで実装
-					.attr( 'src', 'editor.html'
+					.attr( 'src', '../../mods/editor/index.html'
 						+'?page_path='+encodeURIComponent( pageInfo.path )
 					)
 					.css({

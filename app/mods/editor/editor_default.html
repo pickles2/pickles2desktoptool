@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Editor - Pages - Pickles 2 Desktop Tool</title>
+
+		<meta name="viewport" content="width=device-width" />
+		<meta name="keywords" content="" />
+		<meta name="description" content="" />
+
+		<!-- jQuery -->
+		<script src="../../common/scripts/jquery-1.11.1.min.js" type="text/javascript"></script>
+
+		<!-- jQuery UI -->
+		<link rel="stylesheet" href="../../common/jquery-ui/jquery-ui.min.css">
+		<script src="../../common/jquery-ui/jquery-ui.min.js"></script>
+
+		<!-- jQuery mobile -->
+		<link rel="stylesheet" href="../../common/jquery.mobile/jquery.mobile-1.4.5.min.css" />
+		<script src="../../common/jquery.mobile/jquery.mobile-1.4.5.min.js"></script>
+
+		<!-- Bootstrap -->
+		<link rel="stylesheet" href="../../common/bootstrap/css/bootstrap.min.css">
+		<script src="../../common/bootstrap/js/bootstrap.min.js"></script>
+
+		<!-- normalize & FESS -->
+		<link rel="stylesheet" href="../../common/styles/contents.css" type="text/css" />
+
+		<!-- Local Resources -->
+		<link rel="stylesheet" href="./editor_default_files/style.css" type="text/css" />
+		<script>
+			window.px = $.px = window.parent.px;
+		</script>
+		<script src="./editor_default_files/app.js"></script>
+		<script type="text/template" id="cont_tpl_editor">
+			<div class="row">
+				<div class="col-xs-6">
+					<div><textarea></textarea></div>
+					<div class="cont_btns">
+						<ul>
+							<li><button class="cont_btn_save">保存する</button></li>
+							<li><button class="cont_btn_save_and_close">保存して閉じる</button></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-xs-6"><iframe class="cont_preview"></iframe></div>
+			</div>
+		</script>
+		<style>
+			body{
+				overflow: hidden;
+			}
+			.cont_btns{}
+			.cont_btns ul,
+			.cont_btns ul li{
+				margin:0; padding:0 20px;
+				list-style-type: none;
+				text-align:center;
+			}
+			.cont_btns ul li{
+				display:inline-block;
+			}
+		</style>
+	</head>
+	<body class="contents">
+	</body>
+</html>

@@ -15,7 +15,8 @@ window.contApp = new (function( px ){
 	var _cont_path_info = px.utils.parsePath(_cont_path);
 
 	if( !px.fs.existsSync( _cont_realpath ) ){
-		alert('ファイルが存在しません。');
+		alert(_cont_realpath);
+		alert('ファイルが存在しません。ですね。');
 		window.parent.contApp.closeEditor();
 		return this;
 	}

@@ -22,7 +22,7 @@ new (function($, window){
 	var _menu = [
 		// {"label":"Reload(dev)", "cond":"always", "cb": function(){window.location.href='index.html?';}} ,
 		{"label":"SELECT PROJ", "cond":"projectSelected", "app":"index.html", "cb": function(){px.deselectProject();px.subapp();}} ,
-		{"label":"HOME", "cond":"pxStandby", "app":"home.html", "cb": function(){px.subapp();}} ,
+		{"label":"HOME", "cond":"pxStandby", "app":"fncs/home/index.html", "cb": function(){px.subapp();}} ,
 		{"label":"Config", "cond":"pxStandby", "app":"fncs/config/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"Sitemap", "cond":"pxStandby", "app":"fncs/sitemap/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"Pages", "cond":"pxStandby", "app":"fncs/pages/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
@@ -187,7 +187,7 @@ new (function($, window){
 		if( typeof(_selectedProject) != typeof(0) ){
 			appName = '';
 		}else if( !appName && typeof(_selectedProject) == typeof(0) ){
-			appName = 'home.html';
+			appName = 'fncs/home/index.html';
 		}
 
 		if( appName ){
@@ -198,7 +198,6 @@ new (function($, window){
 						.attr('src', './'+appName)
 				)
 			;
-			// alert(appName+': 開発中');
 		}else{
 			// プロジェクト選択画面を描画
 			$cont.html( $('script#template-selectProject-page').html() );
@@ -214,8 +213,12 @@ new (function($, window){
 									.attr('href', 'javascript:;')
 									.data('path', list[i].path)
 									.data('num', i)
-									.click(function(){ if( !px.selectProject( $(this).data('num') ) ){alert('ERROR');return false;} px.subapp(); })
-									.text(list[i].name)
+									.click( function(){
+										px.selectProject( $(this).data('num'), function(){
+											px.subapp();
+										} );
+									} )
+									.text( list[i].name )
 								)
 					);
 				}

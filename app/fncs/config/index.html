@@ -54,9 +54,11 @@
 				src = JSON.parse( JSON.stringify( src ) );
 
 				px.fs.writeFile( confPath, src, {encoding:'utf8'}, function(err){
-					cont_init(function(){
-						$(btn).removeAttr('disabled');
-						px.message( 'コンフィグを保存しました。' );
+					pj.updateConfig(function(){
+						cont_init(function(){
+							$(btn).removeAttr('disabled');
+							px.message( 'コンフィグを保存しました。' );
+						});
 					});
 				} );
 

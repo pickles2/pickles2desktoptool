@@ -59,21 +59,28 @@
 			var filelist = px.fs.readdirSync( pathDir );
 			return filelist;
 		}
-		this.getConfig = function( cb ){
+		this.getConfig = function(){
 			return _config;
 		}
-		this.getSitemap = function(cb){
+		this.updateConfig = function( cb ){
+			var data_memo = '';
+			this.execPx2( '/?PX=api.get.config', {
+				cd: this.get('path') ,
+				success: function( data ){
+					data_memo += data;
+				} ,
+				complete: function(code){
+					_config = JSON.parse(data_memo);
+					cb( _config );
+				}
+			} );
+			return this;
+		}
+		this.getSitemap = function(){
 			return this.site.getSitemap();
-			// var data_memo = '';
-			// return this.execPx2( '/?PX=api.get.sitemap', {
-			// 	cd: this.get('path') ,
-			// 	success: function( data ){
-			// 		data_memo += data;
-			// 	} ,
-			// 	complete: function(code){
-			// 		cb( data_memo );
-			// 	}
-			// } );
+		}
+		this.updateSitemap = function( cb ){
+			return this.site.updateSitemap( cb );
 		}
 		this.execPx2 = function( cmd, opts ){
 			window.px.utils.spawn('php',
@@ -226,19 +233,9 @@
 				if( !status.entryScriptExists ){
 					itPj.next(pj);return;
 				}
-
-				var data_memo = '';
-				pj.execPx2( '/?PX=api.get.config', {
-					cd: pj.get('path') ,
-					success: function( data ){
-						data_memo += data;
-					} ,
-					complete: function(code){
-						_config = JSON.parse(data_memo);
-						itPj.next(pj);
-					}
-				} );
-
+				pj.updateConfig(function(){
+					itPj.next(pj);
+				});
 			} ,
 			function(itPj, pj){
 				var status = pj.status();
@@ -265,19 +262,25 @@
 					this.getSitemap = function(){
 						return _sitemap;
 					}
+					this.updateSitemap = function( cb ){
+						var sitemap_data_memo = '';
+						pj.execPx2( '/?PX=api.get.sitemap', {
+							cd: pj.get('path') ,
+							success: function( data ){
+								sitemap_data_memo += data;
+							} ,
+							complete: function(code){
+								_sitemap = JSON.parse(sitemap_data_memo);
+								cb( _sitemap );
+							}
+						} );
+						return this;
+					}
 
 					px.utils.iterateFnc([
 						function(it, arg){
-							var sitemap_data_memo = '';
-							pj.execPx2( '/?PX=api.get.sitemap', {
-								cd: pj.get('path') ,
-								success: function( data ){
-									sitemap_data_memo += data;
-								} ,
-								complete: function(code){
-									_sitemap = JSON.parse(sitemap_data_memo);
-									it.next(arg);
-								}
+							_this.updateSitemap( function(code){
+								it.next(arg);
 							} );
 						} ,
 						function(it, arg){
@@ -285,7 +288,7 @@
 							for( var i in _sitemap ){
 								_sitemap_id_map[_sitemap[i].id] = _sitemap[i];
 							}
-							itPj.next(pj);
+							itPj.next(arg);
 						}
 					]).start({});
 

@@ -132,9 +132,11 @@ window.contApp = new (function( px ){
 	$(function(){
 		$childList = $('.cont_sitemap_childlist');
 
-		_config = _this.pj.getConfig();
-		_sitemap = _this.pj.site.getSitemap();
-		_this.redraw();
+		_this.pj.site.updateSitemap(function(){
+			_config = _this.pj.getConfig();
+			_sitemap = _this.pj.site.getSitemap();
+			_this.redraw();
+		});
 
 	});
 

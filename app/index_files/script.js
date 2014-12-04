@@ -1,4 +1,3 @@
-
 /**
  * プロジェクト設定を追加する
  */
@@ -16,9 +15,9 @@ function cont_createProject(form){
 		return false;
 	}
 
-
-
-	px.createProject(pj,
+	// プロジェクトを追加
+	px.createProject(
+		pj ,
 		{
 			error:function(errorMsg){
 				alert('エラー: 入力不備があります。');
@@ -33,5 +32,3 @@ function cont_createProject(form){
 	);
 	return true;
 }
-
-

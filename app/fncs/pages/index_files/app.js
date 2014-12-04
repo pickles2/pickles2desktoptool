@@ -50,12 +50,12 @@ window.contApp = new (function( px ){
 		var contRealpath = _pj.get('path')+'/'+contPath;
 		var pathInfo = px.utils.parsePath(contPath);
 
-		if( !px.fs.existsSync( contRealpath ) ){
-			alert('ファイルが存在しません。');
-			return this;
+		if( px.fs.existsSync( contRealpath ) ){
+			contRealpath = px.fs.realpathSync( contRealpath );
+		}else{
+			// alert('ファイルが存在しません。');
+			// return this;
 		}
-		contRealpath = px.fs.realpathSync( contRealpath );
-
 
 		$editor = $('<div>')
 			.css({
@@ -69,9 +69,7 @@ window.contApp = new (function( px ){
 				$('<iframe>')
 					//↓エディタ自体は別のHTMLで実装
 					.attr( 'src', 'editor.html'
-						+'?page_id='+encodeURIComponent( pageInfo.id )
-						+'&page_path='+encodeURIComponent( pageInfo.path )
-						+'&page_content='+encodeURIComponent( pathInfo.path )
+						+'?page_path='+encodeURIComponent( pageInfo.path )
 					)
 					.css({
 						'border':'0px none',

@@ -5,26 +5,23 @@ window.contApp = new (function( px ){
 	var _this = this;
 	var _pj = px.getCurrentProject();
 
-	var _param = (function(window){
-		// URIパラメータをパースする
-		var paramsArray = [];
-		var url = window.location.href; 
-		parameters = url.split("?");
-		if( parameters.length > 1 ) {
-			var params = parameters[1].split("&");
-			for ( var i = 0; i < params.length; i++ ) {
-				var paramItem = params[i].split("=");
-				for( var i2 in paramItem ){
-					paramItem[i2] = decodeURIComponent( paramItem[i2] );
-				}
-				paramsArray.push( paramItem[0] );
-				paramsArray[paramItem[0]] = paramItem[1];
-			}
-		}
-		return paramsArray;
-	})(window);
+	var _param = px.utils.parseUriParam( window.location.href );
 
-	var _contentsPath = px.fs.realpathSync( _pj.get('path')+'/'+_param.page_content);
+	// var _pageInfo = _pj.site.getPageInfo( _param.page_path );
+	// if( !_pageInfo ){ alert('ERROR: Undefined page path.'); return this; }
+
+	var _cont_path = _pj.findPageContent( _param.page_path );
+	var _cont_realpath = _pj.get('path')+'/'+_cont_path;
+	var _cont_path_info = px.utils.parsePath(_cont_path);
+
+	if( !px.fs.existsSync( _cont_realpath ) ){
+		alert('ファイルが存在しません。');
+		window.parent.contApp.closeEditor();
+		return this;
+	}
+	_cont_realpath = px.fs.realpathSync( _cont_realpath );
+
+	var _contentsPath = px.fs.realpathSync( _pj.get('path')+'/'+_cont_path);
 
 	function save(cb){
 		cb = cb || function(){};

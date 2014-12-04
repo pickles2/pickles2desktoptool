@@ -60,10 +60,16 @@
 	exports.parsePath = function( path ){
 		var rtn = {};
 		rtn.path = path;
-		rtn.basename = rtn.path.replace( new RegExp('^.*\\/'), '' );
-		rtn.dirname = rtn.path.replace( new RegExp(this.escapeRegExp(rtn.basename)+'$'), '' );
+		rtn.basename = this.basename( rtn.path );
+		rtn.dirname = this.dirname( rtn.path );
 		rtn.ext = rtn.basename.replace( new RegExp('^.*\\.'), '' );
 		rtn.basenameExtless = rtn.basename.replace( new RegExp('\\.'+this.escapeRegExp(rtn.ext)+'$'), '' );
+		return rtn;
+	}
+
+	exports.basename = function( path ){
+		var rtn = '';
+		rtn = path.replace( new RegExp('^.*\\/'), '' );
 		return rtn;
 	}
 

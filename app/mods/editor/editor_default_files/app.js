@@ -16,7 +16,7 @@ window.contApp = new (function( px ){
 
 	if( !px.fs.existsSync( _cont_realpath ) ){
 		alert(_cont_realpath);
-		alert('ファイルが存在しません。ですね。');
+		alert('ファイルが存在しません。');
 		window.parent.contApp.closeEditor();
 		return this;
 	}
@@ -51,6 +51,7 @@ window.contApp = new (function( px ){
 			.css({
 				'height':$(window).height() - $('.cont_btns').height() - 10
 			})
+			.focus()
 		;
 		$('iframe.cont_preview')
 			.css({

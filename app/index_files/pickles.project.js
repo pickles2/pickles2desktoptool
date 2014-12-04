@@ -118,6 +118,107 @@
 			return contLocalpath;
 		}
 
+		this.initContentFiles = function( pagePath, opt ){
+			opt = opt||{};
+			opt.success = opt.success||function(){};
+			opt.error = opt.error||function(){};
+			opt.complete = opt.complete||function(){};
+			opt.proc_type = opt.proc_type||'html';
+
+			var pageInfo = this.site.getPageInfo(pagePath);
+			if( pageInfo == null ){
+				opt.error("Page not Exists.");
+				opt.complete();
+				return false;
+			}
+			var contPath = this.findPageContent(pagePath);
+			if( px.fs.existsSync( this.get('path') + contPath ) ){
+				opt.error("Content Already Exists.");
+				opt.complete();
+				return false;
+			}
+			switch( opt.proc_type ){
+				case 'html':
+				case 'html_gui':
+				case 'md':
+					// OK
+					break;
+				default:
+					opt.error('Unknown proc_type "'+opt.proc_type+'".');
+					opt.complete();
+					return false;
+					break;
+			}
+
+			var pathInfo = px.utils.parsePath( this.get('path') + contPath );
+			var prop = {}
+			prop.realpath_cont = pathInfo.path;
+			prop.realpath_resource_dir = pathInfo.dirname + '/' + pathInfo.basenameExtless + '_files/';
+			prop.proc_type = opt.proc_type;
+			if( prop.proc_type == 'md' ){
+				prop.realpath_cont += '.'+prop.proc_type;
+			}
+
+			px.utils.iterateFnc([
+				function(it, prop){
+					// 格納ディレクトリを作る
+					if( px.utils.isDirectory( px.utils.dirname( prop.realpath_cont ) ) ){
+						it.next(prop);
+						return;
+					}
+					px.fs.mkdir( px.utils.dirname( prop.realpath_cont ), function(err){
+						if( err ){
+							opt.error(err);
+							opt.complete();
+							return;
+						}
+						it.next(prop);
+					} );
+				} ,
+				function(it, prop){
+					// コンテンツ自体を作る
+					px.fs.writeFile( prop.realpath_cont, '', function(err){
+						if( err ){
+							opt.error(err);
+							opt.complete();
+							return;
+						}
+						it.next(prop);
+					} );
+				} ,
+				function(it, prop){
+					// リソースディレクトリを作る
+					px.fs.mkdir( prop.realpath_resource_dir, function(err){
+						if( err ){
+							opt.error(err);
+							opt.complete();
+							return;
+						}
+						if( prop.proc_type == 'html_gui' ){
+							px.fs.writeFile( prop.realpath_resource_dir + '/data.ignore.json', '{}', function(err){
+								if( err ){
+									opt.error(err);
+									opt.complete();
+									return;
+								}
+								it.next(prop);
+							} );
+
+						}else{
+							it.next(prop);
+						}
+					} );
+				} ,
+				function(it, prop){
+					opt.success();
+					opt.complete();
+					return;
+					it.next(prop);
+				}
+			]).start(prop);
+
+			return true;
+		}
 
 		px.utils.iterateFnc([
 			function(itPj, pj){

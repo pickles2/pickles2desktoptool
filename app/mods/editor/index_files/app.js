@@ -19,7 +19,15 @@ window.contApp = new (function( px ){
 	 * エディターを起動
 	 */
 	function openEditor(){
-		window.location.href = './editor_default.html?page_path='+encodeURIComponent( _param.page_path );
+		var filename_editor = 'editor_default';
+		var parsedPath = px.utils.parsePath(_cont_path);
+		if( parsedPath.ext == 'html' || parsedPath.ext == 'htm' ){
+			var datajson = _pj.get('path')+'/'+parsedPath.dirname+'/'+parsedPath.basenameExtless+'_files/data.ignore.json';
+			if( px.fs.existsSync( datajson ) ){
+				filename_editor = 'editor_gui';
+			}
+		}
+		window.location.href = './'+filename_editor+'.html?page_path='+encodeURIComponent( _param.page_path );
 		return true;
 	}
 	/**
@@ -67,7 +75,6 @@ window.contApp = new (function( px ){
 		}
 
 		if( px.fs.existsSync( _cont_realpath ) ){
-			// alert('ファイルはありました。');
 			openEditor();
 			return this;
 		}

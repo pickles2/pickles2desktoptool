@@ -1,0 +1,34 @@
+@charset "utf-8";
+
+body{
+	overflow: hidden;
+}
+
+.cont_field{
+	position: relative;
+	top:0; left:0;
+	overflow:auto;
+}
+.cont_field .cont_field-preview{
+	position:relative; top:0; left:0;
+	width:100%;
+	height:100%;
+	border: 0;
+}
+.cont_field .cont_field-ctrlpanel{
+	position:absolute; top:0; left:0;
+	width:100%;
+	height:100%;
+}
+
+
+.cont_btns{}
+.cont_btns ul,
+.cont_btns ul li{
+	margin:0; padding:0 5px;
+	list-style-type: none;
+	text-align:center;
+}
+.cont_btns ul li{
+	display:inline-block;
+}

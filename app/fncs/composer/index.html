@@ -15,10 +15,6 @@
 		<link rel="stylesheet" href="../../common/jquery-ui/jquery-ui.min.css">
 		<script src="../../common/jquery-ui/jquery-ui.min.js"></script>
 
-		<!-- jQuery mobile -->
-		<link rel="stylesheet" href="../../common/jquery.mobile/jquery.mobile-1.4.5.min.css" />
-		<script src="../../common/jquery.mobile/jquery.mobile-1.4.5.min.js"></script>
-
 		<!-- Bootstrap -->
 		<link rel="stylesheet" href="../../common/bootstrap/css/bootstrap.min.css">
 		<script src="../../common/bootstrap/js/bootstrap.min.js"></script>
@@ -32,9 +28,21 @@
 		<script>
 			window.px = $.px = window.parent.px;
 
+			var pj = px.getCurrentProject();
+			var cont_pathComposerJson = pj.get('path')+'/composer.json';
+
+			function cont_init(){
+				px.fs.readFile(cont_pathComposerJson, function(err, src){
+					if(err){
+						px.message(err);
+					}
+					$('.cont_edit_composer_json textarea').val(src);
+				});
+
+			}
+
 			function cont_update_conposer(btn){
 				$(btn).attr('disabled', 'disabled');
-				var pj = px.getCurrentProject();
 				window.px.utils.spawn('composer',
 					['self-update'],
 					{
@@ -61,7 +69,6 @@
 
 			function cont_update_proj(btn){
 				$(btn).attr('disabled', 'disabled');
-				var pj = px.getCurrentProject();
 				window.px.utils.spawn('composer',
 					['update'],
 					{
@@ -89,7 +96,6 @@
 
 			function cont_install_proj(btn){
 				$(btn).attr('disabled', 'disabled');
-				var pj = px.getCurrentProject();
 				window.px.utils.spawn('composer',
 					['install'],
 					{
@@ -115,8 +121,26 @@
 				);
 			}
 
+			/**
+			 * composer.json の編集を保存
+			 */
+			function cont_save_composerJson(form){
+				var $form = $(form);
+				var src = $form.find('textarea').val();
+				src = JSON.parse( JSON.stringify( src ) );
+				px.fs.writeFile( cont_pathComposerJson, src, {encoding:'utf8'}, function(err){
+					if(err){
+						px.message( 'composer.json の保存に失敗しました。' );
+					}else{
+						px.message( 'composer.json を保存しました。 $ composer update を実行してください。' );
+					}
+				} );
+			}
+
 			$(function(){
+				cont_init();
 			});
+
 		</script>
 	</head>
 	<body>
@@ -131,7 +155,11 @@
 				<p><button onclick="cont_install_proj(this); return false;">composer プロジェクト をインストール (install)</button></p>
 				<pre class="cont_console" style="max-height:360px;">console:
 </pre>
-
+				<h2>Edit composer.json</h2>
+				<form action="javascript:;" method="get" class="cont_edit_composer_json" onsubmit="cont_save_composerJson(this); return false;">
+					<textarea></textarea>
+					<p><button>composer.json の変更を保存する</button></p>
+				</form>
 			</div>
 		</div>
 	</body>

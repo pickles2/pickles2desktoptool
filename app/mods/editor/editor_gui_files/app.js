@@ -7,22 +7,14 @@ window.contApp = new (function( px ){
 
 	var _param = px.utils.parseUriParam( window.location.href );
 
-	// var _pageInfo = _pj.site.getPageInfo( _param.page_path );
-	// if( !_pageInfo ){ alert('ERROR: Undefined page path.'); return this; }
-
 	var _cont_path = _pj.findPageContent( _param.page_path );
 	var _cont_realpath = _pj.get('path')+'/'+_cont_path;
 	var _cont_path_info = px.utils.parsePath(_cont_path);
+	var _cont_contentsPath = px.fs.realpathSync( _pj.get('path')+'/'+_cont_path);
+	var _cont_filesDirPath = _pj.get('path')+'/'+_cont_path_info.dirname+'/'+_cont_path_info.basenameExtless+'_files/data.ignore.json';
 
-	if( !px.fs.existsSync( _cont_realpath ) ){
-		alert(_cont_realpath);
-		alert('ファイルが存在しません。');
-		window.parent.contApp.closeEditor();
-		return this;
-	}
-	_cont_realpath = px.fs.realpathSync( _cont_realpath );
+	var _contentsData = null;
 
-	var _contentsPath = px.fs.realpathSync( _pj.get('path')+'/'+_cont_path);
 
 	/**
 	 * 変更を保存する。
@@ -34,33 +26,27 @@ window.contApp = new (function( px ){
 		// var src = $('body textarea').val();
 		// src = JSON.parse( JSON.stringify( src ) );
 
-		// px.fs.writeFile( _contentsPath, src, {encoding:'utf8'}, function(err){
+		// px.fs.writeFile( _cont_contentsPath, src, {encoding:'utf8'}, function(err){
 		// 	cb( !err );
 		// } );
 		cb( true );
 		return this;
 	}
 
+	/**
+	 * プレビュー画面(=GUI編集画面)を表示
+	 */
 	function preview(iframe){
 		$(iframe)
 			.attr('src', 'http://127.0.0.1:8080'+_param.page_path)
 		;
-		// ↓どうもこのイベントはとれてなさそう。
-		var ifWin = $('iframe.cont_field-preview')[0].contentWindow;
-		$(ifWin)
-			.load(resizeEvent)
-			.resize(resizeEvent)
-		;
-		// ↓なので、とりあえず、1秒タイマーで凌ぐ。
-		setTimeout(resizeEvent, 1000);
 		return true;
 	}
 
-	var _resizeTimer = null;
+	/**
+	 * ウィンドウ リサイズ イベント ハンドラ
+	 */
 	function resizeEvent(){
-		if(_resizeTimer){
-			clearTimeout(_resizeTimer);
-		}
 		$('.cont_field')
 			.css({
 				'height':$(window).height() - 5
@@ -71,12 +57,30 @@ window.contApp = new (function( px ){
 		var fieldheight = $iframe.find('body').height()+20;
 		$('iframe.cont_field-preview').height( fieldheight );
 		$('.cont_field-ctrlpanel').height( fieldheight );
-
-		_resizeTimer = setTimeout(resizeEvent, 5000);
 	}
 
+	/**
+	 * 初期化
+	 */
 	function init(){
 		var $html = $( $('#cont_tpl_editor').html() );
+
+		if( !px.fs.existsSync( _cont_realpath ) ){
+			alert('コンテンツファイルが存在しません。');
+			window.parent.contApp.closeEditor();
+			return this;
+		}
+		_cont_realpath = px.fs.realpathSync( _cont_realpath );
+
+		if( !px.fs.existsSync( _cont_filesDirPath ) ){
+			alert('データファイルが存在しません。');
+			window.parent.contApp.closeEditor();
+			return this;
+		}
+		_cont_filesDirPath = px.fs.realpathSync( _cont_filesDirPath );
+
+		// コンテンツデータをロード
+		_contentsData = JSON.parse( px.fs.readFileSync( _cont_filesDirPath ) );
 
 		$html
 			.find('button.cont_btn_save')
@@ -111,21 +115,28 @@ window.contApp = new (function( px ){
 					'width':'100%'
 				})
 		;
+		$html
+			.find('iframe.cont_field-preview')
+				.bind('load', function(){
+					resizeEvent();
+				})
+		;
 		$('body')
 			.html( '' )
 			.append($html)
 		;
+
 		preview('iframe.cont_field-preview');
 		resizeEvent();
-	}
+	}// init()
 
 	$(function(){
 		px.getCurrentProject().serverStandby( function(){
 			init();
+			$(window).resize(function(){
+				resizeEvent();
+			});
 		} );
 	})
-	$(window).resize(function(){
-		resizeEvent();
-	});
 
 })( window.parent.px );

@@ -12,6 +12,7 @@ window.contApp = new (function( px ){
 	var _cont_path_info = px.utils.parsePath(_cont_path);
 	var _cont_contentsPath = px.fs.realpathSync( _pj.get('path')+'/'+_cont_path);
 	var _cont_filesDirPath = _pj.get('path')+'/'+_cont_path_info.dirname+'/'+_cont_path_info.basenameExtless+'_files/data.ignore.json';
+	var _cont_pathModTpl = px.fs.realpathSync( _pj.get('path')+'/'+_pj.get('home_dir')+'/resources/document_modules/' );
 
 	var _contentsData = null;
 
@@ -65,69 +66,86 @@ window.contApp = new (function( px ){
 	function init(){
 		var $html = $( $('#cont_tpl_editor').html() );
 
-		if( !px.fs.existsSync( _cont_realpath ) ){
-			alert('コンテンツファイルが存在しません。');
-			window.parent.contApp.closeEditor();
-			return this;
-		}
-		_cont_realpath = px.fs.realpathSync( _cont_realpath );
+		px.utils.iterateFnc([
+			function(it){
+				if( !px.fs.existsSync( _cont_realpath ) ){
+					alert('コンテンツファイルが存在しません。');
+					window.parent.contApp.closeEditor();
+					return this;
+				}
+				_cont_realpath = px.fs.realpathSync( _cont_realpath );
 
-		if( !px.fs.existsSync( _cont_filesDirPath ) ){
-			alert('データファイルが存在しません。');
-			window.parent.contApp.closeEditor();
-			return this;
-		}
-		_cont_filesDirPath = px.fs.realpathSync( _cont_filesDirPath );
+				if( !px.fs.existsSync( _cont_filesDirPath ) ){
+					alert('データファイルが存在しません。');
+					window.parent.contApp.closeEditor();
+					return this;
+				}
+				_cont_filesDirPath = px.fs.realpathSync( _cont_filesDirPath );
 
-		// コンテンツデータをロード
-		_contentsData = JSON.parse( px.fs.readFileSync( _cont_filesDirPath ) );
+				// コンテンツデータをロード
+				_contentsData = JSON.parse( px.fs.readFileSync( _cont_filesDirPath ) );
 
-		$html
-			.find('button.cont_btn_save')
-				.click(function(){
-					save(function(result){
-						if(!result){
-							px.message( 'ページの保存に失敗しました。' );
-						}else{
-							px.message( 'ページを保存しました。' );
-						}
-						preview('iframe.cont_field-preview');
-					});
-				})
-		;
-		$html
-			.find('button.cont_btn_save_and_close')
-				.click(function(){
-					save(function(result){
-						if(!result){
-							px.message( 'ページの保存に失敗しました。' );
-						}else{
-							px.message( 'ページを保存しました。' );
-						}
-						window.parent.contApp.closeEditor();
-					});
-				})
-		;
-		$html
-			.find('.cont_field')
-				.css({
-					'border':'none',
-					'width':'100%'
-				})
-		;
-		$html
-			.find('iframe.cont_field-preview')
-				.bind('load', function(){
-					resizeEvent();
-				})
-		;
-		$('body')
-			.html( '' )
-			.append($html)
-		;
+				it.next();
+			} ,
+			function(it){
+				// モジュールテンプレートの初期化
+				_this.modtpl.init( _cont_pathModTpl, function(){
+					it.next();
+				} );
+			} ,
+			function(it){
 
-		preview('iframe.cont_field-preview');
-		resizeEvent();
+				$html
+					.find('button.cont_btn_save')
+						.click(function(){
+							save(function(result){
+								if(!result){
+									px.message( 'ページの保存に失敗しました。' );
+								}else{
+									px.message( 'ページを保存しました。' );
+								}
+								preview('iframe.cont_field-preview');
+							});
+						})
+				;
+				$html
+					.find('button.cont_btn_save_and_close')
+						.click(function(){
+							save(function(result){
+								if(!result){
+									px.message( 'ページの保存に失敗しました。' );
+								}else{
+									px.message( 'ページを保存しました。' );
+								}
+								window.parent.contApp.closeEditor();
+							});
+						})
+				;
+				$html
+					.find('.cont_field')
+						.css({
+							'border':'none',
+							'width':'100%'
+						})
+				;
+				$html
+					.find('iframe.cont_field-preview')
+						.bind('load', function(){
+							resizeEvent();
+						})
+				;
+				$('body')
+					.html( '' )
+					.append($html)
+				;
+
+				preview('iframe.cont_field-preview');
+				resizeEvent();
+
+				it.next();
+			}
+		]).start();
+
 	}// init()
 
 	$(function(){

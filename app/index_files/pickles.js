@@ -310,8 +310,7 @@ new (function($, window){
 		px.save();
 	});
 	process.on( 'uncaughtException', function(e){
-		alert('Uncaught Exception;');
-		console.log('Uncaught Exception;');
+		alert('ERROR: Uncaught Exception');
 		console.log(e);
 	} );
 	$(window).on( 'resize', function(e){

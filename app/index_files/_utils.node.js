@@ -210,16 +210,20 @@
 	/**
 	 * 直列処理
 	 */
-	exports.iterate = function(ary, fnc){
+	exports.iterate = function(ary, fnc, fncComplete){
 		new (function( ary, fnc ){
 			this.idx = -1;
-			this.ary = ary;
-			this.fnc = fnc;
+			this.ary = ary||[];
+			this.fnc = fnc||function(){};
+			this.fncComplete = fncComplete||function(){};
 
 			this.next = function(){
-				if( this.idx+1 >= this.ary.length ){return this;}
+				if( this.idx+1 >= this.ary.length ){
+					this.fncComplete();
+					return this;
+				}
 				this.idx ++;
-				this.fnc( this.ary[this.idx], this.idx, this );
+				this.fnc( this, this.ary[this.idx], this.idx );
 				return this;
 			}
 			this.next();

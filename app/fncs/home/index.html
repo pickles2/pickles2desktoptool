@@ -50,7 +50,7 @@
 						{"title":"node version", "cmd": 'node -v'},
 						{"title":"git version", "cmd": 'git --version'}
 					],
-					function(data, idx, it){
+					function(it, data, idx){
 						window.px.utils.exec(data.cmd,
 							function(err,stdout,stderr){
 								$('.tpl_sys_table').append($('<tr>')
@@ -68,7 +68,7 @@
 
 				px.utils.iterate(
 					_.keys( status ) ,
-					function(data, idx, it){
+					function(it, data, idx){
 						$('.tpl_status_table').append($('<tr>')
 							.append($('<th>').text(data))
 							.append($('<td>')

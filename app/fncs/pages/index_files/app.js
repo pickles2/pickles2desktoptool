@@ -13,7 +13,7 @@ window.contApp = new (function( px ){
 
 	this.redraw = function( current ){
 		if( _sitemap === null ){ return; }
-		var $ul = $('<ul>');
+		var $ul = $('<ul data-inset="true">');
 		// $childList.text( JSON.stringify(_sitemap) );
 
 		current = (typeof(current)==typeof('')?current:'');
@@ -28,6 +28,15 @@ window.contApp = new (function( px ){
 					.data( 'id', _sitemap[idx].id )
 					.data( 'path', _sitemap[idx].path )
 					.data( 'content', _sitemap[idx].content )
+					.css({
+						// ↓暫定だけど、階層の段をつけた。
+						'text-indent': (function(pageInfo){
+							if( !_sitemap[idx].id.length ){ return 0; }
+							if( !_sitemap[idx].logical_path.length ){ return '3em' }
+							var rtn = ( (_sitemap[idx].logical_path.split('>').length + 1) * 3)+'em';
+							return rtn;
+						})(_sitemap[idx])
+					})
 					.click( function(){
 						_this.openEditor( $(this).data('path') );
 					} )

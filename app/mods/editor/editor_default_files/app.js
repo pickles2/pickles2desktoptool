@@ -105,6 +105,10 @@ window.contApp = new (function( px ){
 					'border':'none',
 					'width':'100%'
 				})
+				.bind('load', function(){
+					// ↓これで、遷移後のURLがとれる。
+					console.log( $html.find('iframe.cont_preview')[0].contentWindow.location.href );
+				})
 		;
 		$('body')
 			.html( '' )

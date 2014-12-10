@@ -34,7 +34,6 @@ window.contApp = new (function( px ){
 	 * 初期化
 	 */
 	function init(){
-		var $html = $( $('#cont_tpl_editor').html() );
 
 		px.utils.iterateFnc([
 			function(it){
@@ -56,6 +55,7 @@ window.contApp = new (function( px ){
 				} );
 			} ,
 			function(it){
+				var $html = $( $('#cont_tpl_editor').html() );// ←テンプレートをロード
 				$html
 					.find('button.cont_btn_save')
 						.click(function(){
@@ -89,12 +89,16 @@ window.contApp = new (function( px ){
 							'width':'100%'
 						})
 				;
+
+				// ↓本来、app.ui.js でonloadイベントをセットしたいのだが、
+				// 　ここにこれが書かれていないと何故かイベントが起きない。
 				$html
 					.find('iframe.cont_field-preview')
-						.bind('load', function(){
-							_this.ui.resizeEvent();
-						})
+						// .bind('load', function(){
+						// 	_this.ui.onPreviewLoad();
+						// })
 				;
+
 				$('body')
 					.html( '' )
 					.append($html)

@@ -1,14 +1,21 @@
 window.contApp.ui = new(function(px, contApp){
+	var _this = this;
 	var $preview;
+	var $previewDoc;
 	var $ctrlPanel;
+	var $ctrlPanelSvg;
 	var $palette;
+
+	var dataViewTree = {};
 
 	/**
 	 * フィールド初期化
 	 */
 	this.initField = function( cb ){
 		$preview = $('iframe.cont_field-preview');
+		$previewDoc = $($preview[0].contentWindow.document);
 		$ctrlPanel = $('.cont_field-ctrlpanel');
+		$ctrlPanelSvg = $('<svg>');
 		$palette = $('.cont_modulelist');
 
 		// モジュールパレットの初期化
@@ -44,16 +51,24 @@ window.contApp.ui = new(function(px, contApp){
 		// 編集フィールドの初期化
 		$ctrlPanel
 			.html('')
-			.bind('drop', function(e){
-				var modId = event.dataTransfer.getData("moduleId");
-				px.message( 'modId "'+modId+'" がドロップされました。' );
-			})
-			.bind('dragover', function(e){
-				event.preventDefault();
-				// px.message(456);
-			})
-			.bind('click', function(e){
-				px.message('TEST: Clicked');
+			.append( $ctrlPanelSvg
+				// .bind('drop', function(e){
+				// 	var modId = event.dataTransfer.getData("moduleId");
+				// 	px.message( 'modId "'+modId+'" がドロップされました。' );
+				// })
+				// .bind('dragover', function(e){
+				// 	event.preventDefault();
+				// 	// px.message(456);
+				// })
+				// .bind('click', function(e){
+				// 	px.message('TEST: Clicked');
+				// })
+			)
+		;
+
+		$preview
+			.bind('load', function(){
+				_this.onPreviewLoad();
 			})
 		;
 
@@ -68,6 +83,71 @@ window.contApp.ui = new(function(px, contApp){
 			.attr('src', 'http://127.0.0.1:8080' + path)
 		;
 		return true;
+	} // preview()
+
+	/**
+	 * プレビューのロード完了イベント
+	 * contApp.contData のデータをもとに、コンテンツと編集ツール描画のリセットも行います。
+	 */
+	this.onPreviewLoad = function(){
+		// alert('onPreviewLoad');
+		if( !$preview || !$preview[0] || !$preview[0].contentWindow ){
+			return;
+		}
+
+		$previewDoc = $($preview[0].contentWindow.document);
+
+		this.resizeEvent();
+		return;
+	}
+
+	/**
+	 * コンテンツデータに対応するUIのひな形
+	 */
+	function classUiUnit( contDataPath, $elmParent ){
+		this.contDataPath = contDataPath;
+		this.$elmParent = $elmParent;
+
+		this.$elm = $('<div>')
+			.css({
+				'height': 120,
+				'width': '100%'
+			})
+		;
+
+		this.$elmParent.append(this.$elm);
+
+		this.$svgElm = $('<rect>')
+			.css({
+				'border':'3px dotted #99d',
+				'text-align':'center',
+				'background-color': '#ddf',
+				'display':'block',
+				'position':'absolute'
+			})
+			.attr({
+				'x':this.$elm.offset().left ,
+				'y':this.$elm.offset().top ,
+				'width': this.$elm.width(),
+				'height': this.$elm.height()
+			})
+			.width(this.$elm.width())
+			.height(this.$elm.height())
+			.offset(this.$elm.offset())
+			.text('ここにモジュールをドラッグしてください。')
+			.bind('drop', function(e){
+				var modId = event.dataTransfer.getData("moduleId");
+				px.message( 'modId "'+modId+'" がドロップされました。' );
+			})
+			.bind('dragover', function(e){
+				event.preventDefault();
+				// px.message(456);
+			})
+			.bind('click', function(e){
+				px.message('TEST: Clicked');
+			})
+		;
+		$ctrlPanelSvg.append( this.$svgElm );
 	}
 
 	/**
@@ -80,11 +160,23 @@ window.contApp.ui = new(function(px, contApp){
 			})
 		;
 
-		var $iframe = $($('iframe.cont_field-preview')[0].contentWindow.document);
-		var fieldheight = $iframe.find('body').height()+20;
-		$('iframe.cont_field-preview').height( fieldheight );
-		$('.cont_field-ctrlpanel').height( fieldheight );
-	}
+		$previewDoc = $($preview[0].contentWindow.document);
+		var fieldheight = $previewDoc.find('body').height()+5;
+		$preview.height( fieldheight );
+		$ctrlPanel.height( fieldheight );
+		$ctrlPanelSvg
+			.css({'display':'block'})
+			.height( $ctrlPanel.height() )
+			.width( $ctrlPanel.width() )
+		;
+
+		$ctrlPanelSvg.html('');
+		$previewDoc.find('.contents').each(function(){
+			$(this).html('');
+			var id = $(this).attr('id')||'main';
+			dataViewTree.main = new classUiUnit( id, $(this) );
+		});
+	} // resizeEvent()
 
 
 })(window.px, window.contApp);

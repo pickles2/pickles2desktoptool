@@ -13,7 +13,7 @@
   },
   "window":{
     "title": "pickles2desktoptool",
-    "toolbar":false,
+    "toolbar":true,
     "frame":true,
     "width":960,
     "height":480,

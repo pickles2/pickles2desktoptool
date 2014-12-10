@@ -21,6 +21,14 @@ body{
 	height:100%;
 }
 
+.cont_modulelist{}
+.cont_modulelist ul{
+	margin:0; padding:0;
+}
+.cont_modulelist ul li{
+	margin:0; padding:0;
+	list-style-type: none;
+}
 
 .cont_btns{}
 .cont_btns ul,

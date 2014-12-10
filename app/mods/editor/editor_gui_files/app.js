@@ -94,7 +94,6 @@ window.contApp = new (function( px ){
 				} );
 			} ,
 			function(it){
-
 				$html
 					.find('button.cont_btn_save')
 						.click(function(){
@@ -129,6 +128,20 @@ window.contApp = new (function( px ){
 						})
 				;
 				$html
+					.find('.cont_field-ctrlpanel')
+						.bind('drop', function(e){
+							var modId = event.dataTransfer.getData("moduleId");
+							px.message( 'modId "'+modId+'" がドロップされました。' );
+						})
+						.bind('dragover', function(e){
+							event.preventDefault();
+							// px.message(456);
+						})
+						.bind('click', function(e){
+							px.message('TEST: Clicked');
+						})
+				;
+				$html
 					.find('iframe.cont_field-preview')
 						.bind('load', function(){
 							resizeEvent();
@@ -142,6 +155,38 @@ window.contApp = new (function( px ){
 				preview('iframe.cont_field-preview');
 				resizeEvent();
 
+				it.next();
+			} ,
+			function(it){
+				// モジュールパレットの初期化
+				$('.cont_modulelist')
+					.html('')
+					.append('<ul>')
+				;
+				var li = d3.select('.cont_modulelist ul').selectAll('li');
+				var update = li.data( _this.modtpl.getAll() );
+				update
+					.text(function(d, i){
+						return d.id;
+					})
+					.style({'color':'inherit'})
+				;
+				update.enter()
+					.append('li')
+					.append('button')
+					.text(function(d, i){
+						return d.id;
+					})
+					.style({'color':'inherit'})
+					.attr({'draggable': true})//←HTML5のAPI http://www.htmq.com/dnd/
+					.on('dragstart', function(){
+						px.message( $(this).text() );
+						event.dataTransfer.setData("moduleId", $(this).text() );
+					})
+				;
+				update.exit()
+					.remove()//消すときはこれ。
+				;
 				it.next();
 			}
 		]).start();

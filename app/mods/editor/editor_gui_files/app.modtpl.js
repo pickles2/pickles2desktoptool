@@ -1,6 +1,7 @@
 window.contApp.modtpl = new(function(px, contApp){
 	var _pathModTpl;
-	var _modtpls = {};
+	var _modtpls = [];
+	var _modtplsIdMap = {};
 
 	/**
 	 * 初期化
@@ -16,9 +17,13 @@ window.contApp.modtpl = new(function(px, contApp){
 						px.utils.iterate(
 							data,
 							function( it2, dirname2, idx2 ){
-								_modtpls[dirname1+'/'+dirname2] = new classModTpl( dirname1+'/'+dirname2, function(){
+								_modtpls.push( new classModTpl( dirname1+'/'+dirname2, function(){
+									_modtplsIdMap[dirname1+'/'+dirname2] = _modtpls.length-1;
 									it2.next();
-								} );
+								} ) );
+								// _modtpls[dirname1+'/'+dirname2] = new classModTpl( dirname1+'/'+dirname2, function(){
+								// 	it2.next();
+								// } );
 							} ,
 							function(){
 								it.next();
@@ -56,7 +61,7 @@ window.contApp.modtpl = new(function(px, contApp){
 	 * モジュールを取得
 	 */
 	this.get = function( modId ){
-		return _modtpls[modId];
+		return _modtpls[_modtplsIdMap[modId]];
 	}
 
 	/**

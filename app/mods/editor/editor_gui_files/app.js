@@ -29,81 +29,6 @@ window.contApp = new (function( px ){
 		return this;
 	}
 
-	/**
-	 * プレビュー画面(=GUI編集画面)を表示
-	 */
-	function preview(iframe){
-		$(iframe)
-			.attr('src', 'http://127.0.0.1:8080'+_param.page_path)
-		;
-		return true;
-	}
-
-	/**
-	 * ウィンドウ リサイズ イベント ハンドラ
-	 */
-	function resizeEvent(){
-		$('.cont_field')
-			.css({
-				'height':$(window).height() - 5
-			})
-		;
-
-		var $iframe = $($('iframe.cont_field-preview')[0].contentWindow.document);
-		var fieldheight = $iframe.find('body').height()+20;
-		$('iframe.cont_field-preview').height( fieldheight );
-		$('.cont_field-ctrlpanel').height( fieldheight );
-	}
-
-	/**
-	 * フィールド再描画
-	 */
-	function drawField( cb ){
-		// モジュールパレットの初期化
-		$('.cont_modulelist')
-			.html('')
-			.append('<ul>')
-		;
-		var li = d3.select('.cont_modulelist ul').selectAll('li');
-		var update = li.data( _this.modTpl.getAll() );
-		update
-			.text(function(d, i){
-				return d.id;
-			})
-			.style({'color':'inherit'})
-		;
-		update.enter()
-			.append('li')
-			.append('button')
-			.text(function(d, i){
-				return d.id;
-			})
-			.style({'color':'inherit'})
-			.attr({'draggable': true})//←HTML5のAPI http://www.htmq.com/dnd/
-			.on('dragstart', function(){
-				px.message( $(this).text() );
-				event.dataTransfer.setData("moduleId", $(this).text() );
-			})
-		;
-		update.exit()
-			.remove()//消すときはこれ。
-		;
-
-		// 編集フィールドの初期化
-		$('.cont_field-ctrlpanel')
-			.bind('drop', function(e){
-				var modId = event.dataTransfer.getData("moduleId");
-				px.message( 'modId "'+modId+'" がドロップされました。' );
-			})
-			.bind('dragover', function(e){
-				event.preventDefault();
-				// px.message(456);
-			})
-			.bind('click', function(e){
-				px.message('TEST: Clicked');
-			})
-		;
-	} // drawField()
 
 	/**
 	 * 初期化
@@ -140,7 +65,7 @@ window.contApp = new (function( px ){
 								}else{
 									px.message( 'ページを保存しました。' );
 								}
-								preview('iframe.cont_field-preview');
+								_this.ui.preview( _param.page_path );
 							});
 						})
 				;
@@ -167,7 +92,7 @@ window.contApp = new (function( px ){
 				$html
 					.find('iframe.cont_field-preview')
 						.bind('load', function(){
-							resizeEvent();
+							_this.ui.resizeEvent();
 						})
 				;
 				$('body')
@@ -175,14 +100,13 @@ window.contApp = new (function( px ){
 					.append($html)
 				;
 
-				preview('iframe.cont_field-preview');
-				resizeEvent();
-
 				it.next();
 			} ,
 			function(it){
 				// 編集フィールドの再描画
-				drawField( function(){
+				_this.ui.initField( function(){
+					_this.ui.preview( _param.page_path );
+					_this.ui.resizeEvent();
 					it.next();
 				} );
 			}
@@ -194,7 +118,7 @@ window.contApp = new (function( px ){
 		px.getCurrentProject().serverStandby( function(){
 			init();
 			$(window).resize(function(){
-				resizeEvent();
+				_this.ui.resizeEvent();
 			});
 		} );
 	})

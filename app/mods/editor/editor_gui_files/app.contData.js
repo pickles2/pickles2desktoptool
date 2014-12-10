@@ -3,6 +3,17 @@ window.contApp.contData = new(function(px, contApp){
 	var _dataJsonPath;
 
 	/**
+	 * データを保存する
+	 */
+	this.save = function(cb){
+		cb = cb||function(){};
+		px.fs.writeFile( _dataJsonPath, JSON.stringify(_contentsData), {encoding:'utf8'}, function(err){
+			cb( !err );
+		} );
+		return this;
+	}
+
+	/**
 	 * 初期化
 	 */
 	this.init = function( contentsDataPath, dataJsonPath, cb ){
@@ -32,13 +43,30 @@ window.contApp.contData = new(function(px, contApp){
 				_contentsData = {};
 			}
 			_contentsData.bowl = _contentsData.bowl||{};
-			_contentsData.bowl.main = _contentsData.bowl.main||{};
+			_contentsData.bowl.main = _contentsData.bowl.main||[];
 
 			cb();
 		});
 
 		return this;
 	}// init()
+
+	/**
+	 * 要素を追加する
+	 */
+	this.addElement = function( modId, container, cb ){
+		px.message('開発中: '+modId+' / '+container);
+
+		cb = cb||function(){};
+		var data = {};
+		data.modId = modId;
+		data.val = {};
+
+		_contentsData.bowl[container].push( data );
+console.log(_contentsData);
+		cb();
+		return this;
+	}
 
 	/**
 	 * bowl別のコンテンツデータを取得
@@ -52,7 +80,7 @@ window.contApp.contData = new(function(px, contApp){
 	}
 
 	/**
-	 * bowl別のコンテンツデータを取得
+	 * bowl別のコンテンツデータをセット
 	 */
 	this.setBowlData = function( bowlName, data ){
 		bowlName = bowlName||'main';

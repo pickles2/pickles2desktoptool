@@ -25,7 +25,10 @@ window.contApp = new (function( px ){
 		// 	cb( !err );
 		// } );
 
-		cb( true );
+		_this.contData.save( function(){
+			px.message( 'データファイルを保存しました。' );
+		} );
+
 		return this;
 	}
 
@@ -94,9 +97,6 @@ window.contApp = new (function( px ){
 				// 　ここにこれが書かれていないと何故かイベントが起きない。
 				$html
 					.find('iframe.cont_field-preview')
-						// .bind('load', function(){
-						// 	_this.ui.onPreviewLoad();
-						// })
 				;
 
 				$('body')

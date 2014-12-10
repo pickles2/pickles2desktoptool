@@ -21,9 +21,6 @@ window.contApp.modTpl = new(function(px, contApp){
 									_modTplsIdMap[dirname1+'/'+dirname2] = _modTpls.length-1;
 									it2.next();
 								} ) );
-								// _modTpls[dirname1+'/'+dirname2] = new classModTpl( dirname1+'/'+dirname2, function(){
-								// 	it2.next();
-								// } );
 							} ,
 							function(){
 								it.next();

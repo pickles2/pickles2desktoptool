@@ -27,7 +27,13 @@ window.contApp.ui = new(function(px, contApp){
 			.text(function(d, i){
 				return d.id;
 			})
+			.attr({'data-id': function(d, i){ return d.id }})
+			.attr({'draggable': true})//←HTML5のAPI http://www.htmq.com/dnd/
 			.style({'color':'inherit'})
+			.on('dragstart', function(){
+				// px.message( $(this).data('id') );
+				event.dataTransfer.setData("modId", $(this).data('id') );
+			})
 		;
 		update.enter()
 			.append('li')
@@ -36,19 +42,15 @@ window.contApp.ui = new(function(px, contApp){
 				return d.id;
 			})
 			.style({'color':'inherit'})
+			.attr({'data-id': function(d, i){ return d.id }})
 			.attr({'draggable': true})//←HTML5のAPI http://www.htmq.com/dnd/
 			.on('dragstart', function(){
-				px.message( $(this).text() );
-				event.dataTransfer.setData("moduleId", $(this).text() );
+				// px.message( $(this).data('id') );
+				event.dataTransfer.setData("modId", $(this).data('id') );
 			})
 		;
 		update.exit()
 			.remove()//消すときはこれ。
-		;
-
-		// 編集フィールドの初期化
-		$ctrlPanel
-			.html('')
 		;
 
 		$preview
@@ -64,6 +66,10 @@ window.contApp.ui = new(function(px, contApp){
 	 * プレビュー画面(=GUI編集画面)を表示
 	 */
 	this.preview = function( path ){
+
+		// 編集フィールドの初期化
+		$ctrlPanel.html('');
+
 		$preview
 			.attr('src', 'http://127.0.0.1:8080' + path)
 		;
@@ -120,17 +126,20 @@ window.contApp.ui = new(function(px, contApp){
 			.height(this.$elm.height())
 			.offset(this.$elm.offset())
 			.text('ここにモジュールをドラッグしてください。')
+			.data({'data-path': contDataPath})
 			.bind('drop', function(e){
-				var modId = event.dataTransfer.getData("moduleId");
-				px.message( 'modId "'+modId+'" がドロップされました。' );
+				var modId = event.dataTransfer.getData("modId");
+				// px.message( 'modId "'+modId+'" がドロップされました。' );
+				contApp.contData.addElement( modId, $(this).data('data-path'), function(){
+					px.message('開発中: 要素の追加完了しました。');
+				} );
 			})
 			.bind('dragover', function(e){
 				event.preventDefault();
-				// px.message(456);
 			})
-			.bind('click', function(e){
-				px.message('TEST: Clicked');
-			})
+			// .bind('click', function(e){
+			// 	px.message('TEST: Clicked');
+			// })
 		;
 		$ctrlPanel.append( this.$ctrlElm );
 	}

@@ -7,15 +7,6 @@ window.contApp = new (function( px ){
 
 	var _param = px.utils.parseUriParam( window.location.href );
 
-	var _cont_path = _pj.findPageContent( _param.page_path );
-	var _cont_realpath = _pj.get('path')+'/'+_cont_path;
-	var _cont_path_info = px.utils.parsePath(_cont_path);
-	var _cont_contentsPath = px.fs.realpathSync( _pj.get('path')+'/'+_cont_path);
-	var _cont_filesDirPath = _pj.get('path')+'/'+_cont_path_info.dirname+'/'+_cont_path_info.basenameExtless+'_files/data.ignore.json';
-	var _cont_pathModTpl = px.fs.realpathSync( _pj.get('path')+'/'+_pj.get('home_dir')+'/resources/document_modules/' );
-
-	var _contentsData = null;
-
 
 	/**
 	 * 変更を保存する。
@@ -24,12 +15,16 @@ window.contApp = new (function( px ){
 		px.message( '[開発中]ページ保存は、まだ仕様が固まらないので一旦スタブ状態にしてます。' );
 
 		cb = cb || function(){};
+
+		// var contPath = _pj.findPageContent( _param.page_path );
+		// var contentsRealpath = px.fs.realpathSync( _pj.get('path')+'/'+contPath);
 		// var src = $('body textarea').val();
 		// src = JSON.parse( JSON.stringify( src ) );
 
-		// px.fs.writeFile( _cont_contentsPath, src, {encoding:'utf8'}, function(err){
+		// px.fs.writeFile( contentsRealpath, src, {encoding:'utf8'}, function(err){
 		// 	cb( !err );
 		// } );
+
 		cb( true );
 		return this;
 	}
@@ -61,6 +56,56 @@ window.contApp = new (function( px ){
 	}
 
 	/**
+	 * フィールド再描画
+	 */
+	function drawField( cb ){
+		// モジュールパレットの初期化
+		$('.cont_modulelist')
+			.html('')
+			.append('<ul>')
+		;
+		var li = d3.select('.cont_modulelist ul').selectAll('li');
+		var update = li.data( _this.modTpl.getAll() );
+		update
+			.text(function(d, i){
+				return d.id;
+			})
+			.style({'color':'inherit'})
+		;
+		update.enter()
+			.append('li')
+			.append('button')
+			.text(function(d, i){
+				return d.id;
+			})
+			.style({'color':'inherit'})
+			.attr({'draggable': true})//←HTML5のAPI http://www.htmq.com/dnd/
+			.on('dragstart', function(){
+				px.message( $(this).text() );
+				event.dataTransfer.setData("moduleId", $(this).text() );
+			})
+		;
+		update.exit()
+			.remove()//消すときはこれ。
+		;
+
+		// 編集フィールドの初期化
+		$('.cont_field-ctrlpanel')
+			.bind('drop', function(e){
+				var modId = event.dataTransfer.getData("moduleId");
+				px.message( 'modId "'+modId+'" がドロップされました。' );
+			})
+			.bind('dragover', function(e){
+				event.preventDefault();
+				// px.message(456);
+			})
+			.bind('click', function(e){
+				px.message('TEST: Clicked');
+			})
+		;
+	} // drawField()
+
+	/**
 	 * 初期化
 	 */
 	function init(){
@@ -68,28 +113,20 @@ window.contApp = new (function( px ){
 
 		px.utils.iterateFnc([
 			function(it){
-				if( !px.fs.existsSync( _cont_realpath ) ){
-					alert('コンテンツファイルが存在しません。');
-					window.parent.contApp.closeEditor();
-					return this;
-				}
-				_cont_realpath = px.fs.realpathSync( _cont_realpath );
-
-				if( !px.fs.existsSync( _cont_filesDirPath ) ){
-					alert('データファイルが存在しません。');
-					window.parent.contApp.closeEditor();
-					return this;
-				}
-				_cont_filesDirPath = px.fs.realpathSync( _cont_filesDirPath );
-
-				// コンテンツデータをロード
-				_contentsData = JSON.parse( px.fs.readFileSync( _cont_filesDirPath ) );
-
-				it.next();
+				// モジュールテンプレートのロード・初期化
+				var pathModTpl = px.fs.realpathSync( _pj.get('path')+'/'+_pj.get('home_dir')+'/resources/document_modules/' );
+				_this.modTpl.init( pathModTpl, function(){
+					it.next();
+				} );
 			} ,
 			function(it){
-				// モジュールテンプレートの初期化
-				_this.modtpl.init( _cont_pathModTpl, function(){
+				// コンテンツデータのロード・初期化
+				var contPath = _pj.findPageContent( _param.page_path );
+				var realpath = _pj.get('path')+'/'+contPath;
+				var pathInfo = px.utils.parsePath(contPath);
+				var dataJsonPath = _pj.get('path')+'/'+pathInfo.dirname+'/'+pathInfo.basenameExtless+'_files/data.ignore.json';
+
+				_this.contData.init( realpath, dataJsonPath, function(){
 					it.next();
 				} );
 			} ,
@@ -128,20 +165,6 @@ window.contApp = new (function( px ){
 						})
 				;
 				$html
-					.find('.cont_field-ctrlpanel')
-						.bind('drop', function(e){
-							var modId = event.dataTransfer.getData("moduleId");
-							px.message( 'modId "'+modId+'" がドロップされました。' );
-						})
-						.bind('dragover', function(e){
-							event.preventDefault();
-							// px.message(456);
-						})
-						.bind('click', function(e){
-							px.message('TEST: Clicked');
-						})
-				;
-				$html
 					.find('iframe.cont_field-preview')
 						.bind('load', function(){
 							resizeEvent();
@@ -158,36 +181,10 @@ window.contApp = new (function( px ){
 				it.next();
 			} ,
 			function(it){
-				// モジュールパレットの初期化
-				$('.cont_modulelist')
-					.html('')
-					.append('<ul>')
-				;
-				var li = d3.select('.cont_modulelist ul').selectAll('li');
-				var update = li.data( _this.modtpl.getAll() );
-				update
-					.text(function(d, i){
-						return d.id;
-					})
-					.style({'color':'inherit'})
-				;
-				update.enter()
-					.append('li')
-					.append('button')
-					.text(function(d, i){
-						return d.id;
-					})
-					.style({'color':'inherit'})
-					.attr({'draggable': true})//←HTML5のAPI http://www.htmq.com/dnd/
-					.on('dragstart', function(){
-						px.message( $(this).text() );
-						event.dataTransfer.setData("moduleId", $(this).text() );
-					})
-				;
-				update.exit()
-					.remove()//消すときはこれ。
-				;
-				it.next();
+				// 編集フィールドの再描画
+				drawField( function(){
+					it.next();
+				} );
 			}
 		]).start();
 

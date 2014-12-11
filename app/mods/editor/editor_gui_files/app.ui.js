@@ -95,16 +95,11 @@ window.contApp.ui = new(function(px, contApp){
 	/**
 	 * コンテンツデータに対応するUIのひな形
 	 */
-	function classUiUnit( contDataPath, $elmParent ){
+	function classUiUnit( contDataPath, data, $elmParent ){
 		this.contDataPath = contDataPath;
 		this.$elmParent = $elmParent;
-
-		this.$elm = $('<div>')
-			.css({
-				'height': 120,
-				'width': '100%'
-			})
-		;
+		var modTpl = contApp.modTpl.get( data.modId );
+		this.$elm = $( modTpl.template );
 
 		this.$elmParent.append(this.$elm);
 
@@ -112,20 +107,15 @@ window.contApp.ui = new(function(px, contApp){
 			.css({
 				'border':'3px dotted #99d',
 				'text-align':'center',
-				'background-color': '#ddf',
+				'background-color': 'transparent',
 				'display':'block',
-				'position':'absolute'
-			})
-			.attr({
-				'x':this.$elm.offset().left ,
-				'y':this.$elm.offset().top ,
+				'position':'absolute',
 				'width': this.$elm.width(),
 				'height': this.$elm.height()
 			})
 			.width(this.$elm.width())
 			.height(this.$elm.height())
 			.offset(this.$elm.offset())
-			.text('ここにモジュールをドラッグしてください。')
 			.data({'data-path': contDataPath})
 			.bind('drop', function(e){
 				var modId = event.dataTransfer.getData("modId");
@@ -137,9 +127,9 @@ window.contApp.ui = new(function(px, contApp){
 			.bind('dragover', function(e){
 				event.preventDefault();
 			})
-			// .bind('click', function(e){
-			// 	px.message('TEST: Clicked');
-			// })
+			.bind('click', function(e){
+				px.message( 'UTODO: 開発中: select '+$(this).data('data-path') );
+			})
 		;
 		$ctrlPanel.append( this.$ctrlElm );
 	}
@@ -164,7 +154,58 @@ window.contApp.ui = new(function(px, contApp){
 		$previewDoc.find('.contents').each(function(){
 			$(this).html('');
 			var id = $(this).attr('id')||'main';
-			dataViewTree.main = new classUiUnit( id, $(this) );
+			var data = contApp.contData.getBowlData( id );
+
+			for( var idx in data ){
+				dataViewTree.main = new classUiUnit( '/'+id+'@'+idx, data[idx], $(this) );
+			}
+
+			new (function( contDataPath, data, $elmParent ){
+				this.contDataPath = contDataPath;
+				this.$elmParent = $elmParent;
+
+				this.$elm = $('<div>')
+					.css({
+						'height': 120,
+						'width': '100%'
+					})
+				;
+
+				this.$elmParent.append(this.$elm);
+
+				this.$ctrlElm = $('<div>')
+					.css({
+						'border':'3px dotted #99d',
+						'text-align':'center',
+						'background-color': '#ddf',
+						'display':'block',
+						'position':'absolute',
+						'width': this.$elm.width(),
+						'height': this.$elm.height()
+					})
+					.width(this.$elm.width())
+					.height(this.$elm.height())
+					.offset(this.$elm.offset())
+					.text('ここにモジュールをドラッグしてください。')
+					.data({'data-path': contDataPath})
+					.bind('drop', function(e){
+						var modId = event.dataTransfer.getData("modId");
+						// px.message( 'modId "'+modId+'" がドロップされました。' );
+						// contApp.contData.addElement( modId, $(this).data('data-path'), function(){
+						// 	px.message('開発中: 要素の追加完了しました。');
+						// } );
+					})
+					.bind('dragover', function(e){
+						event.preventDefault();
+					})
+					// .bind('click', function(e){
+					// 	px.message('TEST: Clicked');
+					// })
+				;
+				$ctrlPanel.append( this.$ctrlElm );
+
+			})( '/'+id+'@'+data.length, {}, $(this) );
+
 		});
 	} // resizeEvent()
 

@@ -54,15 +54,20 @@ window.contApp.contData = new(function(px, contApp){
 	/**
 	 * 要素を追加する
 	 */
-	this.addElement = function( modId, container, cb ){
-		px.message('開発中: '+modId+' / '+container);
+	this.addElement = function( modId, containerPath, cb ){
+		px.message('開発中: '+modId+' / '+containerPath);
 
 		cb = cb||function(){};
 		var data = {};
 		data.modId = modId;
 		data.val = {};
 
-		_contentsData.bowl[container].push( data );
+		// ↓containerPathの形式に迷い中。一旦コメントアウト。
+		// 　"/fields.main@0/fields.{$fielsname}@2/fields.{$fielsname}@1"
+		// 　こんな感じだと格納しきれるだろうか。
+		// 　ルートはbowlsってことにする。
+		// _contentsData.bowl[containerPath].push( data );
+console.log(containerPath);
 console.log(_contentsData);
 		cb();
 		return this;

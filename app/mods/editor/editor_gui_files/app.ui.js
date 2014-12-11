@@ -157,7 +157,7 @@ window.contApp.ui = new(function(px, contApp){
 			var data = contApp.contData.getBowlData( id );
 
 			for( var idx in data ){
-				dataViewTree.main = new classUiUnit( '/'+id+'@'+idx, data[idx], $(this) );
+				dataViewTree.main = new classUiUnit( '/fields.'+id+'@'+idx, data[idx], $(this) );
 			}
 
 			new (function( contDataPath, data, $elmParent ){
@@ -204,7 +204,7 @@ window.contApp.ui = new(function(px, contApp){
 				;
 				$ctrlPanel.append( this.$ctrlElm );
 
-			})( '/'+id+'@'+data.length, {}, $(this) );
+			})( '/fields.'+id+'@'+data.length, {}, $(this) );
 
 		});
 	} // resizeEvent()

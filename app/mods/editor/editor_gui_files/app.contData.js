@@ -43,7 +43,7 @@ window.contApp.contData = new(function(px, contApp){
 				_contentsData = {};
 			}
 			_contentsData.bowl = _contentsData.bowl||{};
-			_contentsData.bowl.main = _contentsData.bowl.main||[];
+			_contentsData.bowl["fields.main"] = _contentsData.bowl["fields.main"]||[];
 
 			cb();
 		});
@@ -62,6 +62,8 @@ window.contApp.contData = new(function(px, contApp){
 		data.modId = modId;
 		data.val = {};
 
+		var path = this.parseElementPath( containerPath );
+
 		// ↓containerPathの形式に迷い中。一旦コメントアウト。
 		// 　"/fields.main@0/fields.{$fielsname}@2/fields.{$fielsname}@1"
 		// 　こんな感じだと格納しきれるだろうか。
@@ -74,14 +76,27 @@ console.log(_contentsData);
 	}
 
 	/**
+	 * 要素のパスを解析する
+	 */
+	this.parseElementPath = function( containerPath ){
+		containerPath = containerPath||'';
+		if( !containerPath ){ containerPath = '/fields.main'; }
+		containerPath = containerPath.replace( new RegExp('^\\/*'), '' );
+		containerPath = containerPath.replace( new RegExp('\\/*$'), '' );
+		containerPath = containerPath.split('/');
+console.log(containerPath);
+		return containerPath;
+	}
+
+	/**
 	 * bowl別のコンテンツデータを取得
 	 */
 	this.getBowlData = function( bowlName ){
 		bowlName = bowlName||'main';
-		if( !_contentsData.bowl[bowlName] ){
+		if( !_contentsData.bowl["fields."+bowlName] ){
 			return false;
 		}
-		return _contentsData.bowl[bowlName];
+		return _contentsData.bowl["fields."+bowlName];
 	}
 
 	/**
@@ -89,7 +104,7 @@ console.log(_contentsData);
 	 */
 	this.setBowlData = function( bowlName, data ){
 		bowlName = bowlName||'main';
-		_contentsData.bowl[bowlName] = data;
+		_contentsData.bowl["fields."+bowlName] = data;
 		return;
 	}
 

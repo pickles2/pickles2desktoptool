@@ -62,15 +62,54 @@ window.contApp.contData = new(function(px, contApp){
 		data.modId = modId;
 		data.val = {};
 
-		var path = this.parseElementPath( containerPath );
+		var containerPath = this.parseElementPath( containerPath );
 
 		// ↓containerPathの形式に迷い中。一旦コメントアウト。
 		// 　"/fields.main@0/fields.{$fielsname}@2/fields.{$fielsname}@1"
 		// 　こんな感じだと格納しきれるだろうか。
 		// 　ルートはbowlsってことにする。
 		// _contentsData.bowl[containerPath].push( data );
-console.log(containerPath);
-console.log(_contentsData);
+
+		function set_r( aryPath, data, newData ){
+			var cur = aryPath.shift();
+			var idx = null;
+			var tmpSplit = cur.split('@');
+			cur = tmpSplit[0];
+			if( tmpSplit.length >=2 ){
+				idx = Number(tmpSplit[1]);
+				// console.log(idx);
+			}
+
+			if( !aryPath.length ){
+				// ここが最後の要素だったら
+				if( !data[cur] ){
+					data[cur] = {};
+				}
+				if( idx === null ){
+					data[cur] = newData;
+					return true;
+				}
+				data[cur] = data[cur]||[];
+				data[cur][idx] = newData;
+				return true;
+			}else{
+				// もっと深かったら
+				if( !data[cur] ){
+					return false;
+				}
+				if( idx === null ){
+					data[cur] = newData;
+					return set_r( aryPath, data[cur], newData );
+				}else{
+					return set_r( aryPath, data[cur][idx], newData );
+				}
+			}
+
+		}
+
+		set_r( containerPath, _contentsData.bowl, {modId: modId} );
+		// console.log(_contentsData);
+
 		cb();
 		return this;
 	}
@@ -79,12 +118,16 @@ console.log(_contentsData);
 	 * 要素のパスを解析する
 	 */
 	this.parseElementPath = function( containerPath ){
+		if( typeof(containerPath) === typeof([]) ){
+			return containerPath;
+		}
+
 		containerPath = containerPath||'';
 		if( !containerPath ){ containerPath = '/fields.main'; }
 		containerPath = containerPath.replace( new RegExp('^\\/*'), '' );
 		containerPath = containerPath.replace( new RegExp('\\/*$'), '' );
 		containerPath = containerPath.split('/');
-console.log(containerPath);
+		// console.log(containerPath);
 		return containerPath;
 	}
 

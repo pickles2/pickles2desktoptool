@@ -191,9 +191,10 @@ window.contApp.ui = new(function(px, contApp){
 					.bind('drop', function(e){
 						var modId = event.dataTransfer.getData("modId");
 						// px.message( 'modId "'+modId+'" がドロップされました。' );
-						// contApp.contData.addElement( modId, $(this).data('data-path'), function(){
-						// 	px.message('開発中: 要素の追加完了しました。');
-						// } );
+						contApp.contData.addElement( modId, $(this).data('data-path'), function(){
+							px.message('開発中: 要素の追加完了しました。');
+							_this.resizeEvent();
+						} );
 					})
 					.bind('dragover', function(e){
 						event.preventDefault();

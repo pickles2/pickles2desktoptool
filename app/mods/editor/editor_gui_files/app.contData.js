@@ -55,20 +55,25 @@ window.contApp.contData = new(function(px, contApp){
 	 * 要素を追加する
 	 */
 	this.addElement = function( modId, containerPath, cb ){
-		px.message('開発中: '+modId+' / '+containerPath);
-
+		// px.message('開発中: '+modId+' / '+containerPath);
 		cb = cb||function(){};
+
 		var data = {};
 		data.modId = modId;
-		data.val = {};
+		var modTpl = contApp.modTpl.get( data.modId );
+		var fieldList = _.keys( modTpl.fields );
+		for( var idx in fieldList ){
+			switch( modTpl.fields[fieldList[idx]].type ){
+				case 'markdown':
+					data['fields.'+fieldList[idx]] = '';
+					break;
+				case 'module':
+					data['fields.'+fieldList[idx]] = [];
+					break;
+			}
+		}
 
 		var containerPath = this.parseElementPath( containerPath );
-
-		// ↓containerPathの形式に迷い中。一旦コメントアウト。
-		// 　"/fields.main@0/fields.{$fielsname}@2/fields.{$fielsname}@1"
-		// 　こんな感じだと格納しきれるだろうか。
-		// 　ルートはbowlsってことにする。
-		// _contentsData.bowl[containerPath].push( data );
 
 		function set_r( aryPath, data, newData ){
 			var cur = aryPath.shift();
@@ -107,7 +112,7 @@ window.contApp.contData = new(function(px, contApp){
 
 		}
 
-		set_r( containerPath, _contentsData.bowl, {modId: modId} );
+		set_r( containerPath, _contentsData.bowl, data );
 		// console.log(_contentsData);
 
 		cb();

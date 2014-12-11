@@ -45,10 +45,24 @@ window.contApp.modTpl = new(function(px, contApp){
 		var _this = this;
 		this.id = modId;
 		this.path = px.fs.realpathSync(_pathModTpl+'/'+modId+'/');
+		this.fields = {};
 		px.fs.readFile( this.path+'/template.html', function( err, buffer ){
 			var src = buffer.toString();
 			src = JSON.parse( JSON.stringify( src ) );
 			_this.template = src;
+
+			var field = null;
+			while( 1 ){
+				if( !src.match(new RegExp('^(.*?)\\{\\&(.*?)\\&\\}(.*)$', 'm')) ){
+					break;
+				}
+				field = RegExp.$2;
+				src = RegExp.$3;
+
+				field = JSON.parse( field );
+				_this.fields[field.input.name] = field.input;
+			}
+
 			cb();
 		} );
 		return;

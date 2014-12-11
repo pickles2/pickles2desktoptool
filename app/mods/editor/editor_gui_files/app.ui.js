@@ -96,10 +96,38 @@ window.contApp.ui = new(function(px, contApp){
 	 * コンテンツデータに対応するUIのひな形
 	 */
 	function classUiUnit( contDataPath, data, $elmParent ){
+
 		this.contDataPath = contDataPath;
 		this.$elmParent = $elmParent;
 		var modTpl = contApp.modTpl.get( data.modId );
-		this.$elm = $( modTpl.template );
+		var fieldList = _.keys( modTpl.fields );
+
+		this.fields = {};
+		for( var idx in fieldList ){
+			switch( modTpl.fields[fieldList[idx]].type ){
+				case 'markdown':
+					this.fields[fieldList[idx]] = data['fields.'+fieldList[idx]];
+					// this.fields[fieldList[idx]] = new classUiUnit(
+					// 	contDataPath+'/'+fieldList[idx],
+					// 	data['fields.'+fieldList[idx]],
+					// 	$tmpParent
+					// );
+					break;
+				case 'module':
+					this.fields[fieldList[idx]] = [];
+					for( var idx2 in data['fields.'+fieldList[idx]] ){
+						var $tmpParent = $('<div>');
+						this.fields[fieldList[idx]][idx2] = new classUiUnit(
+							contDataPath+'/fields.'+fieldList[idx]+'@'+idx2,
+							data['fields.'+fieldList[idx]][idx2],
+							$tmpParent
+						);
+					}
+					break;
+			}
+		}
+
+		this.$elm = $( '<div>'+modTpl.template+'</div>' );
 
 		this.$elmParent.append(this.$elm);
 

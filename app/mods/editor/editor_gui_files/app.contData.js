@@ -130,6 +130,72 @@ window.contApp.contData = new(function(px, contApp){
 	}
 
 	/**
+	 * 要素を削除する
+	 */
+	this.removeElement = function( containerPath, cb ){
+		cb = cb||function(){};
+
+		var containerPath = this.parseElementPath( containerPath );
+
+		function remove_r( aryPath, data ){
+			// console.log( data );
+			var cur = aryPath.shift();
+			var idx = null;
+			var tmpSplit = cur.split('@');
+			cur = tmpSplit[0];
+			if( tmpSplit.length >=2 ){
+				idx = Number(tmpSplit[1]);
+				// console.log(idx);
+			}
+			var tmpCur = cur.split('.');
+			var container = tmpCur[0];
+			var fieldName = tmpCur[1];
+			var modTpl = contApp.modTpl.get( data.modId );
+
+			if( container == 'bowl' ){
+				return remove_r( aryPath, data.bowl[fieldName] );
+			}
+
+			if( !aryPath.length ){
+				// ここが最後の要素だったら
+				if( !data.fields ){
+					data.fields = {};
+				}
+				if( !data.fields[fieldName] ){
+					data.fields[fieldName] = [];
+				}
+				switch( modTpl.fields[fieldName].type ){
+					case 'module':
+						data.fields[fieldName].splice(idx, 1);
+						break;
+					default:
+						delete data.fields[fieldName];
+						break;
+				}
+				return true;
+			}else{
+				// もっと深かったら
+				switch( modTpl.fields[fieldName].type ){
+					case 'module':
+						return remove_r( aryPath, data.fields[fieldName][idx] );
+						break;
+					default:
+						return remove_r( aryPath, data.fields[fieldName] );
+						break;
+				}
+			}
+			return true;
+
+		}
+
+		remove_r( containerPath, _contentsData );
+
+		cb();
+
+		return this;
+	}
+
+	/**
 	 * 要素のパスを解析する
 	 */
 	this.parseElementPath = function( containerPath ){

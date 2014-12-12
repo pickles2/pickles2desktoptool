@@ -356,6 +356,16 @@ window.contApp.ui = new(function(px, contApp){
 				return false;
 			})
 		;
+		$editWindow.find('form .cont_tpl_module_editor-remove')
+			.attr({'data-guieditor-cont-data-path':contDataPath})
+			.click(function(){
+				contApp.contData.removeElement( $(this).attr('data-guieditor-cont-data-path') );
+				delete data;
+				$editWindow.remove();
+				_this.resizeEvent();
+				return false;
+			})
+		;
 
 		for( var idx in modTpl.fields ){
 			var field = modTpl.fields[idx];
@@ -363,6 +373,9 @@ window.contApp.ui = new(function(px, contApp){
 				case 'module':
 					$editWindow.find('table')
 						.append($('<tr>')
+							.append($('<th>')
+								.text(field.type+' ('+modTpl.fields[idx].name+')')
+							)
 							.append($('<td>')
 								.text('ネストされたモジュールがあります。')
 							)

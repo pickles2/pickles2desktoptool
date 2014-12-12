@@ -70,14 +70,18 @@ window.contApp.modTpl = new(function(px, contApp){
 			var field = {};
 			var rtn = '';
 			while( 1 ){
-				if( !src.match(new RegExp('^(.*?)\\{\\&(.*?)\\&\\}(.*)$')) ){
+				if( !src.match( new RegExp('^((?:.|\r|\n)*?)\\{\\&((?:.|\r|\n)*?)\\&\\}((?:.|\r|\n)*)$') ) ){
 					rtn += src;
 					break;
 				}
 				rtn += RegExp.$1;
 				field = RegExp.$2;
 				field = JSON.parse( field );
-				rtn += fieldData[field.input.name];
+				if( typeof(fieldData[field.input.name]) === typeof([]) ){
+					rtn += fieldData[field.input.name].join('');
+				}else{
+					rtn += fieldData[field.input.name];
+				}
 				src = RegExp.$3;
 
 			}
@@ -85,11 +89,12 @@ window.contApp.modTpl = new(function(px, contApp){
 		}
 
 		function parseTpl(src){
+			src = JSON.parse( JSON.stringify( src ) );
 			_this.template = src;
 
 			var field = null;
 			while( 1 ){
-				if( !src.match(new RegExp('^(.*?)\\{\\&(.*?)\\&\\}(.*)$')) ){
+				if( !src.match(new RegExp('^((?:.|\r|\n)*?)\\{\\&((?:.|\r|\n)*?)\\&\\}((?:.|\r|\n)*)$') ) ){
 					break;
 				}
 				field = RegExp.$2;

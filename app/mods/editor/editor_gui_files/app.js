@@ -12,21 +12,23 @@ window.contApp = new (function( px ){
 	 * 変更を保存する。
 	 */
 	function save(cb){
-		px.message( '[開発中]ページ保存は、まだ仕様が固まらないので一旦スタブ状態にしてます。' );
+		// px.message( '[開発中]ページ保存は、まだ仕様が固まらないので一旦スタブ状態にしてます。' );
 
 		cb = cb || function(){};
 
-		// var contPath = _pj.findPageContent( _param.page_path );
-		// var contentsRealpath = px.fs.realpathSync( _pj.get('path')+'/'+contPath);
-		// var src = $('body textarea').val();
-		// src = JSON.parse( JSON.stringify( src ) );
-
-		// px.fs.writeFile( contentsRealpath, src, {encoding:'utf8'}, function(err){
-		// 	cb( !err );
-		// } );
-
 		_this.contData.save( function(){
 			px.message( 'データファイルを保存しました。' );
+
+			var contPath = _pj.findPageContent( _param.page_path );
+			var contentsRealpath = px.fs.realpathSync( _pj.get('path')+'/'+contPath);
+
+			src = _this.ui.finalize();
+
+			px.fs.writeFile( contentsRealpath, src, {encoding:'utf8'}, function(err){
+				px.message( 'HTMLファイルを保存しました。' );
+				cb( !err );
+			} );
+
 		} );
 
 		return this;

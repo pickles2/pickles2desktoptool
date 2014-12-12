@@ -33,7 +33,8 @@ window.contApp.ui = new(function(px, contApp){
 			.style({'color':'inherit'})
 			.on('dragstart', function(){
 				// px.message( $(this).data('id') );
-				event.dataTransfer.setData("modId", $(this).data('id') );
+				event.dataTransfer.setData('method', 'add' );
+				event.dataTransfer.setData('modId', $(this).data('id') );
 			})
 		;
 		update.enter()
@@ -47,7 +48,8 @@ window.contApp.ui = new(function(px, contApp){
 			.attr({'draggable': true})//←HTML5のAPI http://www.htmq.com/dnd/
 			.on('dragstart', function(){
 				// px.message( $(this).data('id') );
-				event.dataTransfer.setData("modId", $(this).data('id') );
+				event.dataTransfer.setData('method', 'add' );
+				event.dataTransfer.setData('modId', $(this).data('id') );
 			})
 		;
 		update.exit()
@@ -207,9 +209,15 @@ window.contApp.ui = new(function(px, contApp){
 						"border":"0px dotted #99d"
 					});
 				})
-				.bind('drop', function(e){
-					var modId = e.dataTransfer.getData("modId");
-					px.message( 'modId "'+modId+'" がドロップされました。' );
+				.attr({'draggable': true})//←HTML5のAPI http://www.htmq.com/dnd/
+				.on('dragstart', function(){
+					event.dataTransfer.setData("method", 'moveTo' );
+					event.dataTransfer.setData("data-guieditor-cont-data-path", $(this).attr('data-guieditor-cont-data-path') );
+				})
+				.bind('drop', function(){
+					var method = event.dataTransfer.getData("method");
+					var modId = event.dataTransfer.getData("modId");
+					px.message( 'modId "'+modId+'" が "'+method+'" のためにドロップされました。' );
 					// contApp.contData.addElement( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
 					// 	px.message('開発中: 要素の追加完了しました。');
 					// } );
@@ -266,8 +274,12 @@ window.contApp.ui = new(function(px, contApp){
 								});
 							})
 							.bind('drop', function(e){
+								var method = event.dataTransfer.getData("method");
+								if( method !== 'add' ){
+									px.message('追加する要素をドロップしてください。ここに移動することはできません。');
+									return;
+								}
 								var modId = event.dataTransfer.getData("modId");
-								// px.message( 'modId "'+modId+'" がドロップされました。' );
 								contApp.contData.addElement( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
 									px.message('要素を追加しました。');
 									contApp.ui.resizeEvent();

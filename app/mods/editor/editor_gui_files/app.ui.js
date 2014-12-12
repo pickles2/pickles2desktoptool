@@ -4,6 +4,7 @@ window.contApp.ui = new(function(px, contApp){
 	var $previewDoc;
 	var $ctrlPanel;
 	var $palette;
+	var $editWindow;
 
 	var dataViewTree = {};
 
@@ -217,10 +218,10 @@ window.contApp.ui = new(function(px, contApp){
 					e.preventDefault();
 				})
 				.bind('click', function(e){
-					px.message( '開発中: このモジュールを選択して、編集できるようになる予定です。' );
+					// _this.openEditWindow( $(this).attr('data-guieditor-cont-data-path') );
 				})
 				.bind('dblclick', function(e){
-					// px.message( 'ここに追加したいモジュールをドロップしてください。' );
+					_this.openEditWindow( $(this).attr('data-guieditor-cont-data-path') );
 				})
 			;
 			$ctrlPanel.append( $ctrlElm );
@@ -290,8 +291,109 @@ window.contApp.ui = new(function(px, contApp){
 			}
 		}
 
-
 	} // function classUiUnit()
+
+	/**
+	 * モジュールの編集ウィンドウを開く
+	 */
+	this.openEditWindow = function( contDataPath ){
+		// px.message( '開発中: このモジュールを選択して、編集できるようになる予定です。' );
+		// px.message( contDataPath );
+		var data = contApp.contData.get( contDataPath );
+		var modTpl = contApp.modTpl.get( data.modId );
+
+		if( $editWindow ){ $editWindow.remove(); }
+		$editWindow = $('<div>')
+			.css({
+				'position':'fixed',
+				'left':0,
+				'top':0,
+				'width': '100%',
+				'height': $('body').height(),
+				// 'background-color':'#eee',
+				'overflow':'auto',
+				'padding': '5em'
+			})
+		;
+		$editWindow
+			.append( $('#cont_tpl_module_editor').html() )
+		;
+		// $editWindow.find('.container')
+		// 	// .append('開発中: このモジュールを選択して、編集できるようになる予定です。')
+		// 	// .append(contDataPath)
+		// ;
+		$editWindow.find('form')
+			.attr({
+				'action': 'javascript:;',
+				'data-guieditor-cont-data-path':contDataPath
+			})
+			.submit(function(){
+				for( var idx in modTpl.fields ){
+					var field = modTpl.fields[idx];
+					switch( field.type ){
+						case 'module':
+							break;
+						case 'markdown':
+						default:
+							// console.log(modTpl.fields[idx]);
+							// console.log(data.fields[modTpl.fields[idx].name]);
+							var src = $editWindow.find('form [name='+JSON.stringify( modTpl.fields[idx].name )+']').val();
+							src = JSON.parse( JSON.stringify(src) );
+							data.fields[field.name] = src;
+							break;
+					}
+				}
+				// px.message('UTODO: 開発中です。');
+				// px.message( $(this).attr('data-guieditor-cont-data-path') );
+				$editWindow.remove();
+				_this.resizeEvent();
+				return false;
+			})
+		;
+		$editWindow.find('form .cont_tpl_module_editor-cancel')
+			.click(function(){
+				$editWindow.remove();
+				return false;
+			})
+		;
+
+		for( var idx in modTpl.fields ){
+			var field = modTpl.fields[idx];
+			switch( field.type ){
+				case 'module':
+					$editWindow.find('table')
+						.append($('<tr>')
+							.append($('<td>')
+								.text('ネストされたモジュールがあります。')
+							)
+						)
+					;
+					break;
+				case 'markdown':
+				default:
+					// console.log(modTpl.fields[idx]);
+					// console.log(data.fields[modTpl.fields[idx].name]);
+					$editWindow.find('table')
+						.append($('<tr>')
+							.append($('<th>')
+								.text(field.type+' ('+modTpl.fields[idx].name+')')
+							)
+							.append($('<td>')
+								.append($('<textarea>')
+									.attr({"name":modTpl.fields[idx].name})
+									.val(data.fields[modTpl.fields[idx].name])
+									.css({'width':'100%','height':'12em'})
+								)
+							)
+						)
+					;
+					break;
+			}
+		}
+
+		$('body').append( $editWindow );
+		return this;
+	}// openEditWindow()
 
 	/**
 	 * ウィンドウ リサイズ イベント ハンドラ
@@ -307,6 +409,7 @@ window.contApp.ui = new(function(px, contApp){
 		var fieldheight = $previewDoc.find('body').height()+5;
 		$preview.height( fieldheight );
 		$ctrlPanel.height( fieldheight );
+		if($editWindow){ $editWindow.height( fieldheight ); }
 
 
 		$ctrlPanel.html('');
@@ -322,12 +425,13 @@ window.contApp.ui = new(function(px, contApp){
 		});
 	} // resizeEvent()
 
-
 	/**
 	 * 最終書き出しHTMLのソースを取得
 	 */
 	this.finalize = function(){
-		return dataViewTree.main.bind( 'finalize' );
+		var src = dataViewTree.main.bind( 'finalize' );
+		src = JSON.parse( JSON.stringify(src) );
+		return src;
 	}
 
 })(window.px, window.contApp);

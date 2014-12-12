@@ -147,6 +147,61 @@ window.contApp.contData = new(function(px, contApp){
 	}
 
 	/**
+	 * データを取得する
+	 */
+	this.get = function( containerPath, data ){
+		data = data || _contentsData;
+		var aryPath = this.parseElementPath( containerPath );
+
+		var cur = aryPath.shift();
+		var idx = null;
+		var tmpSplit = cur.split('@');
+		cur = tmpSplit[0];
+		if( tmpSplit.length >=2 ){
+			idx = Number(tmpSplit[1]);
+			// console.log(idx);
+		}
+		var tmpCur = cur.split('.');
+		var container = tmpCur[0];
+		var fieldName = tmpCur[1];
+		var modTpl = contApp.modTpl.get( data.modId );
+
+		if( container == 'bowl' ){
+			return this.get( aryPath, data.bowl[fieldName] );
+		}
+
+		if( !aryPath.length ){
+			// ここが最後の要素だったら
+			if( !data.fields ){
+				data.fields = {};
+			}
+			if( !data.fields[fieldName] ){
+				data.fields[fieldName] = [];
+			}
+			switch( modTpl.fields[fieldName].type ){
+				case 'module':
+					data.fields[fieldName] = data.fields[fieldName]||[];
+					return data.fields[fieldName][idx];
+					break;
+				default:
+					return data.fields[fieldName];
+					break;
+			}
+		}else{
+			// もっと深かったら
+			switch( modTpl.fields[fieldName].type ){
+				case 'module':
+					return this.get( aryPath, data.fields[fieldName][idx] );
+					break;
+				default:
+					return this.get( aryPath, data.fields[fieldName] );
+					break;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * bowl別のコンテンツデータを取得
 	 */
 	this.getBowlData = function( bowlName ){

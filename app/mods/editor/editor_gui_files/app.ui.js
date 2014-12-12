@@ -103,22 +103,26 @@ window.contApp.ui = new(function(px, contApp){
 
 		this.fields = {};
 		for( var idx in this.fieldList ){
-			switch( this.modTpl.fields[this.fieldList[idx]].type ){
+			var fieldName = this.fieldList[idx];
+			switch( this.modTpl.fields[fieldName].type ){
 				case 'markdown':
-					this.fields[this.fieldList[idx]] = data['fields'][this.fieldList[idx]];
+					this.fields[fieldName] = data['fields'][fieldName];
 					break;
 				case 'module':
-					this.fields[this.fieldList[idx]] = [];
-					for( var idx2 in data['fields'][this.fieldList[idx]] ){
-						this.fields[this.fieldList[idx]][idx2] = new classUiUnit(
-							contDataPath+'/fields.'+this.fieldList[idx]+'@'+idx2,
-							data['fields'][this.fieldList[idx]][idx2]
+					this.fields[fieldName] = [];
+					for( var idx2 in data['fields'][fieldName] ){
+						this.fields[fieldName][idx2] = new classUiUnit(
+							contDataPath+'/fields.'+fieldName+'@'+idx2,
+							data['fields'][fieldName][idx2]
 						);
 					}
 					break;
 			}
 		}
 
+		/**
+		 * HTMLコードを生成する
+		 */
 		this.bind = function( mode ){
 			mode = mode||"finalize";
 			// mode =
@@ -126,17 +130,102 @@ window.contApp.ui = new(function(px, contApp){
 			//    finalize (デフォルト/最終書き出し)
 			var fieldData = {};
 			for( var idx in this.fieldList ){
-				switch( this.modTpl.fields[this.fieldList[idx]].type ){
+				var fieldName = this.fieldList[idx];
+				switch( this.modTpl.fields[fieldName].type ){
 					case 'markdown':
-						fieldData[this.fieldList[idx]] = this.fields[this.fieldList[idx]];
-						if( mode == 'canvas' && !fieldData[this.fieldList[idx]].length ){
-							fieldData[this.fieldList[idx]] = '(テキストを入力してください)';
+						fieldData[fieldName] = this.fields[fieldName];
+						if( mode == 'canvas' && !fieldData[fieldName].length ){
+							fieldData[fieldName] = '(テキストを入力してください)';
 						}
 						break;
 					case 'module':
-						fieldData[this.fieldList[idx]] = [];
-						for( var idx2 in this.fields[this.fieldList[idx]] ){
-							fieldData[this.fieldList[idx]][idx2] = this.fields[this.fieldList[idx]][idx2].bind( mode );
+						fieldData[fieldName] = [];
+						for( var idx2 in this.fields[fieldName] ){
+							fieldData[fieldName][idx2] = this.fields[fieldName][idx2].bind( mode );
+						}
+						if( mode == 'canvas' ){
+							fieldData[fieldName].push( $('<div>')
+								.attr("data-guieditor-cont-data-path", this.contDataPath+'@'+(idx2+1))
+								.css({
+									"height": 60,
+									"background-color":"#eef"
+								})
+								.get(0).outerHTML
+							);
+						}
+						break;
+				}
+			}
+			var rtn = $('<div>')
+				.attr("data-guieditor-cont-data-path", this.contDataPath)
+				.append( this.modTpl.bind(fieldData) )
+			;			// console.log(rtn);
+			if( mode == 'finalize' ){
+				rtn = rtn.get(0).innerHTML;
+			}else{
+				rtn = rtn.get(0).outerHTML;
+			}
+			return rtn;
+		}
+
+		/**
+		 * コントロールパネルを描画する
+		 */
+		this.drawCtrlPanels = function( $content ){
+
+			var $elm = $content.find('[data-guieditor-cont-data-path='+JSON.stringify(this.contDataPath)+']');
+			var $ctrlElm = $('<div>')
+				.css({
+					'border':'0px dotted #99d',
+					'text-align':'center',
+					'background-color': 'transparent',
+					'display':'block',
+					'position':'absolute',
+					"z-index":0,
+					'width': $elm.width(),
+					'height': $elm.height()
+				})
+				.width($elm.width())
+				.height($elm.height())
+				.offset($elm.offset())
+				.attr({'data-guieditor-cont-data-path': this.contDataPath})
+				.bind('mouseover', function(e){
+					$(this).css({
+						"border":"3px dotted #000",
+						// "z-index":10000
+					});
+				})
+				.bind('mouseout', function(e){
+					$(this).css({
+						"border":"0px dotted #99d",
+						// "z-index":0
+					});
+				})
+				.bind('drop', function(e){
+					var modId = event.dataTransfer.getData("modId");
+					// px.message( 'modId "'+modId+'" がドロップされました。' );
+					contApp.contData.addElement( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
+						px.message('開発中: 要素の追加完了しました。');
+					} );
+				})
+				.bind('dragover', function(e){
+					event.preventDefault();
+				})
+				.bind('click', function(e){
+					px.message( 'UTODO: 開発中: select '+$(this).attr('data-guieditor-cont-data-path') );
+				})
+			;
+			$ctrlPanel.append( $ctrlElm );
+
+
+			for( var idx in this.fieldList ){
+				var fieldName = this.fieldList[idx];
+				switch( this.modTpl.fields[fieldName].type ){
+					case 'markdown':
+						break;
+					case 'module':
+						for( var idx2 in this.fields[fieldName] ){
+							this.fields[fieldName][idx2].drawCtrlPanels( $content );
 						}
 
 						// new (function( contDataPath, data ){
@@ -181,57 +270,13 @@ window.contApp.ui = new(function(px, contApp){
 						// 	;
 						// 	$ctrlPanel.append( this.$ctrlElm );
 
-						// })( this.contDataPath+'/fields.'+this.fieldList[idx]+'@'+this.fields[this.fieldList[idx]].length, {} );
+						// })( this.contDataPath+'/fields.'+fieldName+'@'+this.fields[fieldName].length, {} );
 
 						break;
 				}
 			}
-			var rtn = $('<div>')
-				.attr("data-guieditor-cont-data-path", this.contDataPath)
-				.append( this.modTpl.bind(fieldData) )
-			;
-			// console.log(rtn);
-			if( mode == 'finalize' ){
-				rtn = rtn.get(0).innerHTML;
-			}else{
-				rtn = rtn.get(0).outerHTML;
-			}
-			return rtn;
 		}
-		// this.$elm = $( '<div>' )
-		// 	.append( this.bind() )
-		// ;
 
-
-		// this.$ctrlElm = $('<div>')
-		// 	.css({
-		// 		'border':'3px dotted #99d',
-		// 		'text-align':'center',
-		// 		'background-color': 'transparent',
-		// 		'display':'block',
-		// 		'position':'absolute',
-		// 		'width': this.$elm.width(),
-		// 		'height': this.$elm.height()
-		// 	})
-		// 	.width(this.$elm.width())
-		// 	.height(this.$elm.height())
-		// 	.offset(this.$elm.offset())
-		// 	.data({'data-path': contDataPath})
-		// 	.bind('drop', function(e){
-		// 		var modId = event.dataTransfer.getData("modId");
-		// 		// px.message( 'modId "'+modId+'" がドロップされました。' );
-		// 		contApp.contData.addElement( modId, $(this).data('data-path'), function(){
-		// 			px.message('開発中: 要素の追加完了しました。');
-		// 		} );
-		// 	})
-		// 	.bind('dragover', function(e){
-		// 		event.preventDefault();
-		// 	})
-		// 	.bind('click', function(e){
-		// 		px.message( 'UTODO: 開発中: select '+$(this).data('data-path') );
-		// 	})
-		// ;
-		// $ctrlPanel.append( this.$ctrlElm );
 
 	} // function classUiUnit()
 
@@ -257,9 +302,10 @@ window.contApp.ui = new(function(px, contApp){
 			var id = $(this).attr('id')||'main';
 			var data = contApp.contData.getBowlData( id );
 
-			dataViewTree.main = new classUiUnit( '/', data );
+			dataViewTree[id] = new classUiUnit( '/', data );
+			$(this).html( dataViewTree[id].bind( 'canvas' ) );
+			$(this).html( dataViewTree[id].drawCtrlPanels($(this)) );
 
-			$(this).html( dataViewTree.main.bind( 'canvas' ) );
 		});
 	} // resizeEvent()
 

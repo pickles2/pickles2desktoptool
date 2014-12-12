@@ -96,30 +96,28 @@ window.contApp.ui = new(function(px, contApp){
 	 * コンテンツデータに対応するUIのひな形
 	 */
 	function classUiUnit( contDataPath, data, $elmParent ){
+		// console.log(contDataPath);
+		// console.log(data);
 
 		this.contDataPath = contDataPath;
 		this.$elmParent = $elmParent;
-		var modTpl = contApp.modTpl.get( data.modId );
-		var fieldList = _.keys( modTpl.fields );
+		this.modTpl = contApp.modTpl.get( data.modId );
+		// console.log(this.modTpl);
+		this.fieldList = _.keys( this.modTpl.fields );
 
 		this.fields = {};
-		for( var idx in fieldList ){
-			switch( modTpl.fields[fieldList[idx]].type ){
+		for( var idx in this.fieldList ){
+			switch( this.modTpl.fields[this.fieldList[idx]].type ){
 				case 'markdown':
-					this.fields[fieldList[idx]] = data['fields.'+fieldList[idx]];
-					// this.fields[fieldList[idx]] = new classUiUnit(
-					// 	contDataPath+'/'+fieldList[idx],
-					// 	data['fields.'+fieldList[idx]],
-					// 	$tmpParent
-					// );
+					this.fields[this.fieldList[idx]] = data['fields'][this.fieldList[idx]];
 					break;
 				case 'module':
-					this.fields[fieldList[idx]] = [];
-					for( var idx2 in data['fields.'+fieldList[idx]] ){
+					this.fields[this.fieldList[idx]] = [];
+					for( var idx2 in data['fields'][this.fieldList[idx]] ){
 						var $tmpParent = $('<div>');
-						this.fields[fieldList[idx]][idx2] = new classUiUnit(
-							contDataPath+'/fields.'+fieldList[idx]+'@'+idx2,
-							data['fields.'+fieldList[idx]][idx2],
+						this.fields[this.fieldList[idx]][idx2] = new classUiUnit(
+							contDataPath+'/fields.'+this.fieldList[idx]+'@'+idx2,
+							data['fields'][this.fieldList[idx]][idx2],
 							$tmpParent
 						);
 					}
@@ -127,8 +125,78 @@ window.contApp.ui = new(function(px, contApp){
 			}
 		}
 
-		this.$elm = $( '<div>'+modTpl.template+'</div>' );
+		this.bind = function(){
+			var fieldData = {};
+			for( var idx in this.fieldList ){
+				switch( this.modTpl.fields[this.fieldList[idx]].type ){
+					case 'markdown':
+						fieldData[this.fieldList[idx]] = this.fields[this.fieldList[idx]];
+						if( !fieldData[this.fieldList[idx]].length ){
+							fieldData[this.fieldList[idx]] = '(テキストを入力してください)';
+						}
+						break;
+					case 'module':
+						fieldData[this.fieldList[idx]] = [];
+						for( var idx2 in this.fields[this.fieldList[idx]] ){
+							fieldData[this.fieldList[idx]][idx2] = this.fields[this.fieldList[idx]][idx2].bind();
+						}
 
+						new (function( contDataPath, data, $elmParent ){
+							this.contDataPath = contDataPath;
+							this.$elmParent = $elmParent;
+
+							this.$elm = $('<div>')
+								.css({
+									'height': 60,
+									'width': '100%'
+								})
+							;
+
+							this.$elmParent.append(this.$elm);
+
+							this.$ctrlElm = $('<div>')
+								.css({
+									'border':'3px dotted #99d',
+									'text-align':'center',
+									'background-color': '#ddf',
+									'display':'block',
+									'position':'absolute',
+									'width': this.$elm.width(),
+									'height': this.$elm.height()
+								})
+								.width(this.$elm.width())
+								.height(this.$elm.height())
+								.offset(this.$elm.offset())
+								.text('ここにモジュールをドラッグしてください。')
+								.data({'data-path': contDataPath})
+								.bind('drop', function(e){
+									var modId = event.dataTransfer.getData("modId");
+									// px.message( 'modId "'+modId+'" がドロップされました。' );
+									contApp.contData.addElement( modId, $(this).data('data-path'), function(){
+										px.message('開発中: 要素の追加完了しました。');
+										_this.resizeEvent();
+									} );
+								})
+								.bind('dragover', function(e){
+									event.preventDefault();
+								})
+								// .bind('click', function(e){
+								// 	px.message('TEST: Clicked');
+								// })
+							;
+							$ctrlPanel.append( this.$ctrlElm );
+
+						})( this.contDataPath+'/fields.'+this.fieldList[idx]+'@'+this.fields[this.fieldList[idx]].length, {}, this.$elmParent );
+
+						break;
+				}
+			}
+			var rtn = this.modTpl.bind(fieldData);
+			// console.log(rtn);
+			return rtn;
+		}
+
+		this.$elm = $( '<div>'+this.bind()+'</div>' );
 		this.$elmParent.append(this.$elm);
 
 		this.$ctrlElm = $('<div>')
@@ -184,56 +252,12 @@ window.contApp.ui = new(function(px, contApp){
 			var id = $(this).attr('id')||'main';
 			var data = contApp.contData.getBowlData( id );
 
-			for( var idx in data ){
-				dataViewTree.main = new classUiUnit( '/fields.'+id+'@'+idx, data[idx], $(this) );
-			}
+			dataViewTree.main = new classUiUnit( '/', data, $(this) );
 
-			new (function( contDataPath, data, $elmParent ){
-				this.contDataPath = contDataPath;
-				this.$elmParent = $elmParent;
+			// for( var idx in data ){
+			// 	dataViewTree.main = new classUiUnit( '/fields.'+id+'@'+idx, data[idx], $(this) );
+			// }
 
-				this.$elm = $('<div>')
-					.css({
-						'height': 120,
-						'width': '100%'
-					})
-				;
-
-				this.$elmParent.append(this.$elm);
-
-				this.$ctrlElm = $('<div>')
-					.css({
-						'border':'3px dotted #99d',
-						'text-align':'center',
-						'background-color': '#ddf',
-						'display':'block',
-						'position':'absolute',
-						'width': this.$elm.width(),
-						'height': this.$elm.height()
-					})
-					.width(this.$elm.width())
-					.height(this.$elm.height())
-					.offset(this.$elm.offset())
-					.text('ここにモジュールをドラッグしてください。')
-					.data({'data-path': contDataPath})
-					.bind('drop', function(e){
-						var modId = event.dataTransfer.getData("modId");
-						// px.message( 'modId "'+modId+'" がドロップされました。' );
-						contApp.contData.addElement( modId, $(this).data('data-path'), function(){
-							px.message('開発中: 要素の追加完了しました。');
-							_this.resizeEvent();
-						} );
-					})
-					.bind('dragover', function(e){
-						event.preventDefault();
-					})
-					// .bind('click', function(e){
-					// 	px.message('TEST: Clicked');
-					// })
-				;
-				$ctrlPanel.append( this.$ctrlElm );
-
-			})( '/fields.'+id+'@'+data.length, {}, $(this) );
 
 		});
 	} // resizeEvent()

@@ -43,7 +43,7 @@ window.contApp.contData = new(function(px, contApp){
 				_contentsData = {};
 			}
 			_contentsData.bowl = _contentsData.bowl||{};
-			_contentsData.bowl["fields.main"] = _contentsData.bowl["fields.main"]||[];
+			_contentsData.bowl["main"] = _contentsData.bowl["main"]||[];
 
 			cb();
 		});
@@ -65,10 +65,10 @@ window.contApp.contData = new(function(px, contApp){
 		for( var idx in fieldList ){
 			switch( modTpl.fields[fieldList[idx]].type ){
 				case 'markdown':
-					data['fields.'+fieldList[idx]] = '';
+					data['fields'][fieldList[idx]] = '';
 					break;
 				case 'module':
-					data['fields.'+fieldList[idx]] = [];
+					data['fields'][fieldList[idx]] = [];
 					break;
 			}
 		}
@@ -141,10 +141,10 @@ window.contApp.contData = new(function(px, contApp){
 	 */
 	this.getBowlData = function( bowlName ){
 		bowlName = bowlName||'main';
-		if( !_contentsData.bowl["fields."+bowlName] ){
+		if( !_contentsData.bowl[bowlName] ){
 			return false;
 		}
-		return _contentsData.bowl["fields."+bowlName];
+		return _contentsData.bowl[bowlName];
 	}
 
 	/**
@@ -152,7 +152,7 @@ window.contApp.contData = new(function(px, contApp){
 	 */
 	this.setBowlData = function( bowlName, data ){
 		bowlName = bowlName||'main';
-		_contentsData.bowl["fields."+bowlName] = data;
+		_contentsData.bowl[bowlName] = data;
 		return;
 	}
 

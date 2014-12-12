@@ -41,6 +41,65 @@ window.contApp.contData = new(function(px, contApp){
 	}// init()
 
 	/**
+	 * データを取得する
+	 */
+	this.get = function( containerPath, data ){
+		data = data || _contentsData;
+
+		var aryPath = this.parseElementPath( containerPath );
+		if( !aryPath.length ){
+			return data;
+		}
+
+		var cur = aryPath.shift();
+		var idx = null;
+		var tmpSplit = cur.split('@');
+		cur = tmpSplit[0];
+		if( tmpSplit.length >=2 ){
+			idx = Number(tmpSplit[1]);
+			// console.log(idx);
+		}
+		var tmpCur = cur.split('.');
+		var container = tmpCur[0];
+		var fieldName = tmpCur[1];
+		var modTpl = contApp.modTpl.get( data.modId );
+
+		if( container == 'bowl' ){
+			return this.get( aryPath, data.bowl[fieldName] );
+		}
+
+		if( !aryPath.length ){
+			// ここが最後の要素だったら
+			if( !data.fields ){
+				data.fields = {};
+			}
+			if( !data.fields[fieldName] ){
+				data.fields[fieldName] = [];
+			}
+			switch( modTpl.fields[fieldName].type ){
+				case 'module':
+					data.fields[fieldName] = data.fields[fieldName]||[];
+					return data.fields[fieldName][idx];
+					break;
+				default:
+					return data.fields[fieldName];
+					break;
+			}
+		}else{
+			// もっと深かったら
+			switch( modTpl.fields[fieldName].type ){
+				case 'module':
+					return this.get( aryPath, data.fields[fieldName][idx] );
+					break;
+				default:
+					return this.get( aryPath, data.fields[fieldName] );
+					break;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * 要素を追加する
 	 */
 	this.addElement = function( modId, containerPath, cb ){
@@ -98,7 +157,7 @@ window.contApp.contData = new(function(px, contApp){
 				switch( modTpl.fields[fieldName].type ){
 					case 'module':
 						data.fields[fieldName] = data.fields[fieldName]||[];
-						data.fields[fieldName][idx] = newData;
+						data.fields[fieldName].splice( idx, 0, newData);
 						break;
 					default:
 						data.fields[fieldName] = newData;
@@ -127,7 +186,7 @@ window.contApp.contData = new(function(px, contApp){
 		// console.log('done...');
 		// console.log(_contentsData);
 		return this;
-	}
+	}// addElement()
 
 	/**
 	 * 要素を削除する
@@ -138,6 +197,9 @@ window.contApp.contData = new(function(px, contApp){
 		var containerPath = this.parseElementPath( containerPath );
 
 		function remove_r( aryPath, data ){
+			if( !aryPath.length ){
+				return false;
+			}
 			// console.log( data );
 			var cur = aryPath.shift();
 			var idx = null;
@@ -193,7 +255,7 @@ window.contApp.contData = new(function(px, contApp){
 		cb();
 
 		return this;
-	}
+	}// removeElement()
 
 	/**
 	 * 要素のパスを解析する
@@ -210,61 +272,6 @@ window.contApp.contData = new(function(px, contApp){
 		containerPath = containerPath.split('/');
 		// console.log(containerPath);
 		return containerPath;
-	}
-
-	/**
-	 * データを取得する
-	 */
-	this.get = function( containerPath, data ){
-		data = data || _contentsData;
-		var aryPath = this.parseElementPath( containerPath );
-
-		var cur = aryPath.shift();
-		var idx = null;
-		var tmpSplit = cur.split('@');
-		cur = tmpSplit[0];
-		if( tmpSplit.length >=2 ){
-			idx = Number(tmpSplit[1]);
-			// console.log(idx);
-		}
-		var tmpCur = cur.split('.');
-		var container = tmpCur[0];
-		var fieldName = tmpCur[1];
-		var modTpl = contApp.modTpl.get( data.modId );
-
-		if( container == 'bowl' ){
-			return this.get( aryPath, data.bowl[fieldName] );
-		}
-
-		if( !aryPath.length ){
-			// ここが最後の要素だったら
-			if( !data.fields ){
-				data.fields = {};
-			}
-			if( !data.fields[fieldName] ){
-				data.fields[fieldName] = [];
-			}
-			switch( modTpl.fields[fieldName].type ){
-				case 'module':
-					data.fields[fieldName] = data.fields[fieldName]||[];
-					return data.fields[fieldName][idx];
-					break;
-				default:
-					return data.fields[fieldName];
-					break;
-			}
-		}else{
-			// もっと深かったら
-			switch( modTpl.fields[fieldName].type ){
-				case 'module':
-					return this.get( aryPath, data.fields[fieldName][idx] );
-					break;
-				default:
-					return this.get( aryPath, data.fields[fieldName] );
-					break;
-			}
-		}
-		return false;
 	}
 
 	/**

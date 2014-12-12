@@ -3,17 +3,6 @@ window.contApp.contData = new(function(px, contApp){
 	var _dataJsonPath;
 
 	/**
-	 * データを保存する
-	 */
-	this.save = function(cb){
-		cb = cb||function(){};
-		px.fs.writeFile( _dataJsonPath, JSON.stringify(_contentsData), {encoding:'utf8'}, function(err){
-			cb( !err );
-		} );
-		return this;
-	}
-
-	/**
 	 * 初期化
 	 */
 	this.init = function( contentsDataPath, dataJsonPath, cb ){
@@ -55,27 +44,32 @@ window.contApp.contData = new(function(px, contApp){
 	 * 要素を追加する
 	 */
 	this.addElement = function( modId, containerPath, cb ){
-		// px.message('開発中: '+modId+' / '+containerPath);
+		console.log( '開発中: '+modId+': '+containerPath );
 		cb = cb||function(){};
 
-		var data = {};
-		data.modId = modId;
-		var modTpl = contApp.modTpl.get( data.modId );
+		var newData = new (function(){
+			this.modId = modId ,
+			this.fields = {}
+		})(modId);
+		var modTpl = contApp.modTpl.get( newData.modId );
 		var fieldList = _.keys( modTpl.fields );
 		for( var idx in fieldList ){
-			switch( modTpl.fields[fieldList[idx]].type ){
-				case 'markdown':
-					data['fields'][fieldList[idx]] = '';
-					break;
+			var fieldName = fieldList[idx];
+			switch( modTpl.fields[fieldName].type ){
 				case 'module':
-					data['fields'][fieldList[idx]] = [];
+					newData.fields[fieldName] = [];
+					break;
+				default:
+					newData.fields[fieldName] = '';
 					break;
 			}
 		}
 
 		var containerPath = this.parseElementPath( containerPath );
+		console.log( containerPath );
 
 		function set_r( aryPath, data, newData ){
+			console.log( data );
 			var cur = aryPath.shift();
 			var idx = null;
 			var tmpSplit = cur.split('@');
@@ -84,38 +78,54 @@ window.contApp.contData = new(function(px, contApp){
 				idx = Number(tmpSplit[1]);
 				// console.log(idx);
 			}
+			var tmpCur = cur.split('.');
+			var container = tmpCur[0];
+			var fieldName = tmpCur[1];
+			var modTpl = contApp.modTpl.get( data.modId );
+
+			if( container == 'bowl' ){
+				return set_r( aryPath, data.bowl[fieldName], newData );
+			}
 
 			if( !aryPath.length ){
 				// ここが最後の要素だったら
-				if( !data[cur] ){
-					data[cur] = {};
+				if( !data.fields ){
+					data.fields = {};
 				}
-				if( idx === null ){
-					data[cur] = newData;
-					return true;
+				if( !data.fields[fieldName] ){
+					data.fields[fieldName] = [];
 				}
-				data[cur] = data[cur]||[];
-				data[cur][idx] = newData;
+				switch( modTpl.fields[fieldName].type ){
+					case 'module':
+						data.fields[fieldName] = data.fields[fieldName]||[];
+						data.fields[fieldName][idx] = newData;
+						break;
+					default:
+						data.fields[fieldName] = newData;
+						return true;
+						break;
+				}
 				return true;
 			}else{
 				// もっと深かったら
-				if( !data[cur] ){
-					return false;
-				}
-				if( idx === null ){
-					data[cur] = newData;
-					return set_r( aryPath, data[cur], newData );
-				}else{
-					return set_r( aryPath, data[cur][idx], newData );
+				switch( modTpl.fields[fieldName].type ){
+					case 'module':
+						return set_r( aryPath, data.fields[fieldName][idx], newData );
+						break;
+					default:
+						return set_r( aryPath, data.fields[fieldName], newData );
+						break;
 				}
 			}
 
 		}
 
-		set_r( containerPath, _contentsData.bowl, data );
-		// console.log(_contentsData);
+		set_r( containerPath, _contentsData, newData );
 
 		cb();
+
+		console.log('done...');
+		console.log(_contentsData);
 		return this;
 	}
 
@@ -154,6 +164,17 @@ window.contApp.contData = new(function(px, contApp){
 		bowlName = bowlName||'main';
 		_contentsData.bowl[bowlName] = data;
 		return;
+	}
+
+	/**
+	 * データを保存する
+	 */
+	this.save = function(cb){
+		cb = cb||function(){};
+		px.fs.writeFile( _dataJsonPath, JSON.stringify(_contentsData), {encoding:'utf8'}, function(err){
+			cb( !err );
+		} );
+		return this;
 	}
 
 })(window.px, window.contApp);

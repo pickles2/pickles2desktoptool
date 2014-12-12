@@ -44,7 +44,7 @@ window.contApp.contData = new(function(px, contApp){
 	 * 要素を追加する
 	 */
 	this.addElement = function( modId, containerPath, cb ){
-		console.log( '開発中: '+modId+': '+containerPath );
+		// console.log( '開発中: '+modId+': '+containerPath );
 		cb = cb||function(){};
 
 		var newData = new (function(){
@@ -66,10 +66,10 @@ window.contApp.contData = new(function(px, contApp){
 		}
 
 		var containerPath = this.parseElementPath( containerPath );
-		console.log( containerPath );
+		// console.log( containerPath );
 
 		function set_r( aryPath, data, newData ){
-			console.log( data );
+			// console.log( data );
 			var cur = aryPath.shift();
 			var idx = null;
 			var tmpSplit = cur.split('@');
@@ -124,8 +124,8 @@ window.contApp.contData = new(function(px, contApp){
 
 		cb();
 
-		console.log('done...');
-		console.log(_contentsData);
+		// console.log('done...');
+		// console.log(_contentsData);
 		return this;
 	}
 

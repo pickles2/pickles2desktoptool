@@ -96,7 +96,7 @@ window.contApp.ui = new(function(px, contApp){
 	 * コンテンツデータに対応するUIのひな形
 	 */
 	function classUiUnit( contDataPath, data ){
-		console.log(contDataPath);
+		// console.log(contDataPath);
 		contDataPath = contDataPath.replace( new RegExp('^\\/*'), '/' );
 		this.contDataPath = contDataPath;
 		this.modTpl = contApp.modTpl.get( data.modId );
@@ -149,7 +149,7 @@ window.contApp.ui = new(function(px, contApp){
 							fieldData[fieldName].push( $('<div>')
 								.attr("data-guieditor-cont-data-path", this.contDataPath+'/fields.'+fieldName+'@'+( this.fields[fieldName].length ))
 								.css({
-									"height": 60,
+									"height": 30,
 									"background-color":"#eef"
 								})
 								.get(0).outerHTML
@@ -160,8 +160,13 @@ window.contApp.ui = new(function(px, contApp){
 			}
 			var rtn = $('<div>')
 				.attr("data-guieditor-cont-data-path", this.contDataPath)
+				.css({
+					'margin-top':5,
+					'margin-bottom':5,
+				})
 				.append( this.modTpl.bind(fieldData) )
-			;			// console.log(rtn);
+			;
+			// console.log(rtn);
 			if( mode == 'finalize' ){
 				rtn = rtn.get(0).innerHTML;
 			}else{
@@ -202,17 +207,20 @@ window.contApp.ui = new(function(px, contApp){
 					});
 				})
 				.bind('drop', function(e){
-					var modId = event.dataTransfer.getData("modId");
-					// px.message( 'modId "'+modId+'" がドロップされました。' );
-					contApp.contData.addElement( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
-						px.message('開発中: 要素の追加完了しました。');
-					} );
+					var modId = e.dataTransfer.getData("modId");
+					px.message( 'modId "'+modId+'" がドロップされました。' );
+					// contApp.contData.addElement( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
+					// 	px.message('開発中: 要素の追加完了しました。');
+					// } );
 				})
 				.bind('dragover', function(e){
-					event.preventDefault();
+					e.preventDefault();
 				})
 				.bind('click', function(e){
-					px.message( 'UTODO: 開発中: select '+$(this).attr('data-guieditor-cont-data-path') );
+					px.message( '開発中: このモジュールを選択して、編集できるようになる予定です。' );
+				})
+				.bind('dblclick', function(e){
+					// px.message( 'ここに追加したいモジュールをドロップしてください。' );
 				})
 			;
 			$ctrlPanel.append( $ctrlElm );
@@ -231,6 +239,8 @@ window.contApp.ui = new(function(px, contApp){
 						var $ctrlElm = $('<div>')
 							.css({
 								'border':'0px dotted #99d',
+								'font-size':'11px',
+								'overflow':'hidden',
 								'text-align':'center',
 								'background-color': 'transparent',
 								'display':'block',
@@ -258,15 +268,19 @@ window.contApp.ui = new(function(px, contApp){
 								var modId = event.dataTransfer.getData("modId");
 								// px.message( 'modId "'+modId+'" がドロップされました。' );
 								contApp.contData.addElement( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
-									px.message('開発中: 要素の追加完了しました。');
+									px.message('要素を追加しました。');
 									contApp.ui.resizeEvent();
 								} );
 							})
 							.bind('dragover', function(e){
-								event.preventDefault();
+								e.preventDefault();
 							})
 							.bind('click', function(e){
-								px.message( 'UTODO: 開発中: select '+$(this).attr('data-guieditor-cont-data-path') );
+								// px.message( 'UTODO: 開発中: select '+$(this).attr('data-guieditor-cont-data-path') );
+							})
+							.bind('dblclick', function(e){
+								px.message( 'ここに追加したいモジュールをドロップしてください。' );
+								e.preventDefault();
 							})
 						;
 						$ctrlPanel.append( $ctrlElm );

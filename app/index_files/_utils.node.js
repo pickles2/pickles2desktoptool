@@ -272,4 +272,13 @@
 		return paramsArray;
 	}
 
+	/**
+	 * Markdown形式のテキストをHTMLに変換
+	 */
+	exports.markdown = function( src ){
+		var markdown = require( "markdown" ).markdown;
+		var rtn = markdown.toHTML( src );
+		return rtn;
+	}
+
 })(exports);

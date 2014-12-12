@@ -9,7 +9,8 @@
   "author": "Tomoya Koyanagi",
   "license": "BSD",
   "dependencies": {
-    "nodewebkit": "0.11.*"
+    "nodewebkit": "0.11.*",
+    "markdown": "0.5.*"
   },
   "window":{
     "title": "pickles2desktoptool",

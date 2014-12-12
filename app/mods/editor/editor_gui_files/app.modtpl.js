@@ -77,11 +77,24 @@ window.contApp.modTpl = new(function(px, contApp){
 				rtn += RegExp.$1;
 				field = RegExp.$2;
 				field = JSON.parse( field );
-				if( typeof(fieldData[field.input.name]) === typeof([]) ){
-					rtn += fieldData[field.input.name].join('');
-				}else{
-					rtn += fieldData[field.input.name];
+				switch( field.input.type ){
+					case 'module':
+						rtn += fieldData[field.input.name].join('');
+						break;
+					case 'markdown':
+						var mdData = fieldData[field.input.name];
+						mdData = px.utils.markdown( mdData );
+						rtn += mdData;
+						break;
+					default:
+						rtn += fieldData[field.input.name];
+						break;
 				}
+				// if( typeof(fieldData[field.input.name]) === typeof([]) ){
+				// 	rtn += fieldData[field.input.name].join('');
+				// }else{
+				// 	rtn += fieldData[field.input.name];
+				// }
 				src = RegExp.$3;
 
 			}

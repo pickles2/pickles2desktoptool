@@ -217,10 +217,19 @@ window.contApp.ui = new(function(px, contApp){
 				.bind('drop', function(){
 					var method = event.dataTransfer.getData("method");
 					var modId = event.dataTransfer.getData("modId");
+					var moveFrom = event.dataTransfer.getData("data-guieditor-cont-data-path");
 					px.message( 'modId "'+modId+'" が "'+method+'" のためにドロップされました。' );
-					// contApp.contData.addElement( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
-					// 	px.message('開発中: 要素の追加完了しました。');
-					// } );
+					if( method == 'add' ){
+						contApp.contData.addElement( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
+							px.message('要素を追加しました。');
+							contApp.ui.resizeEvent();
+						} );
+					}else if( method == 'moveTo' ){
+						contApp.contData.moveElementTo( moveFrom, $(this).attr('data-guieditor-cont-data-path'), function(){
+							px.message('要素を移動しました。');
+							contApp.ui.resizeEvent();
+						} );
+					}
 				})
 				.bind('dragover', function(e){
 					e.preventDefault();

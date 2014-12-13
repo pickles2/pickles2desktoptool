@@ -189,6 +189,92 @@ window.contApp.contData = new(function(px, contApp){
 	}// addElement()
 
 	/**
+	 * 要素を更新する
+	 */
+	this.updateElement = function( newData, containerPath, cb ){
+		// console.log( '開発中: '+modId+': '+containerPath );
+		cb = cb||function(){};
+
+		var containerPath = this.parseElementPath( containerPath );
+		// console.log( containerPath );
+
+		function set_r( aryPath, data, newData ){
+			// console.log( data );
+			var cur = aryPath.shift();
+			var idx = null;
+			var tmpSplit = cur.split('@');
+			cur = tmpSplit[0];
+			if( tmpSplit.length >=2 ){
+				idx = Number(tmpSplit[1]);
+				// console.log(idx);
+			}
+			var tmpCur = cur.split('.');
+			var container = tmpCur[0];
+			var fieldName = tmpCur[1];
+			var modTpl = contApp.modTpl.get( data.modId );
+
+			if( container == 'bowl' ){
+				return set_r( aryPath, data.bowl[fieldName], newData );
+			}
+
+			if( !aryPath.length ){
+				// ここが最後の要素だったら
+				if( !data.fields ){
+					data.fields = {};
+				}
+				if( !data.fields[fieldName] ){
+					data.fields[fieldName] = [];
+				}
+				switch( modTpl.fields[fieldName].type ){
+					case 'module':
+						data.fields[fieldName] = data.fields[fieldName]||[];
+						data.fields[fieldName][idx] = newData;
+						break;
+					default:
+						data.fields[fieldName] = newData;
+						return true;
+						break;
+				}
+				return true;
+			}else{
+				// もっと深かったら
+				switch( modTpl.fields[fieldName].type ){
+					case 'module':
+						return set_r( aryPath, data.fields[fieldName][idx], newData );
+						break;
+					default:
+						return set_r( aryPath, data.fields[fieldName], newData );
+						break;
+				}
+			}
+
+		}
+
+		set_r( containerPath, _contentsData, newData );
+
+		cb();
+
+		// console.log('done...');
+		// console.log(_contentsData);
+		return this;
+	}// addElement()
+
+	/**
+	 * 要素を移動する
+	 */
+	this.moveElementTo = function( fromContainerPath, toContainerPath, cb ){
+		cb = cb||function(){};
+
+		var dataFrom = this.get( fromContainerPath );
+		dataFrom = JSON.parse(JSON.stringify( dataFrom ));//←オブジェクトのdeepcopy
+		this.addElement( dataFrom.modId, toContainerPath );
+		this.updateElement( dataFrom, toContainerPath );
+		this.removeElement(fromContainerPath);
+		cb();
+		return this;
+	}
+
+	/**
 	 * 要素を削除する
 	 */
 	this.removeElement = function( containerPath, cb ){

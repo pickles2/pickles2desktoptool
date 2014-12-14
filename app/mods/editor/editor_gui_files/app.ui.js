@@ -371,13 +371,12 @@ window.contApp.ui = new(function(px, contApp){
 		$editWindow = $('<div>')
 			.css({
 				'position':'fixed',
-				'left':0,
-				'top':0,
+				'left':0, 'top':0,
 				'width': '100%',
 				'height': $('body').height(),
 				// 'background-color':'#eee',
 				'overflow':'auto',
-				'padding': '5em'
+				'padding': '5em 0 2em 0'
 			})
 		;
 		$editWindow
@@ -487,7 +486,9 @@ window.contApp.ui = new(function(px, contApp){
 		var fieldheight = $previewDoc.find('body').height()+5;
 		$preview.height( fieldheight );
 		$ctrlPanel.height( fieldheight );
-		if($editWindow){ $editWindow.height( fieldheight ); }
+		if( $editWindow ){
+			$editWindow.height( fieldheight );
+		}
 
 
 		$ctrlPanel.html('');

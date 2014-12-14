@@ -284,6 +284,9 @@ window.contApp.contData = new(function(px, contApp){
 			// 同じ箱の中での並び替え
 			if( fromParsed.num < toParsed.num ){
 				// 上から下へ
+				if( !this.get(toContainerPath) ){
+					toContainerPath = toParsed.container + '@' + ( toParsed.num-1 );
+				}
 				this.removeElement(fromContainerPath);
 				this.addElement( dataFrom.modId, toContainerPath );
 				this.updateElement( dataFrom, toContainerPath );

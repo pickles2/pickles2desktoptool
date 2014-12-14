@@ -153,19 +153,22 @@ window.contApp.ui = new(function(px, contApp){
 							fieldData[fieldName].push( $('<div>')
 								.attr( "data-guieditor-cont-data-path", contDataPathNext )
 								.append( $('<div>')
-									.text( contDataPathNext + ' ここに新しい要素をドラッグしてください。' )
+									.text(
+										// contDataPathNext +
+										' ここに新しい要素をドラッグしてください。'
+									)
 									.css({
 										'overflow':'hidden',
 										"padding": 15,
+										"background-color":"#eef",
+										"border-radius":5,
+										"font-size":9,
+										'text-align':'center',
 										'box-sizing': 'content-box'
 									})
 								)
 								.css({
-									"margin":'5px 0',
-									"background-color":"#eef",
-									"border-radius":5,
-									"font-size":9,
-									'text-align':'center'
+									"padding":'5px 0'
 								})
 								.get(0).outerHTML
 							);
@@ -243,6 +246,17 @@ window.contApp.ui = new(function(px, contApp){
 						} );
 					}
 				})
+				.bind('dragenter', function(e){
+					$(this).css({
+						"border-radius":0,
+						"border":"3px dotted #99f"
+					});
+				})
+				.bind('dragleave', function(e){
+					$(this).css({
+						"border":0
+					});
+				})
 				.bind('dragover', function(e){
 					e.preventDefault();
 				})
@@ -268,30 +282,29 @@ window.contApp.ui = new(function(px, contApp){
 						var $elm = $content.find('[data-guieditor-cont-data-path='+JSON.stringify(contDataPath)+']');
 						var $ctrlElm = $('<div>')
 							.css({
-								'border':'0px dotted #99d',
+								'border':0,
 								'font-size':'11px',
 								'overflow':'hidden',
 								'text-align':'center',
 								'background-color': 'transparent',
 								'display':'block',
 								'position':'absolute',
+								'top': $elm.offset().top + 5,
+								'left': $elm.offset().left,
 								"z-index":0,
 								'width': $elm.width(),
 								'height': $elm.height()
 							})
-							.width($elm.width())
-							.height($elm.height())
-							.offset($elm.offset())
-							// .text(contDataPath)
 							.attr({'data-guieditor-cont-data-path': contDataPath})
 							.bind('mouseover', function(e){
 								$(this).css({
-									"border":"3px dotted #000"
+									"border-radius":5,
+									"border":"1px solid #000"
 								});
 							})
 							.bind('mouseout', function(e){
 								$(this).css({
-									"border":"0px dotted #99d"
+									"border":0
 								});
 							})
 							.bind('drop', function(e){
@@ -313,6 +326,17 @@ window.contApp.ui = new(function(px, contApp){
 									px.message('要素を追加しました。');
 									contApp.ui.resizeEvent();
 								} );
+							})
+							.bind('dragenter', function(e){
+								$(this).css({
+									"border-radius":0,
+									"border":"3px dotted #99f"
+								});
+							})
+							.bind('dragleave', function(e){
+								$(this).css({
+									"border":0
+								});
 							})
 							.bind('dragover', function(e){
 								e.preventDefault();

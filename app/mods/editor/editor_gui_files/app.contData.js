@@ -265,12 +265,53 @@ window.contApp.contData = new(function(px, contApp){
 	this.moveElementTo = function( fromContainerPath, toContainerPath, cb ){
 		cb = cb||function(){};
 
+		function parseElementPath(path){
+			var rtn = {};
+			rtn = px.utils.parsePath( path );
+			var basenameParse = rtn.basename.split('@');
+			rtn.container = rtn.dirname+'/'+basenameParse[0];
+			rtn.num = Number(basenameParse[1]);
+			return rtn;
+		}
+
+		var fromParsed = parseElementPath(fromContainerPath);
+		var toParsed = parseElementPath(toContainerPath);
+
 		var dataFrom = this.get( fromContainerPath );
 		dataFrom = JSON.parse(JSON.stringify( dataFrom ));//←オブジェクトのdeepcopy
-		this.addElement( dataFrom.modId, toContainerPath );
-		this.updateElement( dataFrom, toContainerPath );
-		this.removeElement(fromContainerPath);
-		cb();
+
+		if( fromParsed.container == toParsed.container ){
+			// 同じ箱の中での並び替え
+			if( fromParsed.num < toParsed.num ){
+				// 上から下へ
+				this.removeElement(fromContainerPath);
+				this.addElement( dataFrom.modId, toContainerPath );
+				this.updateElement( dataFrom, toContainerPath );
+
+			}else if( fromParsed.num > toParsed.num ){
+				// 下から上へ
+				this.addElement( dataFrom.modId, toContainerPath );
+				this.updateElement( dataFrom, toContainerPath );
+				this.removeElement(fromParsed.container+'@'+(fromParsed.num+1));
+			}
+			cb();
+		}else if( toParsed.path.indexOf(fromParsed.path) === 0 ){
+			px.message('自分の子階層へ移動することはできません。');
+			cb();
+		}else if( fromParsed.path.indexOf(toParsed.container) === 0 ){
+			// var tmp = fromParsed.path.replace( new RegExp('^'+px.utils.escapeRegExp(toParsed.container)), '' );
+			this.removeElement(fromParsed.path);
+			this.addElement( dataFrom.modId, toContainerPath );
+			this.updateElement( dataFrom, toContainerPath );
+			cb();
+		}else{
+			// まったく関連しない箱への移動
+			this.addElement( dataFrom.modId, toContainerPath );
+			this.updateElement( dataFrom, toContainerPath );
+			this.removeElement(fromContainerPath);
+			cb();
+		}
+
 		return this;
 	}
 

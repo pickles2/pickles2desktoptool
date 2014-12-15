@@ -29,68 +29,9 @@
 
 		<!-- Local Resources -->
 		<link rel="stylesheet" href="./index_files/style.css" type="text/css" />
+		<script src="./index_files/script.js"></script>
 
 		<script>
-			window.px = $.px = window.parent.px;
-			$(function(){
-				var pj = px.getCurrentProject();
-				var status = pj.status();
-
-				$('.tpl_name').text( pj.get('name') );
-				$('.tpl_path').text( pj.get('path') );
-				$('.tpl_home_dir').text( pj.get('home_dir') );
-				$('.tpl_entry_script').text( pj.get('entry_script') );
-				$('.tpl_vcs').text( pj.get('vcs') );
-
-				px.utils.iterate(
-					_.keys( status ) ,
-					function(it, data, idx){
-						$('.tpl_status_table').append($('<tr>')
-							.append($('<th>').text(data))
-							.append($('<td>')
-								.text((status[data]?'true':'false'))
-							)
-						);
-						it.next();
-					}
-				);
-
-				// インストールボタン
-				if( status.pathExists && !status.composerJsonExists ){
-					$('.cont_install_ui')
-						.html('<p class="center"><button onclick="cont_install(this); return false;">Pickles 2 をインストールする</button></p>')
-					;
-				}
-
-			});
-
-			/**
-			 * Pickles2 クリーンインストール
-			 */
-			function cont_install(btn){
-				$(btn).attr('disabled','disabled');
-				var pj = px.getCurrentProject();
-				window.px.utils.spawn( px.cmd('composer'),
-					[
-						'create-project',
-						'tomk79/pickles2',
-						'./',
-						'dev-master'
-					],
-					{
-						cd: pj.get('path'),
-						success: function(data){
-						} ,
-						error: function(data){
-							alert('ERROR: '+data);
-						} ,
-						complete: function(code){
-							$(btn).removeAttr('disabled');
-							px.subapp('home.html');
-						}
-					}
-				);
-			}
 		</script>
 	</head>
 	<body style="background-color:#eee;">
@@ -133,8 +74,7 @@
 
 
 				<p><button onclick="px.deselectProject(); px.subapp(); return false;">プロジェクト選択へ戻る</button></p>
-				<p><button onclick="if(confirm('このプロジェクトを削除してよろしいですか？')){px.deleteProject( px.getCurrentProject().projectId );} return false;">このプロジェクトを削除</button></p>
-
+				<p><button onclick="if(confirm('このプロジェクトを削除してよろしいですか？')){px.deleteProject( px.getCurrentProject().projectId, function(){px.subapp();} );} return false;">このプロジェクトを削除</button></p>
 			</div>
 		</div>
 	</body>

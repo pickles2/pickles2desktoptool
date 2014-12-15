@@ -92,7 +92,8 @@ new (function($, window){
 	/**
 	 * DBをロードする
 	 */
-	this.load = function(){
+	this.load = function(cb){
+		cb = cb||function(){};
 		_db = require( _path_db );
 		_db.projects = _db.projects||[];
 		_db.projects.sort( function(a, b){
@@ -104,15 +105,18 @@ new (function($, window){
 			}
 			return 0;
 		} );
+		cb();
 		return true;
 	}
 
 	/**
 	 * DBを保存する
 	 */
-	this.save = function(){
+	this.save = function(cb){
+		cb = cb || function(){};
 		var data = JSON.stringify( _db );
 		_fs.writeFileSync( _path_db, data, {"encoding":"utf8","mode":436,"flag":"w"} );
+		cb();
 		return true;
 	}
 
@@ -167,13 +171,27 @@ new (function($, window){
 	}
 
 	/**
+	 * プロジェクト情報を更新する
+	 */
+	this.updateProject = function(projectId, projectInfo){
+		if( typeof(projectId) !== typeof(0) ){
+			return false;
+		}
+		projectInfo = JSON.parse( JSON.stringify( projectInfo ) );
+		_db.projects[projectId] = projectInfo;
+		return true;
+	}
+
+	/**
 	 * プロジェクトを削除する
 	 */
-	this.deleteProject = function(projectId){
+	this.deleteProject = function(projectId, cb){
+		cb = cb || function(){};
 		_db.projects.splice(projectId, 1)
 		this.deselectProject();
-		this.save();
-		this.subapp();
+		this.save(function(){
+			cb();
+		});
 		return true;
 	}
 

@@ -3,3 +3,6 @@
 	overflow:auto;
 	white-space: pre;
 }
+.contents .cont_maintask_ui{
+	padding: 5em 1em;
+}

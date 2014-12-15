@@ -35,37 +35,27 @@ window.contApp = new (function(){
 			function(it, arg){
 				if( !status.pathExists ){
 					// パスの選択しなおしbutton
-					$('.cont_install_ui')
-						.html('')
-						.append( $('<form action="javascript:;" method="get">')
+					$('.cont_maintask_ui')
+						.html( $('#template-reselectProject-path').html() )
+						.find('form')
 							.submit(function(){
 								_this.selectProjectPath( $(this).find('[name=pj_path]').val() );
 								return false;
 							})
-							.append( $('<p class="center">')
-								.append( $('<input type="file" name="pj_path" value="" webkitdirectory>') )
-							)
-							.append( $('<p class="center">')
-								.append( $('<button>')
-									.text( '選択したパスで続ける')
-								)
-							)
-						)
 					;
 				}else if( status.pathExists && !status.composerJsonExists ){
 					// インストールボタン
-					$('.cont_install_ui')
-						.html('')
-						.append( $('<p class="center">')
-							.append( $('<button>')
-								.click(function(){
-									_this.install(this);
-									return false;
-								})
-								.text( 'Pickles 2 をインストールする')
-							)
-						)
+					$('.cont_maintask_ui')
+						.html( $('#template-install-pickles2').html() )
+						.find('button')
+							.click(function(){
+								_this.install(this);
+								return false;
+							})
 					;
+				}else{
+					// ちゃんとインストールできてます
+					$('.cont_maintask_ui').remove();
 				}
 				it.next(arg);
 			}

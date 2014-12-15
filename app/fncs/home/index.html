@@ -31,14 +31,43 @@
 		<link rel="stylesheet" href="./index_files/style.css" type="text/css" />
 		<script src="./index_files/script.js"></script>
 
-		<script>
+		<script type="text/template" id="template-reselectProject-path">
+			<div>
+				<form action="javascript:;" method="get">
+					<p class="center">
+						プロジェクトのルート・ディレクトリが見つかりません。<br />もう一度選択してください。<br />
+					</p>
+					<table class="def" style="width:100%;">
+						<tr>
+							<th>Path <span class="must">必須</span></th>
+							<td><input type="file" name="pj_path" value="" webkitdirectory /></td>
+						</tr>
+					</table>
+					<p class="center">
+						<button>選択したパスで続ける</button>
+					</p>
+				</form>
+			</div>
+		</script>
+		<script type="text/template" id="template-install-pickles2">
+			<p class="center">
+				プロジェクトに Pickles 2 がインストールされていません。<br />
+				次のボタンを押して、インストールしてください。<br />
+			</p>
+			<p class="center">
+				<button>Pickles 2 をインストールする</button>
+			</p>
 		</script>
 	</head>
 	<body style="background-color:#eee;">
 		<div class="contents">
 			<div class="container">
 				<h1 class="tpl_name">...</h1>
+
+				<div class="cont_maintask_ui"></div>
+
 				<div class="unit">
+					<h2>Project Information</h2>
 					<table class="def" style="width:100%; table-layout: fixed;">
 						<colgroup><col width="30%" /><col width="70%" /></colgroup>
 						<tr>
@@ -69,7 +98,6 @@
 					<table class="def tpl_status_table" style="width:100%; table-layout: fixed;">
 						<colgroup><col width="30%" /><col width="70%" /></colgroup>
 					</table>
-					<div class="cont_install_ui"></div>
 				</div><!-- /.unit -->
 
 

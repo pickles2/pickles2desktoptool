@@ -45,11 +45,6 @@ new (function($, window){
 
 	this.server = require('./index_files/px_server_emurator.node.js').init(this,$);
 
-	// var findpath = require('nodewebkit').findpath;
-	// var nwpath = findpath();
-	// console.log(findpath);
-	// alert(nwpath);
-
 
 	/**
 	 * アプリケーションの初期化

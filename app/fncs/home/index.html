@@ -42,33 +42,6 @@
 				$('.tpl_entry_script').text( pj.get('entry_script') );
 				$('.tpl_vcs').text( pj.get('vcs') );
 
-console.log( px.cmd('composer') );
-				px.utils.iterate(
-					[
-						{"title":"PHP version", "cmd": px.cmd('php') + ' -v'},
-						{"title":"PHP path", "cmd": 'which php'},
-						{"title":"composer version", "cmd": px.cmd('php') + ' ' + px.cmd('composer') + ' --version'},
-						{"title":"node version", "cmd": 'node -v'},
-						{"title":"git version", "cmd": 'git --version'},
-						{"title":"User name", "cmd": 'whoami'},
-						{"title":"Current directory", "cmd": 'pwd'}
-					],
-					function(it, data, idx){
-						window.px.utils.exec(data.cmd,
-							function(err,stdout,stderr){
-								$('.tpl_sys_table').append($('<tr>')
-									.append($('<th>').text(data.title))
-									.append($('<td>')
-										.text(stdout)
-										.css({"overflow":"auto","white-space":"pre"})
-									)
-								);
-								it.next();
-							}
-						);
-					}
-				);
-
 				px.utils.iterate(
 					_.keys( status ) ,
 					function(it, data, idx){
@@ -151,19 +124,13 @@ console.log( px.cmd('composer') );
 				</div><!-- /.unit -->
 
 				<div class="unit">
-					<h2>Status</h2>
+					<h2>Project Status</h2>
 					<table class="def tpl_status_table" style="width:100%; table-layout: fixed;">
 						<colgroup><col width="30%" /><col width="70%" /></colgroup>
 					</table>
 					<div class="cont_install_ui"></div>
 				</div><!-- /.unit -->
 
-				<div class="unit">
-					<h2>System info</h2>
-					<table class="def tpl_sys_table" style="width:100%; table-layout: fixed;">
-						<colgroup><col width="30%" /><col width="70%" /></colgroup>
-					</table>
-				</div><!-- /.unit -->
 
 				<p><button onclick="px.deselectProject(); px.subapp(); return false;">プロジェクト選択へ戻る</button></p>
 				<p><button onclick="if(confirm('このプロジェクトを削除してよろしいですか？')){px.deleteProject( px.getCurrentProject().projectId );} return false;">このプロジェクトを削除</button></p>

@@ -100,11 +100,15 @@ window.contApp.ui = new(function(px, contApp){
 	 */
 	function classUiUnit( contDataPath, data ){
 		// console.log(contDataPath);
+		// console.log( data );
 		contDataPath = contDataPath.replace( new RegExp('^\\/*'), '/' );
 		this.contDataPath = contDataPath;
 		this.modTpl = contApp.modTpl.get( data.modId );
+		if( this.modTpl === false ){
+			this.modTpl = contApp.modTpl.get( '_sys/unknown' );
+		}
+		// console.log( this.modTpl );
 		this.fieldList = _.keys( this.modTpl.fields );
-		// console.log(this.modTpl);
 
 		this.fields = {};
 		for( var idx in this.fieldList ){

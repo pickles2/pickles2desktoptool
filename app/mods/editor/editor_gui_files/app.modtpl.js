@@ -4,13 +4,24 @@ window.contApp.modTpl = new(function(px, contApp){
 	var _modTplsIdMap = {};
 
 	/**
+	 * システムテンプレートかどうか判断する
+	 */
+	function isSystemMod( modId ){
+		if( !modId.match(new RegExp('^_sys\\/')) ){
+			return false;
+		}
+		return true;
+	}
+
+	/**
 	 * 初期化
 	 */
 	this.init = function( pathModTpl, cb ){
 		_pathModTpl = pathModTpl;
 
 		var modIdList = [];
-		modIdList.push( '_root' );
+		modIdList.push( '_sys/root' );
+		modIdList.push( '_sys/unknown' );
 
 		px.fs.readdir( _pathModTpl, function(err, data){
 			px.utils.iterate(
@@ -20,6 +31,10 @@ window.contApp.modTpl = new(function(px, contApp){
 						px.utils.iterate(
 							data,
 							function( it2, dirname2, idx2 ){
+								if( !px.utils.isFile( _pathModTpl+'/'+dirname1+'/'+dirname2+'/template.html' ) ){
+									it2.next();//テンプレートが未定義
+									return;
+								}
 								modIdList.push( dirname1+'/'+dirname2 );
 								it2.next();
 							} ,
@@ -57,7 +72,7 @@ window.contApp.modTpl = new(function(px, contApp){
 		var _this = this;
 		this.id = modId;
 		this.path = null;
-		if( modId !== '_root' ){
+		if( !isSystemMod(modId) ){
 			this.path = px.fs.realpathSync(_pathModTpl+'/'+modId+'/');
 		}
 		this.fields = {};
@@ -101,7 +116,8 @@ window.contApp.modTpl = new(function(px, contApp){
 			return rtn;
 		}
 
-		function parseTpl(src){
+		function parseTpl(src, cb){
+			cb = cb||function(){};
 			src = JSON.parse( JSON.stringify( src ) );
 			_this.template = src;
 
@@ -119,13 +135,19 @@ window.contApp.modTpl = new(function(px, contApp){
 			cb();
 		}
 
-		if( modId == '_root' ){
-			parseTpl( '{&{"input":{"type":"module","name":"main"}}&}' );
+		if( modId == '_sys/root' ){
+			parseTpl( '{&{"input":{"type":"module","name":"main"}}&}', cb );
+		}else if( modId == '_sys/unknown' ){
+			parseTpl( '<div style="background:#f00;padding:10px;color:#fff;text-align:center;border:1px solid #fdd;">[ERROR] 未知のモジュールテンプレートです。<!-- .error --></div>', cb );
 		}else if( this.path ){
 			px.fs.readFile( this.path+'/template.html', function( err, buffer ){
+				if( err ){
+					parseTpl( '<div style="background:#f00;padding:10px;color:#fff;text-align:center;border:1px solid #fdd;">[ERROR] モジュールテンプレートの読み込みエラーです。<!-- .error --></div>', cb );
+					return;
+				}
 				var src = buffer.toString();
 				src = JSON.parse( JSON.stringify( src ) );
-				parseTpl( src );
+				parseTpl( src, cb );
 			} );
 		}
 
@@ -136,7 +158,11 @@ window.contApp.modTpl = new(function(px, contApp){
 	 * モジュールを取得
 	 */
 	this.get = function( modId ){
-		return _modTpls[_modTplsIdMap[modId]];
+		var rtn = _modTpls[_modTplsIdMap[modId]];
+		if( typeof( _modTpls[_modTplsIdMap[modId]] ) !== typeof({}) ){
+			rtn = false;
+		}
+		return rtn;
 	}
 
 	/**

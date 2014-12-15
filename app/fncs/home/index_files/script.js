@@ -55,7 +55,9 @@ window.contApp = new (function(){
 					;
 				}else{
 					// ちゃんとインストールできてます
-					$('.cont_maintask_ui').remove();
+					$('.cont_maintask_ui')
+						.html( $('#template-standby').html() )
+					;
 				}
 				it.next(arg);
 			}

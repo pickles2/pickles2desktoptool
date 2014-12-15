@@ -11,8 +11,14 @@ window.contApp = new (function( px ){
 	var _pj = this.pj = px.getCurrentProject();
 
 
+	/**
+	 * 再描画
+	 */
 	this.redraw = function( current ){
-		if( _sitemap === null ){ return; }
+		if( _sitemap === null ){
+			px.message('[ERROR] サイトマップが正常に読み込まれていません。');
+			return;
+		}
 		var $ul = $('<ul data-inset="true">');
 		// $childList.text( JSON.stringify(_sitemap) );
 
@@ -138,6 +144,7 @@ window.contApp = new (function( px ){
 		return this;
 	}
 
+
 	$(function(){
 		$childList = $('.cont_sitemap_childlist');
 
@@ -147,14 +154,15 @@ window.contApp = new (function( px ){
 			_this.redraw();
 		});
 
+		$(window).resize(function(){
+			// エディタのサイズ調整
+			$editor
+				.css({
+					'height':$(window).height()
+				})
+		});
+
 	});
 
-	$(window).resize(function(){
-		// エディタのサイズ調整
-		$editor
-			.css({
-				'height':$(window).height()
-			})
-	});
 
 })( window.parent.px );

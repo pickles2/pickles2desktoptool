@@ -31,12 +31,13 @@ new (function($, window){
 		// {"label":"Reload(dev)", "cond":"always", "cb": function(){window.location.href='index.html?';}} ,
 		{"label":"SELECT PROJ", "cond":"projectSelected", "app":"index.html", "cb": function(){px.deselectProject();px.subapp();}} ,
 		{"label":"HOME", "cond":"pxStandby", "app":"fncs/home/index.html", "cb": function(){px.subapp();}} ,
-		{"label":"Config", "cond":"pxStandby", "app":"fncs/config/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"Sitemap", "cond":"pxStandby", "app":"fncs/sitemap/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"Pages", "cond":"pxStandby", "app":"fncs/pages/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"Preview", "cond":"pxStandby", "app":"fncs/preview/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"clearcache", "cond":"pxStandby", "app":"fncs/clearcache/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"Sitemap", "cond":"pxStandby", "app":"fncs/sitemap/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"Contents", "cond":"pxStandby", "app":"fncs/pages/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"Theme", "cond":"pxStandby", "app":"fncs/theme/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"publish", "cond":"pxStandby", "app":"fncs/publish/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"clearcache", "cond":"pxStandby", "app":"fncs/clearcache/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"Config", "cond":"pxStandby", "app":"fncs/config/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"composer", "cond":"pxStandby", "app":"fncs/composer/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"git", "cond":"pxStandby", "app":"fncs/git/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"Finderで開く", "cond":"pxStandby", "app":null, "cb": function(){px.getCurrentProject().open();}}
@@ -374,7 +375,7 @@ new (function($, window){
 		px.save();
 	});
 	process.on( 'uncaughtException', function(e){
-		alert('ERROR: Uncaught Exception');
+		// alert('ERROR: Uncaught Exception');
 		// console.log(e);
 	} );
 	$(window).on( 'resize', function(e){

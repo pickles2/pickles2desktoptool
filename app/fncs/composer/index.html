@@ -43,7 +43,7 @@
 
 			function cont_update_conposer(btn){
 				$(btn).attr('disabled', 'disabled');
-				window.px.utils.spawn('composer',
+				window.px.utils.spawn( px.cmd('composer'),
 					['self-update'],
 					{
 						success: function(data){
@@ -69,7 +69,7 @@
 
 			function cont_update_proj(btn){
 				$(btn).attr('disabled', 'disabled');
-				window.px.utils.spawn('composer',
+				window.px.utils.spawn( px.cmd('composer'),
 					['update'],
 					{
 						cd: pj.get('path'),
@@ -96,7 +96,7 @@
 
 			function cont_install_proj(btn){
 				$(btn).attr('disabled', 'disabled');
-				window.px.utils.spawn('composer',
+				window.px.utils.spawn( px.cmd('composer'),
 					['install'],
 					{
 						cd: pj.get('path'),

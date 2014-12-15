@@ -42,13 +42,16 @@
 				$('.tpl_entry_script').text( pj.get('entry_script') );
 				$('.tpl_vcs').text( pj.get('vcs') );
 
+console.log( px.cmd('composer') );
 				px.utils.iterate(
 					[
-						{"title":"PHP version", "cmd": 'php -v'},
+						{"title":"PHP version", "cmd": px.cmd('php') + ' -v'},
 						{"title":"PHP path", "cmd": 'which php'},
-						{"title":"composer version", "cmd": 'composer --version'},
+						{"title":"composer version", "cmd": px.cmd('php') + ' ' + px.cmd('composer') + ' --version'},
 						{"title":"node version", "cmd": 'node -v'},
-						{"title":"git version", "cmd": 'git --version'}
+						{"title":"git version", "cmd": 'git --version'},
+						{"title":"User name", "cmd": 'whoami'},
+						{"title":"Current directory", "cmd": 'pwd'}
 					],
 					function(it, data, idx){
 						window.px.utils.exec(data.cmd,
@@ -94,7 +97,7 @@
 			function cont_install(btn){
 				$(btn).attr('disabled','disabled');
 				var pj = px.getCurrentProject();
-				window.px.utils.spawn('composer',
+				window.px.utils.spawn( px.cmd('composer'),
 					[
 						'create-project',
 						'tomk79/pickles2',

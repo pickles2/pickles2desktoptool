@@ -15,7 +15,15 @@ new (function($, window){
 		_fs.mkdirSync( _path_data_dir );
 	}
 	if( !_fs.existsSync( _path_db ) ){
-		_fs.writeFileSync( _path_db, JSON.stringify( {"projects":[]} ), {"encoding":"utf8","mode":436,"flag":"w"} );
+		_fs.writeFileSync( _path_db,
+			JSON.stringify(
+				{
+					"commands":{} ,
+					"projects":[]
+				}
+			),
+			{"encoding":"utf8","mode":436,"flag":"w"}
+		);
 	}
 	_path_db = _fs.realpathSync( _path_db );
 	var $header, $footer, $main, $contents;
@@ -42,19 +50,49 @@ new (function($, window){
 	// console.log(findpath);
 	// alert(nwpath);
 
-	(function(){
-		// node-webkit の標準的なメニューを出す
-		var gui = require('nw.gui');
-		win = gui.Window.get();
-		var nativeMenuBar = new gui.Menu({ type: "menubar" });
-		try {
-			nativeMenuBar.createMacBuiltin("Pickles 2 Desktop Tool");
-			win.menu = nativeMenuBar;
-		} catch (ex) {
-			console.log(ex.message);
-		}
-	})();
 
+	/**
+	 * アプリケーションの初期化
+	 */
+	function init(cb){
+		(function(){
+			// node-webkit の標準的なメニューを出す
+			var gui = require('nw.gui');
+			win = gui.Window.get();
+			var nativeMenuBar = new gui.Menu({ type: "menubar" });
+			try {
+				nativeMenuBar.createMacBuiltin("Pickles 2 Desktop Tool");
+				win.menu = nativeMenuBar;
+			} catch (ex) {
+				console.log(ex.message);
+			}
+		})();
+
+		_db = _db||{};
+		_db.commands = _db.commands||{};
+		_db.projects = _db.projects||[];
+
+		if( !_utils.isDirectory( _path_data_dir+'commands/' ) ){
+			_fs.mkdirSync( _path_data_dir+'commands/' );
+		}
+		if( !_utils.isDirectory( _path_data_dir+'commands/composer/' ) ){
+			_fs.mkdirSync( _path_data_dir+'commands/composer/' );
+		}
+		if( !_utils.isFile( _path_data_dir+'commands/composer/composer.phar' ) ){
+			px.utils.exec(
+				'php -r "readfile(\'https://getcomposer.org/installer\');" | php' ,
+				function(){
+					_db.commands.composer = _path_data_dir+'commands/composer/composer.phar';
+					px.save();
+					cb();
+				},
+				{cd: _path_data_dir+'commands/composer/'}
+			);
+		}else{
+			cb();
+		}
+		return;
+	}
 
 	/**
 	 * DBをロードする
@@ -175,6 +213,19 @@ new (function($, window){
 			return null;
 		}
 		return _pj;
+	}
+
+	/**
+	 * コマンドのパスを取得する
+	 */
+	this.cmd = function(cmd){
+		if( !_db.commands ){
+			return cmd;
+		}
+		if( !_db.commands[cmd] ){
+			return cmd;
+		}
+		return _db.commands[cmd];
 	}
 
 	/**
@@ -311,7 +362,7 @@ new (function($, window){
 	});
 	process.on( 'uncaughtException', function(e){
 		alert('ERROR: Uncaught Exception');
-		console.log(e);
+		// console.log(e);
 	} );
 	$(window).on( 'resize', function(e){
 		layoutReset();
@@ -324,16 +375,29 @@ new (function($, window){
 
 
 	$(function(){
-		// アプリケーション開始
-		px.load();
+		px.utils.iterateFnc([
+			function(it, arg){
+				// init
+				init(function(){
+					it.next(arg);
+				});
+			} ,
+			function(it, arg){
+				// アプリケーション開始
+				px.load();
 
-		// DOMスキャン
-		$header   = $('.theme_header');
-		$contents = $('.contents');
-		$footer   = $('.theme_footer');
+				// DOMスキャン
+				$header   = $('.theme_header');
+				$contents = $('.contents');
+				$footer   = $('.theme_footer');
 
-		layoutReset();
-		px.subapp();
+				layoutReset();
+				px.subapp();
+
+				it.next(arg);
+			}
+		]).start({});
+
 	});
 
 	return this;

@@ -36,9 +36,17 @@
 				$(btn).attr('disabled', 'disabled');
 				var pj = px.getCurrentProject();
 				$('.cont_console').text('');
-				pj.execPx2(
-					'/?PX=publish.run',
+				var $msg = $('<div>');
+				px.spawnDialog(
+					'php',
+					[
+						pj.get('path') + '/' + pj.get('entry_script') ,
+						'/?PX=publish.run'
+					] ,
 					{
+						cd: pj.get('path'),
+						title: 'パブリッシュ',
+						description: $msg.text('スタティックHTMLをパブリッシュしています。'),
 						success: function(data){
 							$('.cont_console').text(
 								$('.cont_console').text() + data
@@ -49,15 +57,37 @@
 								$('.cont_console').text() + data
 							);
 						} ,
-						complete: function(code){
-							// $('.cont_console').text(
-							// 	$('.cont_console').text() + code
-							// );
+						cmdComplete: function(code){
+							$msg.text( 'パブリッシュを完了しました。' );
+						} ,
+						complete: function(dataFin){
 							$(btn).removeAttr('disabled');
 							px.message( 'パブリッシュを完了しました。' );
 						}
 					}
 				);
+				// pj.execPx2(
+				// 	'/?PX=publish.run',
+				// 	{
+				// 		success: function(data){
+				// 			$('.cont_console').text(
+				// 				$('.cont_console').text() + data
+				// 			);
+				// 		} ,
+				// 		error: function(data){
+				// 			$('.cont_console').text(
+				// 				$('.cont_console').text() + data
+				// 			);
+				// 		} ,
+				// 		complete: function(code){
+				// 			// $('.cont_console').text(
+				// 			// 	$('.cont_console').text() + code
+				// 			// );
+				// 			$(btn).removeAttr('disabled');
+				// 			px.message( 'パブリッシュを完了しました。' );
+				// 		}
+				// 	}
+				// );
 			}
 
 			function cont_open_publish_dir(btn){

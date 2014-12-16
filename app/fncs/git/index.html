@@ -65,29 +65,42 @@
 				$(btn).attr('disabled', 'disabled');
 				var pj = px.getCurrentProject();
 				$('.cont_console').text('');
-				window.px.utils.spawn('git',
-					['status'],
+				px.execDialog(
+					'git status',
 					{
 						cd: pj.get('path'),
-						success: function(data){
-							$('.cont_console').text(
-								$('.cont_console').text() + data
-							);
-						} ,
-						error: function(data){
-							$('.cont_console').text(
-								$('.cont_console').text() + data
-							);
-						} ,
-						complete: function(code){
-							// $('.cont_console').text(
-							// 	$('.cont_console').text() + code
-							// );
+						title: '$ git status',
+						description: $('<p>').text('gitのステータス状態を表示します。'),
+						complete: function(stdout){
+							$('.cont_console').text( stdout );
 							$(btn).removeAttr('disabled');
 							px.message( 'gitのステータス表示を完了しました。' );
 						}
 					}
 				);
+				// window.px.utils.spawn('git',
+				// 	['status'],
+				// 	{
+				// 		cd: pj.get('path'),
+				// 		success: function(data){
+				// 			$('.cont_console').text(
+				// 				$('.cont_console').text() + data
+				// 			);
+				// 		} ,
+				// 		error: function(data){
+				// 			$('.cont_console').text(
+				// 				$('.cont_console').text() + data
+				// 			);
+				// 		} ,
+				// 		complete: function(code){
+				// 			// $('.cont_console').text(
+				// 			// 	$('.cont_console').text() + code
+				// 			// );
+				// 			$(btn).removeAttr('disabled');
+				// 			px.message( 'gitのステータス表示を完了しました。' );
+				// 		}
+				// 	}
+				// );
 			}
 
 		</script>

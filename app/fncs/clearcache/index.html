@@ -36,9 +36,17 @@
 				$(btn).attr('disabled', 'disabled');
 				var pj = px.getCurrentProject();
 				$('.cont_console').text('');
-				pj.execPx2(
-					'/?PX=clearcache',
+				var $msg = $('<div>');
+				px.spawnDialog(
+					'php',
+					[
+						pj.get('path') + '/' + pj.get('entry_script') ,
+						'/?PX=clearcache'
+					] ,
 					{
+						cd: pj.get('path'),
+						title: 'キャッシュをクリア',
+						description: $msg.text('Pickles のキャッシュをクリアしています。'),
 						success: function(data){
 							$('.cont_console').text(
 								$('.cont_console').text() + data
@@ -49,15 +57,36 @@
 								$('.cont_console').text() + data
 							);
 						} ,
-						complete: function(code){
-							// $('.cont_console').text(
-							// 	$('.cont_console').text() + code
-							// );
+						cmdComplete: function(code){
+							$msg.text( 'Pickles のキャッシュをクリアしました。' );
+						} ,
+						complete: function(dataFin){
 							$(btn).removeAttr('disabled');
-							px.message( 'キャッシュを削除しました。' );
+							px.message( 'キャッシュをクリアしました。' );
 						}
 					}
-				);
+				);				// pj.execPx2(
+				// 	'/?PX=clearcache',
+				// 	{
+				// 		success: function(data){
+				// 			$('.cont_console').text(
+				// 				$('.cont_console').text() + data
+				// 			);
+				// 		} ,
+				// 		error: function(data){
+				// 			$('.cont_console').text(
+				// 				$('.cont_console').text() + data
+				// 			);
+				// 		} ,
+				// 		complete: function(code){
+				// 			// $('.cont_console').text(
+				// 			// 	$('.cont_console').text() + code
+				// 			// );
+				// 			$(btn).removeAttr('disabled');
+				// 			px.message( 'キャッシュを削除しました。' );
+				// 		}
+				// 	}
+				// );
 			}
 
 		</script>

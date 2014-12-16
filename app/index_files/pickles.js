@@ -26,7 +26,7 @@ new (function($, window){
 		);
 	}
 	_path_db = _fs.realpathSync( _path_db );
-	var $header, $footer, $main, $contents;
+	var $header, $footer, $main, $contents, $dialog;
 	var _menu = [
 		// {"label":"Reload(dev)", "cond":"always", "cb": function(){window.location.href='index.html?';}} ,
 		{"label":"SELECT PROJ", "cond":"projectSelected", "app":"index.html", "cb": function(){px.deselectProject();px.subapp();}} ,
@@ -366,7 +366,195 @@ new (function($, window){
 				'height': $contents.height() - 10
 			})
 		;
+		$dialog
+			.css({
+				'width': $(window).width(),
+				'height': $(window).height()
+			})
+		;
 	}
+
+	/**
+	 * ダイアログを表示する
+	 */
+	this.dialog = function(opt){
+		opt = opt||{};
+		opt.title = opt.title||'command:';
+		opt.description = opt.description||'';
+		opt.buttons = opt.buttons||[
+			$('<button>').text('OK').click(function(){
+				$dialog.remove();
+			})
+		];
+
+		var $dialogButtons = $('<div class="dialog-buttons center">').append(opt.buttons);
+
+		$dialog = $('<div>')
+			.addClass('contents')
+			.css({
+				'position':'fixed',
+				'left':0, 'top':0,
+				'width': $(window).width(),
+				'height': $(window).height(),
+				'overflow':'hidden',
+				'z-index':10000
+			})
+			.append( $('<div>')
+				.css({
+					'position':'fixed',
+					'left':0, 'top':0,
+					'width':'100%', 'height':'100%',
+					'overflow':'hidden',
+					'background':'#333',
+					'opacity':0.3
+				})
+			)
+			.append( $('<div>')
+				.css({
+					'position':'absolute',
+					'left':0, 'top':0,
+					'padding-top':'4em',
+					'overflow':'auto',
+					'width':"100%",
+					'height':"100%"
+				})
+				.append( $('<div>')
+					.addClass('dialog_box')
+					.css({
+						'width':'80%',
+						'margin':'3em auto'
+					})
+					.append( $('<h1>')
+						.text(opt.title)
+					)
+					.append( $('<div>')
+						.append(opt.body)
+					)
+					.append( $dialogButtons )
+				)
+			)
+		;
+
+		$('body').append($dialog);
+		return $dialog;
+	}//dialog()
+
+	/**
+	 * ダイアログ上でコマンドを流す
+	 */
+	this.execDialog = function(cmd, opt){
+		var $dialog;
+		var output = '';
+		var dlgOpt = {};
+
+		opt = opt||{};
+		opt.title = opt.title||'command:';
+		opt.description = opt.description||'';
+		opt.complete = opt.complete||function(){};
+
+		var $pre = $('<pre>')
+			.css({
+				'height':'12em',
+				'overflow':'auto'
+			})
+			.text('実行中...')
+		;
+
+		dlgOpt = {};
+		dlgOpt.title = opt.title;
+		dlgOpt.body = $('<div>')
+			.append(opt.description)
+			.append( $pre )
+		;
+		dlgOpt.buttons = [
+			$('<button>')
+				.text('OK')
+				.click(function(){
+					opt.complete( output );
+					$dialog.remove();
+				})
+		];
+
+		$dialog = this.dialog( dlgOpt );
+
+		output = '';
+		this.utils.exec(
+			cmd,
+			function(error, stdout, stderr){
+				output = stdout;
+				$pre.text(stdout);
+				dlgOpt.buttons[0].removeAttr('disabled');
+			} ,
+			{
+				cd: opt.cd
+			}
+		);
+		return this;
+	}//execDialog()
+
+	/**
+	 * ダイアログ上でコマンドを流す(spawn)
+	 */
+	this.spawnDialog = function(cmd, cliOpts, opt){
+		var $dialog;
+		var stdout = '';
+
+		opt = opt||{};
+		opt.title = opt.title||'command:';
+		opt.description = opt.description||$('<div>');
+		opt.success = opt.success||function(){};
+		opt.error = opt.error||function(){};
+		opt.cmdComplete = opt.cmdComplete||function(){};
+		opt.complete = opt.complete||function(){};
+
+		var $pre = $('<pre>')
+			.css({
+				'height':'12em',
+				'overflow':'auto'
+			})
+			.text('実行中...')
+		;
+
+		var dlgOpt = {};
+		dlgOpt.title = opt.title;
+		dlgOpt.body = $('<div>')
+			.append( opt.description )
+			.append( $pre )
+		;
+		dlgOpt.buttons = [
+			$('<button>')
+				.text('OK')
+				.click(function(){
+					opt.complete(stdout);
+					$dialog.remove();
+				})
+				.attr({'disabled':'disabled'})
+		];
+
+		$dialog = this.dialog( dlgOpt );
+
+		stdout = '';
+		this.utils.spawn(
+			cmd,
+			cliOpts,
+			{
+				cd: opt.cd,
+				success: function(data){
+					stdout += data;
+					$pre.text(stdout);
+					opt.success(data);
+				} ,
+				error: function(data){
+					opt.error(data);
+				} ,
+				complete: function(code){
+					opt.cmdComplete(code);
+					dlgOpt.buttons[0].removeAttr('disabled');
+				}
+			}
+		);
+		return this;
+	}//spawnDialog()
 
 	/**
 	 * イベントセット
@@ -404,6 +592,7 @@ new (function($, window){
 				$header   = $('.theme_header');
 				$contents = $('.contents');
 				$footer   = $('.theme_footer');
+				$dialog   = $('<div>');
 
 				layoutReset();
 				px.subapp();

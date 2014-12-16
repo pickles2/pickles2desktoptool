@@ -86,8 +86,9 @@ window.contApp = new (function(){
 	 */
 	this.install = function(btn){
 		$(btn).attr('disabled','disabled');
-
-		px.utils.spawn( px.cmd('composer'),
+		var $msg = $('<div>');
+		px.spawnDialog(
+			px.cmd('composer'),
 			[
 				'create-project',
 				'tomk79/pickles2',
@@ -96,12 +97,17 @@ window.contApp = new (function(){
 			],
 			{
 				cd: pj.get('path'),
+				title: 'Pickles のセットアップ',
+				description: $msg.text('Pickles をセットアップしています。この処理はしばらく時間がかかります。'),
 				success: function(data){
 				} ,
 				error: function(data){
 					alert('ERROR: '+data);
 				} ,
-				complete: function(code){
+				cmdComplete: function(code){
+					$msg.text('Pickles のセットアップが完了しました。');
+				},
+				complete: function(dataFin){
 					$(btn).removeAttr('disabled');
 					px.subapp();
 				}

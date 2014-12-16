@@ -109,7 +109,11 @@ window.contApp = new (function(){
 				},
 				complete: function(dataFin){
 					$(btn).removeAttr('disabled');
-					px.subapp();
+					var currentPjId = pj.projectId;
+					px.deselectProject();
+					px.selectProject( currentPjId, function(){
+						px.subapp();
+					} );
 				}
 			}
 		);

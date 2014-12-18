@@ -383,7 +383,7 @@ new (function($, window){
 		opt.description = opt.description||'';
 		opt.buttons = opt.buttons||[
 			$('<button>').text('OK').click(function(){
-				$dialog.remove();
+				px.closeDialog();
 			})
 		];
 
@@ -435,9 +435,28 @@ new (function($, window){
 			)
 		;
 
-		$('body').append($dialog);
+		$('body')
+			.append($dialog)
+		;
+		$('body .theme_wrap')
+			.css({
+				'-webkit-filter': 'blur(3px)'
+			}
+		);
 		return $dialog;
 	}//dialog()
+	/**
+	 * ダイアログを表示する
+	 */
+	this.closeDialog = function(){
+		$dialog.remove();
+		$('body .theme_wrap')
+			.css({
+				'-webkit-filter': 'blur(0)'
+			}
+		);
+		return $dialog;
+	}//closeDialog()
 
 	/**
 	 * ダイアログ上でコマンドを流す
@@ -471,7 +490,8 @@ new (function($, window){
 				.text('OK')
 				.click(function(){
 					opt.complete( output );
-					$dialog.remove();
+					px.closeDialog();
+					// $dialog.remove();
 				})
 		];
 
@@ -499,6 +519,7 @@ new (function($, window){
 		var $dialog;
 		var stdout = '';
 
+		cmd = this.cmd(cmd);
 		opt = opt||{};
 		opt.title = opt.title||'command:';
 		opt.description = opt.description||$('<div>');
@@ -526,7 +547,8 @@ new (function($, window){
 				.text('OK')
 				.click(function(){
 					opt.complete(stdout);
-					$dialog.remove();
+					px.closeDialog();
+					// $dialog.remove();
 				})
 				.attr({'disabled':'disabled'})
 		];

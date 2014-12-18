@@ -32,7 +32,10 @@ window.contApp.contData = new(function(px, contApp){
 				_contentsData = {};
 			}
 			_contentsData.bowl = _contentsData.bowl||{};
-			_contentsData.bowl["main"] = _contentsData.bowl["main"]||[];
+			_contentsData.bowl.main = _contentsData.bowl.main||{
+				'modId':'_sys/root',
+				'fields':{}
+			};
 
 			cb();
 		});

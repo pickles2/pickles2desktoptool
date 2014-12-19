@@ -1,4 +1,4 @@
-window.contApp.contData = new(function(px, contApp){
+window.contApp.instance = new(function(px, contApp){
 	var _contentsData;
 	var _dataJsonPath;
 

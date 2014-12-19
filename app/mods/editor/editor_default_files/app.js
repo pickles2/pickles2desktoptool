@@ -106,7 +106,7 @@ window.contApp = new (function( px ){
 					'width':'100%'
 				})
 				.bind('load', function(){
-					// ↓これで、遷移後のURLがとれる。
+					// ↓ UTODO: これで、遷移後のURLがとれる。
 					console.log( $html.find('iframe.cont_preview')[0].contentWindow.location.href );
 				})
 		;

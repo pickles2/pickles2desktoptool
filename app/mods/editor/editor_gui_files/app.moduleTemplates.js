@@ -1,4 +1,4 @@
-window.contApp.modTpl = new(function(px, contApp){
+window.contApp.moduleTemplates = new(function(px, contApp){
 	var _pathModTpl;
 	var _modTpls = [];
 	var _modTplsIdMap = {};

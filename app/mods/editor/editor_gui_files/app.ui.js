@@ -23,7 +23,7 @@ window.contApp.ui = new(function(px, contApp){
 			.append('<ul>')
 		;
 		var li = d3.select('.cont_modulelist ul').selectAll('li');
-		var update = li.data( contApp.modTpl.getAll() );
+		var update = li.data( contApp.moduleTemplates.getAll() );
 		update
 			.text(function(d, i){
 				return d.id;
@@ -103,17 +103,17 @@ window.contApp.ui = new(function(px, contApp){
 		// console.log( data );
 		instancePath = instancePath.replace( new RegExp('^\\/*'), '/' );
 		this.instancePath = instancePath;
-		this.modTpl = contApp.modTpl.get( data.modId );
-		if( this.modTpl === false ){
-			this.modTpl = contApp.modTpl.get( '_sys/unknown' );
+		this.moduleTemplates = contApp.moduleTemplates.get( data.modId );
+		if( this.moduleTemplates === false ){
+			this.moduleTemplates = contApp.moduleTemplates.get( '_sys/unknown' );
 		}
-		// console.log( this.modTpl );
-		this.fieldList = _.keys( this.modTpl.fields );
+		// console.log( this.moduleTemplates );
+		this.fieldList = _.keys( this.moduleTemplates.fields );
 
 		this.fields = {};
 		for( var idx in this.fieldList ){
 			var fieldName = this.fieldList[idx];
-			switch( this.modTpl.fields[fieldName].type ){
+			switch( this.moduleTemplates.fields[fieldName].type ){
 				case 'markdown':
 					this.fields[fieldName] = data.fields[fieldName];
 					break;
@@ -140,7 +140,7 @@ window.contApp.ui = new(function(px, contApp){
 			var fieldData = {};
 			for( var idx in this.fieldList ){
 				var fieldName = this.fieldList[idx];
-				switch( this.modTpl.fields[fieldName].type ){
+				switch( this.moduleTemplates.fields[fieldName].type ){
 					case 'markdown':
 						fieldData[fieldName] = this.fields[fieldName];
 						if( mode == 'canvas' && !fieldData[fieldName].length ){
@@ -186,7 +186,7 @@ window.contApp.ui = new(function(px, contApp){
 					'margin-top':5,
 					'margin-bottom':5,
 				})
-				.append( this.modTpl.bind(fieldData) )
+				.append( this.moduleTemplates.bind(fieldData) )
 			;
 			// console.log(rtn);
 			if( mode == 'finalize' ){
@@ -276,7 +276,7 @@ window.contApp.ui = new(function(px, contApp){
 
 			for( var idx in this.fieldList ){
 				var fieldName = this.fieldList[idx];
-				switch( this.modTpl.fields[fieldName].type ){
+				switch( this.moduleTemplates.fields[fieldName].type ){
 					case 'module':
 						for( var idx2 in this.fields[fieldName] ){
 							this.fields[fieldName][idx2].drawCtrlPanels( $content );
@@ -369,7 +369,7 @@ window.contApp.ui = new(function(px, contApp){
 		// px.message( '開発中: このモジュールを選択して、編集できるようになる予定です。' );
 		// px.message( instancePath );
 		var data = contApp.contentsSourceData.get( instancePath );
-		var modTpl = contApp.modTpl.get( data.modId );
+		var modTpl = contApp.moduleTemplates.get( data.modId );
 
 		if( $editWindow ){ $editWindow.remove(); }
 		$editWindow = $('<div>')

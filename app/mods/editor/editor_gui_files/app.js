@@ -16,7 +16,7 @@ window.contApp = new (function( px ){
 
 		cb = cb || function(){};
 
-		_this.instance.save( function(){
+		_this.contentsSourceData.save( function(){
 			px.message( 'データファイルを保存しました。' );
 
 			var contPath = _pj.findPageContent( _param.page_path );
@@ -55,7 +55,7 @@ window.contApp = new (function( px ){
 				var pathInfo = px.utils.parsePath(contPath);
 				var dataJsonPath = _pj.get('path')+'/'+pathInfo.dirname+'/'+pathInfo.basenameExtless+'_files/data.ignore.json';
 
-				_this.instance.init( realpath, dataJsonPath, function(){
+				_this.contentsSourceData.init( realpath, dataJsonPath, function(){
 					it.next();
 				} );
 			} ,

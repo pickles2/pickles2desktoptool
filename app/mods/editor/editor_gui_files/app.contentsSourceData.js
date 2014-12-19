@@ -1,20 +1,21 @@
-window.contApp.instance = new(function(px, contApp){
-	var _contentsData;
+window.contApp.contentsSourceData = new(function(px, contApp){
+	var _contentsSourceData;
+	var _contentsRealPath;
 	var _dataJsonPath;
 
 	/**
 	 * 初期化
 	 */
-	this.init = function( contentsDataPath, dataJsonPath, cb ){
-		_contentsDataPath = contentsDataPath;
+	this.init = function( contentsRealPath, dataJsonPath, cb ){
+		_contentsRealPath = contentsRealPath;
 		_dataJsonPath = dataJsonPath;
 
-		if( !px.fs.existsSync( contentsDataPath ) ){
+		if( !px.fs.existsSync( contentsRealPath ) ){
 			px.message('コンテンツファイルが存在しません。');
 			window.parent.contApp.closeEditor();
 			return this;
 		}
-		contentsDataPath = px.fs.realpathSync( contentsDataPath );
+		contentsRealPath = px.fs.realpathSync( contentsRealPath );
 
 		if( !px.fs.existsSync( dataJsonPath ) ){
 			px.message('データファイルが存在しません。');
@@ -26,13 +27,13 @@ window.contApp.instance = new(function(px, contApp){
 		px.fs.readFile( dataJsonPath, function(err, data){
 
 			// コンテンツデータをロード
-			_contentsData = JSON.parse( data );
-			if( typeof(_contentsData) !== typeof({}) ){
+			_contentsSourceData = JSON.parse( data );
+			if( typeof(_contentsSourceData) !== typeof({}) ){
 				px.message( 'データが破損しています。' );
-				_contentsData = {};
+				_contentsSourceData = {};
 			}
-			_contentsData.bowl = _contentsData.bowl||{};
-			_contentsData.bowl.main = _contentsData.bowl.main||{
+			_contentsSourceData.bowl = _contentsSourceData.bowl||{};
+			_contentsSourceData.bowl.main = _contentsSourceData.bowl.main||{
 				'modId':'_sys/root',
 				'fields':{}
 			};
@@ -47,7 +48,7 @@ window.contApp.instance = new(function(px, contApp){
 	 * データを取得する
 	 */
 	this.get = function( containerPath, data ){
-		data = data || _contentsData;
+		data = data || _contentsSourceData;
 
 		var aryPath = this.parseElementPath( containerPath );
 		if( !aryPath.length ){
@@ -182,12 +183,12 @@ window.contApp.instance = new(function(px, contApp){
 
 		}
 
-		set_r( containerPath, _contentsData, newData );
+		set_r( containerPath, _contentsSourceData, newData );
 
 		cb();
 
 		// console.log('done...');
-		// console.log(_contentsData);
+		// console.log(_contentsSourceData);
 		return this;
 	}// addElement()
 
@@ -253,12 +254,12 @@ window.contApp.instance = new(function(px, contApp){
 
 		}
 
-		set_r( containerPath, _contentsData, newData );
+		set_r( containerPath, _contentsSourceData, newData );
 
 		cb();
 
 		// console.log('done...');
-		// console.log(_contentsData);
+		// console.log(_contentsSourceData);
 		return this;
 	}// addElement()
 
@@ -383,7 +384,7 @@ window.contApp.instance = new(function(px, contApp){
 
 		}
 
-		remove_r( containerPath, _contentsData );
+		remove_r( containerPath, _contentsSourceData );
 
 		cb();
 
@@ -412,10 +413,10 @@ window.contApp.instance = new(function(px, contApp){
 	 */
 	this.getBowlData = function( bowlName ){
 		bowlName = bowlName||'main';
-		if( !_contentsData.bowl[bowlName] ){
+		if( !_contentsSourceData.bowl[bowlName] ){
 			return false;
 		}
-		return _contentsData.bowl[bowlName];
+		return _contentsSourceData.bowl[bowlName];
 	}
 
 	/**
@@ -423,7 +424,7 @@ window.contApp.instance = new(function(px, contApp){
 	 */
 	this.setBowlData = function( bowlName, data ){
 		bowlName = bowlName||'main';
-		_contentsData.bowl[bowlName] = data;
+		_contentsSourceData.bowl[bowlName] = data;
 		return;
 	}
 
@@ -432,7 +433,7 @@ window.contApp.instance = new(function(px, contApp){
 	 */
 	this.save = function(cb){
 		cb = cb||function(){};
-		px.fs.writeFile( _dataJsonPath, JSON.stringify(_contentsData), {encoding:'utf8'}, function(err){
+		px.fs.writeFile( _dataJsonPath, JSON.stringify(_contentsSourceData), {encoding:'utf8'}, function(err){
 			cb( !err );
 		} );
 		return this;

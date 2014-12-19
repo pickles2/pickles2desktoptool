@@ -81,7 +81,7 @@ window.contApp.ui = new(function(px, contApp){
 
 	/**
 	 * プレビューのロード完了イベント
-	 * contApp.instance のデータをもとに、コンテンツと編集ツール描画のリセットも行います。
+	 * contApp.contentsSourceData のデータをもとに、コンテンツと編集ツール描画のリセットも行います。
 	 */
 	this.onPreviewLoad = function(){
 		// alert('onPreviewLoad');
@@ -239,12 +239,12 @@ window.contApp.ui = new(function(px, contApp){
 					var moveFrom = event.dataTransfer.getData("data-guieditor-cont-data-path");
 					// px.message( 'modId "'+modId+'" が "'+method+'" のためにドロップされました。' );
 					if( method == 'add' ){
-						contApp.instance.addElement( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
+						contApp.contentsSourceData.addElement( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
 							px.message('要素を追加しました。');
 							contApp.ui.resizeEvent();
 						} );
 					}else if( method == 'moveTo' ){
-						contApp.instance.moveElementTo( moveFrom, $(this).attr('data-guieditor-cont-data-path'), function(){
+						contApp.contentsSourceData.moveElementTo( moveFrom, $(this).attr('data-guieditor-cont-data-path'), function(){
 							// px.message('要素を移動しました。');
 							contApp.ui.resizeEvent();
 						} );
@@ -315,7 +315,7 @@ window.contApp.ui = new(function(px, contApp){
 								var method = event.dataTransfer.getData("method");
 								if( method === 'moveTo' ){
 									var moveFrom = event.dataTransfer.getData("data-guieditor-cont-data-path");
-									contApp.instance.moveElementTo( moveFrom, $(this).attr('data-guieditor-cont-data-path'), function(){
+									contApp.contentsSourceData.moveElementTo( moveFrom, $(this).attr('data-guieditor-cont-data-path'), function(){
 										// px.message('要素を移動しました。');
 										contApp.ui.resizeEvent();
 									} );
@@ -326,7 +326,7 @@ window.contApp.ui = new(function(px, contApp){
 									return;
 								}
 								var modId = event.dataTransfer.getData("modId");
-								contApp.instance.addElement( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
+								contApp.contentsSourceData.addElement( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
 									px.message('要素を追加しました。');
 									contApp.ui.resizeEvent();
 								} );
@@ -368,7 +368,7 @@ window.contApp.ui = new(function(px, contApp){
 	this.openEditWindow = function( instancePath ){
 		// px.message( '開発中: このモジュールを選択して、編集できるようになる予定です。' );
 		// px.message( instancePath );
-		var data = contApp.instance.get( instancePath );
+		var data = contApp.contentsSourceData.get( instancePath );
 		var modTpl = contApp.modTpl.get( data.modId );
 
 		if( $editWindow ){ $editWindow.remove(); }
@@ -427,7 +427,7 @@ window.contApp.ui = new(function(px, contApp){
 		$editWindow.find('form .cont_tpl_module_editor-remove')
 			.attr({'data-guieditor-cont-data-path':instancePath})
 			.click(function(){
-				contApp.instance.removeElement( $(this).attr('data-guieditor-cont-data-path') );
+				contApp.contentsSourceData.removeElement( $(this).attr('data-guieditor-cont-data-path') );
 				delete data;
 				$editWindow.remove();
 				_this.resizeEvent();
@@ -499,7 +499,7 @@ window.contApp.ui = new(function(px, contApp){
 		$previewDoc.find('.contents').each(function(){
 			$(this).html('');
 			var id = $(this).attr('id')||'main';
-			var data = contApp.instance.getBowlData( id );
+			var data = contApp.contentsSourceData.getBowlData( id );
 
 			dataViewTree[id] = new classUiUnit( '/bowl.main', data );
 			$(this).html( dataViewTree[id].bind( 'canvas' ) );

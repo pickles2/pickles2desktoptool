@@ -439,10 +439,9 @@ new (function($, window){
 			.append($dialog)
 		;
 		$('body .theme_wrap')
-			.css({
-				'-webkit-filter': 'blur(3px)'
-			}
-		);
+			.addClass('filter')
+			.addClass('filter-blur')
+		;
 		return $dialog;
 	}//dialog()
 	/**
@@ -451,10 +450,8 @@ new (function($, window){
 	this.closeDialog = function(){
 		$dialog.remove();
 		$('body .theme_wrap')
-			.css({
-				'-webkit-filter': 'blur(0)'
-			}
-		);
+			.removeClass('filter-blur')
+		;
 		return $dialog;
 	}//closeDialog()
 

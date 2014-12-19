@@ -1,14 +1,14 @@
 window.contApp.contentsSourceData = new(function(px, contApp){
 	var _contentsSourceData;
 	var _contentsRealPath;
-	var _dataJsonPath;
+	var _contentsSourceDataJsonPath;
 
 	/**
 	 * 初期化
 	 */
-	this.init = function( contentsRealPath, dataJsonPath, cb ){
+	this.init = function( contentsRealPath, contentsSourceDataJsonPath, cb ){
 		_contentsRealPath = contentsRealPath;
-		_dataJsonPath = dataJsonPath;
+		_contentsSourceDataJsonPath = contentsSourceDataJsonPath;
 
 		if( !px.fs.existsSync( contentsRealPath ) ){
 			px.message('コンテンツファイルが存在しません。');
@@ -17,19 +17,19 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 		}
 		contentsRealPath = px.fs.realpathSync( contentsRealPath );
 
-		if( !px.fs.existsSync( dataJsonPath ) ){
-			px.message('データファイルが存在しません。');
+		if( !px.fs.existsSync( contentsSourceDataJsonPath ) ){
+			px.message('コンテンツデータファイル(JSON)が存在しません。');
 			window.parent.contApp.closeEditor();
 			return this;
 		}
-		dataJsonPath = px.fs.realpathSync( dataJsonPath );
+		contentsSourceDataJsonPath = px.fs.realpathSync( contentsSourceDataJsonPath );
 
-		px.fs.readFile( dataJsonPath, function(err, data){
+		px.fs.readFile( contentsSourceDataJsonPath, function(err, data){
 
 			// コンテンツデータをロード
 			_contentsSourceData = JSON.parse( data );
 			if( typeof(_contentsSourceData) !== typeof({}) ){
-				px.message( 'データが破損しています。' );
+				px.message( 'コンテンツデータファイルデータ(JSON)が破損しています。' );
 				_contentsSourceData = {};
 			}
 			_contentsSourceData.bowl = _contentsSourceData.bowl||{};
@@ -47,10 +47,10 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 	/**
 	 * データを取得する
 	 */
-	this.get = function( containerPath, data ){
+	this.get = function( containerInstancePath, data ){
 		data = data || _contentsSourceData;
 
-		var aryPath = this.parseElementPath( containerPath );
+		var aryPath = this.parseInstancePath( containerInstancePath );
 		if( !aryPath.length ){
 			return data;
 		}
@@ -73,7 +73,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 		}
 
 		if( !aryPath.length ){
-			// ここが最後の要素だったら
+			// ここが最後のインスタンスだったら
 			if( !data.fields ){
 				data.fields = {};
 			}
@@ -104,10 +104,10 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 	}
 
 	/**
-	 * 要素を追加する
+	 * インスタンスを追加する
 	 */
-	this.addElement = function( modId, containerPath, cb ){
-		// console.log( '開発中: '+modId+': '+containerPath );
+	this.addInstance = function( modId, containerInstancePath, cb ){
+		// console.log( '開発中: '+modId+': '+containerInstancePath );
 		cb = cb||function(){};
 
 		var newData = new (function(){
@@ -128,8 +128,8 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 			}
 		}
 
-		var containerPath = this.parseElementPath( containerPath );
-		// console.log( containerPath );
+		var containerInstancePath = this.parseInstancePath( containerInstancePath );
+		// console.log( containerInstancePath );
 
 		function set_r( aryPath, data, newData ){
 			// console.log( data );
@@ -151,7 +151,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 			}
 
 			if( !aryPath.length ){
-				// ここが最後の要素だったら
+				// ここが最後のインスタンスだったら
 				if( !data.fields ){
 					data.fields = {};
 				}
@@ -183,24 +183,24 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 
 		}
 
-		set_r( containerPath, _contentsSourceData, newData );
+		set_r( containerInstancePath, _contentsSourceData, newData );
 
 		cb();
 
 		// console.log('done...');
 		// console.log(_contentsSourceData);
 		return this;
-	}// addElement()
+	}// addInstance()
 
 	/**
-	 * 要素を更新する
+	 * インスタンスを更新する
 	 */
-	this.updateElement = function( newData, containerPath, cb ){
-		// console.log( '開発中: '+modId+': '+containerPath );
+	this.updateInstance = function( newData, containerInstancePath, cb ){
+		// console.log( '開発中: '+modId+': '+containerInstancePath );
 		cb = cb||function(){};
 
-		var containerPath = this.parseElementPath( containerPath );
-		// console.log( containerPath );
+		var containerInstancePath = this.parseInstancePath( containerInstancePath );
+		// console.log( containerInstancePath );
 
 		function set_r( aryPath, data, newData ){
 			// console.log( data );
@@ -222,7 +222,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 			}
 
 			if( !aryPath.length ){
-				// ここが最後の要素だったら
+				// ここが最後のインスタンスだったら
 				if( !data.fields ){
 					data.fields = {};
 				}
@@ -254,22 +254,22 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 
 		}
 
-		set_r( containerPath, _contentsSourceData, newData );
+		set_r( containerInstancePath, _contentsSourceData, newData );
 
 		cb();
 
 		// console.log('done...');
 		// console.log(_contentsSourceData);
 		return this;
-	}// addElement()
+	}// addInstance()
 
 	/**
-	 * 要素を移動する
+	 * インスタンスを移動する
 	 */
-	this.moveElementTo = function( fromContainerPath, toContainerPath, cb ){
+	this.moveInstanceTo = function( fromContainerInstancePath, toContainerInstancePath, cb ){
 		cb = cb||function(){};
 
-		function parseElementPath(path){
+		function parseInstancePath(path){
 			var rtn = {};
 			rtn = px.utils.parsePath( path );
 			var basenameParse = rtn.basename.split('@');
@@ -278,28 +278,28 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 			return rtn;
 		}
 
-		var fromParsed = parseElementPath(fromContainerPath);
-		var toParsed = parseElementPath(toContainerPath);
+		var fromParsed = parseInstancePath(fromContainerInstancePath);
+		var toParsed = parseInstancePath(toContainerInstancePath);
 
-		var dataFrom = this.get( fromContainerPath );
+		var dataFrom = this.get( fromContainerInstancePath );
 		dataFrom = JSON.parse(JSON.stringify( dataFrom ));//←オブジェクトのdeepcopy
 
 		if( fromParsed.container == toParsed.container ){
 			// 同じ箱の中での並び替え
 			if( fromParsed.num < toParsed.num ){
 				// 上から下へ
-				if( !this.get(toContainerPath) ){
-					toContainerPath = toParsed.container + '@' + ( toParsed.num-1 );
+				if( !this.get(toContainerInstancePath) ){
+					toContainerInstancePath = toParsed.container + '@' + ( toParsed.num-1 );
 				}
-				this.removeElement(fromContainerPath);
-				this.addElement( dataFrom.modId, toContainerPath );
-				this.updateElement( dataFrom, toContainerPath );
+				this.removeInstance(fromContainerInstancePath);
+				this.addInstance( dataFrom.modId, toContainerInstancePath );
+				this.updateInstance( dataFrom, toContainerInstancePath );
 
 			}else if( fromParsed.num > toParsed.num ){
 				// 下から上へ
-				this.addElement( dataFrom.modId, toContainerPath );
-				this.updateElement( dataFrom, toContainerPath );
-				this.removeElement(fromParsed.container+'@'+(fromParsed.num+1));
+				this.addInstance( dataFrom.modId, toContainerInstancePath );
+				this.updateInstance( dataFrom, toContainerInstancePath );
+				this.removeInstance(fromParsed.container+'@'+(fromParsed.num+1));
 			}
 			cb();
 		}else if( toParsed.path.indexOf(fromParsed.path) === 0 ){
@@ -307,15 +307,15 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 			cb();
 		}else if( fromParsed.path.indexOf(toParsed.container) === 0 ){
 			// var tmp = fromParsed.path.replace( new RegExp('^'+px.utils.escapeRegExp(toParsed.container)), '' );
-			this.removeElement(fromParsed.path);
-			this.addElement( dataFrom.modId, toContainerPath );
-			this.updateElement( dataFrom, toContainerPath );
+			this.removeInstance(fromParsed.path);
+			this.addInstance( dataFrom.modId, toContainerInstancePath );
+			this.updateInstance( dataFrom, toContainerInstancePath );
 			cb();
 		}else{
 			// まったく関連しない箱への移動
-			this.addElement( dataFrom.modId, toContainerPath );
-			this.updateElement( dataFrom, toContainerPath );
-			this.removeElement(fromContainerPath);
+			this.addInstance( dataFrom.modId, toContainerInstancePath );
+			this.updateInstance( dataFrom, toContainerInstancePath );
+			this.removeInstance(fromContainerInstancePath);
 			cb();
 		}
 
@@ -323,12 +323,12 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 	}
 
 	/**
-	 * 要素を削除する
+	 * インスタンスを削除する
 	 */
-	this.removeElement = function( containerPath, cb ){
+	this.removeInstance = function( containerInstancePath, cb ){
 		cb = cb||function(){};
 
-		var containerPath = this.parseElementPath( containerPath );
+		var containerInstancePath = this.parseInstancePath( containerInstancePath );
 
 		function remove_r( aryPath, data ){
 			if( !aryPath.length ){
@@ -353,7 +353,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 			}
 
 			if( !aryPath.length ){
-				// ここが最後の要素だったら
+				// ここが最後のインスタンスだったら
 				if( !data.fields ){
 					data.fields = {};
 				}
@@ -384,28 +384,28 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 
 		}
 
-		remove_r( containerPath, _contentsSourceData );
+		remove_r( containerInstancePath, _contentsSourceData );
 
 		cb();
 
 		return this;
-	}// removeElement()
+	}// removeInstance()
 
 	/**
-	 * 要素のパスを解析する
+	 * インスタンスのパスを解析する
 	 */
-	this.parseElementPath = function( containerPath ){
-		if( typeof(containerPath) === typeof([]) ){
-			return containerPath;
+	this.parseInstancePath = function( containerInstancePath ){
+		if( typeof(containerInstancePath) === typeof([]) ){
+			return containerInstancePath;
 		}
 
-		containerPath = containerPath||'';
-		if( !containerPath ){ containerPath = '/fields.main'; }
-		containerPath = containerPath.replace( new RegExp('^\\/*'), '' );
-		containerPath = containerPath.replace( new RegExp('\\/*$'), '' );
-		containerPath = containerPath.split('/');
-		// console.log(containerPath);
-		return containerPath;
+		containerInstancePath = containerInstancePath||'';
+		if( !containerInstancePath ){ containerInstancePath = '/fields.main'; }
+		containerInstancePath = containerInstancePath.replace( new RegExp('^\\/*'), '' );
+		containerInstancePath = containerInstancePath.replace( new RegExp('\\/*$'), '' );
+		containerInstancePath = containerInstancePath.split('/');
+		// console.log(containerInstancePath);
+		return containerInstancePath;
 	}
 
 	/**
@@ -433,7 +433,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 	 */
 	this.save = function(cb){
 		cb = cb||function(){};
-		px.fs.writeFile( _dataJsonPath, JSON.stringify(_contentsSourceData), {encoding:'utf8'}, function(err){
+		px.fs.writeFile( _contentsSourceDataJsonPath, JSON.stringify(_contentsSourceData), {encoding:'utf8'}, function(err){
 			cb( !err );
 		} );
 		return this;

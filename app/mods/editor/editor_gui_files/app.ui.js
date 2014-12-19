@@ -159,7 +159,7 @@ window.contApp.ui = new(function(px, contApp){
 								.append( $('<div>')
 									.text(
 										// instancePathNext +
-										' ここに新しい要素をドラッグしてください。'
+										' ここに新しいモジュールをドラッグしてください。'
 									)
 									.css({
 										'overflow':'hidden',
@@ -239,13 +239,13 @@ window.contApp.ui = new(function(px, contApp){
 					var moveFrom = event.dataTransfer.getData("data-guieditor-cont-data-path");
 					// px.message( 'modId "'+modId+'" が "'+method+'" のためにドロップされました。' );
 					if( method == 'add' ){
-						contApp.contentsSourceData.addElement( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
-							px.message('要素を追加しました。');
+						contApp.contentsSourceData.addInstance( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
+							px.message('インスタンスを追加しました。');
 							contApp.ui.resizeEvent();
 						} );
 					}else if( method == 'moveTo' ){
-						contApp.contentsSourceData.moveElementTo( moveFrom, $(this).attr('data-guieditor-cont-data-path'), function(){
-							// px.message('要素を移動しました。');
+						contApp.contentsSourceData.moveInstanceTo( moveFrom, $(this).attr('data-guieditor-cont-data-path'), function(){
+							// px.message('インスタンスを移動しました。');
 							contApp.ui.resizeEvent();
 						} );
 					}
@@ -315,19 +315,19 @@ window.contApp.ui = new(function(px, contApp){
 								var method = event.dataTransfer.getData("method");
 								if( method === 'moveTo' ){
 									var moveFrom = event.dataTransfer.getData("data-guieditor-cont-data-path");
-									contApp.contentsSourceData.moveElementTo( moveFrom, $(this).attr('data-guieditor-cont-data-path'), function(){
-										// px.message('要素を移動しました。');
+									contApp.contentsSourceData.moveInstanceTo( moveFrom, $(this).attr('data-guieditor-cont-data-path'), function(){
+										// px.message('インスタンスを移動しました。');
 										contApp.ui.resizeEvent();
 									} );
 									return;
 								}
 								if( method !== 'add' ){
-									px.message('追加する要素をドロップしてください。ここに移動することはできません。');
+									px.message('追加するモジュールをドロップしてください。ここに移動することはできません。');
 									return;
 								}
 								var modId = event.dataTransfer.getData("modId");
-								contApp.contentsSourceData.addElement( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
-									px.message('要素を追加しました。');
+								contApp.contentsSourceData.addInstance( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
+									px.message('インスタンスを追加しました。');
 									contApp.ui.resizeEvent();
 								} );
 							})
@@ -427,7 +427,7 @@ window.contApp.ui = new(function(px, contApp){
 		$editWindow.find('form .cont_tpl_module_editor-remove')
 			.attr({'data-guieditor-cont-data-path':instancePath})
 			.click(function(){
-				contApp.contentsSourceData.removeElement( $(this).attr('data-guieditor-cont-data-path') );
+				contApp.contentsSourceData.removeInstance( $(this).attr('data-guieditor-cont-data-path') );
 				delete data;
 				$editWindow.remove();
 				_this.resizeEvent();

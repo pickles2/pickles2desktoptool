@@ -380,7 +380,7 @@ new (function($, window){
 	this.dialog = function(opt){
 		opt = opt||{};
 		opt.title = opt.title||'command:';
-		opt.description = opt.description||'';
+		opt.body = opt.body||$('<div>');
 		opt.buttons = opt.buttons||[
 			$('<button>').text('OK').click(function(){
 				px.closeDialog();

@@ -74,6 +74,39 @@
 				<li><a href="javascript:px.subapp('fncs/publish/index.html');">パブリッシュする</a></li>
 			</ol>
 		</script>
+		<script type="text/template" id="template-form-editProject">
+			<div class="unit">
+				<form action="javascript:;" onsubmit="cont_createProject(this);return false;" class="inline">
+					<table class="form_elements" style="width:100%;">
+						<tr>
+							<th>Name <span class="must">必須</span></th>
+							<td><input type="text" name="pj_name" value="" placeholder="Your Project Name" /></td>
+						</tr>
+						<tr>
+							<th>Path <span class="must">必須</span></th>
+							<td>
+								<ul class="form_elements-notes">
+									<li>変更する場合のみ、選択してください。</li>
+								</ul>
+								<input type="file" name="pj_path" value="" webkitdirectory />
+							</td>
+						</tr>
+						<tr>
+							<th>HOME Directory</th>
+							<td><input type="text" name="pj_home_dir" value="" placeholder="px-files/" /></td>
+						</tr>
+						<tr>
+							<th>Entry script</th>
+							<td><input type="text" name="pj_entry_script" value="" placeholder=".px_execute.php" /></td>
+						</tr>
+						<tr>
+							<th>VCS</th>
+							<td><label><input type="radio" name="pj_vcs" value="git" checked="checked" /> git</label></td>
+						</tr>
+					</table>
+				</form>
+			</div>
+		</script>
 	</head>
 	<body style="background-color:#eee;">
 		<div class="contents">
@@ -107,7 +140,9 @@
 							<td class="tpl_vcs">...</td>
 						</tr>
 					</table>
+					<p><button onclick="contApp.editProject(); return false;">プロジェクト情報を編集する</button></p>
 				</div><!-- /.unit -->
+
 
 				<div class="unit">
 					<h2>Project Status</h2>

@@ -54,6 +54,10 @@
 		this.get = function(key){
 			return this.projectInfo[key];
 		}
+		this.set = function(key, val){
+			this.projectInfo[key] = val;
+			return this;
+		}
 		this.getSitemapFilelist = function(){
 			var pathDir = this.get('path')+'/'+this.get('home_dir')+'/sitemaps/';
 			var filelist = px.fs.readdirSync( pathDir );

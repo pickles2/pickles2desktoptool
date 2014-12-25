@@ -119,6 +119,47 @@ window.contApp = new (function(){
 		);
 	}
 
+	/**
+	 * プロジェクトを編集する
+	 */
+	this.editProject = function(){
+		var $form = $( $('#template-form-editProject').html() );
+		$form.find('[name=pj_name]').val(pj.get('name'));
+		// $form.find('[name=pj_path]').val(pj.get('path'));//←セットできない！
+		$form.find('[name=pj_home_dir]').val(pj.get('home_dir'));
+		$form.find('[name=pj_entry_script]').val(pj.get('entry_script'));
+		// $form.find('[name=pj_vcs]').val(pj.get('vcs'));
+
+		px.dialog( {
+			title: 'プロジェクト情報を編集',
+			body: $form ,
+			buttons: [
+				$('<button>').text('OK').click( function(){
+					pj
+						.set('name', $form.find('[name=pj_name]').val())
+						.set('home_dir', $form.find('[name=pj_home_dir]').val())
+						.set('entry_script', $form.find('[name=pj_entry_script]').val())
+						.set('vcs', $form.find('[name=pj_vcs]').val())
+					;
+					if( $form.find('[name=pj_path]').val().length ){
+						pj
+							.set('path', $form.find('[name=pj_path]').val())
+						;
+
+					}
+					px.save( function(){
+						px.closeDialog();
+						px.message('プロジェクト情報を更新しました。');
+						px.subapp();
+					} );
+				} ) ,
+				$('<button>').text('Cancel').click( function(){
+					px.closeDialog();
+				} )
+			]
+		} );
+	}
+
 	$(function(){
 		init();
 	});

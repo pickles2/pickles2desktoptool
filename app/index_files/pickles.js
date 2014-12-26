@@ -28,7 +28,6 @@ new (function($, window){
 	_path_db = _fs.realpathSync( _path_db );
 	var $header, $footer, $main, $contents, $dialog;
 	var _menu = [
-		// {"label":"Reload(dev)", "cond":"always", "cb": function(){window.location.href='index.html?';}} ,
 		{"label":"SELECT PROJ",  "cond":"projectSelected", "area":"footer", "app":"index.html", "cb": function(){px.deselectProject();px.subapp();}} ,
 		{"label":"HOME",         "cond":"pxStandby",       "area":"mainmenu", "app":"fncs/home/index.html", "cb": function(){px.subapp();}} ,
 		{"label":"サイトマップ", "cond":"pxStandby",       "area":"mainmenu", "app":"fncs/sitemap/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
@@ -40,7 +39,9 @@ new (function($, window){
 		{"label":"Preview",      "cond":"pxStandby",       "area":"footer", "app":"fncs/preview/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"composer",     "cond":"pxStandby",       "area":"footer", "app":"fncs/composer/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"git",          "cond":"pxStandby",       "area":"footer", "app":"fncs/git/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"Finderで開く", "cond":"pxStandby",       "area":"footer", "app":null, "cb": function(){px.getCurrentProject().open();}}
+		{"label":"Finderで開く", "cond":"pxStandby",       "area":"footer", "app":null, "cb": function(){px.getCurrentProject().open();}},
+		// {"label":"Reload(dev)", "cond":"always", "cb": function(){window.location.href='index.html?';}} ,
+		{"label":"終了",         "cond":"always",          "area":"footer", "app":null, "cb": function(){px.exit();}}
 	];
 
 	this.server = require('./index_files/px_server_emurator.node.js').init(this,$);
@@ -314,6 +315,7 @@ new (function($, window){
 		}
 
 		$('.theme_gmenu').html('');
+		$('.theme_footer-menu').html('');
 		for( var i in _menu ){
 			if( _menu[i].cond == 'projectSelected' ){
 				if( cpj === null ){
@@ -326,16 +328,27 @@ new (function($, window){
 			}else if( _menu[i].cond != 'always' ){
 				continue;
 			}
-			$('.theme_gmenu').append( $('<li>')
-				.append( $('<a>')
-					.attr({"href":"javascript:;"})
-					.click(_menu[i].cb)
-					.text(_menu[i].label)
-					.data('app', _menu[i].app)
-					.addClass( (_current_app==_menu[i].app ? 'current' : '') )
-				)
-			);
-			var $li = $('<li>')
+
+			var $tmpMenu = $('<a>')
+				.attr({"href":"javascript:;"})
+				.click(_menu[i].cb)
+				.text(_menu[i].label)
+				.data('app', _menu[i].app)
+				.addClass( ( _current_app==_menu[i].app ? 'current' : '' ) )
+			;
+
+			switch( _menu[i].area ){
+				case 'footer':
+					$('.theme_footer-menu').append( $('<li>')
+						.append( $tmpMenu )
+					);
+					break;
+				default:
+					$('.theme_gmenu').append( $('<li>')
+						.append( $tmpMenu )
+					);
+					break;
+			}
 		}
 
 		$('body')

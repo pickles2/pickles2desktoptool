@@ -100,6 +100,7 @@
 				'height':'12em',
 				'overflow':'auto'
 			})
+			.addClass('selectable')
 			.text('実行中...')
 		;
 
@@ -157,6 +158,7 @@
 				'height':'12em',
 				'overflow':'auto'
 			})
+			.addClass('selectable')
 			.text('実行中...')
 		;
 

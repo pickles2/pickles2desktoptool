@@ -1,4 +1,5 @@
 (function(px, $){
+	var $dialog;
 
 	/**
 	 * ダイアログを表示する
@@ -204,5 +205,16 @@
 		return this;
 	}//spawnDialog()
 
+	/**
+	 * イベントリスナー
+	 */
+	$(window).on( 'resize', function(e){
+		$dialog
+			.css({
+				'width': $(window).width(),
+				'height': $(window).height()
+			})
+		;
+	} );
 
 })(px, jQuery);

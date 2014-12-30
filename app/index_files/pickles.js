@@ -28,7 +28,7 @@ new (function($, window){
 		);
 	}
 	_path_db = _fs.realpathSync( _path_db );
-	var $header, $footer, $main, $contents, $dialog;
+	var $header, $footer, $main, $contents;
 	var _menu = [
 		{"label":"SELECT PROJ",  "cond":"projectSelected", "area":"footer", "app":"index.html", "cb": function(){px.deselectProject();px.subapp();}} ,
 		{"label":"HOME",         "cond":"pxStandby",       "area":"mainmenu", "app":"fncs/home/index.html", "cb": function(){px.subapp();}} ,
@@ -400,12 +400,7 @@ new (function($, window){
 				'height': $contents.height() - 10
 			})
 		;
-		$dialog
-			.css({
-				'width': $(window).width(),
-				'height': $(window).height()
-			})
-		;
+
 	}
 
 
@@ -447,7 +442,7 @@ new (function($, window){
 				$header   = $('.theme_header');
 				$contents = $('.contents');
 				$footer   = $('.theme_footer');
-				$dialog   = $('<div>');
+				// $dialog   = $('<div>');
 
 				layoutReset();
 				px.subapp();
@@ -455,6 +450,7 @@ new (function($, window){
 				it.next(arg);
 			}
 		]).start({});
+
 		window.focus();
 	});
 

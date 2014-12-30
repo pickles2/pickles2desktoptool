@@ -11,6 +11,8 @@ new (function($, window){
 	var _current_app = null;
 	var _selectedProject = null;
 	var _pj = null;
+	var _nw_gui = require('nw.gui');
+
 	if( !_utils.isDirectory( _path_data_dir ) ){
 		_fs.mkdirSync( _path_data_dir );
 	}
@@ -41,6 +43,7 @@ new (function($, window){
 		{"label":"git",          "cond":"pxStandby",       "area":"footer", "app":"fncs/git/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"Finderで開く", "cond":"pxStandby",       "area":"footer", "app":null, "cb": function(){px.getCurrentProject().open();}},
 		// {"label":"Reload(dev)", "cond":"always", "cb": function(){window.location.href='index.html?';}} ,
+		{"label":"Px2DT 設定",   "cond":"always",          "area":"footer", "app":null, "cb": function(){px.editPx2DTConfig();}} ,
 		{"label":"終了",         "cond":"always",          "area":"footer", "app":null, "cb": function(){px.exit();}}
 	];
 
@@ -53,15 +56,27 @@ new (function($, window){
 	function init(cb){
 		(function(){
 			// node-webkit の標準的なメニューを出す
-			var gui = require('nw.gui');
-			win = gui.Window.get();
-			var nativeMenuBar = new gui.Menu({ type: "menubar" });
+			var win = _nw_gui.Window.get();
+			var nativeMenuBar = new _nw_gui.Menu({ type: "menubar" });
 			try {
 				nativeMenuBar.createMacBuiltin("Pickles 2 Desktop Tool");
 				win.menu = nativeMenuBar;
+				// win.menu.append(new _nw_gui.MenuItem({
+				// 	type: "normal", 
+				// 	label: 'Item 1',
+				// 	click: function() {
+				// 		console.log('Click on Item 1');
+				// 	}
+				// }));
 			} catch (ex) {
 				console.log(ex.message);
 			}
+
+			// ↓Macのメニューバーの右側に並ぶメニューのこと
+			// var tray = new _nw_gui.Tray({ icon: './common/images/icon.png' });
+			// tray.title = 'Love Tray';
+			// tray.tooltip = 'Love Tooltip';
+
 		})();
 
 		_db = _db||{};
@@ -240,6 +255,13 @@ new (function($, window){
 			return cmd;
 		}
 		return _db.commands[cmd];
+	}
+
+	/**
+	 * DBデータまるごと取得
+	 */
+	this.getDb = function(){
+		return _db;
 	}
 
 	/**
@@ -433,7 +455,7 @@ new (function($, window){
 				it.next(arg);
 			}
 		]).start({});
-
+		window.focus();
 	});
 
 	return this;

@@ -28,63 +28,36 @@
 
 		<!-- Local Resources -->
 		<link rel="stylesheet" href="./index_files/style.css" type="text/css" />
+		<script src="./index_files/script.js"></script>
 
-		<script>
-			window.px = $.px = window.parent.px;
-			var pj = px.getCurrentProject();
-			var configBasePath = pj.get('path')+'/'+pj.get('home_dir');
-			var confPath = configBasePath;
-			function cont_init(cb){
-				cb = cb||function(){};
-				$('.cont_config_json_preview pre').text( JSON.stringify( pj.getConfig() ) );
-
-				var src = '';
-				if( px.utils.isFile(configBasePath+'/config.json') ){
-					confPath = configBasePath+'/config.json';
-				}else if( px.utils.isFile(configBasePath+'/config.php') ){
-					confPath = configBasePath+'/config.php';
-				}
-				src = px.fs.readFileSync(confPath);
-				$('.cont_config_edit').html('').append( $('<textarea>').val(src) );
-				cb();
-			}
-			function cont_save( btn ){
-				$(btn).attr('disabled', 'disabled');
-				var src = $('.cont_config_edit textarea').val();
-				src = JSON.parse( JSON.stringify( src ) );
-
-				px.fs.writeFile( confPath, src, {encoding:'utf8'}, function(err){
-					pj.updateConfig(function(){
-						cont_init(function(){
-							$(btn).removeAttr('disabled');
-							px.message( 'コンフィグを保存しました。' );
-						});
-					});
-				} );
-
-			}
-			$(function(){
-				cont_init();
-			});
+		<script id="template-main" type="text/template">
+			<div class="container">
+				<div class="unit">
+					<h2>Config</h2>
+					<div class="cont_config_edit">
+					</div>
+					<h2>Px2DT Config</h2>
+					<div class="cont_px2dtconfig_edit">
+					</div>
+					<p class="center"><button onclick="contApp.save(this); return false;" class="cont_btn_save">保存する</button></p>
+				</div>
+				<h2>Data preview</h2>
+				<h3>Config</h3>
+				<div class="unit cont_config_json_preview">
+					<pre></pre>
+				</div>
+				<h3>Px2DT Config</h3>
+				<div class="unit cont_px2dtconfig_json_preview">
+					<pre></pre>
+				</div>
+			</div>
 		</script>
-		<style>
-		</style>
 	</head>
 	<body>
 		<div class="container">
 			<h1>Config</h1>
 		</div>
 		<div class="contents">
-			<div class="container">
-				<div class="unit">
-					<div class="cont_config_edit">
-					</div>
-					<p><button onclick="cont_save(this); return false;" class="cont_btn_save">保存する</button></p>
-				</div>
-				<div class="unit cont_config_json_preview">
-					<pre></pre>
-				</div>
-			</div>
 		</div>
 	</body>
 </html>

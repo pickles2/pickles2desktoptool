@@ -6,6 +6,7 @@
 		cbStandby = cbStandby||function(){}
 
 		var _config = null;
+		var _px2DTConfig = null;
 
 		this.validate = function(){
 			var isError = false;
@@ -44,7 +45,8 @@
 			status.entryScriptExists = (status.pathExists && px.utils.isFile( this.get('path')+'/'+this.get('entry_script') ) ? true : false);
 			var homeDir = this.get('path')+'/'+this.get('home_dir');
 			status.homeDirExists = (status.pathExists && px.utils.isDirectory( homeDir ) ? true : false);
-			status.confFileExists = (status.homeDirExists && (px.utils.isFile( homeDir+'/config.php'||px.utils.isFile( homeDir+'/config.json') ) ) ? true : false);
+			status.confFileExists = (status.homeDirExists && (px.utils.isFile( homeDir+'/config.php' )||px.utils.isFile( homeDir+'/config.json' ) ) ? true : false);
+			status.px2DTConfFileExists = (status.homeDirExists && px.utils.isFile( homeDir+'/px2dtconfig.json' ) ? true : false);
 			status.composerJsonExists = (status.pathExists && px.utils.isFile( this.get('path')+'/composer.json' ) ? true : false);
 			status.vendorDirExists = (status.pathExists && px.utils.isDirectory( this.get('path')+'/vendor/' ) ? true : false);
 			status.isPxStandby = ( status.pathExists && status.entryScriptExists && status.homeDirExists && status.confFileExists && status.composerJsonExists && status.vendorDirExists ? true : false );
@@ -67,6 +69,7 @@
 			return _config;
 		}
 		this.updateConfig = function( cb ){
+			cb = cb||function(){};
 			var data_memo = '';
 			this.execPx2( '/?PX=api.get.config', {
 				cd: this.get('path') ,
@@ -77,6 +80,28 @@
 					_config = JSON.parse(data_memo);
 					cb( _config );
 				}
+			} );
+			return this;
+		}
+		this.getPx2DTConfig = function(){
+			return _px2DTConfig;
+		}
+		this.updatePx2DTConfig = function( cb ){
+			cb = cb||function(){};
+
+			_px2DTConfig = {};
+			var path = this.get('path')+'/'+this.get('home_dir')+'/px2dtconfig.json';
+
+			if( !px.utils.isFile( path ) ){
+				cb();
+				return this;
+			}
+			px.fs.readFile( path, {}, function(err, data){
+				try{
+					data = JSON.parse( data );
+				}catch(e){}
+				_px2DTConfig = data;
+				cb();
 			} );
 			return this;
 		}
@@ -233,11 +258,22 @@
 
 		px.utils.iterateFnc([
 			function(itPj, pj){
+				// コンフィグをロード
 				var status = pj.status();
 				if( !status.entryScriptExists ){
 					itPj.next(pj);return;
 				}
 				pj.updateConfig(function(){
+					itPj.next(pj);
+				});
+			} ,
+			function(itPj, pj){
+				// Px2DTコンフィグをロード
+				var status = pj.status();
+				if( !status.px2DTConfFileExists ){
+					itPj.next(pj);return;
+				}
+				pj.updatePx2DTConfig(function(){
 					itPj.next(pj);
 				});
 			} ,

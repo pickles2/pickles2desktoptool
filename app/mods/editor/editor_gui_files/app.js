@@ -43,7 +43,7 @@ window.contApp = new (function( px ){
 		px.utils.iterateFnc([
 			function(it){
 				// モジュールテンプレートのロード・初期化
-				var pathModTpl = px.fs.realpathSync( _pj.get('path')+'/'+_pj.get('home_dir')+'/resources/document_modules/' );
+				var pathModTpl = px.fs.realpathSync( _pj.get('path')+'/'+_pj.getPx2DTConfig().paths_module_template[0] );
 				_this.moduleTemplates.init( pathModTpl, function(){
 					it.next();
 				} );

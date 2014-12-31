@@ -49,10 +49,49 @@ new (function($, window){
 		{"label":"git",          "cond":"pxStandby",       "area":"footer", "app":"fncs/git/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"Finderで開く", "cond":"homeDirExists",   "area":"footer", "app":null, "cb": function(){px.getCurrentProject().open();}},
 		// {"label":"Reload(dev)", "cond":"always", "cb": function(){window.location.href='index.html?';}} ,
+		{"label":"System Info",  "cond":"always",          "area":"footer", "app":null, "cb": function(){px.dialog({
+			title: 'System Info',
+			body: $('<iframe>').attr('src', 'mods/systeminfo/index.html').css({'width':'100%','height':300})
+		});}} ,
 		{"label":"Px2DT 設定",   "cond":"always",          "area":"footer", "app":null, "cb": function(){px.editPx2DTConfig();}} ,
 		{"label":"終了",         "cond":"always",          "area":"footer", "app":null, "cb": function(){px.exit();}}
 	];
 
+
+	/**
+	 * Pickles 2 Desktop Tool のバージョン情報を取得する。
+	 * 
+	 * <pre> [バージョン番号のルール]
+	 *    基本
+	 *      メジャーバージョン番号.マイナーバージョン番号.リリース番号
+	 *        例：1.0.0
+	 *        例：1.8.9
+	 *        例：12.19.129
+	 *      - 大規模な仕様の変更や追加を伴う場合にはメジャーバージョンを上げる。
+	 *      - 小規模な仕様の変更や追加の場合は、マイナーバージョンを上げる。
+	 *      - バグ修正、ドキュメント、コメント修正等の小さな変更は、リリース番号を上げる。
+	 *    開発中プレビュー版
+	 *      基本バージョンの後ろに、a(=α版)またはb(=β版)を付加し、その連番を記載する。
+	 *        例：1.0.0a1 ←最初のα版
+	 *        例：1.0.0b12 ←12回目のβ版
+	 *      開発中およびリリースバージョンの順序は次の通り
+	 *        1.0.0a1 -> 1.0.0a2 -> 1.0.0b1 ->1.0.0b2 -> 1.0.0 ->1.0.1a1 ...
+	 *    ナイトリービルド
+	 *      ビルドの手順はないので正確には "ビルド" ではないが、
+	 *      バージョン番号が振られていない、開発途中のリビジョンを
+	 *      ナイトリービルドと呼ぶ。
+	 *      ナイトリービルドの場合、バージョン情報は、
+	 *      ひとつ前のバージョン文字列の末尾に、'-nb' を付加する。
+	 *        例：1.0.0b12-nb (=1.0.0b12リリース後のナイトリービルド)
+	 *      普段の開発においてコミットする場合、
+	 *      必ずこの get_version() がこの仕様になっていることを確認すること。
+	 * </pre>
+	 * 
+	 * @return string バージョン番号を示す文字列
+	 */
+	this.getVersion = function(){
+		return '2.0.0a0-nb';
+	}
 
 
 	/**

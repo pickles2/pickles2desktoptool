@@ -40,7 +40,7 @@ window.contApp = new (function( px ){
 
 	function preview(iframe){
 		$(iframe)
-			.attr('src', 'http://127.0.0.1:8080'+_param.page_path)
+			.attr('src', px.preview.getUrl(_param.page_path) )
 		;
 		return true;
 	}
@@ -119,7 +119,7 @@ window.contApp = new (function( px ){
 	}
 
 	$(function(){
-		px.getCurrentProject().serverStandby( function(){
+		px.preview.serverStandby( function(){
 			init();
 		} );
 	})

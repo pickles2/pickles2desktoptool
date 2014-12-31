@@ -121,7 +121,7 @@ window.contApp = new (function( px ){
 	}// init()
 
 	$(function(){
-		px.getCurrentProject().serverStandby( function(){
+		px.preview.serverStandby( function(){
 			init();
 			$(window).resize(function(){
 				_this.ui.resizeEvent();

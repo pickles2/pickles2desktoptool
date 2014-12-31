@@ -74,7 +74,7 @@ window.contApp.ui = new(function(px, contApp){
 		$ctrlPanel.html('');
 
 		$preview
-			.attr('src', 'http://127.0.0.1:8080' + path)
+			.attr('src', px.preview.getUrl(path) )
 		;
 		return true;
 	} // preview()

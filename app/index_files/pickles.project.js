@@ -99,9 +99,9 @@
 		this.execGit = function( cmd, fnc ){
 			return this;
 		}
-		this.serverStandby = function(cb){
-			px.server.start(8080, cb);
-		}
+		// this.serverStandby = function(cb){
+		// 	px.preview.serverStandby( cb );
+		// }
 		this.serverStop = function(cb){
 			px.server.stop(cb);
 		}

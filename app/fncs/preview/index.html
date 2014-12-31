@@ -26,8 +26,8 @@
 
 			function cont_start_preview(btn){
 				$(btn).attr('disabled', 'disabled');
-				px.getCurrentProject().serverStandby( function(){
-					$('.cont_preview_frame').attr('src','http://127.0.0.1:8080/');
+				px.preview.serverStandby( function(){
+					$('.cont_preview_frame').attr( 'src', px.preview.getUrl() );
 					$(btn).removeAttr('disabled');
 				} );
 			}

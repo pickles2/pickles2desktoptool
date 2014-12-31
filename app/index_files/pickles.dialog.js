@@ -209,6 +209,7 @@
 	 * イベントリスナー
 	 */
 	$(window).on( 'resize', function(e){
+		if( typeof($dialog) !== typeof( $('<div>') ) ){return;}
 		$dialog
 			.css({
 				'width': $(window).width(),

@@ -12,6 +12,7 @@ new (function($, window){
 	var _selectedProject = null;
 	var _pj = null;
 	var _nw_gui = require('nw.gui');
+	// this.server = require('./index_files/px_server_emurator.node.js').init(this,$);
 
 	if( !_utils.isDirectory( _path_data_dir ) ){
 		_fs.mkdirSync( _path_data_dir );
@@ -21,7 +22,12 @@ new (function($, window){
 			JSON.stringify(
 				{
 					"commands":{} ,
-					"projects":[]
+					"projects":[] ,
+					"network":{
+						"preview":{
+							"port": 8080
+						}
+					}
 				}
 			),
 			{"encoding":"utf8","mode":436,"flag":"w"}
@@ -41,13 +47,12 @@ new (function($, window){
 		{"label":"Preview",      "cond":"pxStandby",       "area":"footer", "app":"fncs/preview/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"composer",     "cond":"pxStandby",       "area":"footer", "app":"fncs/composer/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"git",          "cond":"pxStandby",       "area":"footer", "app":"fncs/git/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"Finderで開く", "cond":"pxStandby",       "area":"footer", "app":null, "cb": function(){px.getCurrentProject().open();}},
+		{"label":"Finderで開く", "cond":"homeDirExists",   "area":"footer", "app":null, "cb": function(){px.getCurrentProject().open();}},
 		// {"label":"Reload(dev)", "cond":"always", "cb": function(){window.location.href='index.html?';}} ,
 		{"label":"Px2DT 設定",   "cond":"always",          "area":"footer", "app":null, "cb": function(){px.editPx2DTConfig();}} ,
 		{"label":"終了",         "cond":"always",          "area":"footer", "app":null, "cb": function(){px.exit();}}
 	];
 
-	this.server = require('./index_files/px_server_emurator.node.js').init(this,$);
 
 
 	/**
@@ -341,6 +346,10 @@ new (function($, window){
 		for( var i in _menu ){
 			if( _menu[i].cond == 'projectSelected' ){
 				if( cpj === null ){
+					continue;
+				}
+			}else if( _menu[i].cond == 'homeDirExists' ){
+				if( cpj === null || !cpj_s.homeDirExists ){
 					continue;
 				}
 			}else if( _menu[i].cond == 'pxStandby' ){

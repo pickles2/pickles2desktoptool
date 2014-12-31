@@ -13,6 +13,7 @@ new (function($, window){
 	var _pj = null;
 	var _nw_gui = require('nw.gui');
 	// this.server = require('./index_files/px_server_emurator.node.js').init(this,$);
+	var _appName = 'Pickles 2 Desktop Tool';
 
 	if( !_utils.isDirectory( _path_data_dir ) ){
 		_fs.mkdirSync( _path_data_dir );
@@ -103,7 +104,7 @@ new (function($, window){
 			var win = _nw_gui.Window.get();
 			var nativeMenuBar = new _nw_gui.Menu({ type: "menubar" });
 			try {
-				nativeMenuBar.createMacBuiltin("Pickles 2 Desktop Tool");
+				nativeMenuBar.createMacBuiltin( _appName );
 				win.menu = nativeMenuBar;
 				// win.menu.append(new _nw_gui.MenuItem({
 				// 	type: "normal", 
@@ -418,6 +419,33 @@ new (function($, window){
 						.append( $tmpMenu )
 					);
 					break;
+			}
+		}
+
+		if( cpj === null ){
+			$('.theme_id')
+				.html('')
+				.append( $('<strong>')
+					.text( _appName )
+				)
+			;
+		}else{
+			$('.theme_id')
+				.html('')
+				.append( $('<a>')
+					.attr('href', 'javascript:;')
+					.text( _appName )
+					.click(function(){
+						px.deselectProject(); px.subapp();
+						return false;
+					})
+				)
+			;
+			if( cpj.get('name') ){
+				$('.theme_id').append( $('<div>')
+					.text( cpj.get('name') )
+				);
+
 			}
 		}
 

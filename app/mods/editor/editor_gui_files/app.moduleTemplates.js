@@ -1,5 +1,7 @@
 window.contApp.moduleTemplates = new(function(px, contApp){
-	var _pathModTpl;
+	// var _pathBase;
+	var _pathsModTpl;
+	// var _pathModTpl;
 	var _modTpls = [];
 	var _modTplsIdMap = {};
 
@@ -16,54 +18,86 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 	/**
 	 * 初期化
 	 */
-	this.init = function( pathModTpl, cb ){
-		_pathModTpl = pathModTpl;
+	this.init = function( pathBase, pathsModTpl, cb ){
+		// _pathBase = pathBase;
+		// console.log(pathsModTpl);
+		_pathsModTpl = JSON.parse(JSON.stringify(pathsModTpl));
+		for( var modIdx in _pathsModTpl ){
+			_pathsModTpl[modIdx] = px.fs.realpathSync( pathBase+'/'+_pathsModTpl[modIdx] );
+		}
 
 		var modIdList = [];
 		modIdList.push( '_sys/root' );
 		modIdList.push( '_sys/unknown' );
 
-		px.fs.readdir( _pathModTpl, function(err, data){
-			px.utils.iterate(
-				data,
-				function( it, dirname1, idx ){
-					px.fs.readdir( _pathModTpl+'/'+dirname1+'/', function(err, data){
-						px.utils.iterate(
-							data,
-							function( it2, dirname2, idx2 ){
-								if( !px.utils.isFile( _pathModTpl+'/'+dirname1+'/'+dirname2+'/template.html' ) ){
-									it2.next();//テンプレートが未定義
-									return;
-								}
-								modIdList.push( dirname1+'/'+dirname2 );
-								it2.next();
-							} ,
-							function(){
-								it.next();
-							}
-						);
-					} );
-				} ,
-				function(){
+		px.utils.iterate(
+			_pathsModTpl,
+			function( it0, pathModTpl, modIdx ){
+				px.fs.readdir( pathModTpl, function(err, data){
 					px.utils.iterate(
-						modIdList ,
-						function( it3, dirname3, idx3 ){
-							_modTplsIdMap[dirname3] = idx3;
-							_modTpls[idx3] = new classModTpl( dirname3, function(){
-								it3.next();
+						data,
+						function( it1, dirname1, idx ){
+							px.fs.readdir( pathModTpl+'/'+dirname1+'/', function(err, data){
+								px.utils.iterate(
+									data,
+									function( it2, dirname2, idx2 ){
+										if( !px.utils.isFile( pathModTpl+'/'+dirname1+'/'+dirname2+'/template.html' ) ){
+											it2.next();//テンプレートが未定義
+											return;
+										}
+										modIdList.push( modIdx+':'+dirname1+'/'+dirname2 );
+										it2.next();
+									} ,
+									function(){
+										it1.next();
+									}
+								);
 							} );
 						} ,
 						function(){
-							cb();
+							px.utils.iterate(
+								modIdList ,
+								function( it3, dirname3, idx3 ){
+									_modTplsIdMap[dirname3] = idx3;
+									_modTpls[idx3] = new classModTpl( dirname3, function(){
+										it3.next();
+									} );
+								} ,
+								function(){
+									it0.next();
+								}
+							);
 						}
 					);
-				}
-			);
-		} );
+				} );
+
+			},
+			function(){
+				cb();
+			}
+		);
 
 		return this;
 	}// init()
 
+	/**
+	 * モジュールテンプレートの物理格納パスを得る
+	 */
+	function getPathModTpl( modId ){
+		// modId の形式は、 {$idx}:{$dir}/{$name}
+		if( isSystemMod(modId) ){
+			return false;
+		}
+		modId.match( new RegExp('^([0-9a-zA-Z]+?)\\:(.*)$') );
+		var rtn = _pathsModTpl[RegExp.$1]+'/'+RegExp.$2+'/';
+		if( typeof(rtn) !== typeof('') ){
+			return false;
+		}
+		if( !px.utils.isDirectory(rtn) ){
+			return false;
+		}
+		return rtn;
+	}
 
 	/**
 	 * モジュールテンプレートオブジェクト
@@ -73,7 +107,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 		this.id = modId;
 		this.path = null;
 		if( !isSystemMod(modId) ){
-			this.path = px.fs.realpathSync(_pathModTpl+'/'+modId+'/');
+			this.path = px.fs.realpathSync( getPathModTpl(modId) );
 		}
 		this.fields = {};
 

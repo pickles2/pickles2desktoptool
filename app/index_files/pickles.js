@@ -490,7 +490,7 @@ new (function($, window){
 	process.on( 'uncaughtException', function(e){
 		// alert('ERROR: Uncaught Exception');
 		// console.log(e);
-		console.log('ERROR: Uncaught Exception');
+		// console.log('ERROR: Uncaught Exception');
 	} );
 	$(window).on( 'resize', function(e){
 		layoutReset();

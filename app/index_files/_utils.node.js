@@ -213,17 +213,21 @@
 	exports.iterate = function(ary, fnc, fncComplete){
 		new (function( ary, fnc ){
 			this.idx = -1;
+			this.idxs = [];
+			for( var i in ary ){
+				this.idxs.push(i);
+			}
 			this.ary = ary||[];
 			this.fnc = fnc||function(){};
 			this.fncComplete = fncComplete||function(){};
 
 			this.next = function(){
-				if( this.idx+1 >= this.ary.length ){
+				if( this.idx+1 >= this.idxs.length ){
 					this.fncComplete();
 					return this;
 				}
 				this.idx ++;
-				this.fnc( this, this.ary[this.idx], this.idx );
+				this.fnc( this, this.ary[this.idxs[this.idx]], this.idxs[this.idx] );
 				return this;
 			}
 			this.next();

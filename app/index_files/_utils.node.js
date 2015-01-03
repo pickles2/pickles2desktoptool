@@ -46,6 +46,13 @@
 	}
 
 	/**
+	 * URLを開く
+	 */
+	exports.openURL = function( url ){
+		this.spawn( 'open', [url], {} );
+	}
+
+	/**
 	 * ディレクトリ名を得る
 	 * phpJSから拝借
 	 */

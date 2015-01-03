@@ -8,6 +8,7 @@ body{
 }
 header{
 	background-color: #eee;
+	/*background-image: url("./images/logo_bg.svg");*/
 	padding: 10px;
 	position:fixed;
 	top:0; left:0;

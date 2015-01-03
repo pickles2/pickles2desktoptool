@@ -28,52 +28,7 @@
 
 		<!-- Local Resources -->
 		<link rel="stylesheet" href="./index_files/style.css" type="text/css" />
-
-		<script>
-			window.px = $.px = window.parent.px;
-			$(function(){
-				var pj = px.getCurrentProject();
-				var filelist = pj.getSitemapFilelist();
-				$('.cont_filelist_sitemap').html('').append( $('<ul data-inset="true">') );
-
-				filelistLoop:for( var i in filelist ){
-					switch( px.utils.getExtension(filelist[i]) ){
-						case 'csv':
-						case 'xlsx':
-							break;
-						default:
-							continue filelistLoop;
-					}
-
-					$('.cont_filelist_sitemap ul').append( $('<li>')
-						.append( $('<a>')
-							.attr('href', 'javascript:;')
-							.data('filename', filelist[i] )
-							.data('num', i)
-							.click( function(e){
-								var path = pj.get('path')+'/'+pj.get('home_dir')+'/sitemaps/'+$(this).data('filename');
-
-								window.px.utils.spawn('open',
-									[path],
-									{
-										success: function(data){
-										} ,
-										error: function(data){
-											alert('error!');
-										} ,
-										complete: function(code){
-										}
-									}
-								);
-
-							} )
-							.text( filelist[i] )
-						)
-					);
-				}
-				$('.cont_filelist_sitemap ul').listview();
-			});
-		</script>
+		<script src="./index_files/app.js"></script>
 	</head>
 	<body>
 		<div class="container">
@@ -81,7 +36,59 @@
 		</div>
 		<div class="contents">
 			<div class="container">
-				<div class="unit cont_filelist_sitemap"></div>
+				<div class="row">
+					<div class="col-md-6">
+						<h2>サイトマップファイル一覧</h2>
+						<div class="unit cont_filelist_sitemap">Loading...</div>
+						<p class="center"><button onclick="contApp.openInFinder(); return false;">sitemaps を Finder で開く</button></p>
+					</div>
+					<div class="col-md-6">
+						<h2>CSVの形式について</h2>
+						<ul>
+							<li>CSVファイルはUTF-8で保存してください。</li>
+							<li>1行目は定義行として、2行目以降にページデータを記述してください。</li>
+							<li>定義行は、<code>* 定義名</code> のように、先頭にアスタリスクを記述します。</li>
+							<li><code>* path</code>、<code>* title</code> は必須です。必ず定義に加えてください。</li>
+						</ul>
+
+						<h3>規定の定義</h3>
+						<div class="unit">
+						<table class="def">
+							<thead>
+								<tr>
+									<th>列</th>
+									<th>キー</th>
+									<th>意味</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr><th>A</th><td class="selectable">path</td><td>ページのパス</td></tr>
+								<tr><th>B</th><td class="selectable">content</td><td>コンテンツファイルの格納先</td></tr>
+								<tr><th>C</th><td class="selectable">id</td><td>ページID</td></tr>
+								<tr><th>D</th><td class="selectable">title</td><td>ページタイトル</td></tr>
+								<tr><th>E</th><td class="selectable">title_breadcrumb</td><td>ページタイトル(パン屑表示用)</td></tr>
+								<tr><th>F</th><td class="selectable">title_h1</td><td>ページタイトル(H1表示用)</td></tr>
+								<tr><th>G</th><td class="selectable">title_label</td><td>ページタイトル(リンク表示用)</td></tr>
+								<tr><th>H</th><td class="selectable">title_full</td><td>ページタイトル(タイトルタグ用)</td></tr>
+								<tr><th>I</th><td class="selectable">logical_path</td><td>論理構造上のパス</td></tr>
+								<tr><th>J</th><td class="selectable">list_flg</td><td>一覧表示フラグ</td></tr>
+								<tr><th>K</th><td class="selectable">layout</td><td>レイアウト</td></tr>
+								<tr><th>L</th><td class="selectable">orderby</td><td>表示順</td></tr>
+								<tr><th>M</th><td class="selectable">keywords</td><td>metaキーワード</td></tr>
+								<tr><th>N</th><td class="selectable">description</td><td>metaディスクリプション</td></tr>
+								<tr><th>O</th><td class="selectable">category_top_flg</td><td>カテゴリトップフラグ</td></tr>
+							</tbody>
+						</table>
+						</div><!-- /.unit -->
+
+						<h2>その他のヒント</h2>
+						<ul>
+							<li>定義列は、任意に並べ替えることができます。</li>
+							<li>定義は任意の名称で追加することができ、コンテンツやテーマから簡単に参照できます。例えば、 <code>* custom_col</code> と定義した列の値は、<code class="selectable">$px->site()->get_page_info( 'page_id', 'custom_col' )</code> や <code class="selectable">$px->site()->get_current_page_info( 'custom_col' )</code> で取得することができます。</li>
+							<li>サイトマップCSVを、グラフィカルなExcelの形式(*.xlsx)で編集することができます。<a href="https://github.com/tomk79/pickles-sitemap-excel-2" onclick="px.utils.openURL( this.href ); return false;">pickles-sitemap-excel-2 プラグイン</a>をプロジェクトに設定してください。</li>
+						</ul>
+					</div>
+				</div>
 			</div>
 		</div>
 	</body>

@@ -50,6 +50,9 @@ window.contApp = new (function(){
 
 	}
 
+	/**
+	 * Finderで表示する
+	 */
 	this.openInFinder = function(){
 		px.utils.spawn('open', [pj.get('path')+'/'+pj.get('home_dir')+'/sitemaps/'], {});
 	}

@@ -7,8 +7,16 @@ window.contApp = new (function(){
 	function init(){
 	}
 
+	/**
+	 * Finderで表示する
+	 */
+	this.openInFinder = function(){
+		px.utils.spawn('open', [pj.get('path')+'/'+pj.get('home_dir')+'/themes/'], {});
+	}
 
-
+	/**
+	 * イベント
+	 */
 	$(function(){
 		init();
 	});

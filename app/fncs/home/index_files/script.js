@@ -160,6 +160,18 @@ window.contApp = new (function(){
 		} );
 	}
 
+	/**
+	 * イベント
+	 */
+	this.openInBrowser = function(){
+		px.preview.serverStandby(function(){
+			px.utils.openURL( px.preview.getUrl() );
+		});
+	}
+
+	/**
+	 * イベント
+	 */
 	$(function(){
 		init();
 	});

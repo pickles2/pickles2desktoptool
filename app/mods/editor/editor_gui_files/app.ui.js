@@ -23,7 +23,19 @@ window.contApp.ui = new(function(px, contApp){
 			.append('<ul>')
 		;
 		var li = d3.select('.cont_modulelist ul').selectAll('li');
-		var update = li.data( contApp.moduleTemplates.getAll() );
+		var modTpls = (function( tmpModTpls ){
+			var rtn = [];
+			for( var i in tmpModTpls ){
+				if( contApp.moduleTemplates.isSystemMod( tmpModTpls[i].id ) ){
+					// システムテンプレートを除外
+					continue;
+				}
+				rtn.push( tmpModTpls[i] );
+			}
+			return rtn;
+		})( contApp.moduleTemplates.getAll() );
+
+		var update = li.data( modTpls );
 		update
 			.text(function(d, i){
 				return d.id;
@@ -486,7 +498,7 @@ window.contApp.ui = new(function(px, contApp){
 
 		$previewDoc = $($preview[0].contentWindow.document);
 
-		var fieldheight = $previewDoc.find('body').height()*1.5;
+		var fieldheight = $previewDoc.find('body').height()*1.5; // ←座標を上手く合わせられないので、余裕を持って長めにしとく。
 		$preview.height( fieldheight );
 		$ctrlPanel.height( fieldheight );
 		if( $editWindow ){
@@ -506,13 +518,16 @@ window.contApp.ui = new(function(px, contApp){
 		});
 
 		setTimeout(function(){
+			// 高さ合わせ処理のタイミングがずれることがある。
+			// 根本的な解決にはなってないが、一旦 setTimeout() で逃げとく。
+			// 描画処理中のどこかに何か原因がありそうな気がする。
 			var fieldheight = $previewDoc.find('body').height();
 			$preview.height( fieldheight );
 			$ctrlPanel.height( fieldheight );
 			if( $editWindow ){
 				$editWindow.height( fieldheight );
 			}
-		}, 100);
+		}, 200);
 	} // resizeEvent()
 
 	/**

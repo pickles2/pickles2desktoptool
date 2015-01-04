@@ -1,4 +1,5 @@
 window.contApp.moduleTemplates = new(function(px, contApp){
+	var _this = this;
 	// var _pathBase;
 	var _pathsModTpl;
 	// var _pathModTpl;
@@ -8,7 +9,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 	/**
 	 * システムテンプレートかどうか判断する
 	 */
-	function isSystemMod( modId ){
+	this.isSystemMod = function( modId ){
 		if( !modId.match(new RegExp('^_sys\\/')) ){
 			return false;
 		}
@@ -85,7 +86,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 	 */
 	function getPathModTpl( modId ){
 		// modId の形式は、 {$idx}:{$dir}/{$name}
-		if( isSystemMod(modId) ){
+		if( contApp.moduleTemplates.isSystemMod(modId) ){
 			return false;
 		}
 		modId.match( new RegExp('^([0-9a-zA-Z]+?)\\:(.*)$') );
@@ -106,7 +107,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 		var _this = this;
 		this.id = modId;
 		this.path = null;
-		if( !isSystemMod(modId) ){
+		if( !contApp.moduleTemplates.isSystemMod(modId) ){
 			this.path = px.fs.realpathSync( getPathModTpl(modId) );
 		}
 		this.fields = {};

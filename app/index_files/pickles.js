@@ -135,15 +135,25 @@ new (function($, window){
 			_fs.mkdirSync( _path_data_dir+'commands/composer/' );
 		}
 		if( !_utils.isFile( _path_data_dir+'commands/composer/composer.phar' ) ){
-			px.utils.exec(
-				'php -r "readfile(\'https://getcomposer.org/installer\');" | php' ,
-				function(){
-					_db.commands.composer = _path_data_dir+'commands/composer/composer.phar';
-					px.save();
-					cb();
-				},
-				{cd: _path_data_dir+'commands/composer/'}
-			);
+			(function(){
+				var opt = {
+					'title': '初期設定中...',
+					'body': $('<p>Pickles 2 Desktop Tool を初期設定しています。インターネットに接続したまま、しばらくお待ちください。</p>') ,
+					'buttons': []
+				};
+				px.utils.exec(
+					'php -r "readfile(\'https://getcomposer.org/installer\');" | php' ,
+					function(){
+						_db.commands.composer = _path_data_dir+'commands/composer/composer.phar';
+						px.save();
+						px.closeDialog();
+						cb();
+					},
+					{cd: _path_data_dir+'commands/composer/'}
+				);
+
+				px.dialog(opt);
+			})();
 		}else{
 			cb();
 		}

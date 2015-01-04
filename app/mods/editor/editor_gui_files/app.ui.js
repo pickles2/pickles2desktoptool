@@ -411,8 +411,6 @@ window.contApp.ui = new(function(px, contApp){
 							break;
 					}
 				}
-				// px.message('UTODO: 開発中です。');
-				// px.message( $(this).attr('data-guieditor-cont-data-path') );
 				$editWindow.remove();
 				_this.resizeEvent();
 				return false;
@@ -487,14 +485,6 @@ window.contApp.ui = new(function(px, contApp){
 		;
 
 		$previewDoc = $($preview[0].contentWindow.document);
-		var fieldheight = $previewDoc.find('body').height()+5;
-		$preview.height( fieldheight );
-		$ctrlPanel.height( fieldheight );
-		if( $editWindow ){
-			$editWindow.height( fieldheight );
-		}
-
-
 		$ctrlPanel.html('');
 		$previewDoc.find('.contents').each(function(){
 			$(this).html('');
@@ -506,6 +496,13 @@ window.contApp.ui = new(function(px, contApp){
 			$(this).html( dataViewTree[id].drawCtrlPanels($(this)) );
 
 		});
+
+		var fieldheight = $previewDoc.find('body').height()+5;
+		$preview.height( fieldheight );
+		$ctrlPanel.height( fieldheight );
+		if( $editWindow ){
+			$editWindow.height( fieldheight );
+		}
 	} // resizeEvent()
 
 	/**

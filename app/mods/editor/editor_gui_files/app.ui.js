@@ -485,6 +485,14 @@ window.contApp.ui = new(function(px, contApp){
 		;
 
 		$previewDoc = $($preview[0].contentWindow.document);
+
+		var fieldheight = $previewDoc.find('body').height()*1.5;
+		$preview.height( fieldheight );
+		$ctrlPanel.height( fieldheight );
+		if( $editWindow ){
+			$editWindow.height( fieldheight );
+		}
+
 		$ctrlPanel.html('');
 		$previewDoc.find('.contents').each(function(){
 			$(this).html('');
@@ -497,12 +505,14 @@ window.contApp.ui = new(function(px, contApp){
 
 		});
 
-		var fieldheight = $previewDoc.find('body').height()+5;
-		$preview.height( fieldheight );
-		$ctrlPanel.height( fieldheight );
-		if( $editWindow ){
-			$editWindow.height( fieldheight );
-		}
+		setTimeout(function(){
+			var fieldheight = $previewDoc.find('body').height();
+			$preview.height( fieldheight );
+			$ctrlPanel.height( fieldheight );
+			if( $editWindow ){
+				$editWindow.height( fieldheight );
+			}
+		}, 100);
 	} // resizeEvent()
 
 	/**

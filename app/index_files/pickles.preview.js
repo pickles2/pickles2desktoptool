@@ -19,8 +19,26 @@
 			return port;
 		}
 
+		/**
+		 * サーバーを起動
+		 */
 		this.serverStandby = function( cb ){
 			_previewServer.start(this.getPort(), cb);
+			return this;
+		}
+
+		/**
+		 * サーバーを停止
+		 */
+		this.serverStop = function( cb ){
+			cb();
+
+			// ↓なぜかサーバーが閉じない。(server.close() が返ってこない)
+			// 　UTODO: ので、↑とりあえず cb() 返しておく。あとで調べる。
+			_previewServer.stop(function(){
+				console.log('---- server closed!! ----');
+			});
+			return this;
 		}
 
 	})();

@@ -1,5 +1,6 @@
-// --------------------------------------
-// setup webserver
+/**
+ * Pickles2 webserver emurator
+ */
 (function(exports){
 	var http = require('http');
 	var url = require('url');
@@ -56,7 +57,8 @@
 		}
 
 		if( applyPx ){
-			px.utils.spawn('php',
+			px.utils.spawn(
+				'php',
 				[
 					pj.get('path')+'/'+pj.get('entry_script') ,
 					'-o', 'json' ,
@@ -80,7 +82,10 @@
 						}
 						// console.log(document_body);
 
-						response.writeHead(dataDecoded.status, 'OK', {'Content-Type': mime});
+						response.writeHead(dataDecoded.status, 'OK', {
+							'Connection': 'close' ,
+							'Content-Type': mime
+						});
 						response.write(document_body);
 						// response.write(''+dataDecoded.relatedlinks.length);
 						response.end();
@@ -89,10 +94,14 @@
 					}
 				}
 			);
+
 		}else{
 			fs.readFile(pj.get('path') + path, function(error, bin){
 				if(error) {
-					response.writeHead(404, 'NotFound', {'Content-Type': 'text/html'});
+					response.writeHead(404, 'NotFound', {
+						'Connection': 'close' ,
+						'Content-Type': 'text/html'
+					});
 					response.write('<!DOCTYPE html>');
 					response.write('<html>');
 					response.write('<head>');
@@ -128,9 +137,9 @@
 		// 指定ポートでLISTEN状態にする
 		_server.listen(_port, function(){
 			_running = true;
-			console.log('Pickles2 server emurator started;');
-			console.log('port: '+_port);
-			console.log('standby;');
+			console.log( 'Pickles2 server emurator started;' );
+			console.log( 'port: '+_port );
+			console.log( 'standby;' );
 			cb(true);
 		});
 
@@ -157,6 +166,10 @@
 			cb(true);
 			return this;
 		}
+		console.log('closing Pickles2 server emurator...');
+		// _server.destroy();
+		// cb(true);
+
 		_server.close(function(){
 			// delete __server;
 			_running = false;

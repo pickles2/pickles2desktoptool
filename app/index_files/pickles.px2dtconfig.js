@@ -17,6 +17,11 @@
 				$('<button>').text('OK').click(function(){
 					px.getDb().commands.php = $tpl.find('[name=php]').val();
 					px.getDb().network.preview.port = $tpl.find('[name=network_preview_port]').val();
+					px.preview.serverStop(function(){
+						px.closeDialog();
+					});
+				}) ,
+				$('<button>').text('Cancel').click(function(){
 					px.closeDialog();
 				})
 			]

@@ -43,7 +43,7 @@
 			var i = path.lastIndexOf('.');
 			return (i < 0) ? '' : path.substr(i + 1);
 		})(path);
-		var mime = 'text/html';
+		var mime = 'application/octet-stream';
 		var applyPx = false;
 		switch( pathExt ){
 			case 'html': case 'htm':             mime = 'text/html'; applyPx = true; break;

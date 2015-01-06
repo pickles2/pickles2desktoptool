@@ -125,19 +125,23 @@ window.contApp.ui = new(function(px, contApp){
 		this.fields = {};
 		for( var idx in this.fieldList ){
 			var fieldName = this.fieldList[idx];
-			switch( this.moduleTemplates.fields[fieldName].type ){
-				case 'markdown':
-					this.fields[fieldName] = data.fields[fieldName];
-					break;
-				case 'module':
-					this.fields[fieldName] = [];
-					for( var idx2 in data.fields[fieldName] ){
-						this.fields[fieldName][idx2] = new classUiUnit(
-							instancePath+'/fields.'+fieldName+'@'+idx2,
-							data.fields[fieldName][idx2]
-						);
-					}
-					break;
+			if( this.moduleTemplates.fields[fieldName].fieldType == 'input' ){
+				switch( this.moduleTemplates.fields[fieldName].type ){
+					case 'markdown':
+						this.fields[fieldName] = data.fields[fieldName];
+						break;
+					case 'module':
+						this.fields[fieldName] = [];
+						for( var idx2 in data.fields[fieldName] ){
+							this.fields[fieldName][idx2] = new classUiUnit(
+								instancePath+'/fields.'+fieldName+'@'+idx2,
+								data.fields[fieldName][idx2]
+							);
+						}
+						break;
+				}
+			}else if( this.moduleTemplates.fields[fieldName].fieldType == 'loop' ){
+				// console.log(this.moduleTemplates.fields[fieldName]);
 			}
 		}
 
@@ -152,44 +156,48 @@ window.contApp.ui = new(function(px, contApp){
 			var fieldData = {};
 			for( var idx in this.fieldList ){
 				var fieldName = this.fieldList[idx];
-				switch( this.moduleTemplates.fields[fieldName].type ){
-					case 'markdown':
-						fieldData[fieldName] = this.fields[fieldName];
-						if( mode == 'canvas' && !fieldData[fieldName].length ){
-							fieldData[fieldName] = '(テキストを入力してください)';
-						}
-						break;
-					case 'module':
-						fieldData[fieldName] = [];
-						for( var idx2 in this.fields[fieldName] ){
-							fieldData[fieldName][idx2] = this.fields[fieldName][idx2].bind( mode );
-						}
-						if( mode == 'canvas' ){
-							var instancePathNext = this.instancePath+'/fields.'+fieldName+'@'+( this.fields[fieldName].length );
-							fieldData[fieldName].push( $('<div>')
-								.attr( "data-guieditor-cont-data-path", instancePathNext )
-								.append( $('<div>')
-									.text(
-										// instancePathNext +
-										' ここに新しいモジュールをドラッグしてください。'
+				if( this.moduleTemplates.fields[fieldName].fieldType == 'input' ){
+					switch( this.moduleTemplates.fields[fieldName].type ){
+						case 'markdown':
+							fieldData[fieldName] = this.fields[fieldName];
+							if( mode == 'canvas' && !fieldData[fieldName].length ){
+								fieldData[fieldName] = '(テキストを入力してください)';
+							}
+							break;
+						case 'module':
+							fieldData[fieldName] = [];
+							for( var idx2 in this.fields[fieldName] ){
+								fieldData[fieldName][idx2] = this.fields[fieldName][idx2].bind( mode );
+							}
+							if( mode == 'canvas' ){
+								var instancePathNext = this.instancePath+'/fields.'+fieldName+'@'+( this.fields[fieldName].length );
+								fieldData[fieldName].push( $('<div>')
+									.attr( "data-guieditor-cont-data-path", instancePathNext )
+									.append( $('<div>')
+										.text(
+											// instancePathNext +
+											' ここに新しいモジュールをドラッグしてください。'
+										)
+										.css({
+											'overflow':'hidden',
+											"padding": 15,
+											"background-color":"#eef",
+											"border-radius":5,
+											"font-size":9,
+											'text-align':'center',
+											'box-sizing': 'content-box'
+										})
 									)
 									.css({
-										'overflow':'hidden',
-										"padding": 15,
-										"background-color":"#eef",
-										"border-radius":5,
-										"font-size":9,
-										'text-align':'center',
-										'box-sizing': 'content-box'
+										"padding":'5px 0'
 									})
-								)
-								.css({
-									"padding":'5px 0'
-								})
-								.get(0).outerHTML
-							);
-						}
-						break;
+									.get(0).outerHTML
+								);
+							}
+							break;
+					}
+				}else if( this.moduleTemplates.fields[fieldName].fieldType == 'loop' ){
+					// UTODO: ？？？？？？
 				}
 			}
 			var rtn = $('<div>')
@@ -410,17 +418,20 @@ window.contApp.ui = new(function(px, contApp){
 			.submit(function(){
 				for( var idx in modTpl.fields ){
 					var field = modTpl.fields[idx];
-					switch( field.type ){
-						case 'module':
-							break;
-						case 'markdown':
-						default:
-							// console.log(modTpl.fields[idx]);
-							// console.log(data.fields[modTpl.fields[idx].name]);
-							var src = $editWindow.find('form [name='+JSON.stringify( modTpl.fields[idx].name )+']').val();
-							src = JSON.parse( JSON.stringify(src) );
-							data.fields[field.name] = src;
-							break;
+					if( field.fieldType == 'input' ){
+						switch( field.type ){
+							case 'module':
+								break;
+							case 'markdown':
+							default:
+								// console.log(modTpl.fields[idx]);
+								// console.log(data.fields[modTpl.fields[idx].name]);
+								var src = $editWindow.find('form [name='+JSON.stringify( modTpl.fields[idx].name )+']').val();
+								src = JSON.parse( JSON.stringify(src) );
+								data.fields[field.name] = src;
+								break;
+						}
+					}else if( field.fieldType == 'loop' ){
 					}
 				}
 				$editWindow.remove();
@@ -447,38 +458,57 @@ window.contApp.ui = new(function(px, contApp){
 
 		for( var idx in modTpl.fields ){
 			var field = modTpl.fields[idx];
-			switch( field.type ){
-				case 'module':
-					$editWindow.find('table')
-						.append($('<tr>')
-							.append($('<th>')
-								.text(field.type+' ('+modTpl.fields[idx].name+')')
-							)
-							.append($('<td>')
-								.text('ネストされたモジュールがあります。')
-							)
-						)
-					;
-					break;
-				case 'markdown':
-				default:
-					// console.log(modTpl.fields[idx]);
-					// console.log(data.fields[modTpl.fields[idx].name]);
-					$editWindow.find('table')
-						.append($('<tr>')
-							.append($('<th>')
-								.text(field.type+' ('+modTpl.fields[idx].name+')')
-							)
-							.append($('<td>')
-								.append($('<textarea>')
-									.attr({"name":modTpl.fields[idx].name})
-									.val(data.fields[modTpl.fields[idx].name])
-									.css({'width':'100%','height':'12em'})
+			if( field.fieldType == 'input' ){
+				switch( field.type ){
+					case 'module':
+						$editWindow.find('table')
+							.append($('<tr>')
+								.append($('<th>')
+									.text(field.type+' ('+modTpl.fields[idx].name+')')
+								)
+								.append($('<td>')
+									.text('ネストされたモジュールがあります。')
 								)
 							)
+						;
+						break;
+					case 'markdown':
+					default:
+						// console.log(modTpl.fields[idx]);
+						// console.log(data.fields[modTpl.fields[idx].name]);
+						$editWindow.find('table')
+							.append($('<tr>')
+								.append($('<th>')
+									.text(field.type+' ('+modTpl.fields[idx].name+')')
+								)
+								.append($('<td>')
+									.append($('<textarea>')
+										.attr({"name":modTpl.fields[idx].name})
+										.val(data.fields[modTpl.fields[idx].name])
+										.css({'width':'100%','height':'12em'})
+									)
+								)
+							)
+						;
+						break;
+				}
+			}else if( field.fieldType == 'loop' ){
+				$editWindow.find('table')
+					.append($('<tr>')
+						.append($('<th>')
+							.text(field.fieldType+' ('+modTpl.fields[idx].name+')')
 						)
-					;
-					break;
+						.append($('<td>')
+							.append($('<input>')
+								.attr({"type":'number'})
+								.attr({"name":modTpl.fields[idx].name})
+								.val(data.fields.length)//??
+								.css({'width':'100%'})
+							)
+						)
+					)
+				;
+
 			}
 		}
 

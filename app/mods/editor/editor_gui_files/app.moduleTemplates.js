@@ -134,7 +134,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 							break;
 						case 'markdown':
 							var mdData = fieldData[field.input.name];
-							mdData = px.utils.markdown( mdData );
+							if(typeof(mdData)===typeof('')) mdData = px.utils.markdown( mdData );
 							rtn += mdData;
 							break;
 						default:
@@ -215,14 +215,14 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 					_this.fields[field.loop.name] = field.loop;
 					_this.fields[field.loop.name].fieldType = 'loop';
 					var tmpSearchResult = searchEndTag( src, 'loop' );
-					// _this.fields[field.loop.name].template = tmpSearchResult.childSrc;
 					_this.fields[field.loop.name].fields = {};
 					parseTpl( tmpSearchResult.childSrc, _this.fields[field.loop.name], cb );
-					// console.log( _this.fields[field.loop.name].fields );
 					src = tmpSearchResult.nextSrc;
 				}else if( field == 'endloop' ){
-					//ループ構造の閉じタグ
-					console.log('debug: endloop defined');
+					// ループ構造の閉じタグ
+					// 本来ここは通らないはず。
+					// ここを通る場合は、対応する開始タグがない loopend がある場合。
+					console.log('debug: "endloop" defined');
 				}
 			}
 			cb();
@@ -243,7 +243,6 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 				parseTpl( src, _this, cb );
 			} );
 		}
-		console.log( this );
 
 		return;
 	}

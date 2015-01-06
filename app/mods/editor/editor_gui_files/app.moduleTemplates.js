@@ -127,18 +127,23 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 				rtn += RegExp.$1;
 				field = RegExp.$2;
 				field = JSON.parse( field );
-				switch( field.input.type ){
-					case 'module':
-						rtn += fieldData[field.input.name].join('');
-						break;
-					case 'markdown':
-						var mdData = fieldData[field.input.name];
-						mdData = px.utils.markdown( mdData );
-						rtn += mdData;
-						break;
-					default:
-						rtn += fieldData[field.input.name];
-						break;
+				if( field.input ){
+					switch( field.input.type ){
+						case 'module':
+							rtn += fieldData[field.input.name].join('');
+							break;
+						case 'markdown':
+							var mdData = fieldData[field.input.name];
+							mdData = px.utils.markdown( mdData );
+							rtn += mdData;
+							break;
+						default:
+							rtn += fieldData[field.input.name];
+							break;
+					}
+				}else if( field.loop ){
+					// UTODO: ？？？？？？
+
 				}
 				// if( typeof(fieldData[field.input.name]) === typeof([]) ){
 				// 	rtn += fieldData[field.input.name].join('');
@@ -151,6 +156,9 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 			return rtn;
 		}
 
+		/**
+		 * テンプレートを解析する
+		 */
 		function parseTpl(src, cb){
 			cb = cb||function(){};
 			src = JSON.parse( JSON.stringify( src ) );
@@ -165,7 +173,16 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 				src = RegExp.$3;
 
 				field = JSON.parse( field );
-				_this.fields[field.input.name] = field.input;
+				if( field.input ){
+					_this.fields[field.input.name] = field.input;
+					_this.fields[field.input.name].fieldType = 'input';
+				}else if( field.loop ){
+					_this.fields[field.loop.name] = field.loop;
+					_this.fields[field.loop.name].fieldType = 'loop';
+				}else if( field == 'endloop' ){
+					//ループ構造の閉じタグ
+					console.log('debug: endloop defined');
+				}
 			}
 			cb();
 		}

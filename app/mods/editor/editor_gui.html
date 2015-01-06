@@ -47,14 +47,14 @@
 
 		<!-- エディタ画面の全体レイアウト -->
 		<script type="text/template" id="cont_tpl_editor">
-			<div class="row">
-				<div class="col-xs-10">
+			<div class="cont_editorframe">
+				<div class="cont_editorframe-preview">
 					<div class="cont_field">
 						<iframe class="cont_field-preview"></iframe>
 						<div class="cont_field-ctrlpanel"></div>
 					</div>
-				</div>
-				<div class="col-xs-2">
+				</div><!-- //.cont_editorframe-preview -->
+				<div class="cont_editorframe-ctrlpanel">
 					<div class="cont_modulelist">
 					</div>
 					<div class="cont_btns">
@@ -63,8 +63,8 @@
 							<li><button class="cont_btn_save_and_close">保存して閉じる</button></li>
 						</ul>
 					</div>
-				</div>
-			</div>
+				</div><!-- //.cont_editorframe-ctrlpanel -->
+			</div><!-- //.cont_editorframe -->
 		</script>
 
 		<!-- モジュール別編集画面 -->

@@ -4,6 +4,24 @@ body{
 	overflow: hidden;
 }
 
+.cont_editorframe{
+	width:100%;
+	display:table-row;
+}
+.cont_editorframe-preview{
+	width:100%;
+	display:table-cell;
+	overflow:auto;
+}
+.cont_editorframe-ctrlpanel{
+	    width:260px;
+	max-width:260px;
+	min-width:260px;
+	display:table-cell;
+	overflow:auto;
+	vertical-align: top;
+}
+
 .cont_field{
 	position: relative;
 	top:0; left:0;

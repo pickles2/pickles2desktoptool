@@ -252,7 +252,7 @@ window.contApp.ui = new(function(px, contApp){
 					// px.message( 'modId "'+modId+'" が "'+method+'" のためにドロップされました。' );
 					if( method == 'add' ){
 						contApp.contentsSourceData.addInstance( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
-							px.message('インスタンスを追加しました。');
+							// px.message('インスタンスを追加しました。');
 							contApp.ui.resizeEvent();
 						} );
 					}else if( method == 'moveTo' ){

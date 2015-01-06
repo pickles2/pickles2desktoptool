@@ -159,10 +159,45 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 		/**
 		 * テンプレートを解析する
 		 */
-		function parseTpl(src, cb){
+		function parseTpl(src, _this, cb){
 			cb = cb||function(){};
 			src = JSON.parse( JSON.stringify( src ) );
 			_this.template = src;
+
+			/* 閉じタグを探す */
+			function searchEndTag( src, fieldType ){
+				var rtn = {
+					childSrc: '',
+					nextSrc: src
+				};
+				var depth = 0;
+				while( 1 ){
+					if( !rtn.nextSrc.match(new RegExp('^((?:.|\r|\n)*?)\\{\\&((?:.|\r|\n)*?)\\&\\}((?:.|\r|\n)*)$') ) ){
+						break;
+					}
+					rtn.childSrc += RegExp.$1;
+					var fieldSrc = RegExp.$2;
+					var field = JSON.parse( fieldSrc );
+					rtn.nextSrc = RegExp.$3;
+
+					if( field == 'end'+fieldType ){
+						if( depth ){
+							depth --;
+							rtn.childSrc += '{&'+fieldSrc+'&}';
+							continue;
+						}
+						return rtn;
+					}else if( field[fieldType] ){
+						depth ++;
+						rtn.childSrc += '{&'+fieldSrc+'&}';
+						continue;
+					}else{
+						rtn.childSrc += '{&'+fieldSrc+'&}';
+						continue;
+					}
+				}
+				return rtn;
+			}
 
 			var field = null;
 			while( 1 ){
@@ -179,6 +214,12 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 				}else if( field.loop ){
 					_this.fields[field.loop.name] = field.loop;
 					_this.fields[field.loop.name].fieldType = 'loop';
+					var tmpSearchResult = searchEndTag( src, 'loop' );
+					// _this.fields[field.loop.name].template = tmpSearchResult.childSrc;
+					_this.fields[field.loop.name].fields = {};
+					parseTpl( tmpSearchResult.childSrc, _this.fields[field.loop.name], cb );
+					// console.log( _this.fields[field.loop.name].fields );
+					src = tmpSearchResult.nextSrc;
 				}else if( field == 'endloop' ){
 					//ループ構造の閉じタグ
 					console.log('debug: endloop defined');
@@ -188,20 +229,21 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 		}
 
 		if( modId == '_sys/root' ){
-			parseTpl( '{&{"input":{"type":"module","name":"main"}}&}', cb );
+			parseTpl( '{&{"input":{"type":"module","name":"main"}}&}', _this, cb );
 		}else if( modId == '_sys/unknown' ){
-			parseTpl( '<div style="background:#f00;padding:10px;color:#fff;text-align:center;border:1px solid #fdd;">[ERROR] 未知のモジュールテンプレートです。<!-- .error --></div>', cb );
+			parseTpl( '<div style="background:#f00;padding:10px;color:#fff;text-align:center;border:1px solid #fdd;">[ERROR] 未知のモジュールテンプレートです。<!-- .error --></div>', _this, cb );
 		}else if( this.path ){
 			px.fs.readFile( this.path+'/template.html', function( err, buffer ){
 				if( err ){
-					parseTpl( '<div style="background:#f00;padding:10px;color:#fff;text-align:center;border:1px solid #fdd;">[ERROR] モジュールテンプレートの読み込みエラーです。<!-- .error --></div>', cb );
+					parseTpl( '<div style="background:#f00;padding:10px;color:#fff;text-align:center;border:1px solid #fdd;">[ERROR] モジュールテンプレートの読み込みエラーです。<!-- .error --></div>', _this, cb );
 					return;
 				}
 				var src = buffer.toString();
 				src = JSON.parse( JSON.stringify( src ) );
-				parseTpl( src, cb );
+				parseTpl( src, _this, cb );
 			} );
 		}
+		console.log( this );
 
 		return;
 	}

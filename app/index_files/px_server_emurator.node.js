@@ -29,6 +29,7 @@
 		var path = parsedUrl.pathname;
 
 		var pj = px.getCurrentProject();
+		// console.log( pj.getConfig().path_controot );
 
 		// ディレクトリトラバーサル防止
 		if (path.indexOf("..") != -1) {
@@ -38,6 +39,7 @@
 			// リクエストが「/」で終わっている場合、index.htmlをつける。
 			path += 'index.html';
 		}
+
 		var _cmdData = '';
 
 		var pathExt = (function (path) {
@@ -55,6 +57,27 @@
 			case 'png':                          mime = 'image/png';break;
 			case 'svg':                          mime = 'image/svg+xml';break;
 		}
+
+		if( applyPx && !path.match( new RegExp( '^'+px.utils.escapeRegExp( pj.getConfig().path_controot ) ) ) ){
+			response.writeHead(500, 'Internal Server Error', {
+				'Connection': 'close' ,
+				'Content-Type': 'text/html'
+			});
+			response.write('<!DOCTYPE html>');
+			response.write('<html>');
+			response.write('<head>');
+			response.write('<meta charset="UTF-8" />');
+			response.write('<title>500 Internal Server Error.</title>');
+			response.write('</head>');
+			response.write('<body>');
+			response.write('<h1>500 Internal Server Error.</h1>');
+			response.write('<p>Pickles2 の管理外のパスにアクセスしました。</p>');
+			response.write('</body>');
+			response.write('</html>');
+			response.end();
+			return;
+		}
+		path = path.replace( new RegExp( '^'+px.utils.escapeRegExp( pj.getConfig().path_controot ) ), '/' );
 
 		if( applyPx ){
 			px.utils.spawn(
@@ -94,18 +117,19 @@
 					}
 				}
 			);
-
+			return ;
 		}else{
 			fs.readFile(pj.get('path') + path, function(error, bin){
 				if(error) {
-					response.writeHead(404, 'NotFound', {
+					response.writeHead(404, 'Not Found', {
 						'Connection': 'close' ,
 						'Content-Type': 'text/html'
 					});
 					response.write('<!DOCTYPE html>');
 					response.write('<html>');
 					response.write('<head>');
-					response.write('<title>Not found.</title>');
+					response.write('<meta charset="UTF-8" />');
+					response.write('<title>404 Not found.</title>');
 					response.write('</head>');
 					response.write('<body>');
 					response.write('<h1>404 Not found.</h1>');
@@ -119,7 +143,9 @@
 					response.end();
 				}
 			});
+			return ;
 		}
+		return ;
 	});
 
 	/**

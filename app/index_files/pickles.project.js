@@ -50,7 +50,19 @@
 			status.composerJsonExists = (status.pathExists && px.utils.isFile( this.get('path')+'/composer.json' ) ? true : false);
 			status.vendorDirExists = (status.pathExists && px.utils.isDirectory( this.get('path')+'/vendor/' ) ? true : false);
 			status.isPxStandby = ( status.pathExists && status.entryScriptExists && status.homeDirExists && status.confFileExists && status.composerJsonExists && status.vendorDirExists ? true : false );
-			status.gitDirExists = (status.pathExists && px.utils.isDirectory( this.get('path')+'/.git/' ) ? true : false);
+			status.gitDirExists = (function(path){
+				function checkGitDir(path){
+					if( status.pathExists && px.utils.isDirectory( path+'/.git/' ) ){
+						return true;
+					}
+					var nextPath = px.utils.dirname( path );
+					if( nextPath == path ){
+						return false;
+					}
+					return checkGitDir( nextPath );
+				}
+				return checkGitDir(path);
+			})( this.get('path') );
 			return status;
 		}
 		this.get = function(key){

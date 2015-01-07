@@ -85,6 +85,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 					data.fields[fieldName] = data.fields[fieldName]||[];
 					return data.fields[fieldName][idx];
 					break;
+				case 'markdown':
 				default:
 					return data.fields[fieldName];
 					break;
@@ -95,6 +96,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 				case 'module':
 					return this.get( aryPath, data.fields[fieldName][idx] );
 					break;
+				case 'markdown':
 				default:
 					return this.get( aryPath, data.fields[fieldName] );
 					break;
@@ -122,6 +124,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 				case 'module':
 					newData.fields[fieldName] = [];
 					break;
+				case 'markdown':
 				default:
 					newData.fields[fieldName] = '';
 					break;
@@ -163,6 +166,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 						data.fields[fieldName] = data.fields[fieldName]||[];
 						data.fields[fieldName].splice( idx, 0, newData);
 						break;
+					case 'markdown':
 					default:
 						data.fields[fieldName] = newData;
 						return true;
@@ -175,6 +179,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 					case 'module':
 						return set_r( aryPath, data.fields[fieldName][idx], newData );
 						break;
+					case 'markdown':
 					default:
 						return set_r( aryPath, data.fields[fieldName], newData );
 						break;
@@ -234,6 +239,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 						data.fields[fieldName] = data.fields[fieldName]||[];
 						data.fields[fieldName][idx] = newData;
 						break;
+					case 'markdown':
 					default:
 						data.fields[fieldName] = newData;
 						return true;
@@ -246,6 +252,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 					case 'module':
 						return set_r( aryPath, data.fields[fieldName][idx], newData );
 						break;
+					case 'markdown':
 					default:
 						return set_r( aryPath, data.fields[fieldName], newData );
 						break;
@@ -364,6 +371,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 					case 'module':
 						data.fields[fieldName].splice(idx, 1);
 						break;
+					case 'markdown':
 					default:
 						delete data.fields[fieldName];
 						break;
@@ -375,6 +383,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 					case 'module':
 						return remove_r( aryPath, data.fields[fieldName][idx] );
 						break;
+					case 'markdown':
 					default:
 						return remove_r( aryPath, data.fields[fieldName] );
 						break;

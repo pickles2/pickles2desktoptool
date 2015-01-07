@@ -142,6 +142,7 @@ window.contApp.ui = new(function(px, contApp){
 				}
 			}else if( this.moduleTemplates.fields[fieldName].fieldType == 'loop' ){
 				// console.log(this.moduleTemplates.fields[fieldName]);
+				console.log( 'debug: UTODO: "loop" (UiUnit)' );
 			}
 		}
 
@@ -198,6 +199,7 @@ window.contApp.ui = new(function(px, contApp){
 					}
 				}else if( this.moduleTemplates.fields[fieldName].fieldType == 'loop' ){
 					// UTODO: ？？？？？？
+					console.log( 'debug: UTODO: "loop" (UI.bind)' );
 				}
 			}
 			var rtn = $('<div>')
@@ -432,6 +434,7 @@ window.contApp.ui = new(function(px, contApp){
 								break;
 						}
 					}else if( field.fieldType == 'loop' ){
+						console.log( 'debug: UTODO: "loop" (EditWindow.submit())' );
 					}
 				}
 				$editWindow.remove();
@@ -493,6 +496,7 @@ window.contApp.ui = new(function(px, contApp){
 						break;
 				}
 			}else if( field.fieldType == 'loop' ){
+				console.log( 'debug: "loop" (EditWindow.draw)' );
 				$editWindow.find('table')
 					.append($('<tr>')
 						.append($('<th>')
@@ -504,6 +508,7 @@ window.contApp.ui = new(function(px, contApp){
 								.attr({"name":modTpl.fields[idx].name})
 								.val(data.fields.length)//??
 								.css({'width':'100%'})
+								.change( function(){ alert($(this).val()); } )
 							)
 						)
 					)

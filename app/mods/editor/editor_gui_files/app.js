@@ -7,6 +7,7 @@ window.contApp = new (function( px ){
 
 	var _param = px.utils.parseUriParam( window.location.href );
 
+	this.fields = {};
 
 	/**
 	 * 変更を保存する。

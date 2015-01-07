@@ -143,6 +143,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 					}
 				}else if( field.loop ){
 					// UTODO: ？？？？？？
+					console.log( 'debug: UTODO: "loop" (ModTpl.bind)' );
 
 				}
 				// if( typeof(fieldData[field.input.name]) === typeof([]) ){
@@ -222,7 +223,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 					// ループ構造の閉じタグ
 					// 本来ここは通らないはず。
 					// ここを通る場合は、対応する開始タグがない loopend がある場合。
-					console.log('debug: "endloop" defined');
+					console.log('debug: ERROR: "endloop" defined');
 				}
 			}
 			cb();

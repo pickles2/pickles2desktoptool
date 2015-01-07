@@ -117,17 +117,23 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 			this.fields = {}
 		})(modId);
 		var modTpl = contApp.moduleTemplates.get( newData.modId );
+
+		// 初期データ追加
 		var fieldList = _.keys( modTpl.fields );
 		for( var idx in fieldList ){
 			var fieldName = fieldList[idx];
-			switch( modTpl.fields[fieldName].type ){
-				case 'module':
-					newData.fields[fieldName] = [];
-					break;
-				case 'markdown':
-				default:
-					newData.fields[fieldName] = '';
-					break;
+			if( modTpl.fields[fieldName].fieldType == 'input' ){
+				switch( modTpl.fields[fieldName].type ){
+					case 'module':
+						newData.fields[fieldName] = [];
+						break;
+					case 'markdown':
+					default:
+						newData.fields[fieldName] = '';
+						break;
+				}
+			}else if( modTpl.fields[fieldName].fieldType == 'loop' ){
+				newData.fields[fieldName] = [];
 			}
 		}
 

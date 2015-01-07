@@ -461,6 +461,8 @@ window.contApp.ui = new(function(px, contApp){
 
 		for( var idx in modTpl.fields ){
 			var field = modTpl.fields[idx];
+			// console.log(field);
+			// console.log(data);
 			if( field.fieldType == 'input' ){
 				switch( field.type ){
 					case 'module':
@@ -506,7 +508,7 @@ window.contApp.ui = new(function(px, contApp){
 							.append($('<input>')
 								.attr({"type":'number'})
 								.attr({"name":modTpl.fields[idx].name})
-								.val(data.fields.length)//??
+								.val(data.fields[idx].length)//??
 								.css({'width':'100%'})
 								.change( function(){ alert($(this).val()); } )
 							)

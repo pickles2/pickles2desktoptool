@@ -212,11 +212,11 @@ window.contApp.ui = new(function(px, contApp){
 							.append( $('<div>')
 								.text(
 									// instancePathNext +
-									'ここをダブルクリックして要素を追加してください。'
+									'ここをダブルクリックして配列要素を追加してください。'
 								)
 								.css({
 									'overflow':'hidden',
-									"padding": 15,
+									"padding": '5px 15px',
 									"background-color":"#dfe",
 									"border-radius":5,
 									"font-size":9,

@@ -105,6 +105,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 		var _this = this;
 		cb = cb || function(){};
 		opt = opt || {};
+
 		this.id = modId;
 		this.path = null;
 		if( !contApp.moduleTemplates.isSystemMod(modId) && !opt.src ){
@@ -201,7 +202,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 		/**
 		 * テンプレートを解析する
 		 */
-		function parseTpl(src, _this, cb){
+		function parseTpl(src, _this, _topThis, cb){
 			cb = cb||function(){};
 			src = JSON.parse( JSON.stringify( src ) );
 			_this.template = src;
@@ -225,9 +226,10 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 					if( typeof(_this.subModule) !== typeof({}) ){
 						_this.subModule = {};
 					}
-					_this.subModule[field.loop.name] = new classModTpl( _this.id, function(){}, {
+					_topThis.subModule[field.loop.name] = new classModTpl( _this.id, function(){}, {
 						"src": tmpSearchResult.content,
-						"subModName": field.loop.name
+						"subModName": field.loop.name,
+						"topThis":_topThis
 					} );
 					src = tmpSearchResult.nextSrc;
 				}else if( field == 'endloop' ){
@@ -240,20 +242,20 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 		}
 
 		if( modId == '_sys/root' ){
-			parseTpl( '{&{"input":{"type":"module","name":"main"}}&}', _this, cb );
+			parseTpl( '{&{"input":{"type":"module","name":"main"}}&}', _this, _this, cb );
 		}else if( modId == '_sys/unknown' ){
-			parseTpl( '<div style="background:#f00;padding:10px;color:#fff;text-align:center;border:1px solid #fdd;">[ERROR] 未知のモジュールテンプレートです。<!-- .error --></div>', _this, cb );
+			parseTpl( '<div style="background:#f00;padding:10px;color:#fff;text-align:center;border:1px solid #fdd;">[ERROR] 未知のモジュールテンプレートです。<!-- .error --></div>', _this, _this, cb );
 		}else if( typeof(opt.src) === typeof('') ){
-			parseTpl( opt.src, _this, cb );
+			parseTpl( opt.src, _this, opt.topThis, cb );
 		}else if( this.path ){
 			px.fs.readFile( this.path+'/template.html', function( err, buffer ){
 				if( err ){
-					parseTpl( '<div style="background:#f00;padding:10px;color:#fff;text-align:center;border:1px solid #fdd;">[ERROR] モジュールテンプレートの読み込みエラーです。<!-- .error --></div>', _this, cb );
+					parseTpl( '<div style="background:#f00;padding:10px;color:#fff;text-align:center;border:1px solid #fdd;">[ERROR] モジュールテンプレートの読み込みエラーです。<!-- .error --></div>', _this, _this, cb );
 					return;
 				}
 				var src = buffer.toString();
 				src = JSON.parse( JSON.stringify( src ) );
-				parseTpl( src, _this, cb );
+				parseTpl( src, _this, _this, cb );
 			} );
 		}
 

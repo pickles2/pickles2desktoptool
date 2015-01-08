@@ -61,7 +61,6 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 		cur = tmpSplit[0];
 		if( tmpSplit.length >=2 ){
 			idx = Number(tmpSplit[1]);
-			// console.log(idx);
 		}
 		var tmpCur = cur.split('.');
 		var container = tmpCur[0];
@@ -165,7 +164,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 			var tmpCur = cur.split('.');
 			var container = tmpCur[0];
 			var fieldName = tmpCur[1];
-			var modTpl = contApp.moduleTemplates.get( data.modId );
+			var modTpl = contApp.moduleTemplates.get( data.modId, data.subModName );
 
 			if( container == 'bowl' ){
 				return set_r( aryPath, data.bowl[fieldName], newData );
@@ -219,8 +218,6 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 
 		cb();
 
-		// console.log('done...');
-		// console.log(_contentsSourceData);
 		return this;
 	}// addInstance()
 
@@ -301,8 +298,6 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 
 		cb();
 
-		// console.log('done...');
-		// console.log(_contentsSourceData);
 		return this;
 	}// updateInstance()
 
@@ -377,14 +372,12 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 			if( !aryPath.length ){
 				return false;
 			}
-			// console.log( data );
 			var cur = aryPath.shift();
 			var idx = null;
 			var tmpSplit = cur.split('@');
 			cur = tmpSplit[0];
 			if( tmpSplit.length >=2 ){
 				idx = Number(tmpSplit[1]);
-				// console.log(idx);
 			}
 			var tmpCur = cur.split('.');
 			var container = tmpCur[0];

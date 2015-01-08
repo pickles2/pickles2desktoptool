@@ -65,7 +65,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 		var tmpCur = cur.split('.');
 		var container = tmpCur[0];
 		var fieldName = tmpCur[1];
-		var modTpl = contApp.moduleTemplates.get( data.modId );
+		var modTpl = contApp.moduleTemplates.get( data.modId, data.subModName );
 
 		if( container == 'bowl' ){
 			return this.get( aryPath, data.bowl[fieldName] );
@@ -244,7 +244,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 			var tmpCur = cur.split('.');
 			var container = tmpCur[0];
 			var fieldName = tmpCur[1];
-			var modTpl = contApp.moduleTemplates.get( data.modId );
+			var modTpl = contApp.moduleTemplates.get( data.modId, data.subModName );
 
 			if( container == 'bowl' ){
 				return set_r( aryPath, data.bowl[fieldName], newData );
@@ -382,7 +382,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 			var tmpCur = cur.split('.');
 			var container = tmpCur[0];
 			var fieldName = tmpCur[1];
-			var modTpl = contApp.moduleTemplates.get( data.modId );
+			var modTpl = contApp.moduleTemplates.get( data.modId, data.subModName );
 
 			if( container == 'bowl' ){
 				return remove_r( aryPath, data.bowl[fieldName] );

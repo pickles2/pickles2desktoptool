@@ -117,15 +117,18 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 	/**
 	 * インスタンスを追加する
 	 */
-	this.addInstance = function( modId, containerInstancePath, cb ){
+	this.addInstance = function( modId, containerInstancePath, cb, subModName ){
 		// console.log( '開発中: '+modId+': '+containerInstancePath );
 		cb = cb||function(){};
 
 		var newData = new (function(){
 			this.modId = modId ,
 			this.fields = {}
-		})(modId);
-		var modTpl = contApp.moduleTemplates.get( newData.modId );
+			if( typeof(subModName) === typeof('') ){
+				this.subModName = subModName;
+			}
+		})(modId, subModName);
+		var modTpl = contApp.moduleTemplates.get( newData.modId, subModName );
 
 		// 初期データ追加
 		var fieldList = _.keys( modTpl.fields );
@@ -210,7 +213,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 				}
 			}
 
-		}
+		} // set_r()
 
 		set_r( containerInstancePath, _contentsSourceData, newData );
 
@@ -301,7 +304,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 		// console.log('done...');
 		// console.log(_contentsSourceData);
 		return this;
-	}// addInstance()
+	}// updateInstance()
 
 	/**
 	 * インスタンスを移動する

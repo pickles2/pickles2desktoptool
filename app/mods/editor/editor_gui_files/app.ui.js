@@ -115,7 +115,7 @@ window.contApp.ui = new(function(px, contApp){
 		// console.log( data );
 		instancePath = instancePath.replace( new RegExp('^\\/*'), '/' );
 		this.instancePath = instancePath;
-		this.moduleTemplates = contApp.moduleTemplates.get( data.modId );
+		this.moduleTemplates = contApp.moduleTemplates.get( data.modId, data.subModName );
 		if( this.moduleTemplates === false ){
 			this.moduleTemplates = contApp.moduleTemplates.get( '_sys/unknown' );
 		}
@@ -387,7 +387,7 @@ window.contApp.ui = new(function(px, contApp){
 									}
 									var modId = event.dataTransfer.getData("modId");
 									contApp.contentsSourceData.addInstance( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
-										px.message('インスタンスを追加しました。');
+										// px.message('インスタンスを追加しました。');
 										contApp.ui.resizeEvent();
 									} );
 								})
@@ -415,13 +415,13 @@ window.contApp.ui = new(function(px, contApp){
 							;
 							$ctrlPanel.append( $ctrlElm );
 
-							break;
+							break;// input/module
 					}
 				}else if( this.moduleTemplates.fields[fieldName].fieldType == 'loop'){
 					for( var idx2 in this.fields[fieldName] ){
 						this.fields[fieldName][idx2].drawCtrlPanels( $content );
 					}
-
+					// console.log(this.moduleTemplates);
 					var instancePath = this.instancePath+'/fields.'+fieldName+'@'+(this.fields[fieldName].length);
 					var $elm = $content.find('[data-guieditor-cont-data-path='+JSON.stringify(instancePath)+']');
 					var $ctrlElm = $('<div>')
@@ -435,11 +435,15 @@ window.contApp.ui = new(function(px, contApp){
 							'position':'absolute',
 							'top': $elm.offset().top + 5,
 							'left': $elm.offset().left,
-							"z-index":0,
+							'z-index':0,
 							'width': $elm.width(),
 							'height': $elm.height()
 						})
-						.attr({'data-guieditor-cont-data-path': instancePath})
+						.attr({
+							'data-guieditor-mod-id': this.moduleTemplates.id,
+							'data-guieditor-sub-mod-name': fieldName,
+							'data-guieditor-cont-data-path': instancePath
+						})
 						.bind('mouseover', function(e){
 							$(this).css({
 								"border-radius":5,
@@ -452,6 +456,17 @@ window.contApp.ui = new(function(px, contApp){
 							});
 						})
 						.bind('drop', function(e){
+							var method = event.dataTransfer.getData("method");
+							if( method === 'moveTo' ){
+								// これはloop要素を並べ替えるための moveTo です。
+								// その他のインスタンスをここに移動したり、作成することはできません。
+								var moveFrom = event.dataTransfer.getData("data-guieditor-cont-data-path");
+								contApp.contentsSourceData.moveInstanceTo( moveFrom, $(this).attr('data-guieditor-cont-data-path'), function(){
+									// px.message('インスタンスを移動しました。');
+									contApp.ui.resizeEvent();
+								} );
+								return;
+							}
 							px.message('ダブルクリックしてください。ドロップできません。');
 							return;
 						})
@@ -473,7 +488,14 @@ window.contApp.ui = new(function(px, contApp){
 							// px.message( 'UTODO: 開発中: select '+$(this).attr('data-guieditor-cont-data-path') );
 						})
 						.bind('dblclick', function(e){
-							px.message( 'loop要素の追加機能は開発中です。' );
+							var modId = $(this).attr("data-guieditor-mod-id");
+							var subModName = $(this).attr("data-guieditor-sub-mod-name");
+							// console.log( modId );
+							// console.log( subModName );
+							contApp.contentsSourceData.addInstance( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
+								// px.message('インスタンスを追加しました。');
+								contApp.ui.resizeEvent();
+							}, subModName );
 							e.preventDefault();
 						})
 					;

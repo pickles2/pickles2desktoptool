@@ -80,26 +80,35 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 			if( !data.fields[fieldName] ){
 				data.fields[fieldName] = [];
 			}
-			switch( modTpl.fields[fieldName].type ){
-				case 'module':
-					data.fields[fieldName] = data.fields[fieldName]||[];
-					return data.fields[fieldName][idx];
-					break;
-				case 'markdown':
-				default:
-					return data.fields[fieldName];
-					break;
+			if( modTpl.fields[fieldName].fieldType == 'input'){
+				switch( modTpl.fields[fieldName].type ){
+					case 'module':
+						data.fields[fieldName] = data.fields[fieldName]||[];
+						return data.fields[fieldName][idx];
+						break;
+					case 'markdown':
+					default:
+						return data.fields[fieldName];
+						break;
+				}
+			}else if( modTpl.fields[fieldName].fieldType == 'loop'){
+				data.fields[fieldName] = data.fields[fieldName]||[];
+				return data.fields[fieldName][idx];
 			}
 		}else{
 			// もっと深かったら
-			switch( modTpl.fields[fieldName].type ){
-				case 'module':
-					return this.get( aryPath, data.fields[fieldName][idx] );
-					break;
-				case 'markdown':
-				default:
-					return this.get( aryPath, data.fields[fieldName] );
-					break;
+			if( modTpl.fields[fieldName].fieldType == 'input'){
+				switch( modTpl.fields[fieldName].type ){
+					case 'module':
+						return this.get( aryPath, data.fields[fieldName][idx] );
+						break;
+					case 'markdown':
+					default:
+						return this.get( aryPath, data.fields[fieldName] );
+						break;
+				}
+			}else if( modTpl.fields[fieldName].fieldType == 'loop'){
+				return this.get( aryPath, data.fields[fieldName][idx] );
 			}
 		}
 		return false;
@@ -167,28 +176,37 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 				if( !data.fields[fieldName] ){
 					data.fields[fieldName] = [];
 				}
-				switch( modTpl.fields[fieldName].type ){
-					case 'module':
-						data.fields[fieldName] = data.fields[fieldName]||[];
-						data.fields[fieldName].splice( idx, 0, newData);
-						break;
-					case 'markdown':
-					default:
-						data.fields[fieldName] = newData;
-						return true;
-						break;
+				if( modTpl.fields[fieldName].fieldType == 'input'){
+					switch( modTpl.fields[fieldName].type ){
+						case 'module':
+							data.fields[fieldName] = data.fields[fieldName]||[];
+							data.fields[fieldName].splice( idx, 0, newData);
+							break;
+						case 'markdown':
+						default:
+							data.fields[fieldName] = newData;
+							return true;
+							break;
+					}
+				}else if( modTpl.fields[fieldName].fieldType == 'loop'){
+					data.fields[fieldName] = data.fields[fieldName]||[];
+					data.fields[fieldName].splice( idx, 0, newData);
 				}
 				return true;
 			}else{
 				// もっと深かったら
-				switch( modTpl.fields[fieldName].type ){
-					case 'module':
-						return set_r( aryPath, data.fields[fieldName][idx], newData );
-						break;
-					case 'markdown':
-					default:
-						return set_r( aryPath, data.fields[fieldName], newData );
-						break;
+				if( modTpl.fields[fieldName].fieldType == 'input'){
+					switch( modTpl.fields[fieldName].type ){
+						case 'module':
+							return set_r( aryPath, data.fields[fieldName][idx], newData );
+							break;
+						case 'markdown':
+						default:
+							return set_r( aryPath, data.fields[fieldName], newData );
+							break;
+					}
+				}else if( modTpl.fields[fieldName].fieldType == 'loop'){
+					return set_r( aryPath, data.fields[fieldName][idx], newData );
 				}
 			}
 
@@ -240,28 +258,37 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 				if( !data.fields[fieldName] ){
 					data.fields[fieldName] = [];
 				}
-				switch( modTpl.fields[fieldName].type ){
-					case 'module':
-						data.fields[fieldName] = data.fields[fieldName]||[];
-						data.fields[fieldName][idx] = newData;
-						break;
-					case 'markdown':
-					default:
-						data.fields[fieldName] = newData;
-						return true;
-						break;
+				if( modTpl.fields[fieldName].fieldType == 'input'){
+					switch( modTpl.fields[fieldName].type ){
+						case 'module':
+							data.fields[fieldName] = data.fields[fieldName]||[];
+							data.fields[fieldName][idx] = newData;
+							break;
+						case 'markdown':
+						default:
+							data.fields[fieldName] = newData;
+							return true;
+							break;
+					}
+				}else if( modTpl.fields[fieldName].fieldType == 'loop'){
+					data.fields[fieldName] = data.fields[fieldName]||[];
+					data.fields[fieldName][idx] = newData;
 				}
 				return true;
 			}else{
 				// もっと深かったら
-				switch( modTpl.fields[fieldName].type ){
-					case 'module':
-						return set_r( aryPath, data.fields[fieldName][idx], newData );
-						break;
-					case 'markdown':
-					default:
-						return set_r( aryPath, data.fields[fieldName], newData );
-						break;
+				if( modTpl.fields[fieldName].fieldType == 'input'){
+					switch( modTpl.fields[fieldName].type ){
+						case 'module':
+							return set_r( aryPath, data.fields[fieldName][idx], newData );
+							break;
+						case 'markdown':
+						default:
+							return set_r( aryPath, data.fields[fieldName], newData );
+							break;
+					}
+				}else if( modTpl.fields[fieldName].fieldType == 'loop'){
+					return set_r( aryPath, data.fields[fieldName][idx], newData );
 				}
 			}
 
@@ -373,26 +400,34 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 				if( !data.fields[fieldName] ){
 					data.fields[fieldName] = [];
 				}
-				switch( modTpl.fields[fieldName].type ){
-					case 'module':
-						data.fields[fieldName].splice(idx, 1);
-						break;
-					case 'markdown':
-					default:
-						delete data.fields[fieldName];
-						break;
+				if( modTpl.fields[fieldName].fieldType == 'input'){
+					switch( modTpl.fields[fieldName].type ){
+						case 'module':
+							data.fields[fieldName].splice(idx, 1);
+							break;
+						case 'markdown':
+						default:
+							delete data.fields[fieldName];
+							break;
+					}
+				}else if( modTpl.fields[fieldName].fieldType == 'loop'){
+					data.fields[fieldName].splice(idx, 1);
 				}
 				return true;
 			}else{
 				// もっと深かったら
-				switch( modTpl.fields[fieldName].type ){
-					case 'module':
-						return remove_r( aryPath, data.fields[fieldName][idx] );
-						break;
-					case 'markdown':
-					default:
-						return remove_r( aryPath, data.fields[fieldName] );
-						break;
+				if( modTpl.fields[fieldName].fieldType == 'input'){
+					switch( modTpl.fields[fieldName].type ){
+						case 'module':
+							return remove_r( aryPath, data.fields[fieldName][idx] );
+							break;
+						case 'markdown':
+						default:
+							return remove_r( aryPath, data.fields[fieldName] );
+							break;
+					}
+				}else if( modTpl.fields[fieldName].fieldType == 'loop'){
+					return remove_r( aryPath, data.fields[fieldName][idx] );
 				}
 			}
 			return true;

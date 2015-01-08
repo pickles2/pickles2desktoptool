@@ -185,9 +185,9 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 					}
 				}else if( field.loop ){
 					console.log( 'debug: "loop" (ModTpl.bind)' );
-					// var tmpSearchResult = searchEndTag( src, 'loop' );
-					// rtn += fieldData[field.loop.name].join('');//moduleと同じということになるはず。
-					// src = tmpSearchResult.nextSrc;
+					var tmpSearchResult = searchEndTag( src, 'loop' );
+					rtn += fieldData[field.loop.name].join('');//moduleと同じということになるはず。
+					src = tmpSearchResult.nextSrc;
 
 				}
 				// if( typeof(fieldData[field.input.name]) === typeof([]) ){
@@ -258,7 +258,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 				var src = buffer.toString();
 				src = JSON.parse( JSON.stringify( src ) );
 				parseTpl( src, _this, cb );
-				console.log(_this);
+				// console.log(_this);
 			} );
 		}
 

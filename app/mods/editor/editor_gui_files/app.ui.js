@@ -143,6 +143,13 @@ window.contApp.ui = new(function(px, contApp){
 			}else if( this.moduleTemplates.fields[fieldName].fieldType == 'loop' ){
 				// console.log(this.moduleTemplates.fields[fieldName]);
 				console.log( 'debug: UTODO: "loop" (UiUnit)' );
+				this.fields[fieldName] = [];
+				for( var idx2 in data.fields[fieldName] ){
+					this.fields[fieldName][idx2] = new classUiUnit(
+						instancePath+'/fields.'+fieldName+'@'+idx2,
+						data.fields[fieldName][idx2]
+					);
+				}
 			}
 		}
 
@@ -177,7 +184,7 @@ window.contApp.ui = new(function(px, contApp){
 									.append( $('<div>')
 										.text(
 											// instancePathNext +
-											' ここに新しいモジュールをドラッグしてください。'
+											'ここに新しいモジュールをドラッグしてください。'
 										)
 										.css({
 											'overflow':'hidden',
@@ -200,6 +207,36 @@ window.contApp.ui = new(function(px, contApp){
 				}else if( this.moduleTemplates.fields[fieldName].fieldType == 'loop' ){
 					// UTODO: ？？？？？？
 					console.log( 'debug: UTODO: "loop" (UI.bind)' );
+					fieldData[fieldName] = [];
+					for( var idx2 in this.fields[fieldName] ){
+						fieldData[fieldName][idx2] = this.fields[fieldName][idx2].bind( mode );
+					}
+
+					if( mode == 'canvas' ){
+						var instancePathNext = this.instancePath+'/fields.'+fieldName+'@'+( this.fields[fieldName].length );
+						fieldData[fieldName].push( $('<div>')
+							.attr( "data-guieditor-cont-data-path", instancePathNext )
+							.append( $('<div>')
+								.text(
+									// instancePathNext +
+									'ここをダブルクリックして要素を追加してください。'
+								)
+								.css({
+									'overflow':'hidden',
+									"padding": 15,
+									"background-color":"#dfe",
+									"border-radius":5,
+									"font-size":9,
+									'text-align':'center',
+									'box-sizing': 'content-box'
+								})
+							)
+							.css({
+								"padding":'5px 0'
+							})
+							.get(0).outerHTML
+						);
+					}
 				}
 			}
 			var rtn = $('<div>')
@@ -298,86 +335,149 @@ window.contApp.ui = new(function(px, contApp){
 
 			for( var idx in this.fieldList ){
 				var fieldName = this.fieldList[idx];
-				switch( this.moduleTemplates.fields[fieldName].type ){
-					case 'module':
-						for( var idx2 in this.fields[fieldName] ){
-							this.fields[fieldName][idx2].drawCtrlPanels( $content );
-						}
+				if( this.moduleTemplates.fields[fieldName].fieldType == 'input'){
+					switch( this.moduleTemplates.fields[fieldName].type ){
+						case 'module':
+							for( var idx2 in this.fields[fieldName] ){
+								this.fields[fieldName][idx2].drawCtrlPanels( $content );
+							}
 
-						var instancePath = this.instancePath+'/fields.'+fieldName+'@'+(this.fields[fieldName].length);
-						var $elm = $content.find('[data-guieditor-cont-data-path='+JSON.stringify(instancePath)+']');
-						var $ctrlElm = $('<div>')
-							.css({
-								'border':0,
-								'font-size':'11px',
-								'overflow':'hidden',
-								'text-align':'center',
-								'background-color': 'transparent',
-								'display':'block',
-								'position':'absolute',
-								'top': $elm.offset().top + 5,
-								'left': $elm.offset().left,
-								"z-index":0,
-								'width': $elm.width(),
-								'height': $elm.height()
-							})
-							.attr({'data-guieditor-cont-data-path': instancePath})
-							.bind('mouseover', function(e){
-								$(this).css({
-									"border-radius":5,
-									"border":"1px solid #000"
-								});
-							})
-							.bind('mouseout', function(e){
-								$(this).css({
-									"border":0
-								});
-							})
-							.bind('drop', function(e){
-								var method = event.dataTransfer.getData("method");
-								if( method === 'moveTo' ){
-									var moveFrom = event.dataTransfer.getData("data-guieditor-cont-data-path");
-									contApp.contentsSourceData.moveInstanceTo( moveFrom, $(this).attr('data-guieditor-cont-data-path'), function(){
-										// px.message('インスタンスを移動しました。');
+							var instancePath = this.instancePath+'/fields.'+fieldName+'@'+(this.fields[fieldName].length);
+							var $elm = $content.find('[data-guieditor-cont-data-path='+JSON.stringify(instancePath)+']');
+							var $ctrlElm = $('<div>')
+								.css({
+									'border':0,
+									'font-size':'11px',
+									'overflow':'hidden',
+									'text-align':'center',
+									'background-color': 'transparent',
+									'display':'block',
+									'position':'absolute',
+									'top': $elm.offset().top + 5,
+									'left': $elm.offset().left,
+									"z-index":0,
+									'width': $elm.width(),
+									'height': $elm.height()
+								})
+								.attr({'data-guieditor-cont-data-path': instancePath})
+								.bind('mouseover', function(e){
+									$(this).css({
+										"border-radius":5,
+										"border":"1px solid #000"
+									});
+								})
+								.bind('mouseout', function(e){
+									$(this).css({
+										"border":0
+									});
+								})
+								.bind('drop', function(e){
+									var method = event.dataTransfer.getData("method");
+									if( method === 'moveTo' ){
+										var moveFrom = event.dataTransfer.getData("data-guieditor-cont-data-path");
+										contApp.contentsSourceData.moveInstanceTo( moveFrom, $(this).attr('data-guieditor-cont-data-path'), function(){
+											// px.message('インスタンスを移動しました。');
+											contApp.ui.resizeEvent();
+										} );
+										return;
+									}
+									if( method !== 'add' ){
+										px.message('追加するモジュールをドロップしてください。ここに移動することはできません。');
+										return;
+									}
+									var modId = event.dataTransfer.getData("modId");
+									contApp.contentsSourceData.addInstance( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
+										px.message('インスタンスを追加しました。');
 										contApp.ui.resizeEvent();
 									} );
-									return;
-								}
-								if( method !== 'add' ){
-									px.message('追加するモジュールをドロップしてください。ここに移動することはできません。');
-									return;
-								}
-								var modId = event.dataTransfer.getData("modId");
-								contApp.contentsSourceData.addInstance( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
-									px.message('インスタンスを追加しました。');
-									contApp.ui.resizeEvent();
-								} );
-							})
-							.bind('dragenter', function(e){
-								$(this).css({
-									"border-radius":0,
-									"border":"3px dotted #99f"
-								});
-							})
-							.bind('dragleave', function(e){
-								$(this).css({
-									"border":0
-								});
-							})
-							.bind('dragover', function(e){
-								e.preventDefault();
-							})
-							.bind('click', function(e){
-								// px.message( 'UTODO: 開発中: select '+$(this).attr('data-guieditor-cont-data-path') );
-							})
-							.bind('dblclick', function(e){
-								px.message( 'ここに追加したいモジュールをドロップしてください。' );
-								e.preventDefault();
-							})
-						;
-						$ctrlPanel.append( $ctrlElm );
+								})
+								.bind('dragenter', function(e){
+									$(this).css({
+										"border-radius":0,
+										"border":"3px dotted #99f"
+									});
+								})
+								.bind('dragleave', function(e){
+									$(this).css({
+										"border":0
+									});
+								})
+								.bind('dragover', function(e){
+									e.preventDefault();
+								})
+								.bind('click', function(e){
+									// px.message( 'UTODO: 開発中: select '+$(this).attr('data-guieditor-cont-data-path') );
+								})
+								.bind('dblclick', function(e){
+									px.message( 'ここに追加したいモジュールをドロップしてください。' );
+									e.preventDefault();
+								})
+							;
+							$ctrlPanel.append( $ctrlElm );
 
-						break;
+							break;
+					}
+				}else if( this.moduleTemplates.fields[fieldName].fieldType == 'loop'){
+					for( var idx2 in this.fields[fieldName] ){
+						this.fields[fieldName][idx2].drawCtrlPanels( $content );
+					}
+
+					var instancePath = this.instancePath+'/fields.'+fieldName+'@'+(this.fields[fieldName].length);
+					var $elm = $content.find('[data-guieditor-cont-data-path='+JSON.stringify(instancePath)+']');
+					var $ctrlElm = $('<div>')
+						.css({
+							'border':0,
+							'font-size':'11px',
+							'overflow':'hidden',
+							'text-align':'center',
+							'background-color': 'transparent',
+							'display':'block',
+							'position':'absolute',
+							'top': $elm.offset().top + 5,
+							'left': $elm.offset().left,
+							"z-index":0,
+							'width': $elm.width(),
+							'height': $elm.height()
+						})
+						.attr({'data-guieditor-cont-data-path': instancePath})
+						.bind('mouseover', function(e){
+							$(this).css({
+								"border-radius":5,
+								"border":"2px solid #666"
+							});
+						})
+						.bind('mouseout', function(e){
+							$(this).css({
+								"border":0
+							});
+						})
+						.bind('drop', function(e){
+							px.message('ダブルクリックしてください。ドロップできません。');
+							return;
+						})
+						.bind('dragenter', function(e){
+							$(this).css({
+								"border-radius":0,
+								"border":"3px dotted #99f"
+							});
+						})
+						.bind('dragleave', function(e){
+							$(this).css({
+								"border":0
+							});
+						})
+						.bind('dragover', function(e){
+							e.preventDefault();
+						})
+						.bind('click', function(e){
+							// px.message( 'UTODO: 開発中: select '+$(this).attr('data-guieditor-cont-data-path') );
+						})
+						.bind('dblclick', function(e){
+							px.message( 'loop要素の追加機能は開発中です。' );
+							e.preventDefault();
+						})
+					;
+					$ctrlPanel.append( $ctrlElm );
 				}
 			}
 		}
@@ -502,16 +602,10 @@ window.contApp.ui = new(function(px, contApp){
 				$editWindow.find('table')
 					.append($('<tr>')
 						.append($('<th>')
-							.text(field.fieldType+' ('+modTpl.fields[idx].name+')')
+							.text(field.type+' ('+modTpl.fields[idx].name+')')
 						)
 						.append($('<td>')
-							.append($('<input>')
-								.attr({"type":'number'})
-								.attr({"name":modTpl.fields[idx].name})
-								.val(data.fields[idx].length)//??
-								.css({'width':'100%'})
-								.change( function(){ alert($(this).val()); } )
-							)
+							.text('ネストされたサブモジュールがあります。')
 						)
 					)
 				;

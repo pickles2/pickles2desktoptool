@@ -111,15 +111,12 @@ window.contApp.ui = new(function(px, contApp){
 	 * コンテンツデータに対応するUIのひな形
 	 */
 	function classUiUnit( instancePath, data ){
-		// console.log(instancePath);
-		// console.log( data );
 		instancePath = instancePath.replace( new RegExp('^\\/*'), '/' );
 		this.instancePath = instancePath;
 		this.moduleTemplates = contApp.moduleTemplates.get( data.modId, data.subModName );
 		if( this.moduleTemplates === false ){
 			this.moduleTemplates = contApp.moduleTemplates.get( '_sys/unknown' );
 		}
-		// console.log( this.moduleTemplates );
 		this.fieldList = _.keys( this.moduleTemplates.fields );
 
 		this.fields = {};
@@ -141,8 +138,6 @@ window.contApp.ui = new(function(px, contApp){
 						break;
 				}
 			}else if( this.moduleTemplates.fields[fieldName].fieldType == 'loop' ){
-				// console.log(this.moduleTemplates.fields[fieldName]);
-				console.log( 'debug: UTODO: "loop" (UiUnit)' );
 				this.fields[fieldName] = [];
 				for( var idx2 in data.fields[fieldName] ){
 					this.fields[fieldName][idx2] = new classUiUnit(
@@ -205,8 +200,6 @@ window.contApp.ui = new(function(px, contApp){
 							break;
 					}
 				}else if( this.moduleTemplates.fields[fieldName].fieldType == 'loop' ){
-					// UTODO: ？？？？？？
-					console.log( 'debug: UTODO: "loop" (UI.bind)' );
 					fieldData[fieldName] = [];
 					for( var idx2 in this.fields[fieldName] ){
 						fieldData[fieldName][idx2] = this.fields[fieldName][idx2].bind( mode );
@@ -247,7 +240,7 @@ window.contApp.ui = new(function(px, contApp){
 				})
 				.append( this.moduleTemplates.bind(fieldData) )
 			;
-			// console.log(rtn);
+
 			if( mode == 'finalize' ){
 				rtn = rtn.get(0).innerHTML;
 			}else{
@@ -421,7 +414,7 @@ window.contApp.ui = new(function(px, contApp){
 					for( var idx2 in this.fields[fieldName] ){
 						this.fields[fieldName][idx2].drawCtrlPanels( $content );
 					}
-					// console.log(this.moduleTemplates);
+
 					var instancePath = this.instancePath+'/fields.'+fieldName+'@'+(this.fields[fieldName].length);
 					var $elm = $content.find('[data-guieditor-cont-data-path='+JSON.stringify(instancePath)+']');
 					var $ctrlElm = $('<div>')
@@ -490,10 +483,7 @@ window.contApp.ui = new(function(px, contApp){
 						.bind('dblclick', function(e){
 							var modId = $(this).attr("data-guieditor-mod-id");
 							var subModName = $(this).attr("data-guieditor-sub-mod-name");
-							// console.log( modId );
-							// console.log( subModName );
 							contApp.contentsSourceData.addInstance( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
-								// px.message('インスタンスを追加しました。');
 								contApp.ui.resizeEvent();
 							}, subModName );
 							e.preventDefault();
@@ -513,7 +503,7 @@ window.contApp.ui = new(function(px, contApp){
 		// px.message( '開発中: このモジュールを選択して、編集できるようになる予定です。' );
 		// px.message( instancePath );
 		var data = contApp.contentsSourceData.get( instancePath );
-		var modTpl = contApp.moduleTemplates.get( data.modId );
+		var modTpl = contApp.moduleTemplates.get( data.modId, data.subModName );
 
 		if( $editWindow ){ $editWindow.remove(); }
 		$editWindow = $('<div>')
@@ -548,15 +538,13 @@ window.contApp.ui = new(function(px, contApp){
 								break;
 							case 'markdown':
 							default:
-								// console.log(modTpl.fields[idx]);
-								// console.log(data.fields[modTpl.fields[idx].name]);
 								var src = $editWindow.find('form [name='+JSON.stringify( modTpl.fields[idx].name )+']').val();
 								src = JSON.parse( JSON.stringify(src) );
 								data.fields[field.name] = src;
 								break;
 						}
 					}else if( field.fieldType == 'loop' ){
-						console.log( 'debug: UTODO: "loop" (EditWindow.submit())' );
+						// loop: 特に処理なし
 					}
 				}
 				$editWindow.remove();
@@ -583,8 +571,6 @@ window.contApp.ui = new(function(px, contApp){
 
 		for( var idx in modTpl.fields ){
 			var field = modTpl.fields[idx];
-			// console.log(field);
-			// console.log(data);
 			if( field.fieldType == 'input' ){
 				switch( field.type ){
 					case 'module':
@@ -601,8 +587,6 @@ window.contApp.ui = new(function(px, contApp){
 						break;
 					case 'markdown':
 					default:
-						// console.log(modTpl.fields[idx]);
-						// console.log(data.fields[modTpl.fields[idx].name]);
 						$editWindow.find('table')
 							.append($('<tr>')
 								.append($('<th>')
@@ -620,11 +604,10 @@ window.contApp.ui = new(function(px, contApp){
 						break;
 				}
 			}else if( field.fieldType == 'loop' ){
-				console.log( 'debug: "loop" (EditWindow.draw)' );
 				$editWindow.find('table')
 					.append($('<tr>')
 						.append($('<th>')
-							.text(field.type+' ('+modTpl.fields[idx].name+')')
+							.text(field.fieldType+' ('+modTpl.fields[idx].name+')')
 						)
 						.append($('<td>')
 							.text('ネストされたサブモジュールがあります。')

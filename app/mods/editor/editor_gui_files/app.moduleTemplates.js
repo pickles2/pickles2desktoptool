@@ -20,8 +20,6 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 	 * 初期化
 	 */
 	this.init = function( pathBase, pathsModTpl, cb ){
-		// _pathBase = pathBase;
-		// console.log(pathsModTpl);
 		_pathsModTpl = JSON.parse(JSON.stringify(pathsModTpl));
 		for( var modIdx in _pathsModTpl ){
 			_pathsModTpl[modIdx] = px.fs.realpathSync( pathBase+'/'+_pathsModTpl[modIdx] );
@@ -184,9 +182,8 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 							break;
 					}
 				}else if( field.loop ){
-					console.log( 'debug: "loop" (ModTpl.bind)' );
 					var tmpSearchResult = searchEndTag( src, 'loop' );
-					rtn += fieldData[field.loop.name].join('');//moduleと同じということになるはず。
+					rtn += fieldData[field.loop.name].join('');
 					src = tmpSearchResult.nextSrc;
 
 				}
@@ -237,7 +234,6 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 					// ループ構造の閉じタグ
 					// 本来ここは通らないはず。
 					// ここを通る場合は、対応する開始タグがない loopend がある場合。
-					console.log('debug: ERROR: "endloop" defined');
 				}
 			}
 			cb();
@@ -258,7 +254,6 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 				var src = buffer.toString();
 				src = JSON.parse( JSON.stringify( src ) );
 				parseTpl( src, _this, cb );
-				// console.log(_this);
 			} );
 		}
 

@@ -253,7 +253,6 @@ window.contApp.ui = new(function(px, contApp){
 		 * コントロールパネルを描画する
 		 */
 		this.drawCtrlPanels = function( $content ){
-
 			var $elm = $content.find('[data-guieditor-cont-data-path='+JSON.stringify(this.instancePath)+']');
 			var $ctrlElm = $('<div>')
 				.css({
@@ -269,7 +268,10 @@ window.contApp.ui = new(function(px, contApp){
 				.width($elm.width())
 				.height($elm.height())
 				.offset($elm.offset())
-				.attr({'data-guieditor-cont-data-path': this.instancePath})
+				.attr({
+					'data-guieditor-cont-data-path': this.instancePath ,
+					'data-guieditor-sub-mod-name': this.moduleTemplates.subModName
+				})
 				.bind('mouseover', function(e){
 					$(this).css({
 						"border":"3px dotted #000"
@@ -284,19 +286,44 @@ window.contApp.ui = new(function(px, contApp){
 				.on('dragstart', function(){
 					event.dataTransfer.setData("method", 'moveTo' );
 					event.dataTransfer.setData("data-guieditor-cont-data-path", $(this).attr('data-guieditor-cont-data-path') );
+					var subModName = $(this).attr('data-guieditor-sub-mod-name');
+					if( typeof(subModName) === typeof('') && subModName.length ){
+						event.dataTransfer.setData("data-guieditor-sub-mod-name", subModName );
+					}
 				})
 				.bind('drop', function(){
 					var method = event.dataTransfer.getData("method");
 					var modId = event.dataTransfer.getData("modId");
 					var moveFrom = event.dataTransfer.getData("data-guieditor-cont-data-path");
+					var moveTo = $(this).attr('data-guieditor-cont-data-path');
+					var subModNameTo = $(this).attr('data-guieditor-sub-mod-name');
+					var subModNameFrom = event.dataTransfer.getData('data-guieditor-sub-mod-name');
+
 					// px.message( 'modId "'+modId+'" が "'+method+'" のためにドロップされました。' );
 					if( method == 'add' ){
-						contApp.contentsSourceData.addInstance( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
+						if( typeof(subModNameTo) === typeof('') ){
+							px.message('ここにモジュールを追加することはできません。');
+							return;
+						}
+						contApp.contentsSourceData.addInstance( modId, moveTo, function(){
 							// px.message('インスタンスを追加しました。');
 							contApp.ui.resizeEvent();
 						} );
 					}else if( method == 'moveTo' ){
-						contApp.contentsSourceData.moveInstanceTo( moveFrom, $(this).attr('data-guieditor-cont-data-path'), function(){
+						function isSubMod( subModName ){
+							if( typeof(subModName) === typeof('') && subModName.length ){
+								return true;
+							}
+							return false;
+						}
+						function removeNum(str){
+							return str.replace(new RegExp('[0-9]+$'),'');
+						}
+						if( (isSubMod(subModNameFrom) || isSubMod(subModNameTo)) && removeNum(moveFrom) !== removeNum(moveTo) ){
+							px.message('並べ替え以外の移動操作はできません。');
+							return;
+						}
+						contApp.contentsSourceData.moveInstanceTo( moveFrom, moveTo, function(){
 							// px.message('インスタンスを移動しました。');
 							contApp.ui.resizeEvent();
 						} );
@@ -454,7 +481,16 @@ window.contApp.ui = new(function(px, contApp){
 								// これはloop要素を並べ替えるための moveTo です。
 								// その他のインスタンスをここに移動したり、作成することはできません。
 								var moveFrom = event.dataTransfer.getData("data-guieditor-cont-data-path");
-								contApp.contentsSourceData.moveInstanceTo( moveFrom, $(this).attr('data-guieditor-cont-data-path'), function(){
+								var moveTo = $(this).attr('data-guieditor-cont-data-path');
+								function removeNum(str){
+									return str.replace(new RegExp('[0-9]+$'),'');
+								}
+								if( removeNum(moveFrom) !== removeNum(moveTo) ){
+									px.message('並べ替え以外の移動操作はできません。');
+									return;
+								}
+
+								contApp.contentsSourceData.moveInstanceTo( moveFrom, moveTo, function(){
 									// px.message('インスタンスを移動しました。');
 									contApp.ui.resizeEvent();
 								} );

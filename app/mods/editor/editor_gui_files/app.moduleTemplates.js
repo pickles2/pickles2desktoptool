@@ -103,14 +103,56 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 	/**
 	 * モジュールテンプレートオブジェクト
 	 */
-	function classModTpl( modId, cb ){
+	function classModTpl( modId, cb, opt ){
 		var _this = this;
+		cb = cb || function(){};
+		opt = opt || {};
 		this.id = modId;
 		this.path = null;
-		if( !contApp.moduleTemplates.isSystemMod(modId) ){
+		if( !contApp.moduleTemplates.isSystemMod(modId) && !opt.src ){
 			this.path = px.fs.realpathSync( getPathModTpl(modId) );
 		}
 		this.fields = {};
+
+		if(opt.subModName){
+			this.subModName = opt.subModName;
+		}
+
+
+		/* 閉じタグを探す */
+		function searchEndTag( src, fieldType ){
+			var rtn = {
+				content: '',
+				nextSrc: src
+			};
+			var depth = 0;
+			while( 1 ){
+				if( !rtn.nextSrc.match(new RegExp('^((?:.|\r|\n)*?)\\{\\&((?:.|\r|\n)*?)\\&\\}((?:.|\r|\n)*)$') ) ){
+					break;
+				}
+				rtn.content += RegExp.$1;
+				var fieldSrc = RegExp.$2;
+				var field = JSON.parse( fieldSrc );
+				rtn.nextSrc = RegExp.$3;
+
+				if( field == 'end'+fieldType ){
+					if( depth ){
+						depth --;
+						rtn.content += '{&'+fieldSrc+'&}';
+						continue;
+					}
+					return rtn;
+				}else if( field[fieldType] ){
+					depth ++;
+					rtn.content += '{&'+fieldSrc+'&}';
+					continue;
+				}else{
+					rtn.content += '{&'+fieldSrc+'&}';
+					continue;
+				}
+			}
+			return rtn;
+		}
 
 		/**
 		 * 値を挿入して返す
@@ -142,8 +184,10 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 							break;
 					}
 				}else if( field.loop ){
-					// UTODO: ？？？？？？
-					console.log( 'debug: UTODO: "loop" (ModTpl.bind)' );
+					console.log( 'debug: "loop" (ModTpl.bind)' );
+					// var tmpSearchResult = searchEndTag( src, 'loop' );
+					// rtn += fieldData[field.loop.name].join('');//moduleと同じということになるはず。
+					// src = tmpSearchResult.nextSrc;
 
 				}
 				// if( typeof(fieldData[field.input.name]) === typeof([]) ){
@@ -165,41 +209,6 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 			src = JSON.parse( JSON.stringify( src ) );
 			_this.template = src;
 
-			/* 閉じタグを探す */
-			function searchEndTag( src, fieldType ){
-				var rtn = {
-					childSrc: '',
-					nextSrc: src
-				};
-				var depth = 0;
-				while( 1 ){
-					if( !rtn.nextSrc.match(new RegExp('^((?:.|\r|\n)*?)\\{\\&((?:.|\r|\n)*?)\\&\\}((?:.|\r|\n)*)$') ) ){
-						break;
-					}
-					rtn.childSrc += RegExp.$1;
-					var fieldSrc = RegExp.$2;
-					var field = JSON.parse( fieldSrc );
-					rtn.nextSrc = RegExp.$3;
-
-					if( field == 'end'+fieldType ){
-						if( depth ){
-							depth --;
-							rtn.childSrc += '{&'+fieldSrc+'&}';
-							continue;
-						}
-						return rtn;
-					}else if( field[fieldType] ){
-						depth ++;
-						rtn.childSrc += '{&'+fieldSrc+'&}';
-						continue;
-					}else{
-						rtn.childSrc += '{&'+fieldSrc+'&}';
-						continue;
-					}
-				}
-				return rtn;
-			}
-
 			var field = null;
 			while( 1 ){
 				if( !src.match(new RegExp('^((?:.|\r|\n)*?)\\{\\&((?:.|\r|\n)*?)\\&\\}((?:.|\r|\n)*)$') ) ){
@@ -216,8 +225,13 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 					_this.fields[field.loop.name] = field.loop;
 					_this.fields[field.loop.name].fieldType = 'loop';
 					var tmpSearchResult = searchEndTag( src, 'loop' );
-					_this.fields[field.loop.name].fields = {};
-					parseTpl( tmpSearchResult.childSrc, _this.fields[field.loop.name], cb );
+					if( typeof(_this.subModule) !== typeof({}) ){
+						_this.subModule = {};
+					}
+					_this.subModule[field.loop.name] = new classModTpl( _this.id, function(){}, {
+						"src": tmpSearchResult.content,
+						"subModName": field.loop.name
+					} );
 					src = tmpSearchResult.nextSrc;
 				}else if( field == 'endloop' ){
 					// ループ構造の閉じタグ
@@ -233,6 +247,8 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 			parseTpl( '{&{"input":{"type":"module","name":"main"}}&}', _this, cb );
 		}else if( modId == '_sys/unknown' ){
 			parseTpl( '<div style="background:#f00;padding:10px;color:#fff;text-align:center;border:1px solid #fdd;">[ERROR] 未知のモジュールテンプレートです。<!-- .error --></div>', _this, cb );
+		}else if( typeof(opt.src) === typeof('') ){
+			parseTpl( opt.src, _this, cb );
 		}else if( this.path ){
 			px.fs.readFile( this.path+'/template.html', function( err, buffer ){
 				if( err ){
@@ -242,6 +258,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 				var src = buffer.toString();
 				src = JSON.parse( JSON.stringify( src ) );
 				parseTpl( src, _this, cb );
+				console.log(_this);
 			} );
 		}
 
@@ -251,10 +268,13 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 	/**
 	 * モジュールを取得
 	 */
-	this.get = function( modId ){
+	this.get = function( modId, subModName ){
 		var rtn = _modTpls[_modTplsIdMap[modId]];
-		if( typeof( _modTpls[_modTplsIdMap[modId]] ) !== typeof({}) ){
+		if( typeof( rtn ) !== typeof({}) ){
 			rtn = false;
+		}
+		if( typeof(subModName) === typeof('') ){
+			return rtn.subModule[subModName];
 		}
 		return rtn;
 	}

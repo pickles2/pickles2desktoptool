@@ -169,18 +169,16 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 				field = RegExp.$2;
 				field = JSON.parse( field );
 				if( field.input ){
-					switch( field.input.type ){
-						case 'module':
+					if( contApp.fieldDefinitions[field.input.type] ){
+						// フィールドタイプ定義を呼び出す
+						rtn += contApp.fieldDefinitions[field.input.type].bind( fieldData[field.input.name] );
+					}else{
+						// ↓未定義のフィールドタイプの場合のデフォルトの挙動
+						if( typeof(fieldData[field.input.name]) === typeof([]) ){
 							rtn += fieldData[field.input.name].join('');
-							break;
-						case 'markdown':
-							var mdData = fieldData[field.input.name];
-							if(typeof(mdData)===typeof('')) mdData = px.utils.markdown( mdData );
-							rtn += mdData;
-							break;
-						default:
+						}else{
 							rtn += fieldData[field.input.name];
-							break;
+						}
 					}
 				}else if( field.loop ){
 					var tmpSearchResult = searchEndTag( src, 'loop' );
@@ -188,11 +186,6 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 					src = tmpSearchResult.nextSrc;
 
 				}
-				// if( typeof(fieldData[field.input.name]) === typeof([]) ){
-				// 	rtn += fieldData[field.input.name].join('');
-				// }else{
-				// 	rtn += fieldData[field.input.name];
-				// }
 				src = RegExp.$3;
 
 			}

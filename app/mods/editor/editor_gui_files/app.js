@@ -7,7 +7,7 @@ window.contApp = new (function( px ){
 
 	var _param = px.utils.parseUriParam( window.location.href );
 
-	this.fields = {};//フィールドの種類ごとの処理を外部化して、ここに入れたい。
+	this.fieldDefinitions = {};//フィールドの種類ごとの処理を外部化して、ここに入れる。
 
 	/**
 	 * 変更を保存する。

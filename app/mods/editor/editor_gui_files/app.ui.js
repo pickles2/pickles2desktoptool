@@ -124,9 +124,6 @@ window.contApp.ui = new(function(px, contApp){
 			var fieldName = this.fieldList[idx];
 			if( this.moduleTemplates.fields[fieldName].fieldType == 'input' ){
 				switch( this.moduleTemplates.fields[fieldName].type ){
-					case 'markdown':
-						this.fields[fieldName] = data.fields[fieldName];
-						break;
 					case 'module':
 						this.fields[fieldName] = [];
 						for( var idx2 in data.fields[fieldName] ){
@@ -135,6 +132,10 @@ window.contApp.ui = new(function(px, contApp){
 								data.fields[fieldName][idx2]
 							);
 						}
+						break;
+					case 'markdown':
+					default:
+						this.fields[fieldName] = data.fields[fieldName];
 						break;
 				}
 			}else if( this.moduleTemplates.fields[fieldName].fieldType == 'loop' ){
@@ -161,12 +162,6 @@ window.contApp.ui = new(function(px, contApp){
 				var fieldName = this.fieldList[idx];
 				if( this.moduleTemplates.fields[fieldName].fieldType == 'input' ){
 					switch( this.moduleTemplates.fields[fieldName].type ){
-						case 'markdown':
-							fieldData[fieldName] = this.fields[fieldName];
-							if( mode == 'canvas' && !fieldData[fieldName].length ){
-								fieldData[fieldName] = '(テキストを入力してください)';
-							}
-							break;
 						case 'module':
 							fieldData[fieldName] = [];
 							for( var idx2 in this.fields[fieldName] ){
@@ -196,6 +191,13 @@ window.contApp.ui = new(function(px, contApp){
 									})
 									.get(0).outerHTML
 								);
+							}
+							break;
+						case 'markdown':
+						default:
+							fieldData[fieldName] = this.fields[fieldName];
+							if( mode == 'canvas' && !fieldData[fieldName].length ){
+								fieldData[fieldName] = '(テキストを入力してください)';
 							}
 							break;
 					}

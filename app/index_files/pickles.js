@@ -1,5 +1,6 @@
 new (function($, window){
 	window.px = $.px = this;
+	this.$ = $;
 
 	var _utils = require('./index_files/_utils.node.js');
 	this.utils = _utils;

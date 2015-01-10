@@ -3,12 +3,23 @@ window.contApp.fieldDefinitions.markdown = _.defaults( new (function( px, contAp
 	/**
 	 * データをバインドする
 	 */
-	this.bind = function( fieldData ){
+	this.bind = function( fieldData, mode ){
 		var rtn = ''
 		if(typeof(fieldData)===typeof('')){
-			fieldData = px.utils.markdown( fieldData );
+			rtn = px.utils.markdown( fieldData );
 		}
-		rtn += fieldData;
+		if( mode == 'canvas' && !rtn.length ){
+			rtn = $('<span>')
+				.text('(ダブルクリックしてマークダウンを編集してください)')
+				.css({
+					'color':'#999',
+					'background-color':'#ddd',
+					'font-size':'10px',
+					'padding':'0 1em'
+				})
+				.get(0).outerHTML
+			;
+		}
 		return rtn;
 	}
 

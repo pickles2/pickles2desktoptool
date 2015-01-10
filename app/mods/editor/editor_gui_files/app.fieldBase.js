@@ -3,24 +3,34 @@ window.contApp.fieldBase = new (function( px, contApp ){
 	/**
 	 * データをバインドする
 	 */
-	this.bind = function( fieldData ){
+	this.bind = function( fieldData, mode ){
 		var rtn = ''
 		if( typeof(fieldData) === typeof([]) ){
 			rtn += fieldData.join('');
 		}else{
 			rtn += fieldData;
 		}
+		if( mode == 'canvas' && !rtn.length ){
+			rtn = $('<span>')
+				.text('(ダブルクリックしてHTMLコードを編集してください)')
+				.css({
+					'color':'#999',
+					'background-color':'#ddd',
+					'font-size':'10px',
+					'padding':'0 1em'
+				})
+				.get(0).outerHTML
+			;
+		}
 		return rtn;
 	}
 
 	/**
-	 * データをバインドして編集画面を作る
+	 * データを正規化する
 	 */
-	this.uiBind = function( fieldData, mode ){
+	this.normalizeData = function( fieldData, mode ){
+		// 編集画面用にデータを初期化。
 		var rtn = fieldData;
-		if( mode == 'canvas' && !rtn.length ){
-			rtn = '(ダブルクリックしてテキストを編集してください)';
-		}
 		return rtn;
 	}
 

@@ -156,7 +156,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 		/**
 		 * 値を挿入して返す
 		 */
-		this.bind = function( fieldData ){
+		this.bind = function( fieldData, mode ){
 			var src = this.template;
 			var field = {};
 			var rtn = '';
@@ -171,10 +171,10 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 				if( field.input ){
 					if( contApp.fieldDefinitions[field.input.type] ){
 						// フィールドタイプ定義を呼び出す
-						rtn += contApp.fieldDefinitions[field.input.type].bind( fieldData[field.input.name] );
+						rtn += contApp.fieldDefinitions[field.input.type].bind( fieldData[field.input.name], mode );
 					}else{
 						// ↓未定義のフィールドタイプの場合のデフォルトの挙動
-						rtn += contApp.fieldBase.bind( fieldData[field.input.name] );
+						rtn += contApp.fieldBase.bind( fieldData[field.input.name], mode );
 					}
 				}else if( field.module ){
 					rtn += fieldData[field.module.name].join('');

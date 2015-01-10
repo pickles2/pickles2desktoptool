@@ -144,7 +144,7 @@ window.contApp.ui = new(function(px, contApp){
 		}
 
 		/**
-		 * HTMLコードを生成する
+		 * UI/出力時のHTMLコードを生成する
 		 */
 		this.bind = function( mode ){
 			mode = mode||"finalize";
@@ -156,9 +156,9 @@ window.contApp.ui = new(function(px, contApp){
 				var fieldName = this.fieldList[idx];
 				if( this.moduleTemplates.fields[fieldName].fieldType == 'input' ){
 					if( contApp.fieldDefinitions[this.moduleTemplates.fields[fieldName].type] ){
-						fieldData[fieldName] = contApp.fieldDefinitions[this.moduleTemplates.fields[fieldName].type].uiBind( this.fields[fieldName], mode );
+						fieldData[fieldName] = contApp.fieldDefinitions[this.moduleTemplates.fields[fieldName].type].normalizeData( this.fields[fieldName], mode );
 					}else{
-						fieldData[fieldName] = contApp.fieldBase.uiBind( this.fields[fieldName], mode );
+						fieldData[fieldName] = contApp.fieldBase.normalizeData( this.fields[fieldName], mode );
 					}
 				}else if( this.moduleTemplates.fields[fieldName].fieldType == 'module' ){
 					fieldData[fieldName] = (function( fieldData, mode, opt ){
@@ -235,7 +235,7 @@ window.contApp.ui = new(function(px, contApp){
 					'margin-top':5,
 					'margin-bottom':5,
 				})
-				.append( this.moduleTemplates.bind(fieldData) )
+				.append( this.moduleTemplates.bind( fieldData, mode) )
 			;
 
 			if( mode == 'finalize' ){

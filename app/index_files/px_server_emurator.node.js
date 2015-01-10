@@ -94,26 +94,19 @@
 					},
 					complete: function(code){
 						var dataDecoded = JSON.parse(_cmdData);
-						// console.log(dataDecoded);
 						var document_body = dataDecoded.body_base64;
 						try{
-							// console.log('Trying to decoding Base64 on node.js...');
-							// console.log(path);
 							document_body = (new Buffer(document_body, 'base64')).toString();
 						}catch(e){
 							// console.log('disabled to decode Base64 data.');
 						}
-						// console.log(document_body);
 
-						response.writeHead(dataDecoded.status, 'OK', {
+						response.writeHead( dataDecoded.status, 'OK', {
 							'Connection': 'close' ,
 							'Content-Type': mime
 						});
-						response.write(document_body);
-						// response.write(''+dataDecoded.relatedlinks.length);
+						response.write( document_body );
 						response.end();
-						// console.log('done.');
-
 					}
 				}
 			);

@@ -7,7 +7,7 @@ function cont_createProject(form){
 	pj.path = $(form).find('[name=pj_path]').val();
 	pj.home_dir = $(form).find('[name=pj_home_dir]').val();
 	pj.entry_script = $(form).find('[name=pj_entry_script]').val();
-	pj.vcs = $(form).find('[name=pj_vcs]').val();
+	// pj.vcs = $(form).find('[name=pj_vcs]').val();
 
 	var _fs = require('fs');
 	if( !px.utils.isDirectory(pj.path) ){

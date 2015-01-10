@@ -31,10 +31,6 @@
 				errorMsg.entry_script = 'entry_script is required.';
 				isError = true;
 			}
-			if( typeof(this.projectInfo.vcs) != typeof('') || !this.projectInfo.vcs.length ){
-				errorMsg.vcs = 'vcs is required.';
-				isError = true;
-			}
 
 			return {isError: isError, errorMsg: errorMsg};
 		}

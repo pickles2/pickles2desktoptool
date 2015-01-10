@@ -20,4 +20,26 @@ window.contApp.fieldBase = new (function( px, contApp ){
 		return rtn;
 	}
 
+	/**
+	 * エディタUIを生成
+	 */
+	this.mkEditor = function( mod, data ){
+		var rtn = $('<div>')
+			.append($('<textarea>')
+				.attr({"name":mod.name})
+				.val(data)
+				.css({'width':'100%','height':'12em'})
+		);
+		return rtn;
+	}
+
+	/**
+	 * エディタUIで編集した内容を保存
+	 */
+	this.saveEditorContent = function( $dom ){
+		var src = $dom.find('textarea').val();
+		src = JSON.parse( JSON.stringify(src) );
+		return src;
+	}
+
 })( window.px, window.contApp );

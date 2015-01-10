@@ -518,10 +518,6 @@ window.contApp.ui = new(function(px, contApp){
 		$editWindow = $('<div>')
 			.append( $('#cont_tpl_module_editor').html() )
 		;
-		// $editWindow.find('.container')
-		// 	// .append('開発中: このモジュールを選択して、編集できるようになる予定です。')
-		// 	// .append(instancePath)
-		// ;
 		$editWindow.find('form')
 			.attr({
 				'action': 'javascript:;',
@@ -531,15 +527,12 @@ window.contApp.ui = new(function(px, contApp){
 				for( var idx in modTpl.fields ){
 					var field = modTpl.fields[idx];
 					if( field.fieldType == 'input' ){
-						switch( field.type ){
-							case 'module':
-								break;
-							case 'markdown':
-							default:
-								var src = $editWindow.find('form [name='+JSON.stringify( modTpl.fields[idx].name )+']').val();
-								src = JSON.parse( JSON.stringify(src) );
-								data.fields[field.name] = src;
-								break;
+						if( field.type == 'module' ){
+							// module: 特に処理なし
+						}else if( contApp.fieldDefinitions[field.type] ){
+							data.fields[field.name] = contApp.fieldDefinitions[field.type].saveEditorContent( $editWindow.find('form [data-field-unit='+JSON.stringify( modTpl.fields[idx].name )+']') );
+						}else{
+							data.fields[field.name] = contApp.fieldBase.saveEditorContent( $editWindow.find('form [data-field-unit='+JSON.stringify( modTpl.fields[idx].name )+']') );
 						}
 					}else if( field.fieldType == 'loop' ){
 						// loop: 特に処理なし
@@ -573,44 +566,33 @@ window.contApp.ui = new(function(px, contApp){
 		for( var idx in modTpl.fields ){
 			var field = modTpl.fields[idx];
 			if( field.fieldType == 'input' ){
-				switch( field.type ){
-					case 'module':
-						$editWindow.find('table')
-							.append($('<tr>')
-								.append($('<th>')
-									.text(field.type+' ('+modTpl.fields[idx].name+')')
+				$editWindow.find('div.cont_tpl_module_editor-canvas')
+					.append($('<div>')
+						.attr( 'data-field-unit', modTpl.fields[idx].name )
+						.append($('<h2>')
+							.text(field.type+' ('+modTpl.fields[idx].name+')')
+						)
+						.append( ((function( field, mod, data ){
+							if( contApp.fieldDefinitions[field.type] ){
+								return contApp.fieldDefinitions[field.type].mkEditor( mod, data );
+							}
+							return $('<div>')
+								.append( $('<textarea>')
+									.attr({"name":mod.name})
+									.val(data)
+									.css({'width':'100%','height':'6em'})
 								)
-								.append($('<td>')
-									.text('ネストされたモジュールがあります。')
-								)
-							)
-						;
-						break;
-					case 'markdown':
-					default:
-						$editWindow.find('table')
-							.append($('<tr>')
-								.append($('<th>')
-									.text(field.type+' ('+modTpl.fields[idx].name+')')
-								)
-								.append($('<td>')
-									.append($('<textarea>')
-										.attr({"name":modTpl.fields[idx].name})
-										.val(data.fields[modTpl.fields[idx].name])
-										.css({'width':'100%','height':'12em'})
-									)
-								)
-							)
-						;
-						break;
-				}
+							;
+						})( field, modTpl.fields[idx], data.fields[modTpl.fields[idx].name] ) ) )
+					)
+				;
 			}else if( field.fieldType == 'loop' ){
-				$editWindow.find('table')
-					.append($('<tr>')
-						.append($('<th>')
+				$editWindow.find('div.cont_tpl_module_editor-canvas')
+					.append($('<div>')
+						.append($('<h2>')
 							.text(field.fieldType+' ('+modTpl.fields[idx].name+')')
 						)
-						.append($('<td>')
+						.append($('<p>')
 							.text('ネストされたサブモジュールがあります。')
 						)
 					)
@@ -619,10 +601,9 @@ window.contApp.ui = new(function(px, contApp){
 			}
 		}
 
-		// $('body').append( $editWindow );
 		px.dialog({
 			"title": "編集" ,
-			"body": $editWindow,
+			"body": $editWindow ,
 			"buttons":[]
 		});
 		return this;

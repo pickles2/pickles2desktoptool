@@ -39,7 +39,10 @@ body{
 	height:100%;
 }
 
-.cont_modulelist{}
+.cont_modulelist{
+	max-height: 380px;
+	overflow: auto;
+}
 .cont_modulelist ul{
 	margin:0; padding:0;
 }

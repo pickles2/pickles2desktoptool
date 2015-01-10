@@ -45,4 +45,23 @@ window.contApp.fieldDefinitions.module = _.defaults( new (function( px, contApp 
 		return rtn;
 	}
 
+	/**
+	 * エディタUIを生成
+	 */
+	this.mkEditor = function( mod, data ){
+		var rtn = $('<div>')
+			.append($('<p>')
+				.text('ネストされたモジュールがあります。')
+			)
+		;
+		return rtn;
+	}
+
+	/**
+	 * エディタUIで編集した内容を保存
+	 */
+	this.saveEditorContent = function( $dom ){
+		// 特に処理なし
+	}
+
 })( window.px, window.contApp ), window.contApp.fieldBase );

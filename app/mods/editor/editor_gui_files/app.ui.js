@@ -161,45 +161,16 @@ window.contApp.ui = new(function(px, contApp){
 			for( var idx in this.fieldList ){
 				var fieldName = this.fieldList[idx];
 				if( this.moduleTemplates.fields[fieldName].fieldType == 'input' ){
-					switch( this.moduleTemplates.fields[fieldName].type ){
-						case 'module':
-							fieldData[fieldName] = [];
-							for( var idx2 in this.fields[fieldName] ){
-								fieldData[fieldName][idx2] = this.fields[fieldName][idx2].bind( mode );
-							}
-							if( mode == 'canvas' ){
-								var instancePathNext = this.instancePath+'/fields.'+fieldName+'@'+( this.fields[fieldName].length );
-								fieldData[fieldName].push( $('<div>')
-									.attr( "data-guieditor-cont-data-path", instancePathNext )
-									.append( $('<div>')
-										.text(
-											// instancePathNext +
-											'ここに新しいモジュールをドラッグしてください。'
-										)
-										.css({
-											'overflow':'hidden',
-											"padding": 15,
-											"background-color":"#eef",
-											"border-radius":5,
-											"font-size":9,
-											'text-align':'center',
-											'box-sizing': 'content-box'
-										})
-									)
-									.css({
-										"padding":'5px 0'
-									})
-									.get(0).outerHTML
-								);
-							}
-							break;
-						case 'markdown':
-						default:
-							fieldData[fieldName] = this.fields[fieldName];
-							if( mode == 'canvas' && !fieldData[fieldName].length ){
-								fieldData[fieldName] = '(テキストを入力してください)';
-							}
-							break;
+					if( contApp.fieldDefinitions[this.moduleTemplates.fields[fieldName].type] ){
+						fieldData[fieldName] = contApp.fieldDefinitions[this.moduleTemplates.fields[fieldName].type].uiBind( this.fields[fieldName], mode, {
+							"instancePath": this.instancePath ,
+							"fieldName": fieldName
+						} );
+					}else{
+						fieldData[fieldName] = this.fields[fieldName];
+						if( mode == 'canvas' && !fieldData[fieldName].length ){
+							fieldData[fieldName] = '(編集してください)';
+						}
 					}
 				}else if( this.moduleTemplates.fields[fieldName].fieldType == 'loop' ){
 					fieldData[fieldName] = [];

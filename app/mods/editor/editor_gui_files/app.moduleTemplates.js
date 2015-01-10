@@ -174,12 +174,11 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 						rtn += contApp.fieldDefinitions[field.input.type].bind( fieldData[field.input.name] );
 					}else{
 						// ↓未定義のフィールドタイプの場合のデフォルトの挙動
-						if( typeof(fieldData[field.input.name]) === typeof([]) ){
-							rtn += fieldData[field.input.name].join('');
-						}else{
-							rtn += fieldData[field.input.name];
-						}
+						rtn += contApp.fieldBase.bind( fieldData[field.input.name] );
 					}
+				}else if( field.module ){
+					rtn += fieldData[field.module.name].join('');
+
 				}else if( field.loop ){
 					var tmpSearchResult = searchEndTag( src, 'loop' );
 					rtn += fieldData[field.loop.name].join('');
@@ -212,6 +211,9 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 				if( field.input ){
 					_this.fields[field.input.name] = field.input;
 					_this.fields[field.input.name].fieldType = 'input';
+				}else if( field.module ){
+					_this.fields[field.module.name] = field.module;
+					_this.fields[field.module.name].fieldType = 'module';
 				}else if( field.loop ){
 					_this.fields[field.loop.name] = field.loop;
 					_this.fields[field.loop.name].fieldType = 'loop';
@@ -235,7 +237,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 		}
 
 		if( modId == '_sys/root' ){
-			parseTpl( '{&{"input":{"type":"module","name":"main"}}&}', _this, _this, cb );
+			parseTpl( '{&{"module":{"name":"main"}}&}', _this, _this, cb );
 		}else if( modId == '_sys/unknown' ){
 			parseTpl( '<div style="background:#f00;padding:10px;color:#fff;text-align:center;border:1px solid #fdd;">[ERROR] 未知のモジュールテンプレートです。<!-- .error --></div>', _this, _this, cb );
 		}else if( typeof(opt.src) === typeof('') ){

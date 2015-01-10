@@ -123,20 +123,14 @@ window.contApp.ui = new(function(px, contApp){
 		for( var idx in this.fieldList ){
 			var fieldName = this.fieldList[idx];
 			if( this.moduleTemplates.fields[fieldName].fieldType == 'input' ){
-				switch( this.moduleTemplates.fields[fieldName].type ){
-					case 'module':
-						this.fields[fieldName] = [];
-						for( var idx2 in data.fields[fieldName] ){
-							this.fields[fieldName][idx2] = new classUiUnit(
-								instancePath+'/fields.'+fieldName+'@'+idx2,
-								data.fields[fieldName][idx2]
-							);
-						}
-						break;
-					case 'markdown':
-					default:
-						this.fields[fieldName] = data.fields[fieldName];
-						break;
+				this.fields[fieldName] = data.fields[fieldName];
+			}else if( this.moduleTemplates.fields[fieldName].fieldType == 'module' ){
+				this.fields[fieldName] = [];
+				for( var idx2 in data.fields[fieldName] ){
+					this.fields[fieldName][idx2] = new classUiUnit(
+						instancePath+'/fields.'+fieldName+'@'+idx2,
+						data.fields[fieldName][idx2]
+					);
 				}
 			}else if( this.moduleTemplates.fields[fieldName].fieldType == 'loop' ){
 				this.fields[fieldName] = [];
@@ -162,16 +156,46 @@ window.contApp.ui = new(function(px, contApp){
 				var fieldName = this.fieldList[idx];
 				if( this.moduleTemplates.fields[fieldName].fieldType == 'input' ){
 					if( contApp.fieldDefinitions[this.moduleTemplates.fields[fieldName].type] ){
-						fieldData[fieldName] = contApp.fieldDefinitions[this.moduleTemplates.fields[fieldName].type].uiBind( this.fields[fieldName], mode, {
-							"instancePath": this.instancePath ,
-							"fieldName": fieldName
-						} );
+						fieldData[fieldName] = contApp.fieldDefinitions[this.moduleTemplates.fields[fieldName].type].uiBind( this.fields[fieldName], mode );
 					}else{
-						fieldData[fieldName] = this.fields[fieldName];
-						if( mode == 'canvas' && !fieldData[fieldName].length ){
-							fieldData[fieldName] = '(編集してください)';
-						}
+						fieldData[fieldName] = contApp.fieldBase.uiBind( this.fields[fieldName], mode );
 					}
+				}else if( this.moduleTemplates.fields[fieldName].fieldType == 'module' ){
+					fieldData[fieldName] = (function( fieldData, mode, opt ){
+						var rtn = [];
+						for( var idx2 in fieldData ){
+							rtn[idx2] = fieldData[idx2].bind( mode );
+						}
+						if( mode == 'canvas' ){
+							var instancePathNext = opt.instancePath+'/fields.'+opt.fieldName+'@'+( fieldData.length );
+							rtn.push( $('<div>')
+								.attr( "data-guieditor-cont-data-path", instancePathNext )
+								.append( $('<div>')
+									.text(
+										// instancePathNext +
+										'ここに新しいモジュールをドラッグしてください。'
+									)
+									.css({
+										'overflow':'hidden',
+										"padding": 15,
+										"background-color":"#eef",
+										"border-radius":5,
+										"font-size":9,
+										'text-align':'center',
+										'box-sizing': 'content-box'
+									})
+								)
+								.css({
+									"padding":'5px 0'
+								})
+								.get(0).outerHTML
+							);
+						}
+						return rtn;
+					})( this.fields[fieldName], mode, {
+						"instancePath": this.instancePath ,
+						"fieldName": fieldName
+					} );
 				}else if( this.moduleTemplates.fields[fieldName].fieldType == 'loop' ){
 					fieldData[fieldName] = [];
 					for( var idx2 in this.fields[fieldName] ){
@@ -329,87 +353,84 @@ window.contApp.ui = new(function(px, contApp){
 			for( var idx in this.fieldList ){
 				var fieldName = this.fieldList[idx];
 				if( this.moduleTemplates.fields[fieldName].fieldType == 'input'){
-					switch( this.moduleTemplates.fields[fieldName].type ){
-						case 'module':
-							for( var idx2 in this.fields[fieldName] ){
-								this.fields[fieldName][idx2].drawCtrlPanels( $content );
-							}
-
-							var instancePath = this.instancePath+'/fields.'+fieldName+'@'+(this.fields[fieldName].length);
-							var $elm = $content.find('[data-guieditor-cont-data-path='+JSON.stringify(instancePath)+']');
-							var $ctrlElm = $('<div>')
-								.css({
-									'border':0,
-									'font-size':'11px',
-									'overflow':'hidden',
-									'text-align':'center',
-									'background-color': 'transparent',
-									'display':'block',
-									'position':'absolute',
-									'top': $elm.offset().top + 5,
-									'left': $elm.offset().left,
-									"z-index":0,
-									'width': $elm.width(),
-									'height': $elm.height()
-								})
-								.attr({'data-guieditor-cont-data-path': instancePath})
-								.bind('mouseover', function(e){
-									$(this).css({
-										"border-radius":5,
-										"border":"1px solid #000"
-									});
-								})
-								.bind('mouseout', function(e){
-									$(this).css({
-										"border":0
-									});
-								})
-								.bind('drop', function(e){
-									var method = event.dataTransfer.getData("method");
-									if( method === 'moveTo' ){
-										var moveFrom = event.dataTransfer.getData("data-guieditor-cont-data-path");
-										contApp.contentsSourceData.moveInstanceTo( moveFrom, $(this).attr('data-guieditor-cont-data-path'), function(){
-											// px.message('インスタンスを移動しました。');
-											contApp.ui.resizeEvent();
-										} );
-										return;
-									}
-									if( method !== 'add' ){
-										px.message('追加するモジュールをドロップしてください。ここに移動することはできません。');
-										return;
-									}
-									var modId = event.dataTransfer.getData("modId");
-									contApp.contentsSourceData.addInstance( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
-										// px.message('インスタンスを追加しました。');
-										contApp.ui.resizeEvent();
-									} );
-								})
-								.bind('dragenter', function(e){
-									$(this).css({
-										"border-radius":0,
-										"border":"3px dotted #99f"
-									});
-								})
-								.bind('dragleave', function(e){
-									$(this).css({
-										"border":0
-									});
-								})
-								.bind('dragover', function(e){
-									e.preventDefault();
-								})
-								.bind('click', function(e){
-									// px.message( 'UTODO: 開発中: select '+$(this).attr('data-guieditor-cont-data-path') );
-								})
-								.bind('dblclick', function(e){
-									px.message( 'ここに追加したいモジュールをドロップしてください。' );
-									e.preventDefault();
-								})
-							;
-							$ctrlPanel.append( $ctrlElm );
-
-							break;// input/module
+				}else if( this.moduleTemplates.fields[fieldName].fieldType == 'module'){
+					for( var idx2 in this.fields[fieldName] ){
+						this.fields[fieldName][idx2].drawCtrlPanels( $content );
 					}
+
+					var instancePath = this.instancePath+'/fields.'+fieldName+'@'+(this.fields[fieldName].length);
+					var $elm = $content.find('[data-guieditor-cont-data-path='+JSON.stringify(instancePath)+']');
+					var $ctrlElm = $('<div>')
+						.css({
+							'border':0,
+							'font-size':'11px',
+							'overflow':'hidden',
+							'text-align':'center',
+							'background-color': 'transparent',
+							'display':'block',
+							'position':'absolute',
+							'top': $elm.offset().top + 5,
+							'left': $elm.offset().left,
+							"z-index":0,
+							'width': $elm.width(),
+							'height': $elm.height()
+						})
+						.attr({'data-guieditor-cont-data-path': instancePath})
+						.bind('mouseover', function(e){
+							$(this).css({
+								"border-radius":5,
+								"border":"1px solid #000"
+							});
+						})
+						.bind('mouseout', function(e){
+							$(this).css({
+								"border":0
+							});
+						})
+						.bind('drop', function(e){
+							var method = event.dataTransfer.getData("method");
+							if( method === 'moveTo' ){
+								var moveFrom = event.dataTransfer.getData("data-guieditor-cont-data-path");
+								contApp.contentsSourceData.moveInstanceTo( moveFrom, $(this).attr('data-guieditor-cont-data-path'), function(){
+									// px.message('インスタンスを移動しました。');
+									contApp.ui.resizeEvent();
+								} );
+								return;
+							}
+							if( method !== 'add' ){
+								px.message('追加するモジュールをドロップしてください。ここに移動することはできません。');
+								return;
+							}
+							var modId = event.dataTransfer.getData("modId");
+							contApp.contentsSourceData.addInstance( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
+								// px.message('インスタンスを追加しました。');
+								contApp.ui.resizeEvent();
+							} );
+						})
+						.bind('dragenter', function(e){
+							$(this).css({
+								"border-radius":0,
+								"border":"3px dotted #99f"
+							});
+						})
+						.bind('dragleave', function(e){
+							$(this).css({
+								"border":0
+							});
+						})
+						.bind('dragover', function(e){
+							e.preventDefault();
+						})
+						.bind('click', function(e){
+							// px.message( 'UTODO: 開発中: select '+$(this).attr('data-guieditor-cont-data-path') );
+						})
+						.bind('dblclick', function(e){
+							px.message( 'ここに追加したいモジュールをドロップしてください。' );
+							e.preventDefault();
+						})
+					;
+					$ctrlPanel.append( $ctrlElm );
+
 				}else if( this.moduleTemplates.fields[fieldName].fieldType == 'loop'){
 					for( var idx2 in this.fields[fieldName] ){
 						this.fields[fieldName][idx2].drawCtrlPanels( $content );
@@ -527,13 +548,13 @@ window.contApp.ui = new(function(px, contApp){
 				for( var idx in modTpl.fields ){
 					var field = modTpl.fields[idx];
 					if( field.fieldType == 'input' ){
-						if( field.type == 'module' ){
-							// module: 特に処理なし
-						}else if( contApp.fieldDefinitions[field.type] ){
+						if( contApp.fieldDefinitions[field.type] ){
 							data.fields[field.name] = contApp.fieldDefinitions[field.type].saveEditorContent( $editWindow.find('form [data-field-unit='+JSON.stringify( modTpl.fields[idx].name )+']') );
 						}else{
 							data.fields[field.name] = contApp.fieldBase.saveEditorContent( $editWindow.find('form [data-field-unit='+JSON.stringify( modTpl.fields[idx].name )+']') );
 						}
+					}else if( field.fieldType == 'module' ){
+						// module: 特に処理なし
 					}else if( field.fieldType == 'loop' ){
 						// loop: 特に処理なし
 					}
@@ -584,6 +605,18 @@ window.contApp.ui = new(function(px, contApp){
 								)
 							;
 						})( field, modTpl.fields[idx], data.fields[modTpl.fields[idx].name] ) ) )
+					)
+				;
+			}else if( field.fieldType == 'module' ){
+				$editWindow.find('div.cont_tpl_module_editor-canvas')
+					.append($('<div>')
+						.attr( 'data-field-unit', modTpl.fields[idx].name )
+						.append($('<h2>')
+							.text(field.fieldType+' ('+modTpl.fields[idx].name+')')
+						)
+						.append($('<p>')
+							.text('ネストされたモジュールがあります。')
+						)
 					)
 				;
 			}else if( field.fieldType == 'loop' ){

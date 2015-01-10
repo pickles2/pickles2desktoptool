@@ -5,7 +5,11 @@ window.contApp.fieldBase = new (function( px, contApp ){
 	 */
 	this.bind = function( fieldData ){
 		var rtn = ''
-		rtn += fieldData;
+		if( typeof(fieldData) === typeof([]) ){
+			rtn += fieldData.join('');
+		}else{
+			rtn += fieldData;
+		}
 		return rtn;
 	}
 

@@ -516,17 +516,6 @@ window.contApp.ui = new(function(px, contApp){
 
 		if( $editWindow ){ $editWindow.remove(); }
 		$editWindow = $('<div>')
-			.css({
-				'position':'fixed',
-				'left':0, 'top':0,
-				'width': '100%',
-				'height': $('body').height(),
-				// 'background-color':'#eee',
-				'overflow':'auto',
-				'padding': '5em 0 2em 0'
-			})
-		;
-		$editWindow
 			.append( $('#cont_tpl_module_editor').html() )
 		;
 		// $editWindow.find('.container')
@@ -557,6 +546,7 @@ window.contApp.ui = new(function(px, contApp){
 					}
 				}
 				$editWindow.remove();
+				px.closeDialog();
 				_this.resizeEvent();
 				return false;
 			})
@@ -564,6 +554,7 @@ window.contApp.ui = new(function(px, contApp){
 		$editWindow.find('form .cont_tpl_module_editor-cancel')
 			.click(function(){
 				$editWindow.remove();
+				px.closeDialog();
 				return false;
 			})
 		;
@@ -573,6 +564,7 @@ window.contApp.ui = new(function(px, contApp){
 				contApp.contentsSourceData.removeInstance( $(this).attr('data-guieditor-cont-data-path') );
 				delete data;
 				$editWindow.remove();
+				px.closeDialog();
 				_this.resizeEvent();
 				return false;
 			})
@@ -627,7 +619,12 @@ window.contApp.ui = new(function(px, contApp){
 			}
 		}
 
-		$('body').append( $editWindow );
+		// $('body').append( $editWindow );
+		px.dialog({
+			"title": "編集" ,
+			"body": $editWindow,
+			"buttons":[]
+		});
 		return this;
 	}// openEditWindow()
 

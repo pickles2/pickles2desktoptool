@@ -292,4 +292,20 @@
 		return rtn;
 	}
 
+	/**
+	 * Base64 encode
+	 */
+	exports.base64encode = function( bin ){
+		var base64 = bin.toString('base64');
+		return base64;
+	}
+
+	/**
+	 * Base64 decode
+	 */
+	exports.base64decode = function( base64 ){
+		var bin = (new Buffer(base64, 'base64')).toString();
+		return bin;
+	}
+
 })(exports);

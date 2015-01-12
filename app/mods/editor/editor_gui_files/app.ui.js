@@ -549,9 +549,9 @@ window.contApp.ui = new(function(px, contApp){
 					var field = modTpl.fields[idx];
 					if( field.fieldType == 'input' ){
 						if( contApp.fieldDefinitions[field.type] ){
-							data.fields[field.name] = contApp.fieldDefinitions[field.type].saveEditorContent( $editWindow.find('form [data-field-unit='+JSON.stringify( modTpl.fields[idx].name )+']') );
+							data.fields[field.name] = contApp.fieldDefinitions[field.type].saveEditorContent( $editWindow.find('form [data-field-unit='+JSON.stringify( modTpl.fields[idx].name )+']'), data.fields[field.name] );
 						}else{
-							data.fields[field.name] = contApp.fieldBase.saveEditorContent( $editWindow.find('form [data-field-unit='+JSON.stringify( modTpl.fields[idx].name )+']') );
+							data.fields[field.name] = contApp.fieldBase.saveEditorContent( $editWindow.find('form [data-field-unit='+JSON.stringify( modTpl.fields[idx].name )+']'), data.fields[field.name] );
 						}
 					}else if( field.fieldType == 'module' ){
 						// module: 特に処理なし

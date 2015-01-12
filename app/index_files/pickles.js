@@ -18,7 +18,12 @@ new (function($, window){
 
 	if( !_utils.isDirectory( _path_data_dir ) ){
 		_fs.mkdirSync( _path_data_dir );
+		if( !_utils.isDirectory( _path_data_dir ) ){
+			alert( 'FAILED to make directory '+_path_data_dir );
+			process.exit();
+		}
 	}
+
 	if( !_fs.existsSync( _path_db ) ){
 		_fs.writeFileSync( _path_db,
 			JSON.stringify(

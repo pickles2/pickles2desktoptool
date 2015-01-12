@@ -18,9 +18,11 @@
 			return url;
 		}
 
-		this.getPort = function( argument ){
+		this.getPort = function(){
 			var port = 8080;
-			if( px.getDb().network.preview.port ){ port = px.getDb().network.preview.port; }
+			if( px.getDb().network.preview.port ){
+				port = px.getDb().network.preview.port;
+			}
 			return port;
 		}
 

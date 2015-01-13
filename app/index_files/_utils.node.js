@@ -4,6 +4,7 @@
 (function(exports){
 	var _fs = require('fs');
 	var _path = require('path'); // see: http://nodejs.jp/nodejs.org_ja/docs/v0.4/api/path.html
+	var _crypto = require('crypto');
 	var _pathCurrentDir = process.cwd();
 
 	/**
@@ -306,6 +307,17 @@
 	exports.base64decode = function( base64 ){
 		var bin = (new Buffer(base64, 'base64')).toString();
 		return bin;
+	}
+
+	/**
+	 * md5 hash
+	 */
+	exports.md5 = function( val ){
+		var md5 = _crypto.createHash('md5');
+		var origin = val+'';
+		md5.update( origin, 'utf8' );
+		var rtn = md5.digest('hex');
+		return rtn;
 	}
 
 })(exports);

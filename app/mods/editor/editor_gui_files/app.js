@@ -80,8 +80,23 @@ window.contApp = new (function( px ){
 									px.message( 'ページの保存に失敗しました。' );
 								}else{
 									px.message( 'ページを保存しました。' );
+									window.parent.contApp.closeEditor();
 								}
-								window.parent.contApp.closeEditor();
+							});
+						})
+				;
+				$html
+					.find('button.cont_btn_save_and_preview_in_browser')
+						.click(function(){
+							save(function(result){
+								if(!result){
+									px.message( 'ページの保存に失敗しました。' );
+								}else{
+									px.message( 'ページを保存しました。' );
+									px.preview.serverStandby(function(){
+										px.utils.openURL( px.preview.getUrl( _param.page_path ) );
+									});
+								}
 							});
 						})
 				;

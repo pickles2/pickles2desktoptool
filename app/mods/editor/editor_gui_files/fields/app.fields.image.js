@@ -1,5 +1,7 @@
 window.contApp.fieldDefinitions.image = _.defaults( new (function( px, contApp ){
 
+	var resMgr = contApp.contentsSourceData.resourceMgr;
+
 	/**
 	 * データをバインドする
 	 */

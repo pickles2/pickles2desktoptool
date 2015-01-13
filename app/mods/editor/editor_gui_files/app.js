@@ -35,7 +35,7 @@ window.contApp = new (function( px ){
 
 
 	/**
-	 * 初期化
+	 * initialize
 	 */
 	function init(){
 
@@ -48,12 +48,12 @@ window.contApp = new (function( px ){
 			} ,
 			function(it){
 				// コンテンツデータのロード・初期化
-				var contPath = _pj.findPageContent( _param.page_path );
-				var realpath = _pj.get('path')+'/'+contPath;
-				var pathInfo = px.utils.parsePath(contPath);
-				var dataJsonPath = _pj.get('path')+'/'+pathInfo.dirname+'/'+pathInfo.basenameExtless+'_files/guieditor.ignore/data.json';
+				_this.contPath = _pj.findPageContent( _param.page_path );
+				var realpath = _pj.get('path')+'/'+_this.contPath;
+				var pathInfo = px.utils.parsePath( _this.contPath );
+				_this.contFilesDirPath = _pj.get('path')+'/'+pathInfo.dirname+'/'+pathInfo.basenameExtless+'_files/';
 
-				_this.contentsSourceData.init( realpath, dataJsonPath, function(){
+				_this.contentsSourceData.init( realpath, _this.contFilesDirPath, function(){
 					it.next();
 				} );
 			} ,

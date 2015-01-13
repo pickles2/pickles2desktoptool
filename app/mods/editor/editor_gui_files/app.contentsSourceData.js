@@ -1,35 +1,44 @@
 window.contApp.contentsSourceData = new(function(px, contApp){
 	var _contentsSourceData;
 	var _contentsRealPath;
+	var _contFilesDirPath;
 	var _contentsSourceDataJsonPath;
 
 	/**
 	 * 初期化
 	 */
-	this.init = function( contentsRealPath, contentsSourceDataJsonPath, cb ){
+	this.init = function( contentsRealPath, contFilesDirPath, cb ){
+		var _this = this;
 		_contentsRealPath = contentsRealPath;
-		_contentsSourceDataJsonPath = contentsSourceDataJsonPath;
+		_contFilesDirPath = contFilesDirPath;
+		_contentsSourceDataJsonPath = _contFilesDirPath+'/guieditor.ignore/data.json';
 
-		if( !px.fs.existsSync( contentsRealPath ) ){
+		if( !px.fs.existsSync( _contentsRealPath ) ){
 			px.message('コンテンツファイルが存在しません。');
 			window.parent.contApp.closeEditor();
 			return this;
 		}
-		contentsRealPath = px.fs.realpathSync( contentsRealPath );
+		_contentsRealPath = px.fs.realpathSync( _contentsRealPath );
 
-		if( !px.fs.existsSync( contentsSourceDataJsonPath ) ){
+		if( !px.utils.isDirectory( _contFilesDirPath ) ){
+			px.utils.mkdir( _contFilesDirPath );
+		}
+		if( !px.utils.isDirectory( _contFilesDirPath+'/guieditor.ignore/' ) ){
+			px.utils.mkdir( _contFilesDirPath+'/guieditor.ignore/' );
+		}
+		if( !px.fs.existsSync( _contentsSourceDataJsonPath ) ){
 			px.message('コンテンツデータファイル(JSON)が存在しません。');
 			window.parent.contApp.closeEditor();
 			return this;
 		}
-		contentsSourceDataJsonPath = px.fs.realpathSync( contentsSourceDataJsonPath );
+		_contentsSourceDataJsonPath = px.fs.realpathSync( _contentsSourceDataJsonPath );
 
-		px.fs.readFile( contentsSourceDataJsonPath, function(err, data){
+		px.fs.readFile( _contentsSourceDataJsonPath, function(err, data){
 
 			// コンテンツデータをロード
 			_contentsSourceData = JSON.parse( data );
 			if( typeof(_contentsSourceData) !== typeof({}) ){
-				px.message( 'コンテンツデータファイルデータ(JSON)が破損しています。' );
+				px.message( 'コンテンツデータファイル(JSON)が破損しています。' );
 				_contentsSourceData = {};
 			}
 			_contentsSourceData.bowl = _contentsSourceData.bowl||{};
@@ -38,7 +47,13 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 				'fields':{}
 			};
 
-			cb();
+			// リソースマネージャーの初期化
+			_this.resourceMgr.init(
+				_contFilesDirPath,
+				function(){
+					cb();
+				}
+			);
 		});
 
 		return this;

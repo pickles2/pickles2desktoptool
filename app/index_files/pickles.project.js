@@ -232,26 +232,23 @@
 				} ,
 				function(it, prop){
 					// リソースディレクトリを作る
-					px.fs.mkdir( prop.realpath_resource_dir, function(err){
-						if( err ){
-							opt.error(err);
-							opt.complete();
-							return;
-						}
-						if( prop.proc_type == 'html_gui' ){
-							px.fs.writeFile( prop.realpath_resource_dir + '/data.ignore.json', '{}', function(err){
-								if( err ){
-									opt.error(err);
-									opt.complete();
-									return;
-								}
-								it.next(prop);
-							} );
-
-						}else{
+					if( !px.utils.isDirectory( prop.realpath_resource_dir ) ){
+						px.fs.mkdirSync( prop.realpath_resource_dir );
+					}
+					if( prop.proc_type == 'html_gui' ){
+						px.fs.mkdirSync( prop.realpath_resource_dir + '/guieditor.ignore/' );
+						px.fs.writeFile( prop.realpath_resource_dir + '/guieditor.ignore/data.json', '{}', function(err){
+							if( err ){
+								opt.error(err);
+								opt.complete();
+								return;
+							}
 							it.next(prop);
-						}
-					} );
+						} );
+
+					}else{
+						it.next(prop);
+					}
 				} ,
 				function(it, prop){
 					opt.success();

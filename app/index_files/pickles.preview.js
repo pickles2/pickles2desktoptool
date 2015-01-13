@@ -41,7 +41,7 @@
 			cb();
 
 			// ↓なぜかサーバーが閉じない。(server.close() が返ってこない)
-			// 　UTODO: ので、↑とりあえず cb() 返しておく。あとで調べる。
+			// 　UTODO: ので、↑とりあえず cb() 返しておく。あとで調べる。→ server.close() はサーバーを落とす機能じゃなくて、コネクションを閉じる機能？
 			_previewServer.stop(function(){
 				console.log('---- server closed!! ----');
 			});

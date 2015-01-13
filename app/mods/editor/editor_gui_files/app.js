@@ -13,8 +13,6 @@ window.contApp = new (function( px ){
 	 * 変更を保存する。
 	 */
 	function save(cb){
-		// px.message( '[開発中]ページ保存は、まだ仕様が固まらないので一旦スタブ状態にしてます。' );
-
 		cb = cb || function(){};
 
 		_this.contentsSourceData.save( function(){
@@ -44,7 +42,6 @@ window.contApp = new (function( px ){
 		px.utils.iterateFnc([
 			function(it){
 				// モジュールテンプレートのロード・初期化
-				// var pathModTpl = px.fs.realpathSync( _pj.get('path')+'/'+_pj.getPx2DTConfig().paths_module_template[0] );
 				_this.moduleTemplates.init( _pj.get('path'), _pj.getPx2DTConfig().paths_module_template, function(){
 					it.next();
 				} );
@@ -54,7 +51,7 @@ window.contApp = new (function( px ){
 				var contPath = _pj.findPageContent( _param.page_path );
 				var realpath = _pj.get('path')+'/'+contPath;
 				var pathInfo = px.utils.parsePath(contPath);
-				var dataJsonPath = _pj.get('path')+'/'+pathInfo.dirname+'/'+pathInfo.basenameExtless+'_files/data.ignore.json';
+				var dataJsonPath = _pj.get('path')+'/'+pathInfo.dirname+'/'+pathInfo.basenameExtless+'_files/guieditor.ignore/data.json';
 
 				_this.contentsSourceData.init( realpath, dataJsonPath, function(){
 					it.next();

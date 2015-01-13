@@ -22,7 +22,7 @@ window.contApp = new (function( px ){
 		var filename_editor = 'editor_default';
 		var parsedPath = px.utils.parsePath(_cont_path);
 		if( parsedPath.ext == 'html' || parsedPath.ext == 'htm' ){
-			var datajson = _pj.get('path')+'/'+parsedPath.dirname+'/'+parsedPath.basenameExtless+'_files/data.ignore.json';
+			var datajson = _pj.get('path')+'/'+parsedPath.dirname+'/'+parsedPath.basenameExtless+'_files/guieditor.ignore/data.json';
 			if( px.fs.existsSync( datajson ) ){
 				filename_editor = 'editor_gui';
 			}

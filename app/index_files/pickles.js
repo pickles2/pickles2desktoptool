@@ -264,7 +264,7 @@ new (function($, window){
 	 */
 	this.deleteProject = function(projectId, cb){
 		cb = cb || function(){};
-		_db.projects.splice(projectId, 1)
+		_db.projects.splice( projectId, 1 );
 		this.deselectProject();
 		this.save(function(){
 			cb();

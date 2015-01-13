@@ -436,9 +436,17 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 	 * データを保存する
 	 */
 	this.save = function(cb){
+		var _this = this;
 		cb = cb||function(){};
 		px.fs.writeFile( _contentsSourceDataJsonPath, JSON.stringify(_contentsSourceData), {encoding:'utf8'}, function(err){
-			cb( !err );
+
+			// リソースマネージャーの保存処理
+			_this.resourceMgr.save(
+				function(){
+					cb( !err );
+				}
+			);
+
 		} );
 		return this;
 	}

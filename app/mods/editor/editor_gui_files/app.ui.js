@@ -347,7 +347,10 @@ window.contApp.ui = new(function(px, contApp){
 					_this.openEditWindow( $(this).attr('data-guieditor-cont-data-path') );
 				})
 			;
-			$ctrlPanel.append( $ctrlElm );
+			if( !this.instancePath.match(new RegExp('^\\/bowl\\.[a-zA-Z0-9\_\-]+$')) ){
+				// ルートインスタンスは編集できないようにする。
+				$ctrlPanel.append( $ctrlElm );
+			}
 
 
 			for( var idx in this.fieldList ){
@@ -521,8 +524,8 @@ window.contApp.ui = new(function(px, contApp){
 					;
 					$ctrlPanel.append( $ctrlElm );
 				}
-			}
-		}
+			} // for
+		} // this.drawCtrlPanels()
 
 	} // function classUiUnit()
 

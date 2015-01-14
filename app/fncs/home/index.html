@@ -29,7 +29,9 @@
 
 		<!-- Local Resources -->
 		<link rel="stylesheet" href="./index_files/style.css" type="text/css" />
-		<script src="./index_files/script.js"></script>
+		<script src="./index_files/app.js"></script>
+		<script src="./index_files/app.installer.git.js"></script>
+		<script src="./index_files/app.installer.pickles2.js"></script>
 
 		<script type="text/template" id="template-reselectProject-path">
 			<div>
@@ -50,21 +52,34 @@
 			</div>
 		</script>
 		<script type="text/template" id="template-install-pickles2">
-			<div class="center">
-				<h2>プロジェクトに Pickles 2 をセットアップします</h2>
-				<p>
-					<img src="./index_files/images/install_image_clip.png" alt="Composer ☓ Packagist ☓ Pickles 2" />
-				</p>
-				<p>
-					Pickles 2 DesktopTool は、Pickles 2 を Packagest から自動的に取得し、セットアップを完了します。<br />
-				</p>
-				<p>
-					次のボタンを押して、セットアップを続けてください。<br />
-				</p>
-				<p>
-					<button>Pickles 2 をセットアップする</button>
-				</p>
-			</div>
+			<form action="javascript:;" class="inline">
+				<div class="center">
+					<h2>プロジェクトに Pickles 2 をセットアップします</h2>
+					<div class="cont_setup_options left">
+						<h3>セットアップオプション</h3>
+						<ul>
+							<li><label><input type="radio" name="setup_method" value="pickles2" checked="checked" /> Packagist から Pickles 2 をセットアップ</label></li>
+							<li><label><input type="radio" name="setup_method" value="git" /> Gitリポジトリ から クローン</label>
+								<div>Repository URL: <input type="text" name="git_url_repository" value="" style="max-width:100%;" /></div>
+							</li>
+						</ul>
+					</div>
+					<div class="cont_setup_description">
+						<p>
+							<img src="./index_files/images/install_image_clip.png" alt="Composer ☓ Packagist ☓ Pickles 2" />
+						</p>
+						<p>
+							Pickles 2 DesktopTool は、Pickles 2 を Packagest から自動的に取得し、セットアップを完了します。<br />
+						</p>
+					</div>
+					<p>
+						次のボタンを押して、セットアップを続けてください。<br />
+					</p>
+					<p>
+						<button>Pickles 2 をセットアップする</button>
+					</p>
+				</div>
+			</form>
 		</script>
 		<script type="text/template" id="template-standby">
 			<h2>基本的な手順</h2>

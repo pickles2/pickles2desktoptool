@@ -4,6 +4,14 @@ window.contApp = new (function(){
 	var pj = px.getCurrentProject();
 	var status = pj.status();
 
+	/**
+	 * installer collection
+	 */
+	this.installer = {};
+
+	/**
+	 * initialize
+	 */
 	function init(){
 
 		px.utils.iterateFnc([
@@ -47,9 +55,9 @@ window.contApp = new (function(){
 					// インストールボタン
 					$('.cont_maintask_ui')
 						.html( $('#template-install-pickles2').html() )
-						.find('button')
-							.click(function(){
-								_this.install(this);
+						.find('form')
+							.submit(function(){
+								install(this);
 								return false;
 							})
 					;
@@ -63,7 +71,7 @@ window.contApp = new (function(){
 			}
 		]).start({});
 
-	}
+	}// init()
 
 	/**
 	 * パスの選び直し
@@ -84,39 +92,28 @@ window.contApp = new (function(){
 	/**
 	 * Pickles2 クリーンインストール
 	 */
-	this.install = function(btn){
+	function install(form){
+		var btn = $(form).find('button');
 		$(btn).attr('disabled','disabled');
-		var $msg = $('<div>');
-		px.spawnDialog(
-			px.cmd('composer'),
-			[
-				'create-project',
-				'tomk79/pickles2',
-				'./',
-				'dev-master'
-			],
-			{
-				cd: pj.get('path'),
-				title: 'Pickles のセットアップ',
-				description: $msg.text('Pickles をセットアップしています。この処理はしばらく時間がかかります。'),
-				success: function(data){
-				} ,
-				error: function(data){
-					alert('ERROR: '+data);
-				} ,
-				cmdComplete: function(code){
-					$msg.text('Pickles のセットアップが完了しました。');
-				},
-				complete: function(dataFin){
-					$(btn).removeAttr('disabled');
-					var currentPjId = pj.projectId;
-					px.deselectProject();
-					px.selectProject( currentPjId, function(){
-						px.subapp();
-					} );
-				}
+
+		var method = $(form).find('input[name=setup_method]:checked').val();
+		var param = {};
+		switch(method){
+			case 'git':
+				param.repositoryUrl = $(form).find('input[name=git_url_repository]').val();
+				break;
+		}
+
+		_this.installer[method].install( pj, param, {
+			complete: function( dataFin ){
+				$(btn).removeAttr('disabled');
+				var currentPjId = pj.projectId;
+				px.deselectProject();
+				px.selectProject( currentPjId, function(){
+					px.subapp();
+				} );
 			}
-		);
+		} );
 	}
 
 	/**

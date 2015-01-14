@@ -5,6 +5,8 @@
 	 * ダイアログを表示する
 	 */
 	px.dialog = function(opt){
+		px.closeDialog();
+
 		opt = opt||{};
 		opt.title = opt.title||'command:';
 		opt.body = opt.body||$('<div>');
@@ -76,10 +78,12 @@
 	 * ダイアログを閉じる
 	 */
 	px.closeDialog = function(){
-		$dialog.remove();
-		$('body .theme_wrap')
-			.removeClass('filter-blur')
-		;
+		if( $dialog ){
+			$dialog.remove();
+			$('body .theme_wrap')
+				.removeClass('filter-blur')
+			;
+		}
 		return $dialog;
 	}//closeDialog()
 
@@ -194,6 +198,7 @@
 					opt.success(data);
 				} ,
 				error: function(data){
+					stdout += data;
 					opt.error(data);
 				} ,
 				complete: function(code){

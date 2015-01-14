@@ -29,7 +29,7 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 					$msg.text('Pickles のセットアップが完了しました。');
 				},
 				complete: function(dataFin){
-					opt.complete( dataFin );
+					opt.complete();
 				}
 			}
 		);

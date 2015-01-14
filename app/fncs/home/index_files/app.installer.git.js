@@ -6,54 +6,79 @@ window.contApp.installer.git = new (function( px, contApp ){
 	 */
 	this.install = function( pj, param, opt ){
 
+		var path = pj.get('path');
+
 		var $msg = $('<div>');
-		px.spawnDialog(
-			px.cmd('git'),
-			[
-				'clone',
-				param.repositoryUrl,
-				'./'
-			],
+
+		var $dialog;
+		var stdout = '';
+
+		var $pre = $('<pre>')
+			.css({
+				'height':'12em',
+				'overflow':'auto'
+			})
+			.addClass('selectable')
+			.text('実行中...')
+		;
+
+		var dlgOpt = {};
+		dlgOpt.title = 'Pickles のセットアップ';
+		dlgOpt.body = $('<div>')
+			.append( $msg.text('Gitリポジトリからクローンしています。この処理はしばらく時間がかかります。') )
+			.append( $pre )
+		;
+		dlgOpt.buttons = [
+			$('<button>')
+				.text('OK')
+				.click(function(){
+					// これがセットアップ完了の最後の処理
+					px.closeDialog();
+					opt.complete();
+				})
+				.attr({'disabled':'disabled'})
+		];
+
+		$dialog = px.dialog( dlgOpt );
+
+		stdout = '';
+		px.utils.spawn(
+			px.cmd('git'), ['clone', param.repositoryUrl, './'],
 			{
-				cd: pj.get('path'),
-				title: 'Pickles のセットアップ',
-				description: $msg.text('Gitリポジトリからクローンしています。この処理はしばらく時間がかかります。'),
+				cd: path,
 				success: function(data){
+					stdout += data;
+					$pre.text(stdout);
 				} ,
 				error: function(data){
-					px.message('ERROR: '+data);
-					$msg.text('ERROR: '+data);
+					stdout += data;
 				} ,
-				cmdComplete: function(code){
-					$msg.text('$ git clone が完了しました。');
-				},
-				complete: function(dataFin){
-					alert(dataFin);
-					px.spawnDialog(
-						px.cmd('composer'),
-						[
-							'install'
-						],
+				complete: function(code){
+					$msg.text('composer をセットアップしています。この処理はしばらく時間がかかります。');
+					px.utils.spawn(
+						px.cmd('composer'), ['install'],
 						{
-							cd: pj.get('path'),
-							title: 'Pickles のセットアップ',
-							description: $msg.text('composer をセットアップしています。この処理はしばらく時間がかかります。'),
+							cd: path,
 							success: function(data){
+								stdout += data;
+								$pre.text(stdout);
 							} ,
 							error: function(data){
+								stdout += data;
 								$msg.text('ERROR: '+data);
 							} ,
 							cmdComplete: function(code){
 								$msg.text('Pickles のセットアップが完了しました。');
 							},
 							complete: function(dataFin){
-								opt.complete( dataFin );
+								dlgOpt.buttons[0].removeAttr('disabled');
 							}
 						}
 					);
 				}
 			}
 		);
+
 		return this;
 	}
 

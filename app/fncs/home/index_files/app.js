@@ -105,7 +105,7 @@ window.contApp = new (function(){
 		}
 
 		_this.installer[method].install( pj, param, {
-			complete: function( dataFin ){
+			complete: function(){
 				$(btn).removeAttr('disabled');
 				var currentPjId = pj.projectId;
 				px.deselectProject();

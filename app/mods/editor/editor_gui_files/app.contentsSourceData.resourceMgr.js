@@ -27,8 +27,11 @@ window.contApp.contentsSourceData.resourceMgr = new(function(px, contApp){
 		for( var idx in list ){
 			var resKey = list[idx];
 			if( !px.utils.isDirectory( _resourcesDirPath+'/'+resKey ) ){ continue; }
-			var jsonStr = px.fs.readFileSync( _resourcesDirPath+'/'+resKey+'/res.json' );
-			_resourceDb[resKey] = JSON.parse( jsonStr );
+			_resourceDb[resKey] = {};
+			if( px.utils.isFile( _resourcesDirPath+'/'+resKey+'/res.json' ) ){
+				var jsonStr = px.fs.readFileSync( _resourcesDirPath+'/'+resKey+'/res.json' );
+				_resourceDb[resKey] = JSON.parse( jsonStr );
+			}
 		}
 		cb();
 		return;
@@ -50,17 +53,19 @@ window.contApp.contentsSourceData.resourceMgr = new(function(px, contApp){
 				JSON.stringify( _resourceDb[resKey] )
 			);
 
-			var bin = new Buffer(_resourceDb[resKey].base64, 'base64');
-			px.fs.writeFileSync(
-				_resourcesDirPath+'/'+resKey+'/bin.'+_resourceDb[resKey].ext,
-				bin
-			);
+			if(_resourceDb[resKey].base64){
+				var bin = new Buffer(_resourceDb[resKey].base64, 'base64');
+				px.fs.writeFileSync(
+					_resourcesDirPath+'/'+resKey+'/bin.'+_resourceDb[resKey].ext,
+					bin
+				);
 
-			// 公開ファイル
-			px.fs.writeFileSync(
-				_resourcesPublishDirPath+'/'+resKey+'.'+_resourceDb[resKey].ext,
-				bin
-			);
+				// 公開ファイル
+				px.fs.writeFileSync(
+					_resourcesPublishDirPath+'/'+resKey+'.'+_resourceDb[resKey].ext,
+					bin
+				);
+			}
 		}
 		cb();
 		return;

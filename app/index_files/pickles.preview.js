@@ -10,7 +10,7 @@
 
 			var pj = px.getCurrentProject();
 			var croot = '/';
-			if( pj ){
+			if( pj && pj.getConfig() ){
 				croot = pj.getConfig().path_controot;
 				croot = croot.replace( new RegExp('^\\/+'), '' );
 				croot = croot.replace( new RegExp('\\/+$'), '/' );

@@ -129,9 +129,11 @@ new (function($, window){
 
 		})();
 
-		_db = _db||{};
-		_db.commands = _db.commands||{};
-		_db.projects = _db.projects||[];
+		if(!_db){_db = {};}
+		if(!_db.commands){_db.commands = {};}
+		if(!_db.projects){_db.projects = [];}
+		if(!_db.network){_db.network = {};}
+		if(!_db.network.preview){_db.network.preview = {};}
 
 		if( !_utils.isDirectory( _path_data_dir+'commands/' ) ){
 			_fs.mkdirSync( _path_data_dir+'commands/' );

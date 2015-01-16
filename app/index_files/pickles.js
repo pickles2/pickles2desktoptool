@@ -192,7 +192,7 @@ new (function($, window){
 	 */
 	this.save = function(cb){
 		cb = cb || function(){};
-		var data = JSON.stringify( _db );
+		var data = JSON.stringify( _db, null, 1 );
 		_fs.writeFileSync( _path_db, data, {"encoding":"utf8","mode":436,"flag":"w"} );
 		cb();
 		return true;

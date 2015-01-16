@@ -438,7 +438,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 	this.save = function(cb){
 		var _this = this;
 		cb = cb||function(){};
-		px.fs.writeFile( _contentsSourceDataJsonPath, JSON.stringify(_contentsSourceData), {encoding:'utf8'}, function(err){
+		px.fs.writeFile( _contentsSourceDataJsonPath, JSON.stringify(_contentsSourceData, null, 1), {encoding:'utf8'}, function(err){
 
 			// リソースマネージャーの保存処理
 			_this.resourceMgr.save(

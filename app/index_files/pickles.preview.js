@@ -9,9 +9,12 @@
 			path = path.replace( new RegExp('^\\/+'), '' );
 
 			var pj = px.getCurrentProject();
-			var croot = pj.getConfig().path_controot;
-			croot = croot.replace( new RegExp('^\\/+'), '' );
-			croot = croot.replace( new RegExp('\\/+$'), '/' );
+			var croot = '/';
+			if( pj ){
+				croot = pj.getConfig().path_controot;
+				croot = croot.replace( new RegExp('^\\/+'), '' );
+				croot = croot.replace( new RegExp('\\/+$'), '/' );
+			}
 
 			var url = 'http://127.0.0.1:'+port+'/'+croot+path;
 

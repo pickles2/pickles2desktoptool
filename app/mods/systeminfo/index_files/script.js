@@ -19,7 +19,7 @@
 						function(err,stdout,stderr){
 							$('.cont_tpl_sys_table').append($('<tr>')
 								.append($('<th>').text(data.title))
-								.append($('<td>')
+								.append($('<td class="selectable">')
 									.text(stdout)
 									.css({"overflow":"auto","white-space":"pre"})
 								)
@@ -31,7 +31,7 @@
 				}else if( data.val ){
 					$('.cont_tpl_sys_table').append($('<tr>')
 						.append($('<th>').text(data.title))
-						.append($('<td>')
+						.append($('<td class="selectable">')
 							.text(data.val)
 							.css({"overflow":"auto","white-space":"pre"})
 						)

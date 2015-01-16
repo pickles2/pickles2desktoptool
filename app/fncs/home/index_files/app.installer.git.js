@@ -41,7 +41,7 @@ window.contApp.installer.git = new (function( px, contApp ){
 
 		$dialog = px.dialog( dlgOpt );
 
-		stdout = '';
+		// stdout = '';
 		px.utils.spawn(
 			px.cmd('git'), ['clone', param.repositoryUrl, './'],
 			{

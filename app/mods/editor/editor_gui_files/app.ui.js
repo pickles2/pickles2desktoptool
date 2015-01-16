@@ -441,6 +441,11 @@ window.contApp.ui = new(function(px, contApp){
 
 					var instancePath = this.instancePath+'/fields.'+fieldName+'@'+(this.fields[fieldName].length);
 					var $elm = $content.find('[data-guieditor-cont-data-path='+JSON.stringify(instancePath)+']');
+					// if( !$elm.size() ){
+					// 	// memo: loopの下層にあるmarkdownに値が入ってない場合に 0 になった。
+					// 	console.log('unmatched content element.');
+					// 	console.log(JSON.stringify(instancePath));
+					// }
 					var $ctrlElm = $('<div>')
 						.css({
 							'border':0,
@@ -450,8 +455,8 @@ window.contApp.ui = new(function(px, contApp){
 							'background-color': 'transparent',
 							'display':'block',
 							'position':'absolute',
-							'top': $elm.offset().top + 5,
-							'left': $elm.offset().left,
+							'top':  (function($elm){if($elm.size()){return $elm.offset().top  + 5;}return 0;})($elm),
+							'left': (function($elm){if($elm.size()){return $elm.offset().left + 0;}return 0;})($elm),
 							'z-index':0,
 							'width': $elm.width(),
 							'height': $elm.height()

@@ -151,6 +151,7 @@ window.contApp.ui = new(function(px, contApp){
 			// mode =
 			//    canvas (編集用レイアウト)
 			//    finalize (デフォルト/最終書き出し)
+
 			var fieldData = {};
 			for( var idx in this.fieldList ){
 				var fieldName = this.fieldList[idx];
@@ -229,22 +230,55 @@ window.contApp.ui = new(function(px, contApp){
 					}
 				}
 			}
-			var rtn = $('<div>')
-				.attr("data-guieditor-cont-data-path", this.instancePath)
-				.css({
-					'margin-top':5,
-					'margin-bottom':5,
-				})
-				.append( this.moduleTemplates.bind( fieldData, mode) )
-			;
+
+			var tmpSrc = this.moduleTemplates.bind( fieldData, mode );
+			var rtn = $('<div>');
+
+			var isRootElement = (function(tplSrc){
+				tplSrc = JSON.parse( JSON.stringify(tplSrc) );
+				tplSrc = tplSrc.replace( new RegExp('\\<\\!\\-\\-.*?\\-\\-\\>','g'), '' );
+				tplSrc = tplSrc.replace( new RegExp('\\{\\&.*?\\&\\}','g'), '' );
+				tplSrc = tplSrc.replace( new RegExp('\r\n|\r|\n','g'), '' );
+				tplSrc = tplSrc.replace( new RegExp('\t','g'), '' );
+				tplSrc = tplSrc.replace( new RegExp('^[\s\r\n]*'), '' );
+				tplSrc = tplSrc.replace( new RegExp('[\s\r\n]*$'), '' );
+				if( tplSrc.length && tplSrc.indexOf('<') === 0 && tplSrc.match(new RegExp('\\>$')) ){
+					var $jq = $(tplSrc);
+					if( $jq.size() ){
+						return true;
+					}
+				}
+				return false;
+			})(this.moduleTemplates.template);
 
 			if( mode == 'finalize' ){
+				rtn = $('<div>');
+				rtn.append( tmpSrc );
 				rtn = rtn.get(0).innerHTML;
 			}else{
+				rtn = $('<div>');
+				rtn.append( tmpSrc );
+				if( isRootElement ){
+					rtn = $(tmpSrc);
+				}
+				// if( rtn.size() == 1 ){
+				// 	// 要素がいっこだったら、追加した<div>ではなくて、
+				// 	// 最初の要素にマークできるのではないか？
+				// 	// と思ったけど未完成。
+				// 	rtn = rtn.eq(0);
+				// }
+				rtn
+					.attr("data-guieditor-cont-data-path", this.instancePath)
+					.css({
+						// 'border':'1px solid #f00',
+						'margin-top':5,
+						'margin-bottom':5
+					})
+				;
 				rtn = rtn.get(0).outerHTML;
 			}
 			return rtn;
-		}
+		} // this.bind();
 
 		/**
 		 * コントロールパネルを描画する
@@ -682,6 +716,7 @@ window.contApp.ui = new(function(px, contApp){
 		});
 
 		setTimeout(function(){
+			// UTODO:
 			// 高さ合わせ処理のタイミングがずれることがある。
 			// 根本的な解決にはなってないが、一旦 setTimeout() で逃げとく。
 			// 描画処理中のどこかに何か原因がありそうな気がする。

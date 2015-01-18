@@ -148,9 +148,9 @@ window.contApp.ui = new(function(px, contApp){
 		 */
 		this.bind = function( mode ){
 			mode = mode||"finalize";
-			// mode =
-			//    canvas (編集用レイアウト)
-			//    finalize (デフォルト/最終書き出し)
+				// mode =
+				//    canvas (編集用レイアウト)
+				//    finalize (デフォルト/最終書き出し)
 
 			var fieldData = {};
 			for( var idx in this.fieldList ){
@@ -244,18 +244,17 @@ window.contApp.ui = new(function(px, contApp){
 				rtn = $('<div>');
 				rtn.append( tmpSrc );
 				if( isRootElement ){
+					// 要素が1つだったら、追加した<div>ではなくて、
+					// 最初の要素にマークする。
+					// li要素とか、display:blockではない場合にレイアウトを壊さない目的。
+					// 要素が複数の場合、または存在しないテキストノードのみの場合、
+					// 要素がテキストノードで囲われている場合、なども考えられる。
+					// これらの場合は、divで囲ってあげないとハンドルできないので、しかたなし。
 					rtn = $(tmpSrc);
 				}
-				// if( rtn.size() == 1 ){
-				// 	// 要素がいっこだったら、追加した<div>ではなくて、
-				// 	// 最初の要素にマークできるのではないか？
-				// 	// と思ったけど未完成。
-				// 	rtn = rtn.eq(0);
-				// }
 				rtn
 					.attr("data-guieditor-cont-data-path", this.instancePath)
 					.css({
-						// 'border':'1px solid #f00',
 						'margin-top':5,
 						'margin-bottom':5
 					})
@@ -444,7 +443,7 @@ window.contApp.ui = new(function(px, contApp){
 							e.preventDefault();
 						})
 						.bind('click', function(e){
-							// px.message( 'UTODO: 開発中: select '+$(this).attr('data-guieditor-cont-data-path') );
+							// 特に処理なし
 						})
 						.bind('dblclick', function(e){
 							px.message( 'ここに追加したいモジュールをドロップしてください。' );
@@ -535,7 +534,7 @@ window.contApp.ui = new(function(px, contApp){
 							e.preventDefault();
 						})
 						.bind('click', function(e){
-							// px.message( 'UTODO: 開発中: select '+$(this).attr('data-guieditor-cont-data-path') );
+							// 特に処理なし
 						})
 						.bind('dblclick', function(e){
 							var modId = $(this).attr("data-guieditor-mod-id");

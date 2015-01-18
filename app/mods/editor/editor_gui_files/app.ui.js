@@ -234,22 +234,7 @@ window.contApp.ui = new(function(px, contApp){
 			var tmpSrc = this.moduleTemplates.bind( fieldData, mode );
 			var rtn = $('<div>');
 
-			var isRootElement = (function(tplSrc){
-				tplSrc = JSON.parse( JSON.stringify(tplSrc) );
-				tplSrc = tplSrc.replace( new RegExp('\\<\\!\\-\\-.*?\\-\\-\\>','g'), '' );
-				tplSrc = tplSrc.replace( new RegExp('\\{\\&.*?\\&\\}','g'), '' );
-				tplSrc = tplSrc.replace( new RegExp('\r\n|\r|\n','g'), '' );
-				tplSrc = tplSrc.replace( new RegExp('\t','g'), '' );
-				tplSrc = tplSrc.replace( new RegExp('^[\s\r\n]*'), '' );
-				tplSrc = tplSrc.replace( new RegExp('[\s\r\n]*$'), '' );
-				if( tplSrc.length && tplSrc.indexOf('<') === 0 && tplSrc.match(new RegExp('\\>$')) ){
-					var $jq = $(tplSrc);
-					if( $jq.size() ){
-						return true;
-					}
-				}
-				return false;
-			})(this.moduleTemplates.template);
+			var isRootElement = this.moduleTemplates.isRootElement;
 
 			if( mode == 'finalize' ){
 				rtn = $('<div>');

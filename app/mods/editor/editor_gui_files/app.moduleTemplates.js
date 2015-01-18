@@ -107,6 +107,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 		opt = opt || {};
 
 		this.id = modId;
+		this.isRootElement = false;
 		this.path = null;
 		if( !contApp.moduleTemplates.isSystemMod(modId) && !opt.src ){
 			this.path = px.fs.realpathSync( getPathModTpl(modId) );
@@ -198,6 +199,24 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 			cb = cb||function(){};
 			src = JSON.parse( JSON.stringify( src ) );
 			_this.template = src;
+
+			_this.isRootElement = (function(tplSrc){
+				// 単一のルート要素を持っているかどうか判定。
+				tplSrc = JSON.parse( JSON.stringify(tplSrc) );
+				tplSrc = tplSrc.replace( new RegExp('\\<\\!\\-\\-.*?\\-\\-\\>','g'), '' );
+				tplSrc = tplSrc.replace( new RegExp('\\{\\&.*?\\&\\}','g'), '' );
+				tplSrc = tplSrc.replace( new RegExp('\r\n|\r|\n','g'), '' );
+				tplSrc = tplSrc.replace( new RegExp('\t','g'), '' );
+				tplSrc = tplSrc.replace( new RegExp('^[\s\r\n]*'), '' );
+				tplSrc = tplSrc.replace( new RegExp('[\s\r\n]*$'), '' );
+				if( tplSrc.length && tplSrc.indexOf('<') === 0 && tplSrc.match(new RegExp('\\>$')) ){
+					var $jq = $(tplSrc);
+					if( $jq.size() ){
+						return true;
+					}
+				}
+				return false;
+			})(src);
 
 			var field = null;
 			while( 1 ){

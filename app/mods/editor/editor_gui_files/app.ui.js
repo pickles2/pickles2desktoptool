@@ -322,7 +322,7 @@ window.contApp.ui = new(function(px, contApp){
 						}
 						contApp.contentsSourceData.addInstance( modId, moveTo, function(){
 							// px.message('インスタンスを追加しました。');
-							contApp.ui.resizeEvent();
+							contApp.ui.onEditEnd();
 						} );
 					}else if( method == 'moveTo' ){
 						function isSubMod( subModName ){
@@ -340,7 +340,7 @@ window.contApp.ui = new(function(px, contApp){
 						}
 						contApp.contentsSourceData.moveInstanceTo( moveFrom, moveTo, function(){
 							// px.message('インスタンスを移動しました。');
-							contApp.ui.resizeEvent();
+							contApp.ui.onEditEnd();
 						} );
 					}
 				})
@@ -414,7 +414,7 @@ window.contApp.ui = new(function(px, contApp){
 								var moveFrom = event.dataTransfer.getData("data-guieditor-cont-data-path");
 								contApp.contentsSourceData.moveInstanceTo( moveFrom, $(this).attr('data-guieditor-cont-data-path'), function(){
 									// px.message('インスタンスを移動しました。');
-									contApp.ui.resizeEvent();
+									contApp.ui.onEditEnd();
 								} );
 								return;
 							}
@@ -425,7 +425,7 @@ window.contApp.ui = new(function(px, contApp){
 							var modId = event.dataTransfer.getData("modId");
 							contApp.contentsSourceData.addInstance( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
 								// px.message('インスタンスを追加しました。');
-								contApp.ui.resizeEvent();
+								contApp.ui.onEditEnd();
 							} );
 						})
 						.bind('dragenter', function(e){
@@ -512,7 +512,7 @@ window.contApp.ui = new(function(px, contApp){
 
 								contApp.contentsSourceData.moveInstanceTo( moveFrom, moveTo, function(){
 									// px.message('インスタンスを移動しました。');
-									contApp.ui.resizeEvent();
+									contApp.ui.onEditEnd();
 								} );
 								return;
 							}
@@ -540,7 +540,7 @@ window.contApp.ui = new(function(px, contApp){
 							var modId = $(this).attr("data-guieditor-mod-id");
 							var subModName = $(this).attr("data-guieditor-sub-mod-name");
 							contApp.contentsSourceData.addInstance( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
-								contApp.ui.resizeEvent();
+								contApp.ui.onEditEnd();
 							}, subModName );
 							e.preventDefault();
 						})
@@ -551,6 +551,17 @@ window.contApp.ui = new(function(px, contApp){
 		} // this.drawCtrlPanels()
 
 	} // function classUiUnit()
+
+	/**
+	 * 編集操作終了イベント
+	 */
+	this.onEditEnd = function( cb ){
+		cb = cb||function(){};
+		contApp.save();
+		this.resizeEvent();
+		cb();
+		return;
+	}
 
 	/**
 	 * モジュールの編集ウィンドウを開く
@@ -587,7 +598,7 @@ window.contApp.ui = new(function(px, contApp){
 				}
 				$editWindow.remove();
 				px.closeDialog();
-				_this.resizeEvent();
+				contApp.ui.onEditEnd();
 				return false;
 			})
 		;
@@ -605,7 +616,7 @@ window.contApp.ui = new(function(px, contApp){
 				delete data;
 				$editWindow.remove();
 				px.closeDialog();
-				_this.resizeEvent();
+				contApp.ui.onEditEnd();
 				return false;
 			})
 		;

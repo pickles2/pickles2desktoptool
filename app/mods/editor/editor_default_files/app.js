@@ -61,6 +61,7 @@ window.contApp = new (function( px ){
 
 	function init(){
 		var $html = $( $('#cont_tpl_editor').html() );
+		var editTimer;
 
 		$html
 			.find('textarea')
@@ -71,7 +72,34 @@ window.contApp = new (function( px ){
 					'resize':'none'
 				})
 				.val( px.fs.readFileSync(_contentsPath) )
+				// .scrollTop(0)
+				.blur( function(){
+					save(function(result){
+						if(!result){
+							px.message( 'ページの保存に失敗しました。' );
+						}else{
+							// px.message( 'ページを保存しました。' );
+						}
+						preview('iframe.cont_preview');
+					});
+				} )
+				.keydown( function(){
+					if(editTimer){ clearTimeout( editTimer ); }
+					editTimer = setTimeout(function(){
+						save(function(result){
+							if(!result){
+								px.message( 'ページの保存に失敗しました。' );
+							}else{
+								// px.message( 'ページを保存しました。' );
+							}
+							preview('iframe.cont_preview');
+						});
+					}, 1000);
+				} )
 		;
+		setTimeout(function(){
+			$html.find('textarea').scrollTop(0);
+		}, 10);
 		$html
 			.find('button.cont_btn_save')
 				.click(function(){

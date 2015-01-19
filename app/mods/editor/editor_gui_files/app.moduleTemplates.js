@@ -211,7 +211,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 				tplSrc = tplSrc.replace( new RegExp('[\s\r\n]*$'), '' );
 				if( tplSrc.length && tplSrc.indexOf('<') === 0 && tplSrc.match(new RegExp('\\>$')) ){
 					var $jq = $(tplSrc);
-					if( $jq.size() ){
+					if( $jq.size() == 1 ){
 						return true;
 					}
 				}

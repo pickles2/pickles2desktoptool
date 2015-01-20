@@ -7,10 +7,16 @@ window.contApp = new (function( px ){
 
 	var _param = px.utils.parseUriParam( window.location.href );
 
-	// var _pageInfo = _pj.site.getPageInfo( _param.page_path );
-	// if( !_pageInfo ){ alert('ERROR: Undefined page path.'); return this; }
+	var _pageInfo = _pj.site.getPageInfo( _param.page_path );
+	if( !_pageInfo ){
+		alert('ERROR: Undefined page path.'); return this;
+	}
+	var _pathContent = _pageInfo.content;
+	if( !_pathContent ){
+		_pathContent = _pageInfo.path;
+	}
 
-	var _cont_path = _pj.findPageContent( _param.page_path );
+	var _cont_path = _pj.findPageContent( _pathContent );
 	var _cont_realpath = _pj.get('path')+'/'+_cont_path;
 	var _cont_path_info = px.utils.parsePath(_cont_path);
 
@@ -134,8 +140,22 @@ window.contApp = new (function( px ){
 					'width':'100%'
 				})
 				.bind('load', function(){
-					// ↓ UTODO: これで、遷移後のURLがとれる。
-					console.log( $html.find('iframe.cont_preview')[0].contentWindow.location.href );
+					// ↓ これで、現在のURLがとれる。
+					var loc = $html.find('iframe.cont_preview')[0].contentWindow.location;
+					switch( loc.href ){
+						case 'blank':
+						case 'about:blank':
+							return;
+					}
+					var to = loc.pathname;
+					var pageInfo = _pj.site.getPageInfo( to );
+					// console.log( _param.page_path );
+					// console.log( loc.pathname );
+					if( to != _param.page_path ){
+						if(confirm( 'realy to go to "'+to+'"?' )){
+							window.location.href = './index.html?page_path='+encodeURIComponent( to );
+						}
+					}
 				})
 		;
 		$('body')

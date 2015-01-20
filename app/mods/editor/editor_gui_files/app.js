@@ -7,6 +7,15 @@ window.contApp = new (function( px ){
 
 	var _param = px.utils.parseUriParam( window.location.href );
 
+	var _pageInfo = _pj.site.getPageInfo( _param.page_path );
+	if( !_pageInfo ){
+		alert('ERROR: Undefined page path.'); return this;
+	}
+	var _pathContent = _pageInfo.content;
+	if( !_pathContent ){
+		_pathContent = _pageInfo.path;
+	}
+
 	this.fieldDefinitions = {};//フィールドの種類ごとの処理を外部化して、ここに入れる。
 
 	/**
@@ -18,7 +27,7 @@ window.contApp = new (function( px ){
 		_this.contentsSourceData.save( function(){
 			// px.message( 'データファイルを保存しました。' );
 
-			var contPath = _pj.findPageContent( _param.page_path );
+			var contPath = _pj.findPageContent( _pathContent );
 			var contentsRealpath = px.fs.realpathSync( _pj.get('path')+'/'+contPath);
 
 			src = _this.ui.finalize();
@@ -49,7 +58,7 @@ window.contApp = new (function( px ){
 			} ,
 			function(it){
 				// コンテンツデータのロード・初期化
-				_this.contPath = _pj.findPageContent( _param.page_path );
+				_this.contPath = _pj.findPageContent( _pathContent );
 				var realpath = _pj.get('path')+'/'+_this.contPath;
 				var pathInfo = px.utils.parsePath( _this.contPath );
 				_this.contFilesDirPath = _pj.get('path')+'/'+pathInfo.dirname+'/'+pathInfo.basenameExtless+'_files/';

@@ -8,9 +8,15 @@ window.contApp = new (function( px ){
 	var _param = px.utils.parseUriParam( window.location.href );
 
 	var _pageInfo = _pj.site.getPageInfo( _param.page_path );
-	if( !_pageInfo ){ alert('ERROR: Undefined page path.'); return this; }
+	if( !_pageInfo ){
+		alert('ERROR: Undefined page path.'); return this;
+	}
+	var _pathContent = _pageInfo.content;
+	if( !_pathContent ){
+		_pathContent = _pageInfo.path;
+	}
 
-	var _cont_path = _pj.findPageContent( _param.page_path );
+	var _cont_path = _pj.findPageContent( _pathContent );
 	var _cont_realpath = _pj.get('path')+'/'+_cont_path;
 	var _cont_path_info = px.utils.parsePath(_cont_path);
 
@@ -27,9 +33,11 @@ window.contApp = new (function( px ){
 				filename_editor = 'editor_gui';
 			}
 		}
+
 		window.location.href = './'+filename_editor+'.html?page_path='+encodeURIComponent( _param.page_path );
 		return true;
 	}
+
 	/**
 	 * エイリアスページのためのリダイレクト処理
 	 */
@@ -37,6 +45,7 @@ window.contApp = new (function( px ){
 		window.location.href = './index.html?page_path='+encodeURIComponent( to );
 		return true;
 	}
+
 	/**
 	 * リロード処理
 	 */

@@ -296,6 +296,9 @@
 					var _sitemap = null;
 					var _sitemap_id_map = null;
 					this.getPageInfo = function( pagePath ){
+						if( pagePath.match(new RegExp('\\/$')) && _config.directory_index && _config.directory_index.length ){
+							pagePath += _config.directory_index[0];
+						}
 						if( _sitemap && _sitemap[pagePath] ){
 							return _sitemap[pagePath];
 						}

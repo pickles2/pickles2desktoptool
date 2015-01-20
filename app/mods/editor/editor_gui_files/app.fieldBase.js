@@ -38,11 +38,18 @@ window.contApp.fieldBase = new (function( px, contApp ){
 	 * エディタUIを生成
 	 */
 	this.mkEditor = function( mod, data ){
+		var rows = 12;
+		if( mod.rows ){
+			rows = mod.rows;
+		}
 		var rtn = $('<div>')
 			.append($('<textarea>')
-				.attr({"name":mod.name})
+				.attr({
+					"name":mod.name,
+					"rows":rows
+				})
 				.val(data)
-				.css({'width':'100%','height':'12em'})
+				.css({'width':'100%','height':'auto'})
 		);
 		return rtn;
 	}

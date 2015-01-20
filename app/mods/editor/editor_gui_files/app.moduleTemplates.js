@@ -194,6 +194,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 
 				}else if( field.echo ){
 					// echo field
+					// UTODO: loopなどの内側は名前領域が異なるので、外側の値にアクセスできない
 					if( contApp.fieldDefinitions[memoInputField[field.echo.ref].type] ){
 						// フィールドタイプ定義を呼び出す
 						rtn += contApp.fieldDefinitions[memoInputField[field.echo.ref].type].bind( fieldData[field.echo.ref], mode );

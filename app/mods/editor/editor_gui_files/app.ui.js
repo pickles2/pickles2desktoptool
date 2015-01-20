@@ -621,6 +621,23 @@ window.contApp.ui = new(function(px, contApp){
 			})
 		;
 
+		function mkEditFieldLabel(field){
+			var rtn = '';
+			var name = field.name;
+			if( field.label ){
+				name = field.label;
+			}
+			switch( field.fieldType ){
+				case 'input':
+					rtn = name+' <span class="small"> - '+field.type+'</small>';
+					break;
+				default:
+					rtn = name+' <span class="small"> - '+field.fieldType+'</span>';
+					break;
+			}
+			return rtn;
+		}
+
 		for( var idx in modTpl.fields ){
 			var field = modTpl.fields[idx];
 			if( field.fieldType == 'input' ){
@@ -628,7 +645,7 @@ window.contApp.ui = new(function(px, contApp){
 					.append($('<div>')
 						.attr( 'data-field-unit', modTpl.fields[idx].name )
 						.append($('<h2>')
-							.text(field.type+' ('+modTpl.fields[idx].name+')')
+							.html( mkEditFieldLabel( modTpl.fields[idx] ) )
 						)
 						.append( ((function( field, mod, data ){
 							if( contApp.fieldDefinitions[field.type] ){
@@ -649,7 +666,8 @@ window.contApp.ui = new(function(px, contApp){
 					.append($('<div>')
 						.attr( 'data-field-unit', modTpl.fields[idx].name )
 						.append($('<h2>')
-							.text(field.fieldType+' ('+modTpl.fields[idx].name+')')
+							// .text(field.fieldType+' ('+modTpl.fields[idx].name+')')
+							.html( mkEditFieldLabel( modTpl.fields[idx] ) )
 						)
 						.append($('<p>')
 							.text('ネストされたモジュールがあります。')
@@ -660,7 +678,8 @@ window.contApp.ui = new(function(px, contApp){
 				$editWindow.find('div.cont_tpl_module_editor-canvas')
 					.append($('<div>')
 						.append($('<h2>')
-							.text(field.fieldType+' ('+modTpl.fields[idx].name+')')
+							// .text(field.fieldType+' ('+modTpl.fields[idx].name+')')
+							.html( mkEditFieldLabel( modTpl.fields[idx] ) )
 						)
 						.append($('<p>')
 							.text('ネストされたサブモジュールがあります。')

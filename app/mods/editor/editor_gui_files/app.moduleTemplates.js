@@ -161,6 +161,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 			var src = this.template;
 			var field = {};
 			var rtn = '';
+			var memoInputField = {};
 			while( 1 ){
 				if( !src.match( new RegExp('^((?:.|\r|\n)*?)\\{\\&((?:.|\r|\n)*?)\\&\\}((?:.|\r|\n)*)$') ) ){
 					rtn += src;
@@ -170,6 +171,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 				field = RegExp.$2;
 				field = JSON.parse( field );
 				if( field.input ){
+					// input field
 					if( contApp.fieldDefinitions[field.input.type] ){
 						// フィールドタイプ定義を呼び出す
 						rtn += contApp.fieldDefinitions[field.input.type].bind( fieldData[field.input.name], mode );
@@ -177,13 +179,28 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 						// ↓未定義のフィールドタイプの場合のデフォルトの挙動
 						rtn += contApp.fieldBase.bind( fieldData[field.input.name], mode );
 					}
+					memoInputField[field.input.name] = {
+						fieldType: "input", type: field.input.type
+					}
 				}else if( field.module ){
+					// module field
 					rtn += fieldData[field.module.name].join('');
 
 				}else if( field.loop ){
+					// loop field
 					var tmpSearchResult = searchEndTag( src, 'loop' );
 					rtn += fieldData[field.loop.name].join('');
 					src = tmpSearchResult.nextSrc;
+
+				}else if( field.echo ){
+					// echo field
+					if( contApp.fieldDefinitions[memoInputField[field.echo.ref].type] ){
+						// フィールドタイプ定義を呼び出す
+						rtn += contApp.fieldDefinitions[memoInputField[field.echo.ref].type].bind( fieldData[field.echo.ref], mode );
+					}else{
+						// ↓未定義のフィールドタイプの場合のデフォルトの挙動
+						rtn += contApp.fieldBase.bind( fieldData[field.echo.ref], mode );
+					}
 
 				}
 				src = RegExp.$3;
@@ -250,6 +267,9 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 					// ループ構造の閉じタグ
 					// 本来ここは通らないはず。
 					// ここを通る場合は、対応する開始タグがない loopend がある場合。
+				}else if( field.echo ){
+					// _this.fields[field.echo.name] = field.echo;
+					// _this.fields[field.echo.name].fieldType = 'echo';
 				}
 			}
 			cb();

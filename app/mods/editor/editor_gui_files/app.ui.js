@@ -736,11 +736,13 @@ window.contApp.ui = new(function(px, contApp){
 
 		});
 
-		setTimeout(function(){
-			// UTODO:
-			// 高さ合わせ処理のタイミングがずれることがある。
-			// 根本的な解決にはなってないが、一旦 setTimeout() で逃げとく。
-			// 描画処理中のどこかに何か原因がありそうな気がする。
+		// setTimeout(function(){
+			// 高さ合わせ処理のタイミングがずれることがあったので、
+			// 根本的な解決にはなってないが、一旦 setTimeout() で逃げといた。
+			// 初期化の処理を見なおしたら解決したので、setTimeout() ははずした。
+			// UTODO: 画像が含まれている & レスポンシブの場合(？)に、ずれる現象はまだ起きている。
+			//        仮説：ctrlPanelを配置したあとでスクロールバーがでて、画像の幅が変わる(→同時に高さも変わる)ことが原因？
+			//        しかし、画像が含まれない場合にも起こる場合がある。ブレークポイントをまたぐと起きる、とか？
 			var fieldheight = $previewDoc.find('body').height();
 			$preview.height( fieldheight );
 			$ctrlPanel.height( fieldheight );
@@ -748,7 +750,7 @@ window.contApp.ui = new(function(px, contApp){
 				$editWindow.height( fieldheight );
 			}
 			cb();
-		}, 200);
+		// }, 200);
 
 		return;
 	} // resizeEvent()

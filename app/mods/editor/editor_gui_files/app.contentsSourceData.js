@@ -102,6 +102,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 			}else if( modTpl.fields[fieldName].fieldType == 'loop'){
 				data.fields[fieldName] = data.fields[fieldName]||[];
 				return data.fields[fieldName][idx];
+			}else if( modTpl.fields[fieldName].fieldType == 'echo'){
 			}
 		}else{
 			// もっと深かったら
@@ -111,6 +112,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 				return this.get( aryPath, data.fields[fieldName][idx] );
 			}else if( modTpl.fields[fieldName].fieldType == 'loop'){
 				return this.get( aryPath, data.fields[fieldName][idx] );
+			}else if( modTpl.fields[fieldName].fieldType == 'echo'){
 			}
 		}
 		return false;
@@ -142,6 +144,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 				newData.fields[fieldName] = [];
 			}else if( modTpl.fields[fieldName].fieldType == 'loop' ){
 				newData.fields[fieldName] = [];
+			}else if( modTpl.fields[fieldName].fieldType == 'echo' ){
 			}
 		}
 
@@ -183,6 +186,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 				}else if( modTpl.fields[fieldName].fieldType == 'loop'){
 					data.fields[fieldName] = data.fields[fieldName]||[];
 					data.fields[fieldName].splice( idx, 0, newData);
+				}else if( modTpl.fields[fieldName].fieldType == 'echo'){
 				}
 				return true;
 			}else{
@@ -193,6 +197,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 					return set_r( aryPath, data.fields[fieldName][idx], newData );
 				}else if( modTpl.fields[fieldName].fieldType == 'loop'){
 					return set_r( aryPath, data.fields[fieldName][idx], newData );
+				}else if( modTpl.fields[fieldName].fieldType == 'echo'){
 				}
 			}
 
@@ -250,6 +255,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 				}else if( modTpl.fields[fieldName].fieldType == 'loop'){
 					data.fields[fieldName] = data.fields[fieldName]||[];
 					data.fields[fieldName][idx] = newData;
+				}else if( modTpl.fields[fieldName].fieldType == 'echo'){
 				}
 				return true;
 			}else{
@@ -260,6 +266,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 					return set_r( aryPath, data.fields[fieldName][idx], newData );
 				}else if( modTpl.fields[fieldName].fieldType == 'loop'){
 					return set_r( aryPath, data.fields[fieldName][idx], newData );
+				}else if( modTpl.fields[fieldName].fieldType == 'echo'){
 				}
 			}
 
@@ -373,6 +380,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 					data.fields[fieldName].splice(idx, 1);
 				}else if( modTpl.fields[fieldName].fieldType == 'loop'){
 					data.fields[fieldName].splice(idx, 1);
+				}else if( modTpl.fields[fieldName].fieldType == 'echo'){
 				}
 				return true;
 			}else{
@@ -383,6 +391,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 					return remove_r( aryPath, data.fields[fieldName][idx] );
 				}else if( modTpl.fields[fieldName].fieldType == 'loop'){
 					return remove_r( aryPath, data.fields[fieldName][idx] );
+				}else if( modTpl.fields[fieldName].fieldType == 'echo'){
 				}
 			}
 			return true;

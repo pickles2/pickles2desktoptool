@@ -70,11 +70,13 @@ window.contApp.ui = new(function(px, contApp){
 
 		$preview
 			.bind('load', function(){
-				_this.onPreviewLoad();
+				var callback = cb;
+				_this.onPreviewLoad( callback );
 			})
 		;
 
-		cb();
+		// cb();
+		return;
 	} // initField()
 
 	/**
@@ -95,15 +97,18 @@ window.contApp.ui = new(function(px, contApp){
 	 * プレビューのロード完了イベント
 	 * contApp.contentsSourceData のデータをもとに、コンテンツと編集ツール描画のリセットも行います。
 	 */
-	this.onPreviewLoad = function(){
+	this.onPreviewLoad = function( cb ){
+		cb = cb || function(){};
+
 		// alert('onPreviewLoad');
 		if( !$preview || !$preview[0] || !$preview[0].contentWindow ){
+			cb();
 			return;
 		}
 
 		$previewDoc = $($preview[0].contentWindow.document);
 
-		this.resizeEvent();
+		this.resizeEvent( cb );
 		return;
 	}
 
@@ -701,7 +706,9 @@ window.contApp.ui = new(function(px, contApp){
 	/**
 	 * ウィンドウ リサイズ イベント ハンドラ
 	 */
-	this.resizeEvent = function(){
+	this.resizeEvent = function( cb ){
+		cb = cb || function(){};
+
 		$('.cont_field')
 			.css({
 				'height':$(window).height() - 5
@@ -740,7 +747,10 @@ window.contApp.ui = new(function(px, contApp){
 			if( $editWindow ){
 				$editWindow.height( fieldheight );
 			}
+			cb();
 		}, 200);
+
+		return;
 	} // resizeEvent()
 
 	/**

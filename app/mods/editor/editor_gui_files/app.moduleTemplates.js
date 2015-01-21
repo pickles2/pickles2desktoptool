@@ -117,7 +117,11 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 		if(opt.subModName){
 			this.subModName = opt.subModName;
 		}
-
+		if( opt.topThis ){
+			this.nameSpace = opt.topThis.nameSpace;
+		}else{
+			this.nameSpace = {"vars": {}};
+		}
 
 		/* 閉じタグを探す */
 		function searchEndTag( src, fieldType ){
@@ -161,7 +165,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 			var src = this.template;
 			var field = {};
 			var rtn = '';
-			var memoInputField = {};
+
 			while( 1 ){
 				if( !src.match( new RegExp('^((?:.|\r|\n)*?)\\{\\&((?:.|\r|\n)*?)\\&\\}((?:.|\r|\n)*)$') ) ){
 					rtn += src;
@@ -172,16 +176,19 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 				field = JSON.parse( field );
 				if( field.input ){
 					// input field
+					var tmpVal = '';
 					if( contApp.fieldDefinitions[field.input.type] ){
 						// フィールドタイプ定義を呼び出す
-						rtn += contApp.fieldDefinitions[field.input.type].bind( fieldData[field.input.name], mode );
+						tmpVal += contApp.fieldDefinitions[field.input.type].bind( fieldData[field.input.name], mode );
 					}else{
 						// ↓未定義のフィールドタイプの場合のデフォルトの挙動
-						rtn += contApp.fieldBase.bind( fieldData[field.input.name], mode );
+						tmpVal += contApp.fieldBase.bind( fieldData[field.input.name], mode );
 					}
-					memoInputField[field.input.name] = {
-						fieldType: "input", type: field.input.type
+					rtn += tmpVal;
+					_this.nameSpace.vars[field.input.name] = {
+						fieldType: "input", type: field.input.type, val: tmpVal
 					}
+
 				}else if( field.module ){
 					// module field
 					rtn += fieldData[field.module.name].join('');
@@ -194,13 +201,8 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 
 				}else if( field.echo ){
 					// echo field
-					// UTODO: loopなどの内側は名前領域が異なるので、外側の値にアクセスできない
-					if( contApp.fieldDefinitions[memoInputField[field.echo.ref].type] ){
-						// フィールドタイプ定義を呼び出す
-						rtn += contApp.fieldDefinitions[memoInputField[field.echo.ref].type].bind( fieldData[field.echo.ref], mode );
-					}else{
-						// ↓未定義のフィールドタイプの場合のデフォルトの挙動
-						rtn += contApp.fieldBase.bind( fieldData[field.echo.ref], mode );
+					if( _this.nameSpace.vars[field.echo.ref] && _this.nameSpace.vars[field.echo.ref].val ){
+						rtn += _this.nameSpace.vars[field.echo.ref].val;
 					}
 
 				}
@@ -281,17 +283,14 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 		}else if( modId == '_sys/unknown' ){
 			parseTpl( '<div style="background:#f00;padding:10px;color:#fff;text-align:center;border:1px solid #fdd;">[ERROR] 未知のモジュールテンプレートです。<!-- .error --></div>', _this, _this, cb );
 		}else if( typeof(opt.src) === typeof('') ){
-			parseTpl( opt.src, _this, opt.topThis, cb );
+			parseTpl( opt.src, this, opt.topThis, cb );
 		}else if( this.path ){
-			px.fs.readFile( this.path+'/template.html', function( err, buffer ){
-				if( err ){
-					parseTpl( '<div style="background:#f00;padding:10px;color:#fff;text-align:center;border:1px solid #fdd;">[ERROR] モジュールテンプレートの読み込みエラーです。<!-- .error --></div>', _this, _this, cb );
-					return;
-				}
-				var src = buffer.toString();
-				src = JSON.parse( JSON.stringify( src ) );
-				parseTpl( src, _this, _this, cb );
-			} );
+			var tmpTplSrc = px.fs.readFileSync( this.path+'/template.html' );
+			if( !tmpTplSrc ){
+				tmpTplSrc = '<div style="background:#f00;padding:10px;color:#fff;text-align:center;border:1px solid #fdd;">[ERROR] モジュールテンプレートの読み込みエラーです。<!-- .error --></div>';
+			}
+			tmpTplSrc = JSON.parse( JSON.stringify( tmpTplSrc.toString() ) );
+			parseTpl( tmpTplSrc, this, this, cb );
 		}
 
 		return;

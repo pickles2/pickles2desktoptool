@@ -134,10 +134,22 @@ window.contApp = new (function( px ){
 			function(it){
 				// 編集フィールドの再描画
 				_this.ui.initField( function(){
-					_this.ui.preview( _param.page_path );
-					_this.ui.resizeEvent();
-					it.next();
+					_this.ui.resizeEvent(function(){
+						it.next();
+					});
 				} );
+				_this.ui.preview( _param.page_path );//プレビュー表示をキック
+
+					// ↑なんかこの辺の処理の順番が交錯してて気持ち悪いが、
+					// 　一旦意図したタイミングで次へ送っているので良しとする。
+					// 　あとで再整理。
+			} ,
+			function(it){
+				// リサイズイベントを登録
+				$(window).resize(function(){
+					_this.ui.resizeEvent();
+				});
+				it.next();
 			}
 		]).start();
 
@@ -146,9 +158,6 @@ window.contApp = new (function( px ){
 	$(function(){
 		px.preview.serverStandby( function(){
 			init();
-			$(window).resize(function(){
-				_this.ui.resizeEvent();
-			});
 		} );
 	})
 

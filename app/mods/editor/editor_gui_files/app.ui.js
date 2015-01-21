@@ -234,7 +234,7 @@ window.contApp.ui = new(function(px, contApp){
 						);
 					}
 				}
-			}
+			}// for
 
 			var tmpSrc = this.moduleTemplates.bind( fieldData, mode );
 			var rtn = $('<div>');

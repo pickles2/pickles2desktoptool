@@ -174,6 +174,8 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 				rtn += RegExp.$1;
 				field = RegExp.$2;
 				field = JSON.parse( field );
+				src = RegExp.$3;
+
 				if( field.input ){
 					// input field
 					var tmpVal = '';
@@ -206,7 +208,6 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 					}
 
 				}
-				src = RegExp.$3;
 
 			}
 			return rtn;

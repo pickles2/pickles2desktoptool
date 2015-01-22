@@ -186,7 +186,9 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 						// ↓未定義のフィールドタイプの場合のデフォルトの挙動
 						tmpVal += contApp.fieldBase.bind( fieldData[field.input.name], mode );
 					}
-					rtn += tmpVal;
+					if( !field.input.hidden ){//← "hidden": true だったら、非表示(=出力しない)
+						rtn += tmpVal;
+					}
 					_this.nameSpace.vars[field.input.name] = {
 						fieldType: "input", type: field.input.type, val: tmpVal
 					}

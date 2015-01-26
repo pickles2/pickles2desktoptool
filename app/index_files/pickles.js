@@ -47,6 +47,7 @@ new (function($, window){
 	var _current_app = null;
 	var _selectedProject = null;
 	var _pj = null;
+	this.php = require('phpjs');//めんどくさいから入れちゃった
 	var _nw_gui = require('nw.gui');
 	// this.server = require('./index_files/px_server_emurator.node.js').init(this,$);
 	var _appName = 'Pickles 2 Desktop Tool';

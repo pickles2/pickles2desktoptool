@@ -176,7 +176,9 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 				field = JSON.parse( field );
 				src = RegExp.$3;
 
-				if( field.input ){
+				if( typeof(field) == typeof('') ){
+					// end系：無視
+				}else if( field.input ){
 					// input field
 					var tmpVal = '';
 					if( contApp.fieldDefinitions[field.input.type] ){
@@ -202,6 +204,17 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 					var tmpSearchResult = searchEndTag( src, 'loop' );
 					rtn += fieldData[field.loop.name].join('');
 					src = tmpSearchResult.nextSrc;
+
+				}else if( field.if ){
+					// if field
+					// is_set に指定されたフィールドに値があったら、という評価ロジックを取り急ぎ実装。
+					// もうちょっとマシな条件の書き方がありそうな気がするが、あとで考える。
+					var tmpSearchResult = searchEndTag( src, 'if' );
+					src = '';
+					if( _this.nameSpace.vars[field.if.is_set] && px.php.trim(_this.nameSpace.vars[field.if.is_set].val).length ){
+						src += tmpSearchResult.content;
+					}
+					src += tmpSearchResult.nextSrc;
 
 				}else if( field.echo ){
 					// echo field
@@ -272,7 +285,24 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 				}else if( field == 'endloop' ){
 					// ループ構造の閉じタグ
 					// 本来ここは通らないはず。
-					// ここを通る場合は、対応する開始タグがない loopend がある場合。
+					// ここを通る場合は、対応する開始タグがない endloop がある場合。
+				}else if( field.if ){
+					// _this.fields[field.if.name] = field.if;
+					// _this.fields[field.if.name].fieldType = 'if';
+					// var tmpSearchResult = searchEndTag( src, 'if' );
+					// if( typeof(_this.subModule) !== typeof({}) ){
+					// 	_this.subModule = {};
+					// }
+					// _topThis.subModule[field.if.name] = new classModTpl( _this.id, function(){}, {
+					// 	"src": tmpSearchResult.content,
+					// 	"subModName": field.if.name,
+					// 	"topThis":_topThis
+					// } );
+					// src = tmpSearchResult.nextSrc;
+				}else if( field == 'endif' ){
+					// 分岐構造の閉じタグ
+					// 本来ここは通らないはず。
+					// ここを通る場合は、対応する開始タグがない endloop がある場合。
 				}else if( field.echo ){
 					// _this.fields[field.echo.name] = field.echo;
 					// _this.fields[field.echo.name].fieldType = 'echo';

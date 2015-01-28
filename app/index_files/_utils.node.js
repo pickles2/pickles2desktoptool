@@ -61,10 +61,16 @@
 		return path.replace(/\\/g, '/').replace(/\/[^\/]*\/?$/, '');
 	}
 
+	/**
+	 * 正規表現で使えるようにエスケープ処理を施す
+	 */
 	exports.escapeRegExp = function(str) {
 		return str.replace(/([.*+?^=!:${}()|[\]\/\\])/g, "\\$1");
 	}
 
+	/**
+	 * パス文字列を解析する
+	 */
 	exports.parsePath = function( path ){
 		var rtn = {};
 		rtn.path = path;
@@ -75,12 +81,18 @@
 		return rtn;
 	}
 
+	/**
+	 * パス文字列から、ファイル名を取り出す
+	 */
 	exports.basename = function( path ){
 		var rtn = '';
 		rtn = path.replace( new RegExp('^.*\\/'), '' );
 		return rtn;
 	}
 
+	/**
+	 * 新規ディレクトリを作成する
+	 */
 	exports.mkdir = function(path){
 		if( _fs.existsSync(path) ){
 			return true;
@@ -89,6 +101,9 @@
 		return true;
 	}
 
+	/**
+	 * ファイルまたはディレクトリが存在するか調べる
+	 */
 	exports.fileExists = function(path){
 		if( !_fs.existsSync(path) ){
 			return false;
@@ -96,6 +111,9 @@
 		return true;
 	}
 
+	/**
+	 * ファイルが存在するか調べる
+	 */
 	exports.isFile = function(path){
 		if( !this.fileExists(path) ){
 			return false;
@@ -106,6 +124,9 @@
 		return true;
 	}
 
+	/**
+	 * ディレクトリが存在するか調べる
+	 */
 	exports.isDirectory = function(path){
 		if( !this.fileExists(path) ){
 			return false;

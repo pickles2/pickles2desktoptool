@@ -48,8 +48,11 @@ window.contApp = new (function( px ){
 		return this;
 	}
 
-	function preview(iframe){
-		$(iframe)
+	/**
+	 * プレビュー画面を更新する
+	 */
+	function preview(){
+		$('iframe.cont_preview')
 			.attr('src', px.preview.getUrl(_param.page_path) )
 		;
 		return true;
@@ -69,6 +72,9 @@ window.contApp = new (function( px ){
 		;
 	}
 
+	/**
+	 * 初期化
+	 */
 	function init(){
 		var $html = $( $('#cont_tpl_editor').html() );
 		var editTimer;
@@ -94,7 +100,7 @@ window.contApp = new (function( px ){
 						}else{
 							// px.message( 'ページを保存しました。' );
 						}
-						preview('iframe.cont_preview');
+						preview();
 					});
 				} )
 				.keydown( function(){
@@ -109,7 +115,7 @@ window.contApp = new (function( px ){
 							}else{
 								// px.message( 'ページを保存しました。' );
 							}
-							preview('iframe.cont_preview');
+							preview();
 						});
 					}, 1000);
 				} )
@@ -126,7 +132,7 @@ window.contApp = new (function( px ){
 						}else{
 							px.message( 'ページを保存しました。' );
 						}
-						preview('iframe.cont_preview');
+						preview();
 						$('textarea').focus();
 					});
 				})
@@ -159,13 +165,17 @@ window.contApp = new (function( px ){
 							return;
 					}
 					var to = loc.pathname;
-					var pageInfo = _pj.site.getPageInfo( to );
-					// console.log( _param.page_path );
-					// console.log( loc.pathname );
+					var pathControot = _pj.getConfig().path_controot;
+					to = to.replace( new RegExp( '^'+px.utils.escapeRegExp( pathControot ) ), '' );
+					to = to.replace( new RegExp( '^\\/*' ), '/' );
+
+					console.log( pathControot );
+					console.log( _param.page_path );
+					console.log( to );
 					if( to != _param.page_path ){
-						if(confirm( 'realy to go to "'+to+'"?' )){
+						// if(confirm( 'realy to go to "'+to+'"?' )){
 							window.location.href = './index.html?page_path='+encodeURIComponent( to );
-						}
+						// }
 					}
 				})
 		;
@@ -173,7 +183,7 @@ window.contApp = new (function( px ){
 			.html( '' )
 			.append($html)
 		;
-		preview('iframe.cont_preview');
+		preview();
 		resize();
 	}
 

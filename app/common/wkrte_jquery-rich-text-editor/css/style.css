@@ -1,0 +1,82 @@
+/*
+	Name: 
+	Date: 
+	Description: 
+	Version: 1.0
+	Author: Jeremie Tisseau
+	Autor URI: http://web-kreation.com
+*/
+
+/***** Global *****/
+html { 
+	padding: 0;
+	margin: 0;
+}
+
+body {
+	background: #F5F4EF url('../images/bg.png') no-repeat;
+	color: #000305;
+	font-size: 87.5%; /* Base font size: 14px */
+	font-family: Arial, sans-serif;
+	line-height: 1.2em;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+}
+
+#container, footer {
+    display: block;
+    text-align: left;
+    width: 720px;
+    margin: 20px auto;
+	background: white;
+	border: 1px solid #eee;
+}
+
+#container {
+	padding: 40px;
+}
+
+a img {border:none}
+
+/* HTML5 tags */
+header, section, footer,
+aside, nav, article, figure, copyright {
+	display: block;
+}
+
+/*
+ * Footer
+ */
+footer {
+	padding: 20px 40px;
+}
+
+footer copyright {	
+	font-style: italic;	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

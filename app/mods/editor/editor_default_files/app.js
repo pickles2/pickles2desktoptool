@@ -2,6 +2,7 @@ window.px = $.px = window.parent.px;
 window.contApp = new (function( px ){
 	if( !px ){ alert('px が宣言されていません。'); }
 
+	var _lastSourceCode;
 	var _this = this;
 	var _pj = px.getCurrentProject();
 
@@ -29,6 +30,9 @@ window.contApp = new (function( px ){
 
 	var _contentsPath = px.fs.realpathSync( _pj.get('path')+'/'+_cont_path);
 
+	/**
+	 * コンテンツの編集結果を保存する
+	 */
 	function save(cb){
 		cb = cb || function(){};
 		var src = $('body textarea').val();
@@ -68,6 +72,7 @@ window.contApp = new (function( px ){
 	function init(){
 		var $html = $( $('#cont_tpl_editor').html() );
 		var editTimer;
+		_lastSourceCode = px.fs.readFileSync(_contentsPath);
 
 		$html
 			.find('textarea')
@@ -77,9 +82,12 @@ window.contApp = new (function( px ){
 					'border':'none',
 					'resize':'none'
 				})
-				.val( px.fs.readFileSync(_contentsPath) )
+				.val( _lastSourceCode )
 				// .scrollTop(0)
 				.blur( function(){
+					var src = $('body textarea').val();
+					if( src == _lastSourceCode ){ return; }
+					_lastSourceCode = src;
 					save(function(result){
 						if(!result){
 							px.message( 'ページの保存に失敗しました。' );
@@ -92,6 +100,9 @@ window.contApp = new (function( px ){
 				.keydown( function(){
 					if(editTimer){ clearTimeout( editTimer ); }
 					editTimer = setTimeout(function(){
+						var src = $('body textarea').val();
+						if( src == _lastSourceCode ){ return; }
+						_lastSourceCode = src;
 						save(function(result){
 							if(!result){
 								px.message( 'ページの保存に失敗しました。' );

@@ -34,8 +34,8 @@ window.contApp.fieldDefinitions.wysiwig_rte = _.defaults( new (function( px, con
 		editors = $textarea.rte({
 			width: 720,
 			height: 520,
-			controls_rte: window.rte_toolbar,
-			controls_html: window.html_toolbar
+			controls_rte: window.top.rte_toolbar,
+			controls_html: window.top.html_toolbar
 		});
 		return;
 	}

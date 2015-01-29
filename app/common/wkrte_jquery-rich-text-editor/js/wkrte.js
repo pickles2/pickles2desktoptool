@@ -566,7 +566,7 @@ lwRTE.prototype.enable_design_mode = function(){
 	
 	// FadeIn/FadeOut Toolbar
 	//returns the document of the iframe: http://brandonaaron.net/blog/2009/05/14/jquery-edge-better-support-for-other-windows-and-documents 
-	var iframeClickEvents = $('iframe').contents().get(0);
+	var iframeClickEvents = $(self.iframe).contents().get(0);
 	
 	$(iframeClickEvents).bind('click', function(event){
 		$(".rte-toolbar").fadeIn();

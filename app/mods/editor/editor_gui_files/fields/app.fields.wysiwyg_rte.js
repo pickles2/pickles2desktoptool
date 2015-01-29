@@ -2,7 +2,7 @@
  * WYSIWYG Editor "wkrte" field
  * @see https://code.google.com/p/wkrte/
  */
-window.contApp.fieldDefinitions.wysiwig_rte = _.defaults( new (function( px, contApp ){
+window.contApp.fieldDefinitions.wysiwyg_rte = _.defaults( new (function( px, contApp ){
 	var editors;
 	var $textarea = px.$('<textarea>');
 

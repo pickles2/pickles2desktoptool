@@ -560,7 +560,7 @@ lwRTE.prototype.enable_design_mode = function(){
 	});
 	
 	// Mozilla CSS styling off
-	if (!$.browser.msie) 
+	// if (!$.browser.msie) 
 		self.editor_cmd('styleWithCSS', false);
 	
 	

@@ -55,6 +55,13 @@ window.contApp.fieldBase = new (function( px, contApp ){
 	}
 
 	/**
+	 * エディタUIが描画されたら呼ばれるコールバック
+	 */
+	this.onEditorUiDrawn = function( mod, data ){
+		return;
+	}
+
+	/**
 	 * エディタUIで編集した内容を保存
 	 */
 	this.saveEditorContent = function( $dom, data ){

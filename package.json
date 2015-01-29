@@ -17,8 +17,8 @@
     "title": "pickles2desktoptool",
     "toolbar":false,
     "frame":true,
-    "width":960,
-    "height":480,
+    "width":1024,
+    "height":520,
     "fullscreen":false,
     "icon": "app/common/images/icon.png",
     "position": "mouse"

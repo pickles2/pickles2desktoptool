@@ -700,6 +700,18 @@ window.contApp.ui = new(function(px, contApp){
 			"body": $editWindow ,
 			"buttons":[]
 		});
+
+		// DOMに配置後にコールバックを呼ぶ
+		// UI系のライブラリを使う場合に不都合がある場合があるので追加した機能。
+		for( var idx in modTpl.fields ){
+			var field = modTpl.fields[idx];
+			if( field.fieldType == 'input' ){
+				if( contApp.fieldDefinitions[field.type] ){
+					return contApp.fieldDefinitions[field.type].onEditorUiDrawn( field, data.fields[modTpl.fields[idx].name] );
+				}
+			}
+		}
+
 		return this;
 	}// openEditWindow()
 

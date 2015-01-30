@@ -19,7 +19,7 @@ window.contApp = new (function( px ){
 			px.message('[ERROR] サイトマップが正常に読み込まれていません。');
 			return;
 		}
-		var $ul = $('<ul data-inset="true">');
+		var $ul = $('<ul class="cont_pagelist">');
 		// $childList.text( JSON.stringify(_sitemap) );
 
 		current = (typeof(current)==typeof('')?current:'');
@@ -49,7 +49,7 @@ window.contApp = new (function( px ){
 				)
 			);
 		}
-		$ul.listview();
+		// $ul.listview();
 	};
 
 	/**

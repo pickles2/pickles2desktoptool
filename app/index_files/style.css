@@ -23,6 +23,7 @@ header{
 .theme_id *{
 	margin:0 0.5em;
 	display: inline-block;
+	font-weight: bold;
 }
 
 ul.theme_gmenu{
@@ -43,6 +44,9 @@ ul.theme_gmenu li a{
 }
 ul.theme_gmenu li a.current{
 	font-weight: bold;
+	text-decoration: underline;
+	background-color: #666;
+	color:#f7f7f7;
 }
 
 footer{
@@ -84,4 +88,18 @@ footer ul.theme_footer-menu li a.current{
 	border:none;
 	margin:0;
 	padding:0;
+}
+.contents ul.cont_projectList{
+	margin:0; padding:0;
+	border-top: 1px solid #000;
+}
+.contents ul.cont_projectList li{
+	list-style-type: none;
+	margin:0 0 1px 0; padding:0;
+	border-bottom: 1px solid #000;
+}
+.contents ul.cont_projectList li a{
+	display:block;
+	font-weight:bold;
+	padding:1em 0.5em;
 }

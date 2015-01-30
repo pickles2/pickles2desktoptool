@@ -354,7 +354,7 @@ new (function($, window){
 
 			var list = this.getProjectList();
 			if( list.length ){
-				var $ul = $('<ul data-inset="true"></ul>');
+				var $ul = $('<ul class="cont_projectList" data-inset="true"></ul>');
 				for( var i = 0; i < list.length; i++ ){
 					$ul.append(
 						$('<li>')
@@ -372,7 +372,7 @@ new (function($, window){
 								)
 					);
 				}
-				$ul.listview(); // ← jQuery mobile の data-role="listview" を動的に適用
+				// $ul.listview(); // ← jQuery mobile の data-role="listview" を動的に適用
 				$('.cont_project_list', $cont)
 					.html('')
 					.append($ul)

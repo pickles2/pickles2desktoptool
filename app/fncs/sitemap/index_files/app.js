@@ -8,7 +8,7 @@ window.contApp = new (function(){
 
 		$('.cont_filelist_sitemap')
 			.html('')
-			.append( $('<ul data-inset="true">') )
+			.append( $('<ul>') )
 		;
 
 		filelistLoop:for( var i in filelist ){
@@ -46,7 +46,7 @@ window.contApp = new (function(){
 				)
 			);
 		}
-		$('.cont_filelist_sitemap ul').listview();
+		// $('.cont_filelist_sitemap ul').listview();
 
 	}
 

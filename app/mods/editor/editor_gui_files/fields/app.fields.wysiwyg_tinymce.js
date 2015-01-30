@@ -17,9 +17,7 @@ window.contApp.fieldDefinitions.wysiwyg_tinymce = _.defaults( new (function( px,
 		var rtn = $('<div>')
 			.append( $iframe
 				.attr({
-					"src": './mods/editor/editor_gui_files/fields/app.fields.wysiwyg_tinymce.form.html',
-					"name":mod.name,
-					"rows":rows
+					"src": './mods/editor/editor_gui_files/fields/app.fields.wysiwyg_tinymce.form.html'
 				})
 				.css({'width':'100%'})
 				.load(function(){

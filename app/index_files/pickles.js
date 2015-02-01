@@ -79,25 +79,25 @@ new (function($, window){
 	_path_db = _fs.realpathSync( _path_db );
 	var $header, $footer, $main, $contents;
 	var _menu = [
-		{"label":"SELECT PROJ",  "cond":"projectSelected", "area":"footer", "app":"index.html", "cb": function(){px.deselectProject();px.subapp();}} ,
+		{"label":"SELECT PROJ",  "cond":"projectSelected", "area":"shoulder", "app":"index.html", "cb": function(){px.deselectProject();px.subapp();}} ,
 		{"label":"HOME",         "cond":"pxStandby",       "area":"mainmenu", "app":"fncs/home/index.html", "cb": function(){px.subapp();}} ,
 		{"label":"サイトマップ", "cond":"pxStandby",       "area":"mainmenu", "app":"fncs/sitemap/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"テーマ",       "cond":"pxStandby",       "area":"mainmenu", "app":"fncs/theme/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"コンテンツ",   "cond":"pxStandby",       "area":"mainmenu", "app":"fncs/pages/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"パブリッシュ", "cond":"pxStandby",       "area":"mainmenu", "app":"fncs/publish/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"clearcache",   "cond":"pxStandby",       "area":"footer", "app":"fncs/clearcache/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"Config",       "cond":"pxStandby",       "area":"footer", "app":"fncs/config/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"Preview",      "cond":"pxStandby",       "area":"footer", "app":"fncs/preview/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"composer",     "cond":"pxStandby",       "area":"footer", "app":"fncs/composer/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"git",          "cond":"pxStandby",       "area":"footer", "app":"fncs/git/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"Finderで開く", "cond":"homeDirExists",   "area":"footer", "app":null, "cb": function(){px.getCurrentProject().open();}},
+		{"label":"clearcache",   "cond":"pxStandby",       "area":"shoulder", "app":"fncs/clearcache/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"Config",       "cond":"pxStandby",       "area":"shoulder", "app":"fncs/config/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"Preview",      "cond":"pxStandby",       "area":"shoulder", "app":"fncs/preview/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"composer",     "cond":"pxStandby",       "area":"shoulder", "app":"fncs/composer/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"git",          "cond":"pxStandby",       "area":"shoulder", "app":"fncs/git/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"Finderで開く", "cond":"homeDirExists",   "area":"shoulder", "app":null, "cb": function(){px.getCurrentProject().open();}},
 		// {"label":"Reload(dev)", "cond":"always", "cb": function(){window.location.href='index.html?';}} ,
-		{"label":"System Info",  "cond":"always",          "area":"footer", "app":null, "cb": function(){px.dialog({
+		{"label":"System Info",  "cond":"always",          "area":"shoulder", "app":null, "cb": function(){px.dialog({
 			title: 'System Info',
 			body: $('<iframe>').attr('src', 'mods/systeminfo/index.html').css({'width':'100%','height':300})
 		});}} ,
-		{"label":"Px2DT 設定",   "cond":"always",          "area":"footer", "app":null, "cb": function(){px.editPx2DTConfig();}} ,
-		{"label":"終了",         "cond":"always",          "area":"footer", "app":null, "cb": function(){px.exit();}}
+		{"label":"Px2DT 設定",   "cond":"always",          "area":"shoulder", "app":null, "cb": function(){px.editPx2DTConfig();}} ,
+		{"label":"終了",         "cond":"always",          "area":"shoulder", "app":null, "cb": function(){px.exit();}}
 	];
 
 
@@ -399,8 +399,8 @@ new (function($, window){
 			cpj_s = cpj.status()
 		}
 
-		$('.theme_gmenu').html('');
-		$('.theme_footer-menu').html('');
+		$('.theme_gmenu').html('<ul>');
+		$('.theme_shoulder_menu ul').html('');
 		for( var i in _menu ){
 			if( _menu[i].cond == 'projectSelected' ){
 				if( cpj === null ){
@@ -427,18 +427,21 @@ new (function($, window){
 			;
 
 			switch( _menu[i].area ){
-				case 'footer':
-					$('.theme_footer-menu').append( $('<li>')
+				case 'shoulder':
+					$('.theme_shoulder_menu ul').append( $('<li>')
 						.append( $tmpMenu )
 					);
 					break;
 				default:
-					$('.theme_gmenu').append( $('<li>')
+					$('.theme_gmenu ul').append( $('<li>')
 						.append( $tmpMenu )
 					);
 					break;
 			}
 		}
+		$('.theme_shoulder_menu ul a').click(function(){
+			$('.theme_shoulder_menu ul').fadeOut('fast');
+		});
 
 		if( cpj === null ){
 			$('.theme_id')
@@ -484,9 +487,9 @@ new (function($, window){
 				'padding':'0 0 0 0' ,
 				'position':'fixed' ,
 				'left':0 ,
-				'top': $header.height()+25 ,
+				'top': $header.height()+0 ,
 				'right': 0 ,
-				'height': $(window).height() - $header.height() - $footer.height() - 50
+				'height': $(document).height() - $header.height() - $footer.height() - 0
 			})
 		;
 		$contents.find('>iframe')
@@ -541,6 +544,13 @@ new (function($, window){
 				layoutReset();
 				px.subapp();
 
+				it.next(arg);
+			} ,
+			function(it, arg){
+				var $ul = $('.theme_shoulder_menu ul');
+				$('.theme_shoulder_menu button').click(function(){
+					$ul.toggle('fast');
+				});
 				it.next(arg);
 			}
 		]).start({});

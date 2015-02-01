@@ -5,6 +5,7 @@
 body{
 	background-color: #fff;
 	cursor: default;
+	color: #333;
 }
 body{
 	/* http://www.softel.co.jp/blogs/tech/archives/2909 */
@@ -26,13 +27,38 @@ textarea{
 img, svg{
 	max-width:100%;
 }
+a{
+	color: #000;
+	text-decoration: underline;
+}
+a:hover{
+	color: #666;
+}
 .dialog_box{
 	background-color:#fff;
 	padding: 15px;
 	border:1px solid #ddd;
 	border-radius: 15px;
-	box-shadow: 10px 10px 10px rgba(0,0,0,0.4);
+	box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.4);
 }
 .form_elements input{
 	max-width:100%;
+}
+.clearfix {
+	display: block;
+	float: none;
+	clear: both;
+}
+.clearfix:after {
+	content: " ";
+	display: block;
+	visibility: hidden;
+	height: 0.1px;
+	font-size: 0.1em;
+	line-height: 0;
+	clear: both;
+}
+.clearfix {
+	/* clearfix(for IE6,7) (IE8以降不要) */
+	zoom: 1;
 }

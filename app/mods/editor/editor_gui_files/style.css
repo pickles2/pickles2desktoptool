@@ -50,6 +50,13 @@ body{
 	margin:0; padding:0;
 	list-style-type: none;
 }
+.cont_modulelist button{
+	text-overflow: ellipsis;
+	width: 96%;
+	display: block;
+	margin: 1px 2px;
+	font-size: small;
+}
 
 .cont_btns{}
 .cont_btns ul,

@@ -141,7 +141,7 @@ header.theme_header .theme_header-inner{
 }
 
 .cont_top_jumbotron{
-	background: linear-gradient(#090909, #424242);
+	background: linear-gradient(#999, #ccc);
 	color: #eee;
 	padding: 3em 0.5em;
 }
@@ -149,11 +149,11 @@ header.theme_header .theme_header-inner{
 .cont_top_footer{
 	text-align: center;
 	padding: 5px;
-	border-top: 1px solid #333;
-	background: linear-gradient(#424242, #676767);
-	color: #fff;
+	border-top: 1px solid #999;
+	background: linear-gradient(#ccc, #ddd);
+	color: #666;
 }
 .cont_top_footer a{
-	color: #fff;
+	color: #333;
 	text-decoration: underline;
 }

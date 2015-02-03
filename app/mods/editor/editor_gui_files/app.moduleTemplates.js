@@ -22,6 +22,9 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 	this.init = function( pathBase, pathsModTpl, cb ){
 		_pathsModTpl = JSON.parse(JSON.stringify(pathsModTpl));
 		for( var modIdx in _pathsModTpl ){
+			if( !px.utils.isDirectory( pathBase+'/'+_pathsModTpl[modIdx] ) ){
+				continue;
+			}
 			_pathsModTpl[modIdx] = px.fs.realpathSync( pathBase+'/'+_pathsModTpl[modIdx] );
 		}
 

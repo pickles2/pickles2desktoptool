@@ -14,6 +14,9 @@ body{
 	-webkit-user-select: none; /* Safari、Chromeなど */
 	-ms-user-select: none; /* IE10かららしい */
 }
+*{
+	outline: none;
+}
 .selectable{
 	user-select: auto; /* CSS3 */
 	-moz-user-select: auto; /* Firefox */
@@ -38,12 +41,48 @@ a:hover{
 	background-color:#fff;
 	padding: 15px;
 	border:1px solid #ddd;
-	border-radius: 15px;
-	box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.4);
+	border-radius: 5px;
+	box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.2);
 }
 .form_elements input{
 	max-width:100%;
 }
+
+.contents button{
+	width: auto;
+	padding: 1em 2em;
+	margin: 2px 5px;
+	box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.1);
+	background: linear-gradient(#f9f9f9, #e5e5e5);
+	border: 1px solid #e0e0e0;
+	box-sizing: border-box;
+}
+
+ul.listview{
+	border: 1px solid #999;
+	border-radius: 0.5em;
+	padding: 0;
+	overflow:hidden;
+	box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.1);
+}
+ul.listview li{
+	border-bottom: 1px solid #999;
+	list-style-type: none;
+	margin:0; padding: 0;
+}
+ul.listview li:last-child{
+	border: none;
+}
+ul.listview li a{
+	display: block;
+	text-decoration: none;
+	padding: 0.8em 1.5em;
+	background-color: #fefefe;
+}
+ul.listview li a:hover{
+	background-color: #f9f9f9;
+}
+
 .clearfix {
 	display: block;
 	float: none;

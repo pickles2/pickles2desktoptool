@@ -8,7 +8,7 @@ window.contApp = new (function(){
 
 		$('.cont_filelist_sitemap')
 			.html('')
-			.append( $('<ul>') )
+			.append( $('<ul>').addClass('listview') )
 		;
 
 		filelistLoop:for( var i in filelist ){

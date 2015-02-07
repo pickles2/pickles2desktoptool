@@ -7,7 +7,7 @@ window.contApp = new (function( px ){
 	var _config = null;
 	var $parent, $current, $childList;
 	var $editor = $('<div>');
-	var $preview, $previewIframe;
+	var $preview, $previewIframe, $pageinfo;
 
 	var _param = px.utils.parseUriParam( window.location.href );
 	var _pj = this.pj = px.getCurrentProject();
@@ -20,10 +20,11 @@ window.contApp = new (function( px ){
 		$childList = $('.cont_sitemap_childlist');
 		$preview = $('.cont_preview');
 		$previewIframe = $preview.find('iframe');
+		$pageinfo = $('.cont_page_info');
 
 		$preview
 			.css({
-				height: 800
+				height: 600
 			})
 		;
 		$previewIframe
@@ -39,20 +40,38 @@ window.contApp = new (function( px ){
 				to = to.replace( new RegExp( '^'+px.utils.escapeRegExp( pathControot ) ), '' );
 				to = to.replace( new RegExp( '^\\/*' ), '/' );
 
-				alert(to);
+				var pageInfo = _this.pj.site.getPageInfo(to);
+				var $html = $('<div>')
+					.append( $('<div>')
+						.text( pageInfo.title+'('+pageInfo.path+')' )
+					)
+					.append( $('<button>')
+						.text( '編集する' )
+						.attr({'data-path': pageInfo.path})
+						.click(function(){
+							_this.openEditor( $(this).data('path') );
+						})
+					)
+				;
+				$pageinfo.html( $html );
+				$childList.find('a').css({'font-weight':'normal'});
+				$childList.find('a[data-path="'+pageInfo.path+'"]').css({'font-weight':'bold'});
+
+				// console.log( pageInfo );
 				// if( to != _param.page_path ){
 				// 	window.location.href = './index.html?page_path='+encodeURIComponent( to );
 				// }
 			})
-			.attr('src', px.preview.getUrl(_param.page_path) )
 		;
 
 		_this.pj.site.updateSitemap(function(){
 			_config = _this.pj.getConfig();
 			_sitemap = _this.pj.site.getSitemap();
 			_this.redraw();
+			_this.loadPreview( _param.page_path, function(){
+				onWindowResize();
+			} );
 		});
-		onWindowResize();
 	}
 
 	/**
@@ -66,6 +85,16 @@ window.contApp = new (function( px ){
 		;
 	}
 
+
+	/**
+	 * プレビューウィンドウにページを表示する
+	 */
+	this.loadPreview = function( path, cb ){
+		px.preview.serverStandby( function(){
+			$previewIframe.attr( 'src', px.preview.getUrl(path) );
+			cb();
+		} );
+	}
 
 	/**
 	 * 再描画
@@ -87,9 +116,9 @@ window.contApp = new (function( px ){
 				.append( $('<a>')
 					.text( _sitemap[idx].title )
 					.attr( 'href', 'javascript:;' )
-					.data( 'id', _sitemap[idx].id )
-					.data( 'path', _sitemap[idx].path )
-					.data( 'content', _sitemap[idx].content )
+					.attr( 'data-id', _sitemap[idx].id )
+					.attr( 'data-path', _sitemap[idx].path )
+					.attr( 'data-content', _sitemap[idx].content )
 					.css({
 						// ↓暫定だけど、階層の段をつけた。
 						'padding-left': (function(pageInfo){
@@ -100,7 +129,8 @@ window.contApp = new (function( px ){
 						})(_sitemap[idx])
 					})
 					.click( function(){
-						_this.openEditor( $(this).data('path') );
+						_this.loadPreview( $(this).attr('data-path') );
+						// _this.openEditor( $(this).attr('data-path') );
 					} )
 				)
 			);

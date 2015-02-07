@@ -7,8 +7,64 @@ window.contApp = new (function( px ){
 	var _config = null;
 	var $parent, $current, $childList;
 	var $editor = $('<div>');
+	var $preview, $previewIframe;
 
+	var _param = px.utils.parseUriParam( window.location.href );
 	var _pj = this.pj = px.getCurrentProject();
+
+
+	/**
+	 * 初期化
+	 */
+	function init(){
+		$childList = $('.cont_sitemap_childlist');
+		$preview = $('.cont_preview');
+		$previewIframe = $preview.find('iframe');
+
+		$preview
+			.css({
+				height: 800
+			})
+		;
+		$previewIframe
+			.bind('load', function(){
+				var loc = $previewIframe.get(0).contentWindow.location;
+				switch( loc.href ){
+					case 'blank':
+					case 'about:blank':
+						return;
+				}
+				var to = loc.pathname;
+				var pathControot = _pj.getConfig().path_controot;
+				to = to.replace( new RegExp( '^'+px.utils.escapeRegExp( pathControot ) ), '' );
+				to = to.replace( new RegExp( '^\\/*' ), '/' );
+
+				alert(to);
+				// if( to != _param.page_path ){
+				// 	window.location.href = './index.html?page_path='+encodeURIComponent( to );
+				// }
+			})
+			.attr('src', px.preview.getUrl(_param.page_path) )
+		;
+
+		_this.pj.site.updateSitemap(function(){
+			_config = _this.pj.getConfig();
+			_sitemap = _this.pj.site.getSitemap();
+			_this.redraw();
+		});
+		onWindowResize();
+	}
+
+	/**
+	 * ウィンドウリサイズイベントハンドラ
+	 */
+	function onWindowResize(){
+		$editor
+			.css({
+				'height':$(window).height()
+			})
+		;
+	}
 
 
 	/**
@@ -36,10 +92,10 @@ window.contApp = new (function( px ){
 					.data( 'content', _sitemap[idx].content )
 					.css({
 						// ↓暫定だけど、階層の段をつけた。
-						'text-indent': (function(pageInfo){
-							if( !_sitemap[idx].id.length ){ return 0; }
+						'padding-left': (function(pageInfo){
+							if( !_sitemap[idx].id.length ){ return '1.5em'; }
 							if( !_sitemap[idx].logical_path.length ){ return '3em' }
-							var rtn = ( (_sitemap[idx].logical_path.split('>').length + 1) * 3)+'em';
+							var rtn = ( (_sitemap[idx].logical_path.split('>').length + 1) * 2)+'em';
 							return rtn;
 						})(_sitemap[idx])
 					})
@@ -132,6 +188,7 @@ window.contApp = new (function( px ){
 
 		return this;
 	}
+
 	/**
 	 * エディター画面を閉じる
 	 * 単に閉じるだけです。編集内容の保存などの処理は、editor.html 側に委ねます。
@@ -144,22 +201,10 @@ window.contApp = new (function( px ){
 		return this;
 	}
 
-
 	$(function(){
-		$childList = $('.cont_sitemap_childlist');
-
-		_this.pj.site.updateSitemap(function(){
-			_config = _this.pj.getConfig();
-			_sitemap = _this.pj.site.getSitemap();
-			_this.redraw();
-		});
-
+		init();
 		$(window).resize(function(){
-			// エディタのサイズ調整
-			$editor
-				.css({
-					'height':$(window).height()
-				})
+			onWindowResize();
 		});
 
 	});

@@ -162,9 +162,6 @@ window.contApp = new (function( px ){
 			})
 		;
 		$iframe
-			.css({
-				'border':'none',
-			})
 			.bind('load', function(){
 				// ↓ これで、現在のURLがとれる。
 				var loc = $iframe.get(0).contentWindow.location;
@@ -178,9 +175,6 @@ window.contApp = new (function( px ){
 				to = to.replace( new RegExp( '^'+px.utils.escapeRegExp( pathControot ) ), '' );
 				to = to.replace( new RegExp( '^\\/*' ), '/' );
 
-				// console.log( pathControot );
-				// console.log( _param.page_path );
-				// console.log( to );
 				if( to != _param.page_path ){
 					// if(confirm( 'realy to go to "'+to+'"?' )){
 					window.location.href = './index.html?page_path='+encodeURIComponent( to );

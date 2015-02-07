@@ -21,6 +21,7 @@
 
 		<!-- normalize & FESS -->
 		<link rel="stylesheet" href="../../common/styles/contents.css" type="text/css" />
+		<script src="../../common/styles/contents.js"></script>
 
 		<!-- Local Resources -->
 		<link rel="stylesheet" href="./index_files/style.css" type="text/css" />
@@ -31,7 +32,7 @@
 			<h1>Page Contents</h1>
 		</div>
 		<div class="contents">
-			<div class="container">
+			<div class="container-fluid">
 				<p>
 					コンテンツは、サイトマップCSVに記述されたページ1つにつき1つ編集します。<br />
 					特別な場合を除き、コンテンツはヘッダー、フッターなどの共通部分(=テーマ領域)を含まない、コンテンツエリアのみのHTMLコードとして管理されています。<br />
@@ -39,9 +40,18 @@
 				<p>
 					次の一覧からページを選択し、コンテンツを編集してください。<br />
 				</p>
-				<div class="cont_sitemap_parent"></div>
-				<div class="cont_sitemap_current_page"></div>
-				<div class="cont_sitemap_childlist"></div>
+				<div class="row">
+					<div class="col-md-3">
+						<div class="cont_sitemap_parent"></div>
+						<div class="cont_sitemap_current_page"></div>
+						<div class="cont_sitemap_childlist"></div>
+					</div>
+					<div class="col-md-9">
+						<div class="preview_window_frame cont_preview">
+							<iframe></iframe>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</body>

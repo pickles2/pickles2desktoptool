@@ -56,6 +56,10 @@ a:hover{
 	background: linear-gradient(#f9f9f9, #e5e5e5);
 	border: 1px solid #e0e0e0;
 	box-sizing: border-box;
+	color: #000;
+}
+.contents button:disabled{
+	color: #bbb;
 }
 
 ul.listview{
@@ -100,4 +104,25 @@ ul.listview li a:hover{
 .clearfix {
 	/* clearfix(for IE6,7) (IE8以降不要) */
 	zoom: 1;
+}
+
+/**
+ * プレビューウィンドウ
+ * ※JSとセットです。
+ */
+.preview_window_frame{
+	border-image:         url("../images/windowframe.png") 63 17 18 62 / 63px 17px 18px 62px repeat stretch;
+	-moz-border-image:    url("../images/windowframe.png") 63 17 18 62 / 63px 17px 18px 62px repeat stretch;
+	-webkit-border-image: url("../images/windowframe.png") 63 17 18 62 / 63px 17px 18px 62px repeat stretch;
+	-o-border-image:      url("../images/windowframe.png") 63 17 18 62 / 63px 17px 18px 62px repeat stretch;
+	-ms-border-image:     url("../images/windowframe.png") 63 17 18 62 / 63px 17px 18px 62px repeat stretch;
+	box-sizing: border-box;
+	position: relative;
+}
+.preview_window_frame > iframe{
+	margin: -13px -2px -13px -57px;
+	width: 100%; height: 100%;
+	position: absolute; left:0; top:0;
+	border: none;
+	box-sizing: border-box;
 }

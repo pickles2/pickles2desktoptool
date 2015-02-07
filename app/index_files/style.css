@@ -17,7 +17,7 @@ header.theme_header{
 	width:100%;
 	min-height:50px;
 	z-index:100;
-	box-shadow: 0 0 13px rgba(0, 0, 0, 0.05);
+	box-shadow: 0 5px 13px rgba(0, 0, 0, 0.1);
 	background: linear-gradient(#000, #090909);
 	color: #eee;
 }
@@ -95,7 +95,8 @@ header.theme_header .theme_header-inner{
 }
 .theme_shoulder_menu button{
 	background: #333;
-	border: 1px solid #999;
+	border: none;
+	border-left: 1px solid #999;
 	position: absolute; top:0; right:0;
 	height: 50px;
 	width: 50px;

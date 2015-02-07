@@ -17,45 +17,59 @@
 
 		<!-- normalize & FESS -->
 		<link rel="stylesheet" href="../../common/styles/contents.css" type="text/css" />
+		<script src="../../common/styles/contents.js"></script>
 
 		<!-- Local Resources -->
 		<link rel="stylesheet" href="./index_files/style.css" type="text/css" />
 
 		<script>
 			window.px = $.px = window.parent.px;
+			var $preview, $preview_frame;
 
-			function cont_start_preview(btn){
-				$(btn).attr('disabled', 'disabled');
-				px.preview.serverStandby( function(){
-					$('.cont_preview_frame').attr( 'src', px.preview.getUrl() );
-					$(btn).removeAttr('disabled');
-				} );
-			}
-			function cont_stop_preview(btn){
-				$(btn).attr('disabled', 'disabled');
-				px.server.stop( function(){
-					$('.cont_preview_frame').attr('src', 'about:blank');
-					$(btn).removeAttr('disabled');
-				} );
-			}
-			function cont_resize(){
-				$('.cont_preview_frame')
-					.css({
-						'display': 'block',
-						'height': $(window).height()
-					})
-				;
-			}
-			$(function(){
-				cont_start_preview($('button'));
-				cont_resize();
-			});
-			$(window).resize(function(){
-				cont_resize();
-			});
+			(function(){
+
+				function cont_start_preview(btn){
+					$(btn).attr('disabled', 'disabled');
+					px.preview.serverStandby( function(){
+						$preview_frame.attr( 'src', px.preview.getUrl() );
+						$(btn).removeAttr('disabled');
+					} );
+				}
+				function cont_stop_preview(btn){
+					$(btn).attr('disabled', 'disabled');
+					px.server.stop( function(){
+						$preview_frame.attr( 'src', 'about:blank' );
+						$(btn).removeAttr('disabled');
+					} );
+				}
+				function cont_resize(){
+					$preview
+						.css({
+							'display': 'block',
+							'height': $(window).height() - 40
+						})
+					;
+				}
+				$(function(){
+					$preview = $('.cont_preview_frame');
+					$preview_frame = $preview.find('iframe');
+
+					cont_start_preview( $('button') );
+					cont_resize();
+
+				});
+				$(window).resize(function(){
+					cont_resize();
+				});
+
+			})();
 		</script>
 	</head>
 	<body>
-		<iframe src="about:blank" class="cont_preview_frame" style="width:100%;"></iframe>
+		<div class="cont_outerframe">
+			<div class="preview_window_frame cont_preview_frame">
+				<iframe src="about:blank" style="width:100%;"></iframe>
+			</div>
+		</div>
 	</body>
 </html>

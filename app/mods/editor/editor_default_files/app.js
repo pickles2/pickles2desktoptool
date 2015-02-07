@@ -30,6 +30,9 @@ window.contApp = new (function( px ){
 
 	var _contentsPath = px.fs.realpathSync( _pj.get('path')+'/'+_cont_path);
 
+	var $preview, $iframe;
+
+
 	/**
 	 * コンテンツの編集結果を保存する
 	 */
@@ -52,22 +55,22 @@ window.contApp = new (function( px ){
 	 * プレビュー画面を更新する
 	 */
 	function preview(){
-		$('iframe.cont_preview')
+		$iframe
 			.attr('src', px.preview.getUrl(_param.page_path) )
 		;
 		return true;
 	}
 
-	function resize(){
+	function windowResize(){
 		$('textarea')
 			.css({
 				'height':$(window).height() - $('.cont_btns').height() - 10
 			})
 			.focus()
 		;
-		$('iframe.cont_preview')
+		$preview
 			.css({
-				'height':$(window).height() - 10
+				'height': $(window).height()
 			})
 		;
 	}
@@ -79,6 +82,9 @@ window.contApp = new (function( px ){
 		var $html = $( $('#cont_tpl_editor').html() );
 		var editTimer;
 		_lastSourceCode = px.fs.readFileSync(_contentsPath);
+
+		$preview = $html.find('.cont_preview');
+		$iframe = $preview.find('iframe');
 
 		$html
 			.find('textarea')
@@ -150,41 +156,47 @@ window.contApp = new (function( px ){
 					});
 				})
 		;
-		$html
-			.find('iframe.cont_preview')
-				.css({
-					'border':'none',
-					'width':'100%'
-				})
-				.bind('load', function(){
-					// ↓ これで、現在のURLがとれる。
-					var loc = $html.find('iframe.cont_preview')[0].contentWindow.location;
-					switch( loc.href ){
-						case 'blank':
-						case 'about:blank':
-							return;
-					}
-					var to = loc.pathname;
-					var pathControot = _pj.getConfig().path_controot;
-					to = to.replace( new RegExp( '^'+px.utils.escapeRegExp( pathControot ) ), '' );
-					to = to.replace( new RegExp( '^\\/*' ), '/' );
+		$preview
+			.css({
+				'width':'100%'
+			})
+		;
+		$iframe
+			.css({
+				'border':'none',
+			})
+			.bind('load', function(){
+				// ↓ これで、現在のURLがとれる。
+				var loc = $iframe.get(0).contentWindow.location;
+				switch( loc.href ){
+					case 'blank':
+					case 'about:blank':
+						return;
+				}
+				var to = loc.pathname;
+				var pathControot = _pj.getConfig().path_controot;
+				to = to.replace( new RegExp( '^'+px.utils.escapeRegExp( pathControot ) ), '' );
+				to = to.replace( new RegExp( '^\\/*' ), '/' );
 
-					console.log( pathControot );
-					console.log( _param.page_path );
-					console.log( to );
-					if( to != _param.page_path ){
-						// if(confirm( 'realy to go to "'+to+'"?' )){
-							window.location.href = './index.html?page_path='+encodeURIComponent( to );
-						// }
-					}
-				})
+				// console.log( pathControot );
+				// console.log( _param.page_path );
+				// console.log( to );
+				if( to != _param.page_path ){
+					// if(confirm( 'realy to go to "'+to+'"?' )){
+					window.location.href = './index.html?page_path='+encodeURIComponent( to );
+					// }
+				}
+			})
 		;
 		$('body')
 			.html( '' )
 			.append($html)
 		;
+
 		preview();
-		resize();
+		windowResize();
+
+		window.initContentsCSS($html);
 	}
 
 	$(function(){
@@ -193,7 +205,7 @@ window.contApp = new (function( px ){
 		} );
 	})
 	$(window).resize(function(){
-		resize();
+		windowResize();
 	});
 
 })( window.parent.px );

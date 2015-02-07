@@ -118,6 +118,7 @@ ul.listview li a:hover{
 	-ms-border-image:     url("../images/windowframe.png") 63 17 18 62 / 63px 17px 18px 62px repeat stretch;
 	box-sizing: border-box;
 	position: relative;
+	height: 300px;
 }
 .preview_window_frame > iframe{
 	margin: -13px -2px -13px -57px;

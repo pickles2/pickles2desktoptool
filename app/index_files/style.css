@@ -6,12 +6,16 @@ body{
 	-webkit-user-select: none; /* Safari、Chromeなど */
 	-ms-user-select: none; /* IE10かららしい */
 }
+*{
+	outline: none;
+}
 header.theme_header{
 	background-color: #eee;
 	padding: 0; margin:0;
 	position:fixed;
 	top:0; left:0;
 	width:100%;
+	min-height:50px;
 	z-index:100;
 	box-shadow: 0 0 13px rgba(0, 0, 0, 0.05);
 	background: linear-gradient(#000, #090909);
@@ -26,12 +30,22 @@ header.theme_header a:hover{
 	text-decoration: none;
 }
 header.theme_header .theme_header-inner{
-	padding: 10px 10px 0 10px;
+	padding: 10px 0px 0 0px;
 }
 
+.theme_px2logo{
+	position: fixed;
+	left: 0; top: 0;
+	width: 50px; height: 50px;
+	padding: 5px;
+	box-sizing: border-box;
+}
+.theme_px2logo img{
+	width: 100%; height: 100%;
+}
 .theme_id{
 	width:auto;
-	margin:0 -0.5em;
+	margin:0 55px;
 	float:left;
 }
 .theme_id *{
@@ -43,6 +57,7 @@ header.theme_header .theme_header-inner{
 .theme_gmenu{
 	float: right;
 	padding: 0 0.5em;
+	margin: 0 55px 0 55px;
 }
 .theme_gmenu ul{
 	display:block;
@@ -55,10 +70,12 @@ header.theme_header .theme_header-inner{
 }
 .theme_gmenu ul li a{
 	display:block;
-	margin:0; padding:0.2em 1em;
+	margin:0;
+	padding:0.6em 1em 0.3em;
 	background-color: #ddd;
 	color: #000;
 	font-weight: normal;
+	text-decoration: none;
 }
 .theme_gmenu ul li a:hover{
 	background-color: #666;
@@ -72,26 +89,33 @@ header.theme_header .theme_header-inner{
 }
 
 .theme_shoulder_menu{
-	position: relative; top: 0; left: 0;
-	float: right;
-	padding:2px;
+	position: fixed; top: 0; right: 0;
+	padding: 0; margin: 0;
+	overflow: hidden;
 }
 .theme_shoulder_menu button{
 	background: #333;
 	border: 1px solid #999;
+	position: absolute; top:0; right:0;
+	height: 50px;
+	width: 50px;
+	box-sizing: border-box;
 }
 .theme_shoulder_menu ul{
 	position: absolute;
-	top: 100%; right: 0;
+	top: 50px; right: 0;
 	display: none;
 	margin: 0; padding: 0;
 	list-style-type: none;
 	background-color: #333;
 	border: 1px solid #aaa;
+	overflow: auto;
+	width:280px;
+	max-width:100%;
+	opacity: 0.95;
 }
 .theme_shoulder_menu ul li{
 	margin: 0 0 1px 0;
-	width:280px;
 	border-bottom: 1px solid #555;
 }
 .theme_shoulder_menu ul li:last-child{
@@ -100,8 +124,9 @@ header.theme_header .theme_header-inner{
 .theme_shoulder_menu ul li a{
 	display:block;
 	font-weight: normal;
-	padding: 0.2em 2em;
+	padding: 0.8em 2em;
 	background-color: #333;
+	text-decoration: none;
 }
 .theme_shoulder_menu ul li a:hover{
 	background-color: #444;
@@ -141,8 +166,8 @@ header.theme_header .theme_header-inner{
 }
 
 .cont_top_jumbotron{
-	background: linear-gradient(#999, #ccc);
-	color: #eee;
+	background: linear-gradient(#bbb, #999);
+	color: #fff;
 	padding: 3em 0.5em;
 }
 

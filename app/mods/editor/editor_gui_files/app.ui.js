@@ -282,11 +282,11 @@ window.contApp.ui = new(function(px, contApp){
 					'display':'block',
 					'position':'absolute',
 					"z-index":0,
-					'width': $elm.width(),
-					'height': $elm.height()
+					'width': $elm.outerWidth(),
+					'height': $elm.outerHeight()
 				})
-				.width($elm.width())
-				.height($elm.height())
+				.width($elm.outerWidth())
+				.height($elm.outerHeight())
 				.offset($elm.offset())
 				.attr({
 					'data-guieditor-cont-data-path': this.instancePath ,

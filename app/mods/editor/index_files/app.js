@@ -21,6 +21,12 @@ window.contApp = new (function( px ){
 	var _cont_path_info = px.utils.parsePath(_cont_path);
 
 
+	if( window.parent && window.parent.contApp && window.parent.contApp.loadPreview ){
+		// 呼び出し元のプレビュー状態を同期する。
+		window.parent.contApp.loadPreview(_param.page_path);
+	}
+
+
 	/**
 	 * エディターを起動
 	 */

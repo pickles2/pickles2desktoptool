@@ -11,7 +11,7 @@ window.contApp = new (function( px ){
 
 	var _param = px.utils.parseUriParam( window.location.href );
 	var _pj = this.pj = px.getCurrentProject();
-
+	var _lastPreviewPath;
 
 	/**
 	 * 初期化
@@ -54,13 +54,11 @@ window.contApp = new (function( px ){
 					)
 				;
 				$pageinfo.html( $html );
-				$childList.find('a').css({'font-weight':'normal'});
-				$childList.find('a[data-path="'+pageInfo.path+'"]').css({'font-weight':'bold'});
+				$childList.find('a').removeClass('current');
+				$childList.find('a[data-path="'+pageInfo.path+'"]').addClass('current');
 
-				// console.log( pageInfo );
-				// if( to != _param.page_path ){
-				// 	window.location.href = './index.html?page_path='+encodeURIComponent( to );
-				// }
+				$preview.css( {'height': $(window).height() - $pageinfo.height() - 15} );
+				$(window).resize();
 			})
 		;
 
@@ -69,7 +67,7 @@ window.contApp = new (function( px ){
 			_sitemap = _this.pj.site.getSitemap();
 			_this.redraw();
 			_this.loadPreview( _param.page_path, function(){
-				onWindowResize();
+				$(window).resize();
 			} );
 		});
 	}
@@ -83,6 +81,11 @@ window.contApp = new (function( px ){
 				'height':$(window).height()
 			})
 		;
+		$('.cont_workspace_container')
+			.css({
+				'height':$(window).height() -15
+			})
+		;
 	}
 
 
@@ -90,10 +93,20 @@ window.contApp = new (function( px ){
 	 * プレビューウィンドウにページを表示する
 	 */
 	this.loadPreview = function( path, cb ){
+		cb = cb || function(){};
+		if( !path ){ path = '/'; }
+		if( _lastPreviewPath == path ){
+			// 前回ロードしたpathと同じなら、リロードをスキップ
+			cb();
+			return this;
+		}
+
+		_lastPreviewPath = path;
 		px.preview.serverStandby( function(){
 			$previewIframe.attr( 'src', px.preview.getUrl(path) );
 			cb();
 		} );
+		return this;
 	}
 
 	/**

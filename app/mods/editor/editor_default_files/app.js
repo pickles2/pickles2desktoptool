@@ -32,7 +32,6 @@ window.contApp = new (function( px ){
 
 	var $preview, $iframe;
 
-
 	/**
 	 * コンテンツの編集結果を保存する
 	 */

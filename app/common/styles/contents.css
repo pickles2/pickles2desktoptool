@@ -14,7 +14,7 @@ body{
 	-webkit-user-select: none; /* Safari、Chromeなど */
 	-ms-user-select: none; /* IE10かららしい */
 }
-*{
+*:focus{
 	outline: none;
 }
 textarea{
@@ -75,6 +75,10 @@ a:hover{
 }
 .contents button:disabled{
 	color: #bbb;
+}
+.contents button:active,
+.contents button:focus{
+	border-color: #999;
 }
 
 /**

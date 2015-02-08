@@ -40,7 +40,6 @@ body{
 }
 
 .cont_modulelist{
-	max-height: 380px;
 	overflow: auto;
 }
 .cont_modulelist ul{

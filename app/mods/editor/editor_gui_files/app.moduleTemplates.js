@@ -238,6 +238,21 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 			cb = cb||function(){};
 			src = JSON.parse( JSON.stringify( src ) );
 			_this.template = src;
+			_this.info = {
+				name: null
+			};
+
+			if( _this.path && px.utils.isDirectory( _this.path ) ){
+				if( px.utils.isFile( _this.path+'/info.json' ) ){
+					var tmpJson = JSON.parse( px.fs.readFileSync( _this.path+'/info.json' ) );
+					if( tmpJson.name ){
+						_this.info.name = tmpJson.name;
+					}
+				}
+				if( px.utils.isFile( _this.path+'/thumb.png' ) ){
+					_this.thumb = 'data:image/png;base64,'+px.utils.base64encode( px.fs.readFileSync( _this.path+'/thumb.png' ) );
+				}
+			}
 
 			_this.isRootElement = (function(tplSrc){
 				// 単一のルート要素を持っているかどうか判定。

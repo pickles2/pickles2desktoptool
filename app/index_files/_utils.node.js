@@ -114,6 +114,18 @@
 	}
 
 	/**
+	 * パス情報から、拡張子を除いたファイル名を取得する。
+	 * 
+	 * @param string $path 対象のパス
+	 * @return string 拡張子が除かれたパス
+	 */
+	exports.trim_extension = function( $path ){
+		var $pathinfo = this.parsePath( $path );
+		var $RTN = $path.replace( new RegExp('\\.'+this.escapeRegExp( $pathinfo.ext )+'$') , '' );
+		return $RTN;
+	}
+
+	/**
 	 * ファイルが存在するか調べる
 	 */
 	exports.isFile = function(path){

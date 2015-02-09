@@ -41,11 +41,35 @@
 		// 移動を実行
 		// console.log( pathBase+task.from );
 		// console.log( pathBase+task.to );
-		mkdirp( px.utils.dirname(pathBase+task.to), function(){
-			px.fs.rename( pathBase+task.from, pathBase+task.to, function(){
+		px.utils.iterateFnc([
+			function( it, arg ){
+				mkdirp( px.utils.dirname(pathBase+task.to), function(){
+					it.next( arg );
+				} );
+			} ,
+			function( it, arg ){
+				// コンテンツファイル本体を移動
+				px.fs.rename( pathBase+task.from, pathBase+task.to, function(){
+					it.next( arg );
+				} );
+			} ,
+			function( it, arg ){
+				// コンテンツリソースディレクトリを移動
+				var dirFrom = px.utils.trim_extension( pathBase+task.from )+'_files/';
+				var dirTo = px.utils.trim_extension( pathBase+task.to )+'_files/';
+				if( !px.utils.isDirectory( dirFrom ) ){
+					// 存在しない場合はスキップ
+					it.next( arg );
+					return;
+				}
+				px.fs.rename( dirFrom, dirTo, function(){
+					it.next( arg );
+				} );
+			} ,
+			function( it, arg ){
 				cb( true );
-			} );
-		} );
+			}
+		]).start({});
 		return;
 	}
 

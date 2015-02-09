@@ -1,3 +1,4 @@
+# [MEMO] see: https://github.com/mllrsohn/node-webkit-builder
 appname=dist/osx/Pickles2DesktopTool
 rm -r ${appname}.app
 mkdir ${appname}.app

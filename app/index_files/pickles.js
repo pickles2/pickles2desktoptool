@@ -79,25 +79,26 @@ new (function($, window){
 	_path_db = _fs.realpathSync( _path_db );
 	var $header, $footer, $main, $contents, $shoulderMenu;
 	var _menu = [
-		{"label":"SELECT PROJ",  "cond":"projectSelected", "area":"shoulder", "app":"index.html", "cb": function(){px.deselectProject();px.subapp();}} ,
-		{"label":"HOME",         "cond":"pxStandby",       "area":"mainmenu", "app":"fncs/home/index.html", "cb": function(){px.subapp();}} ,
-		{"label":"サイトマップ", "cond":"pxStandby",       "area":"mainmenu", "app":"fncs/sitemap/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"テーマ",       "cond":"pxStandby",       "area":"mainmenu", "app":"fncs/theme/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"コンテンツ",   "cond":"pxStandby",       "area":"mainmenu", "app":"fncs/pages/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"パブリッシュ", "cond":"pxStandby",       "area":"mainmenu", "app":"fncs/publish/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"clearcache",   "cond":"pxStandby",       "area":"shoulder", "app":"fncs/clearcache/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"Config",       "cond":"pxStandby",       "area":"shoulder", "app":"fncs/config/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"Preview",      "cond":"pxStandby",       "area":"shoulder", "app":"fncs/preview/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"composer",     "cond":"pxStandby",       "area":"shoulder", "app":"fncs/composer/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"git",          "cond":"pxStandby",       "area":"shoulder", "app":"fncs/git/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"Finderで開く", "cond":"homeDirExists",   "area":"shoulder", "app":null, "cb": function(){px.getCurrentProject().open();}},
-		// {"label":"Reload(dev)", "cond":"always", "cb": function(){window.location.href='index.html?';}} ,
-		{"label":"System Info",  "cond":"always",          "area":"shoulder", "app":null, "cb": function(){px.dialog({
+		{"label":"SELECT PROJ",          "cond":"projectSelected", "area":"shoulder", "app":"index.html", "cb": function(){px.deselectProject();px.subapp();}} ,
+		{"label":"HOME",                 "cond":"pxStandby",       "area":"mainmenu", "app":"fncs/home/index.html", "cb": function(){px.subapp();}} ,
+		{"label":"サイトマップ",         "cond":"pxStandby",       "area":"mainmenu", "app":"fncs/sitemap/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"テーマ",               "cond":"pxStandby",       "area":"mainmenu", "app":"fncs/theme/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"コンテンツ",           "cond":"pxStandby",       "area":"mainmenu", "app":"fncs/pages/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"パブリッシュ",         "cond":"pxStandby",       "area":"mainmenu", "app":"fncs/publish/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"clearcache",           "cond":"pxStandby",       "area":"shoulder", "app":"fncs/clearcache/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"Config",               "cond":"pxStandby",       "area":"shoulder", "app":"fncs/config/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"Preview",              "cond":"pxStandby",       "area":"shoulder", "app":"fncs/preview/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"composer",             "cond":"pxStandby",       "area":"shoulder", "app":"fncs/composer/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"git",                  "cond":"pxStandby",       "area":"shoulder", "app":"fncs/git/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"コンテンツを移動する", "cond":"pxStandby",       "area":"shoulder", "app":"fncs/movecontents/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"Finderで開く",         "cond":"homeDirExists",   "area":"shoulder", "app":null, "cb": function(){px.getCurrentProject().open();}},
+		// {"label":"Reload(dev)",          "cond":"always", "cb": function(){window.location.href='index.html?';}} ,
+		{"label":"System Info",          "cond":"always",          "area":"shoulder", "app":null, "cb": function(){px.dialog({
 			title: 'System Info',
 			body: $('<iframe>').attr('src', 'mods/systeminfo/index.html').css({'width':'100%','height':300})
 		});}} ,
-		{"label":"Px2DT 設定",   "cond":"always",          "area":"shoulder", "app":null, "cb": function(){px.editPx2DTConfig();}} ,
-		{"label":"終了",         "cond":"always",          "area":"shoulder", "app":null, "cb": function(){px.exit();}}
+		{"label":"Px2DT 設定",           "cond":"always",          "area":"shoulder", "app":null, "cb": function(){px.editPx2DTConfig();}} ,
+		{"label":"終了",                 "cond":"always",          "area":"shoulder", "app":null, "cb": function(){px.exit();}}
 	];
 
 

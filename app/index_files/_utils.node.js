@@ -66,6 +66,7 @@
 	 * 正規表現で使えるようにエスケープ処理を施す
 	 */
 	exports.escapeRegExp = function(str) {
+		if( typeof(str) !== typeof('') ){return str;}
 		return str.replace(/([.*+?^=!:${}()|[\]\/\\])/g, "\\$1");
 	}
 
@@ -250,16 +251,16 @@
 	 */
 	exports.get_realpath = function( $path, $cd ){
 		var $is_dir = false;
-		if( preg_match( '/(\/|\\\\)+$/s', $path ) ){
+		if( $path.match( '(\\/|\\\\)+$' ) ){
 			$is_dir = true;
 		}
 		$path = this.localize_path($path);
-		if( is_null($cd) ){ $cd = '.'; }
+		if( $cd === null || $cd === undefined ){ $cd = '.'; }
 		$cd = this.localize_path($cd);
-		$preg_dirsep = this.escapeRegExp( DIRECTORY_SEPARATOR );
+		var $preg_dirsep = this.escapeRegExp( DIRECTORY_SEPARATOR );
 
 		if( this.isDirectory($cd) ){
-			$cd = this.get_realpath($cd);
+			$cd = _fs.realpathSync($cd);
 		}else if( !$cd.match(new RegExp('^((?:[A-Za-z]\\:'+$preg_dirsep+')|'+$preg_dirsep+'{1,2})(.*?)$') ) ){
 			$cd = false;
 		}
@@ -267,26 +268,28 @@
 			return false;
 		}
 
-		$prefix = '';
-		$localpath = $path;
+		var $prefix = '';
+		var $localpath = $path;
 		if( $path.match( new RegExp('^((?:[A-Za-z]\\:'+$preg_dirsep+')|'+$preg_dirsep+'{1,2})(.*?)$') ) ){
 			// もともと絶対パスの指定か調べる
-			$prefix = preg_replace('/'+$preg_dirsep+'$/', '', RegExp.$1);
+			$prefix = RegExp.$1;
 			$localpath = RegExp.$2;
+
+			$prefix = $prefix.replace( new RegExp(''+$preg_dirsep+'$'), '');
 			$cd = null; // 元の指定が絶対パスだったら、カレントディレクトリは関係ないので捨てる。
 		}
 
-		$path = $cd+DIRECTORY_SEPARATOR+'.'+DIRECTORY_SEPARATOR+$localpath;
+		$path = (typeof($cd)===typeof('')?$cd:'')+DIRECTORY_SEPARATOR+'.'+DIRECTORY_SEPARATOR+$localpath;
 
-		if( px.utils.isFile( $prefix.$path ) ){
-			$rtn = px.fs.realpathSync( $prefix.$path );
-			if( $is_dir && $rtn != px.fs.realpathSync('/') ){
+		if( this.isFile( $prefix.$path ) ){
+			$rtn = _fs.realpathSync( $prefix.$path );
+			if( $is_dir && $rtn != _fs.realpathSync('/') ){
 				$rtn += DIRECTORY_SEPARATOR;
 			}
 			return $rtn;
 		}
 
-		var $paths = explode( DIRECTORY_SEPARATOR, $path );
+		var $paths = $path.split( DIRECTORY_SEPARATOR );
 		$path = '';
 		for( var $idx in $paths ){
 			var $row = $paths[$idx];
@@ -306,7 +309,7 @@
 			$path += $row;
 		}
 
-		$rtn = $prefix.$path;
+		var $rtn = $prefix+$path;
 		if( $is_dir ){
 			$rtn += DIRECTORY_SEPARATOR;
 		}
@@ -329,11 +332,11 @@
 			$is_dir = true;
 		}
 		if( typeof($cd) === typeof('') && $cd.length ){
-			$cd = px.fs.realpathSync('.');
+			$cd = _fs.realpathSync('.');
 		}else if( this.isDirectory($cd) ){
-			$cd = px.fs.realpathSync($cd);
+			$cd = _fs.realpathSync($cd);
 		}else if( this.isFile($cd) ){
-			$cd = px.fs.realpathSync(this.dirname($cd));
+			$cd = _fs.realpathSync(this.dirname($cd));
 		}
 		var $normalize = function( $tmp_path ){
 			var $tmp_path = this.localize_path( $tmp_path );
@@ -394,14 +397,33 @@
 	 * @return string ローカライズされたパス
 	 */
 	exports.localize_path = function($path){
+		if( typeof($path) !== typeof('') ){return $path;}
 		// $path = this.convert_filesystem_encoding( $path );//文字コードを揃える
-		$path = $path.replace( new RegExp('\\/|\\\\','s'), '/' );//一旦スラッシュに置き換える。
+		$path = $path.replace( new RegExp('\\/|\\\\'), '/' );//一旦スラッシュに置き換える。
 		if( this.is_unix() ){
 			// Windows以外だった場合に、ボリュームラベルを受け取ったら削除する
-			$path = $path.replace( new RegExp('^[A-Z]\\:\\/','s'), '/' );//Windowsのボリュームラベルを削除
+			$path = $path.replace( new RegExp('^[A-Z]\\:\\/'), '/' );//Windowsのボリュームラベルを削除
 		}
-		$path = $path.replace( new RegExp('\\/+','s'), '/' );//重複するスラッシュを1つにまとめる
-		$path = $path.replace( new RegExp('\\/|\\\\','s'), DIRECTORY_SEPARATOR );
+		$path = $path.replace( new RegExp('\\/+'), '/' );//重複するスラッシュを1つにまとめる
+		$path = $path.replace( new RegExp('\\/|\\\\'), DIRECTORY_SEPARATOR );
+		return $path;
+	}
+
+	/**
+	 * パスを正規化する。
+	 * 
+	 * 受け取ったパスを、スラッシュ区切りの表現に正規化します。
+	 * 
+	 * @param string $path 正規化するパス
+	 * @return string 正規化されたパス
+	 */
+	exports.normalize_path = function($path){
+		if( typeof($path) !== typeof('') ){return $path;}
+		// $path = this.convert_encoding( $path );//文字コードを揃える
+		$path = $path.replace( new RegExp('\\/|\\\\'), '/' );//一旦スラッシュに置き換える。
+		// ボリュームラベルを受け取ったら削除する
+		$path = $path.replace( new RegExp('^[A-Z]\\:\\/'), '/' );//Windowsのボリュームラベルを削除
+		$path = $path.replace( new RegExp('\\/+'), '/' );//重複するスラッシュを1つにまとめる
 		return $path;
 	}
 

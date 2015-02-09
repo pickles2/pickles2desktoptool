@@ -233,7 +233,7 @@ new (function($, window){
 			projectInfo.entry_script = '.px_execute.php'
 		}
 
-		var pj = new this.classProject( projectInfo, _db.projects.length );
+		var pj = new (require('./index_files/pickles.project.js')).classProject( window, this, projectInfo, _db.projects.length );
 		var pjValidated = pj.validate();
 
 		if( pjValidated.isError ){

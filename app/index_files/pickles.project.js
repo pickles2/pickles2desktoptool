@@ -207,6 +207,54 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	}//get_directory_index_primary()
 
 
+	/**
+	 * ファイルの処理方法を調べる。
+	 *
+	 * @param string $path パス
+	 * @return string 処理方法
+	 * - ignore = 対象外パス
+	 * - direct = 加工せずそのまま出力する(デフォルト)
+	 * - その他 = process名を格納して返す
+	 */
+	this.get_path_proc_type = function( $path ){
+		var $rtn = [];
+		if( $path === null || $path === undefined ){
+			$path = '/';
+		}
+		$path = px.utils.get_realpath( '/'+$path );
+		if( px.utils.isDirectory('./'.$path) ){
+			$path += '/';
+		}
+		$path = px.utils.normalize_path( $path );
+
+		if( typeof($rtn[$path]) === typeof(true) ){
+			return $rtn[$path];
+		}
+
+		for( var $row in _config.paths_proc_type ){
+			var $type = _config.paths_proc_type[$row];
+			if(typeof($row) !== typeof('')){continue;}
+			var $preg_pattern = px.utils.escapeRegExp( px.utils.normalize_path( px.utils.get_realpath($row) ) );
+			if( $preg_pattern.match( new RegExp('\\*') ) ){
+				// ワイルドカードが使用されている場合
+				$preg_pattern = px.utils.escapeRegExp($row);
+				$preg_pattern = $preg_pattern.replace( new RegExp( px.utils.escapeRegExp('\\*')), '(?:.*?)');//ワイルドカードをパターンに反映
+				$preg_pattern = $preg_pattern+'$';//前方・後方一致
+			}else if(px.utils.isDirectory($row)){
+				$preg_pattern = px.utils.escapeRegExp( px.utils.normalize_path( px.utils.get_realpath($row) )+'/');
+			}else if(px.utils.isFile($row)){
+				$preg_pattern = px.utils.escapeRegExp( px.utils.normalize_path( px.utils.get_realpath($row) ));
+			}
+			if( $path.match( new RegExp('^'+$preg_pattern) ) ){
+				$rtn[$path] = $type;
+				return $rtn[$path];
+			}
+		}
+		$rtn[$path] = 'direct';// <- default
+		return $rtn[$path];
+	}//get_path_proc_type();
+
+
 	this.initContentFiles = function( pagePath, opt ){
 		opt = opt||{};
 		opt.success = opt.success||function(){};

@@ -161,6 +161,52 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		return contLocalpath;
 	}
 
+	/**
+	 * directory_index(省略できるファイル名) の一覧を得る。
+	 * 
+	 * @return array ディレクトリインデックスの一覧
+	 */
+	this.get_directory_index = function(){
+		var $tmp_di = _config.directory_index;
+		var directory_index = [];
+		for( var idx in $tmp_di ){
+			var $file_name = $tmp_di[idx];
+			$file_name = px.php.trim( $file_name );
+			if( !$file_name.length ){ continue; }
+			directory_index.push( $file_name );
+		}
+		if( !directory_index.length ){
+			directory_index.push( 'index.html' );
+		}
+		return directory_index;
+	}//get_directory_index()
+
+	/**
+	 * directory_index のいずれかにマッチするためのpregパターン式を得る。
+	 * 
+	 * @return string pregパターン
+	 */
+	this.get_directory_index_preg_pattern = function(){
+		var $directory_index = this.get_directory_index();
+		for( var $key in $directory_index ){
+			var $row = $directory_index[$key];
+			$directory_index[$key] = px.utils.escapeRegExp($row);
+		}
+		var $rtn = '(?:'+$directory_index.join( '|' )+')';
+		return $rtn;
+	}//get_directory_index_preg_pattern()
+
+	/**
+	 * 最も優先されるインデックスファイル名を得る。
+	 * 
+	 * @return string 最も優先されるインデックスファイル名
+	 */
+	this.get_directory_index_primary = function(){
+		var $directory_index = this.get_directory_index();
+		return $directory_index[0];
+	}//get_directory_index_primary()
+
+
 	this.initContentFiles = function( pagePath, opt ){
 		opt = opt||{};
 		opt.success = opt.success||function(){};

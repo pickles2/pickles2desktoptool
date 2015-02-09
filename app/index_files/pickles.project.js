@@ -155,8 +155,8 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	 * ページパスからコンテンツを探す
 	 */
 	this.findPageContent = function( pagePath ){
-		var contLocalpath = pagePath;
 		var pageInfo = this.site.getPageInfo( pagePath );
+		var contLocalpath = pageInfo.content;
 
 		for( var tmpExt in _config.funcs.processor ){
 			if( px.fs.existsSync( this.get('path')+'/'+contLocalpath+'.'+ tmpExt) ){
@@ -208,6 +208,17 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			}
 			return checkGitDir(path);
 		})( this.get('path') );
+	}// get_realpath_composer_root()
+
+
+	/**
+	 * コンテンツルートの絶対パスを得る
+	 * 
+	 * @return string コンテンツルートディレクトリの絶対パス(.px_execute.php の親ディレクトリ)
+	 */
+	this.get_realpath_controot = function(){
+		var pathBase = px.utils.dirname( px.fs.realpathSync( this.get('path')+'/'+this.get('entry_script') ) )+'/';
+		return pathBase;
 	}// get_realpath_composer_root()
 
 

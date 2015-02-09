@@ -11,7 +11,8 @@
   "dependencies": {
     "nodewebkit": "0.11.*",
     "markdown": "0.5.*",
-    "phpjs": "*"
+    "phpjs": "*",
+    "mkdirp": "0.*"
   },
   "window":{
     "title": "pickles2desktoptool",

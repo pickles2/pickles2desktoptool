@@ -3,8 +3,12 @@
 	/**
 	 * 移動されたコンテンツのリンクを張り替える
 	 */
-	exports.relink = function(pj, task, targetList){
+	exports.relink = function(px, pj, task, targetList, cb){
+		cb = cb||function(){};
 
+		console.log('relink under constructure.');
+
+		cb( true );
 	}
 
 

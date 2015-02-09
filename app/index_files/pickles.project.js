@@ -34,6 +34,9 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		return {isError: isError, errorMsg: errorMsg};
 	}
 
+	/**
+	 * プロジェクトのステータスを調べる
+	 */
 	this.status = function(){
 		var status = {};
 		status.pathExists = px.utils.isDirectory( this.get('path') );
@@ -128,29 +131,32 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		);
 		return this;
 	}
-	this.execGit = function( cmd, fnc ){
-		return this;
-	}
+
 	// this.serverStandby = function(cb){
 	// 	px.preview.serverStandby( cb );
 	// }
 	this.serverStop = function(cb){
 		px.server.stop(cb);
 	}
+
+	/**
+	 * Finderで開く
+	 */
 	this.open = function(){
-		// Finderで開く(Mac)
-		window.px.utils.spawn('open',
-			[
-				this.get('path')
-			] ,
+		return window.px.utils.spawn('open',
+			[this.get('path')] ,
 			{
 				complete: function(){}
 			}
 		);
 	}
+
+	/**
+	 * ページパスからコンテンツを探す
+	 */
 	this.findPageContent = function( pagePath ){
 		var contLocalpath = pagePath;
-		var pageInfo = this.site.getPageInfo(pagePath);
+		var pageInfo = this.site.getPageInfo( pagePath );
 
 		for( var tmpExt in _config.funcs.processor ){
 			if( px.fs.existsSync( this.get('path')+'/'+contLocalpath+'.'+ tmpExt) ){
@@ -160,6 +166,51 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		}
 		return contLocalpath;
 	}
+
+
+	/**
+	 * gitディレクトリの絶対パスを得る
+	 * 
+	 * @return string gitディレクトリのパス(.git の親ディレクトリ)
+	 */
+	this.get_realpath_git_root = function(){
+		return (function(path){
+			function checkGitDir(path){
+				if( px.utils.isDirectory( path ) && px.utils.isDirectory( path+'/.git/' ) ){
+					return px.fs.realpathSync(path)+'/';
+				}
+				var nextPath = px.utils.dirname( path );
+				if( nextPath == path ){
+					return false;
+				}
+				return checkGitDir( nextPath );
+			}
+			return checkGitDir(path);
+		})( this.get('path') );
+	}// get_realpath_git_root()
+
+	/**
+	 * composerのルートの絶対パスを得る
+	 * 
+	 * @return string composer のルートディレクトリのパス(composer.json の親ディレクトリ)
+	 */
+	this.get_realpath_composer_root = function(){
+		return (function(path){
+			function checkGitDir(path){
+				if( px.utils.isDirectory( path ) && px.utils.isFile( path+'/composer.json' ) ){
+					return px.fs.realpathSync(path)+'/';
+				}
+				var nextPath = px.utils.dirname( path );
+				if( nextPath == path ){
+					return false;
+				}
+				return checkGitDir( nextPath );
+			}
+			return checkGitDir(path);
+		})( this.get('path') );
+	}// get_realpath_composer_root()
+
+
 
 	/**
 	 * directory_index(省略できるファイル名) の一覧を得る。
@@ -179,7 +230,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			directory_index.push( 'index.html' );
 		}
 		return directory_index;
-	}//get_directory_index()
+	}// get_directory_index()
 
 	/**
 	 * directory_index のいずれかにマッチするためのpregパターン式を得る。
@@ -195,6 +246,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		var $rtn = '(?:'+$directory_index.join( '|' )+')';
 		return $rtn;
 	}//get_directory_index_preg_pattern()
+
 
 	/**
 	 * 最も優先されるインデックスファイル名を得る。
@@ -255,6 +307,28 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	}//get_path_proc_type();
 
 
+	/**
+	 * コンテンツルートディレクトリのパス(=install path) を取得する
+	 * @return string コンテンツディレクトリのパス
+	 */
+	this.get_path_controot = function(){
+		var $rtn = '/';
+
+		if( px.utils.strlen( _config.path_controot ) ){
+			$rtn = _config.path_controot;
+			$rtn = $rtn.replace(new RegExp('^(.*?)\\/*$'), '$1/');
+			$rtn = px.utils.normalize_path($rtn);
+			return $rtn;
+		}
+
+		$rtn = px.utils.normalize_path($rtn);
+		return $rtn;
+	}
+
+
+	/**
+	 * コンテンツファイルの初期化(=なかったものを新規作成)
+	 */
 	this.initContentFiles = function( pagePath, opt ){
 		opt = opt||{};
 		opt.success = opt.success||function(){};
@@ -354,6 +428,9 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		return true;
 	}
 
+	/**
+	 * projectオブジェクトを初期化
+	 */
 	px.utils.iterateFnc([
 		function(itPj, pj){
 			// コンフィグをロード

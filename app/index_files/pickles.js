@@ -285,7 +285,7 @@ new (function($, window){
 		}
 		_selectedProject = num;
 		// alert(num);
-		_pj = new this.classProject( _db.projects[_selectedProject], _selectedProject, cb );
+		_pj = new (require('./index_files/pickles.project.js')).classProject( window, this, _db.projects[_selectedProject], _selectedProject, cb );
 		return true;
 	}
 

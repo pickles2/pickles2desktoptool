@@ -263,7 +263,7 @@
 	 */
 	exports.get_realpath = function( $path, $cd ){
 		var $is_dir = false;
-		if( $path.match( '(\\/|\\\\)+$' ) ){
+		if( $path.match( new RegExp('(\\/|\\\\)+$') ) ){
 			$is_dir = true;
 		}
 		$path = this.localize_path($path);

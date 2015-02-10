@@ -1,6 +1,26 @@
 (function(exports){
 
 	/**
+	 * コンテンツファイルのコードを書き換える
+	 */
+	function replaceContentSrc( px, pj, code, pathBase, task, resourceDir ){
+
+		// ローカルリソースの参照先置き換え
+		function getBasenameOfResDir(pathResDir){
+			pathResDir = pathResDir.replace( new RegExp('\\/+$'), '' );
+			pathResDir = px.utils.basename( pathResDir );
+			return pathResDir;
+		}
+		var replaceStr = {
+			before: getBasenameOfResDir(resourceDir.from) ,
+			after: getBasenameOfResDir(resourceDir.to)
+		}
+		code = code.replace( new RegExp( px.utils.escapeRegExp(replaceStr.before), 'g' ), replaceStr.after );
+
+		return code;
+	}
+
+	/**
 	 * コンテンツを移動する
 	 */
 	exports.moveContent = function(px, pj, task, cb){
@@ -43,21 +63,21 @@
 			} ,
 			function( it, arg ){
 				// コンテンツファイル本体を移動
-				var fromList = [];
+				arg.fromList = [];
 				if( px.utils.isFile( pathBase+task.from ) ){
-					fromList.push( task );
+					arg.fromList.push( task );
 				}
 				var conf = pj.getConfig();
 				for( var idx in conf.funcs.processor ){
 					if( px.utils.isFile( pathBase+task.from+'.'+idx ) ){
-						fromList.push( {'from':task.from+'.'+idx, 'to':task.to+'.'+idx} );
+						arg.fromList.push( {'from':task.from+'.'+idx, 'to':task.to+'.'+idx} );
 					}
 				}
 				var done = 0;
-				for( var idx in fromList ){
-					px.fs.rename( pathBase+fromList[idx].from, pathBase+fromList[idx].to, function(){
+				for( var idx in arg.fromList ){
+					px.fs.rename( pathBase+arg.fromList[idx].from, pathBase+arg.fromList[idx].to, function(){
 						done ++;
-						if( done >= fromList.length ){
+						if( done >= arg.fromList.length ){
 							it.next( arg );
 						}
 					} );
@@ -65,16 +85,45 @@
 			} ,
 			function( it, arg ){
 				// コンテンツリソースディレクトリを移動
-				var dirFrom = px.utils.trim_extension( pathBase+task.from )+'_files/';
-				var dirTo = px.utils.trim_extension( pathBase+task.to )+'_files/';
-				if( !px.utils.isDirectory( dirFrom ) ){
+				var dirFrom = px.utils.trim_extension( task.from )+'_files/';
+				var dirTo = px.utils.trim_extension( task.to )+'_files/';
+				arg.resourceDir = {
+					"from": dirFrom ,
+					"to": dirTo
+				};
+				if( !px.utils.isDirectory( pathBase+arg.resourceDir.from ) ){
 					// 存在しない場合はスキップ
 					it.next( arg );
 					return;
 				}
-				px.fs.rename( dirFrom, dirTo, function(){
+				px.fs.rename( pathBase+arg.resourceDir.from, pathBase+arg.resourceDir.to, function(){
 					it.next( arg );
 				} );
+			} ,
+			function( it, arg ){
+				// コンテンツリソースへのリンクを置き換え
+				var done = 0;
+				for( var idx in arg.fromList ){
+					(function( idx, fromListRow ){
+						px.fs.readFile( pathBase+fromListRow.to, {}, function(err, data){
+							var src = new Buffer(data).toString();
+							src = replaceContentSrc(px, pj, src, pathBase, fromListRow, arg.resourceDir);
+							if( src === data ){
+								done ++;
+								if( done >= arg.fromList.length ){
+									it.next( arg );
+								}
+							}else{
+								px.fs.writeFile( pathBase+fromListRow.to, src, {}, function(err){
+									done ++;
+									if( done >= arg.fromList.length ){
+										it.next( arg );
+									}
+								});
+							}
+						});
+					})( idx, arg.fromList[idx] );
+				}
 			} ,
 			function( it, arg ){
 				cb( true );

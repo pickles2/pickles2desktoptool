@@ -15,7 +15,27 @@
 			before: getBasenameOfResDir(resourceDir.from) ,
 			after: getBasenameOfResDir(resourceDir.to)
 		}
-		code = code.replace( new RegExp( px.utils.escapeRegExp(replaceStr.before), 'g' ), replaceStr.after );
+
+
+		// JavaScript の RegExp における "." (ドット)は、
+		// 改行文字にはマッチできないらしい...。
+		// 代わりに、 [\\s\\S] と書くと、あらゆる1文字にマッチできるとのこと。
+		// https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/RegExp
+		// （この文字は小数点です） 改行文字（\n、\r、 \u2028、あるいは、\u2029）を除いたあらゆる 1 文字にマッチします（ [\s\S] という正規表現を使えば、改行文字を含めたあらゆる文字にマッチさせることができます）。
+
+		// code = code.replace( new RegExp( px.utils.escapeRegExp(replaceStr.before), 'g' ), replaceStr.after );
+		var tmp = code;
+		code = '';
+		while( 1 ){
+			if( tmp.match( new RegExp( '^([\\s\\S]*?)'+px.utils.escapeRegExp(replaceStr.before)+'([\\s\\S]*)$' ) ) === null ){
+				code += tmp;
+				break;
+			}
+			code += RegExp.$1;
+			code += replaceStr.after;
+			tmp = RegExp.$2;
+			continue;
+		}
 
 		return code;
 	}

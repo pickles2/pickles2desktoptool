@@ -31,12 +31,6 @@
 		}
 
 
-		if( !px.utils.isFile( pathBase+task.from ) ){
-			// 移動元にファイルが存在しない場合は失敗
-			cb( false );
-			return;
-		}
-
 		// ----------------------------------
 		// 移動を実行
 		// console.log( pathBase+task.from );
@@ -49,9 +43,25 @@
 			} ,
 			function( it, arg ){
 				// コンテンツファイル本体を移動
-				px.fs.rename( pathBase+task.from, pathBase+task.to, function(){
-					it.next( arg );
-				} );
+				var fromList = [];
+				if( px.utils.isFile( pathBase+task.from ) ){
+					fromList.push( task );
+				}
+				var conf = pj.getConfig();
+				for( var idx in conf.funcs.processor ){
+					if( px.utils.isFile( pathBase+task.from+'.'+idx ) ){
+						fromList.push( {'from':task.from+'.'+idx, 'to':task.to+'.'+idx} );
+					}
+				}
+				var done = 0;
+				for( var idx in fromList ){
+					px.fs.rename( pathBase+fromList[idx].from, pathBase+fromList[idx].to, function(){
+						done ++;
+						if( done >= fromList.length ){
+							it.next( arg );
+						}
+					} );
+				}
 			} ,
 			function( it, arg ){
 				// コンテンツリソースディレクトリを移動

@@ -49,7 +49,38 @@ window.contApp = new (function( px ){
 						.text( '編集する' )
 						.attr({'data-path': pageInfo.path})
 						.click(function(){
-							_this.openEditor( $(this).data('path') );
+							_this.openEditor( $(this).attr('data-path') );
+							return false;
+						})
+					)
+					.append( $('<a class="icon">')
+						.text( 'Finderで開く' )
+						.attr({
+							'data-content': pageInfo.content ,
+							'href':'javascript:;'
+						})
+						.click(function(){
+							px.utils.openURL( px.utils.dirname( _pj.get_realpath_controot()+$(this).attr('data-content') ) );
+							return false;
+						})
+					)
+					.append( $('<a class="icon">')
+						.text( 'リソースフォルダを開く' )
+						.attr({
+							'data-path': pageInfo.path ,
+							'href':'javascript:;'
+						})
+						.click(function(){
+							var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( $(this).attr('data-path') ) );
+							var realpathFiles = _pj.get_realpath_controot()+pathFiles;
+							if( !px.utils.isDirectory( realpathFiles ) ){
+								px.fs.mkdirSync( realpathFiles );
+								if( !px.utils.isDirectory( realpathFiles ) ){
+									return false;
+								}
+							}
+							px.utils.openURL( realpathFiles );
+							return false;
 						})
 					)
 				;

@@ -82,7 +82,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		cb = cb||function(){};
 		var data_memo = '';
 		this.execPx2( '/?PX=api.get.config', {
-			cd: this.get('path') ,
+			cd: this.get_realpath_controot() ,
 			success: function( data ){
 				data_memo += data;
 			} ,
@@ -159,12 +159,41 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		var contLocalpath = pageInfo.content;
 
 		for( var tmpExt in _config.funcs.processor ){
-			if( px.fs.existsSync( this.get('path')+'/'+contLocalpath+'.'+ tmpExt) ){
+			if( px.fs.existsSync( this.get_realpath_controot()+'/'+contLocalpath+'.'+ tmpExt) ){
 				contLocalpath = contLocalpath+'.'+ tmpExt;
 				break;
 			}
 		}
 		return contLocalpath;
+	}
+
+	/**
+	 * コンテンツパスが、2重拡張子か調べる
+	 */
+	this.isContentDoubleExtension = function( contentPath ){
+		var rtn = false;
+
+		for( var tmpExt in _config.funcs.processor ){
+			if( contentPath.match( new RegExp( '\\.[a-zA-Z0-9\\_\\-]+?\\.'+px.utils.escapeRegExp(tmpExt)+'$' ) ) ){
+				rtn = true;
+				break;
+			}
+		}
+		return true;
+	}
+
+
+	/**
+	 * コンテンツパスから専有リソースディレクトリパスを探す
+	 */
+	this.getContentFilesByPageContent = function( contentPath ){
+		var rtn = contentPath;
+		rtn = px.utils.trim_extension( rtn );
+		if( this.isContentDoubleExtension(contentPath) ){
+			rtn = px.utils.trim_extension( rtn );
+		}
+		rtn += '_files/';
+		return rtn;
 	}
 
 
@@ -186,7 +215,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				return checkGitDir( nextPath );
 			}
 			return checkGitDir(path);
-		})( this.get('path') );
+		})( this.get_realpath_controot() );
 	}// get_realpath_git_root()
 
 	/**
@@ -207,7 +236,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				return checkGitDir( nextPath );
 			}
 			return checkGitDir(path);
-		})( this.get('path') );
+		})( this.get_realpath_controot() );
 	}// get_realpath_composer_root()
 
 
@@ -354,7 +383,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			return false;
 		}
 		var contPath = this.findPageContent(pagePath);
-		if( px.fs.existsSync( this.get('path') + contPath ) ){
+		if( px.fs.existsSync( this.get_realpath_controot() + contPath ) ){
 			opt.error("Content Already Exists.");
 			opt.complete();
 			return false;
@@ -372,7 +401,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				break;
 		}
 
-		var pathInfo = px.utils.parsePath( this.get('path') + contPath );
+		var pathInfo = px.utils.parsePath( this.get_realpath_controot() + contPath );
 		var prop = {}
 		prop.realpath_cont = pathInfo.path;
 		prop.realpath_resource_dir = pathInfo.dirname + '/' + pathInfo.basenameExtless + '_files/';

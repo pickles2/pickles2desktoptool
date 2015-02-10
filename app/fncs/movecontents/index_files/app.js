@@ -50,8 +50,8 @@ window.contApp = new (function( px ){
 			function(it, row, idx){
 				moveCont.moveContent( px, _pj, row, function( result ){
 					if(!result){ it.next(); return; }
-					// var filelist = getContentsFileList();// UTODO: 開発中だからスキップ
-					var filelist = [];
+					var filelist = getContentsFileList();// UTODO: 開発中だからスキップ
+					// var filelist = [];
 					relink.relink( px, _pj, row, filelist, function( result ){
 						it.next();
 					} );
@@ -82,9 +82,7 @@ window.contApp = new (function( px ){
 				rtn.push( path+ls[idx] );
 			}else if( px.utils.isDirectory(baseDir+path+ls[idx]) ){
 				var children = getContentsFileList( path+ls[idx]+'/' );
-				for( var cidx in children ){
-					rtn.push( children[cidx] );
-				}
+				rtn = rtn.concat( children );
 			}
 		}
 

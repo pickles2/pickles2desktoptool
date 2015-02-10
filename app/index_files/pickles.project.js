@@ -49,7 +49,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		status.vendorDirExists = (status.pathExists && px.utils.isDirectory( this.get('path')+'/vendor/' ) ? true : false);
 		status.isPxStandby = ( status.pathExists && status.entryScriptExists && status.homeDirExists && status.confFileExists && status.composerJsonExists && status.vendorDirExists ? true : false );
 		status.gitDirExists = (function(path){
-			function checkGitDir(path){
+			function checkParentDir(path){
 				if( status.pathExists && px.utils.isDirectory( path+'/.git/' ) ){
 					return true;
 				}
@@ -57,9 +57,9 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				if( nextPath == path ){
 					return false;
 				}
-				return checkGitDir( nextPath );
+				return checkParentDir( nextPath );
 			}
-			return checkGitDir(path);
+			return checkParentDir(path);
 		})( this.get('path') );
 		return status;
 	}
@@ -204,7 +204,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	 */
 	this.get_realpath_git_root = function(){
 		return (function(path){
-			function checkGitDir(path){
+			function checkParentDir(path){
 				if( px.utils.isDirectory( path ) && px.utils.isDirectory( path+'/.git/' ) ){
 					return px.fs.realpathSync(path)+'/';
 				}
@@ -212,9 +212,9 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				if( nextPath == path ){
 					return false;
 				}
-				return checkGitDir( nextPath );
+				return checkParentDir( nextPath );
 			}
-			return checkGitDir(path);
+			return checkParentDir(path);
 		})( this.get_realpath_controot() );
 	}// get_realpath_git_root()
 
@@ -225,7 +225,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	 */
 	this.get_realpath_composer_root = function(){
 		return (function(path){
-			function checkGitDir(path){
+			function checkParentDir(path){
 				if( px.utils.isDirectory( path ) && px.utils.isFile( path+'/composer.json' ) ){
 					return px.fs.realpathSync(path)+'/';
 				}
@@ -233,11 +233,33 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				if( nextPath == path ){
 					return false;
 				}
-				return checkGitDir( nextPath );
+				return checkParentDir( nextPath );
 			}
-			return checkGitDir(path);
+			return checkParentDir(path);
 		})( this.get_realpath_controot() );
 	}// get_realpath_composer_root()
+
+
+	/**
+	 * npmのルートの絶対パスを得る
+	 * 
+	 * @return string npm のルートディレクトリのパス(package.json の親ディレクトリ)
+	 */
+	this.get_realpath_npm_root = function(){
+		return (function(path){
+			function checkParentDir(path){
+				if( px.utils.isDirectory( path ) && px.utils.isFile( path+'/package.json' ) ){
+					return px.fs.realpathSync(path)+'/';
+				}
+				var nextPath = px.utils.dirname( path );
+				if( nextPath == path ){
+					return false;
+				}
+				return checkParentDir( nextPath );
+			}
+			return checkParentDir(path);
+		})( this.get_realpath_controot() );
+	}// get_realpath_npm_root()
 
 
 	/**
@@ -330,7 +352,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			if( $preg_pattern.match( new RegExp('\\*') ) ){
 				// ワイルドカードが使用されている場合
 				$preg_pattern = px.utils.escapeRegExp($row);
-				$preg_pattern = $preg_pattern.replace( new RegExp( px.utils.escapeRegExp('\\*')), '(?:.*?)');//ワイルドカードをパターンに反映
+				$preg_pattern = $preg_pattern.replace( new RegExp( px.utils.escapeRegExp('\\*'),'g'), '(?:.*?)');//ワイルドカードをパターンに反映
 				$preg_pattern = $preg_pattern+'$';//前方・後方一致
 			}else if(px.utils.isDirectory($row)){
 				$preg_pattern = px.utils.escapeRegExp( px.utils.normalize_path( px.utils.get_realpath($row) )+'/');

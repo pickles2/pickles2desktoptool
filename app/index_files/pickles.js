@@ -40,6 +40,9 @@ new (function($, window){
 	this.utils = _utils;
 	var _fs = require('fs');
 	this.fs = _fs;
+	var _path = require('path');
+	this.path = _path;
+
 	var _db = {};
 	var _path_data_dir = process.env.HOME + '/.pickles2desktoptool/';
 	var _path_db = process.env.HOME + '/.pickles2desktoptool/db.json';

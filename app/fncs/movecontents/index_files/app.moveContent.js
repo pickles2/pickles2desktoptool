@@ -5,35 +5,83 @@
 	 */
 	function replaceContentSrc( px, pj, code, pathBase, task, resourceDir ){
 
-		// ローカルリソースの参照先置き換え
-		function getBasenameOfResDir(pathResDir){
-			pathResDir = pathResDir.replace( new RegExp('\\/+$'), '' );
-			pathResDir = px.utils.basename( pathResDir );
-			return pathResDir;
-		}
-		var replaceStr = {
-			before: getBasenameOfResDir(resourceDir.from) ,
-			after: getBasenameOfResDir(resourceDir.to)
-		}
-
-
 		// JavaScript の RegExp における "." (ドット)は、
 		// 改行文字にはマッチできないらしい...。
 		// 代わりに、 [\\s\\S] と書くと、あらゆる1文字にマッチできるとのこと。
 		// https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/RegExp
 		// （この文字は小数点です） 改行文字（\n、\r、 \u2028、あるいは、\u2029）を除いたあらゆる 1 文字にマッチします（ [\s\S] という正規表現を使えば、改行文字を含めたあらゆる文字にマッチさせることができます）。
-
+		//
+		// // ローカルリソースの参照先置き換え
+		// function getBasenameOfResDir(pathResDir){
+		// 	pathResDir = pathResDir.replace( new RegExp('\\/+$'), '' );
+		// 	pathResDir = px.utils.basename( pathResDir );
+		// 	return pathResDir;
+		// }
+		// var replaceStr = {
+		// 	before: getBasenameOfResDir(resourceDir.from) ,
+		// 	after: getBasenameOfResDir(resourceDir.to)
+		// }
 		// code = code.replace( new RegExp( px.utils.escapeRegExp(replaceStr.before), 'g' ), replaceStr.after );
+
+		function replacePath( path, task, resourceDir ){
+			var tmp = px.php.trim(path);
+			if( tmp.match( new RegExp('^[a-zA-Z]+\\:') ) ){
+				return path;
+			}
+			var mem = {};
+			path.match( new RegExp('^([\\s]*)[\\s\\S]*?([\\s]*)$') );
+			mem.whiteSpaceBefore = RegExp.$1;
+			mem.whiteSpaceAfter  = RegExp.$2;
+			mem.dirname = px.path.dirname( tmp );
+			mem.basename = px.path.basename( tmp );
+
+			var is = {};
+			is.abs = px.path.isAbsolute(tmp);
+			is.slashClosed = tmp.match( new RegExp('\\/$') );
+			is.dotSlashStart = tmp.match( new RegExp('^\\.\\/') );
+
+			if( is.slashClosed ){
+				mem.dirname = px.path.dirname( tmp+'index.html' );
+				mem.basename = '';
+			}
+
+			tmp = px.path.resolve('/', px.path.dirname(task.from), mem.dirname);
+			if( tmp.match( new RegExp('^'+px.utils.escapeRegExp( px.path.resolve(resourceDir.from) )) ) ){
+				tmp = tmp.replace( new RegExp('^'+px.utils.escapeRegExp( px.path.resolve(resourceDir.from) )), px.path.resolve(resourceDir.to) );
+			}
+
+			if( !is.abs ){
+				tmp = px.path.relative( px.path.dirname(task.to), tmp );
+				if( is.dotSlashStart ){
+					tmp = './'+tmp;
+				}
+			}
+			if( is.slashClosed ){
+				tmp += '/';
+			}else if( mem.basename.length ){
+				tmp += '/'+mem.basename;
+			}
+
+			tmp = mem.whiteSpaceBefore + tmp + mem.whiteSpaceAfter;
+			return tmp;
+		}
+
 		var tmp = code;
 		code = '';
 		while( 1 ){
-			if( tmp.match( new RegExp( '^([\\s\\S]*?)'+px.utils.escapeRegExp(replaceStr.before)+'([\\s\\S]*)$' ) ) === null ){
+			if( tmp.match( new RegExp( '^([\\s\\S]*?)(href|src)\\=(\\"|\\\')([\\s\\S]*?)(?:\\3)([\\s\\S]*)$','i' ) ) === null ){
 				code += tmp;
 				break;
 			}
-			code += RegExp.$1;
-			code += replaceStr.after;
-			tmp = RegExp.$2;
+			var memo = {}
+			memo.before = RegExp.$1 + RegExp.$2 + '=' + RegExp.$3;
+			memo.after = RegExp.$3;
+			memo.path = RegExp.$4;
+			tmp = RegExp.$5;
+
+
+
+			code += memo.before + replacePath( memo.path, task, resourceDir ) + memo.after;
 			continue;
 		}
 
@@ -45,10 +93,7 @@
 	 */
 	exports.moveContent = function(px, pj, task, cb){
 		cb = cb||function(){};
-
-		var path = require('path');
 		var mkdirp = require('mkdirp');
-
 		var pathBase = px.fs.realpathSync( pj.get_realpath_controot() )+'/';
 		// console.log( pathBase );
 		// console.log( task );

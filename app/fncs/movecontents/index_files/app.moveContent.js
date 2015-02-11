@@ -28,6 +28,9 @@
 			if( tmp.match( new RegExp('^[a-zA-Z]+\\:') ) ){
 				return path;
 			}
+			if( tmp.match( new RegExp('^\\/\\/') ) ){
+				return path;
+			}
 			var mem = {};
 			path.match( new RegExp('^([\\s]*)[\\s\\S]*?([\\s]*)$') );
 			mem.whiteSpaceBefore = RegExp.$1;
@@ -52,6 +55,9 @@
 
 			if( !is.abs ){
 				tmp = px.path.relative( px.path.dirname(task.to), tmp );
+				if( !tmp.length ){
+					tmp = '.';
+				}
 				if( is.dotSlashStart ){
 					tmp = './'+tmp;
 				}

@@ -77,7 +77,7 @@ window.contApp = new (function( px ){
 	 */
 	function getContentsFileList( path ){
 		if( !path ){ path = '/'; }
-		var baseDir = px.fs.realpathSync( _pj.get('path') );
+		var baseDir = px.fs.realpathSync( _pj.get_realpath_controot() );
 		var ls = px.fs.readdirSync( baseDir+path );
 		var rtn = []
 		for( var idx in ls ){

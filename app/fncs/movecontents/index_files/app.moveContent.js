@@ -70,7 +70,7 @@
 
 			tmp = mem.whiteSpaceBefore + tmp + mem.whiteSpaceAfter;
 			return tmp;
-		}
+		}// replacePath();
 
 		var tmp = code;
 		code = '';

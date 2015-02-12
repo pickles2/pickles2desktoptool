@@ -44,7 +44,7 @@
 			is.dotSlashStart = tmp.match( new RegExp('^\\.\\/') );
 
 			if( is.slashClosed ){
-				mem.dirname = px.path.dirname( tmp+'index.html' );
+				mem.dirname = px.path.dirname( tmp+'index.html' );//←このindex.htmlは捨てられるのでなんでもいいやつ。
 				mem.basename = '';
 			}
 

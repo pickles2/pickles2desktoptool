@@ -22,9 +22,20 @@ window.contApp = new (function( px ){
 	 */
 	function executeMove( targetList ){
 		var $body = $('<div>');
+		var $btnOk = $('<button>')
+			.text('OK')
+			.click(function(){
+				px.closeDialog();
+			})
+		;
 		px.dialog({
 			'title': '移動処理を実行しています...',
-			'body': $body.text('時間がかかる場合があります。しばらくそのままでお待ちください。')
+			'body': $body.text('時間がかかる場合があります。しばらくそのままでお待ちください。'),
+			'buttons': [
+				$btnOk.attr({
+					'disabled': 'disabled'
+				})
+			]
 		});
 		targetList = JSON.parse( JSON.stringify( targetList ) );
 		targetList = px.php.trim( targetList );
@@ -66,6 +77,7 @@ window.contApp = new (function( px ){
 			} ,
 			function(){
 				$body.text('移動処理を完了しました。');
+				$btnOk.removeAttr('disabled');
 			}
 		);
 

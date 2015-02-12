@@ -19,6 +19,18 @@
 				return path;
 			}
 
+			// パラメータとハッシュを分解
+			var hash = '';
+			if( tmp.match( new RegExp( '^([\\s\\S]*?)(\\#[\\s\\S]*)$' ) ) ){
+				tmp = RegExp.$1;
+				hash = RegExp.$2;
+			}
+			var param = '';
+			if( tmp.match( new RegExp( '^([\\s\\S]*?)(\\?[\\s\\S]*)$' ) ) ){
+				tmp = RegExp.$1;
+				param = RegExp.$2;
+			}
+
 			var mem = {};
 			path.match( new RegExp('^([\\s]*)[\\s\\S]*?([\\s]*)$') );
 			mem.whiteSpaceBefore = RegExp.$1;
@@ -32,41 +44,44 @@
 			is.dotSlashStart = tmp.match( new RegExp('^\\.\\/') );
 
 			if( is.slashClosed ){
-				mem.dirname = px.path.dirname( tmp+'index.html' );
+				mem.dirname = px.path.dirname( tmp+'index.html' );//←このindex.htmlは捨てられるのでなんでもいいやつ。
 				mem.basename = '';
 			}
 
 			tmp = px.path.resolve('/', px.path.dirname(currentPath), mem.dirname);
 			if( is.slashClosed ){
-				tmp += '/';
+				tmp += '/'+pj.get_directory_index_primary();
 			}else if( mem.basename.length ){
 				tmp += '/'+mem.basename;
 			}
-console.log( tmp, task.from, currentPath );
+			tmp = px.path.resolve( tmp );
 			if( tmp != task.from ){
+				// リンク先が、今回移動したファイルと別だったら、
+				// 変換しない。元のまま返す。
 				return path;
 			}
 
-return path;
-			// tmp = task.to;
+			tmp = task.to;
 
-			// if( !is.abs ){
-			// 	tmp = px.path.relative( px.path.dirname(task.to), tmp );
-			// 	if( !tmp.length ){
-			// 		tmp = '.';
-			// 	}
-			// 	if( is.dotSlashStart ){
-			// 		tmp = './'+tmp;
-			// 	}
-			// }
-			// if( is.slashClosed ){
-			// 	tmp += '/';
-			// }else if( mem.basename.length ){
-			// 	tmp += '/'+mem.basename;
-			// }
+			if( !is.abs ){
+				tmp = px.path.relative( px.path.dirname(currentPath), tmp );
+				if( !tmp.length ){
+					tmp = '.';
+				}
+				if( is.dotSlashStart ){
+					tmp = './'+tmp;
+				}
+			}
+			if( is.slashClosed ){
+				tmp = tmp.replace( new RegExp( '\\/'+pj.get_directory_index_preg_pattern()+'$' ), '/' );
+				// tmp += '/'; // ← UTODO: directory_index を削除する処理に変更予定
+			}
 
-			// tmp = mem.whiteSpaceBefore + tmp + mem.whiteSpaceAfter;
-			// return tmp;
+			tmp += param + hash;
+			tmp = mem.whiteSpaceBefore + tmp + mem.whiteSpaceAfter;
+
+			// console.log( task.from, tmp, currentPath );
+			return tmp;
 		}// replacePath();
 
 
@@ -99,11 +114,29 @@ return path;
 			function(it, row, idx){
 				px.fs.readFile( pj.get_realpath_controot()+row, {}, function(err, data){
 					var code = data.toString();
-					code = replaceHtml( code, row, task );
+					var md5CodeBefore = px.utils.md5( code );
 
-					// px.fs.writeFile( pj.get_realpath_controot()+row, code, {}, function(){
+					var ext = px.utils.getExtension( row );
+					switch( ext.toLowerCase() ){
+						case 'html':
+						case 'htm':
+						case 'inc':
+							code = replaceHtml( code, row, task );
+							break;
+						case 'md':
+							code = replaceHtml( code, row, task );
+							break;
+					}
+
+					var md5CodeAfter = px.utils.md5( code );
+					if( md5CodeBefore === md5CodeAfter ){
 						it.next();
-					// } );
+						return;
+					}
+
+					px.fs.writeFile( pj.get_realpath_controot()+row, code, {}, function(){
+						it.next();
+					} );
 				} );
 			},
 			function(){

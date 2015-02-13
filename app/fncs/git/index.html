@@ -64,7 +64,7 @@
 				px.execDialog(
 					'git status',
 					{
-						cd: pj.get('path'),
+						cd: pj.get_realpath_git_root(),
 						title: '$ git status',
 						description: $('<p>').text('gitのステータス状態を表示します。'),
 						complete: function(stdout){
@@ -74,29 +74,6 @@
 						}
 					}
 				);
-				// window.px.utils.spawn('git',
-				// 	['status'],
-				// 	{
-				// 		cd: pj.get('path'),
-				// 		success: function(data){
-				// 			$('.cont_console').text(
-				// 				$('.cont_console').text() + data
-				// 			);
-				// 		} ,
-				// 		error: function(data){
-				// 			$('.cont_console').text(
-				// 				$('.cont_console').text() + data
-				// 			);
-				// 		} ,
-				// 		complete: function(code){
-				// 			// $('.cont_console').text(
-				// 			// 	$('.cont_console').text() + code
-				// 			// );
-				// 			$(btn).removeAttr('disabled');
-				// 			px.message( 'gitのステータス表示を完了しました。' );
-				// 		}
-				// 	}
-				// );
 			}
 
 		</script>
@@ -107,7 +84,7 @@
 		</div>
 		<div class="contents">
 			<div class="container">
-				<p><button onclick="cont_git_init(this); return false;">$ git init</button></p>
+				<!-- p><button onclick="cont_git_init(this); return false;">$ git init</button></p -->
 				<p><button onclick="cont_git_status(this); return false;">$ git status</button></p>
 				<pre class="cont_console" style="max-height:360px;">console:
 </pre>

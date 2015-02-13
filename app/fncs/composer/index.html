@@ -29,7 +29,7 @@
 			window.px = $.px = window.parent.px;
 
 			var pj = px.getCurrentProject();
-			var cont_pathComposerJson = pj.get('path')+'/composer.json';
+			var cont_pathComposerJson = pj.get_realpath_composer_root();
 
 			function cont_init(){
 				px.fs.readFile(cont_pathComposerJson, function(err, src){
@@ -72,7 +72,7 @@
 				window.px.utils.spawn( px.cmd('composer'),
 					['update'],
 					{
-						cd: pj.get('path'),
+						cd: pj.get_realpath_composer_root(),
 						success: function(data){
 							$('.cont_console').text(
 								$('.cont_console').text() + data
@@ -99,7 +99,7 @@
 				window.px.utils.spawn( px.cmd('composer'),
 					['install'],
 					{
-						cd: pj.get('path'),
+						cd: pj.get_realpath_composer_root(),
 						success: function(data){
 							$('.cont_console').text(
 								$('.cont_console').text() + data
@@ -111,9 +111,6 @@
 							);
 						} ,
 						complete: function(code){
-							// $('.cont_console').text(
-							// 	$('.cont_console').text() + code
-							// );
 							$(btn).removeAttr('disabled');
 							px.message( 'composer install 完了しました。' );
 						}

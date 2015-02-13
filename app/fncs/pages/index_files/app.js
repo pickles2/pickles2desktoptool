@@ -88,7 +88,6 @@ window.contApp = new (function( px ){
 				$childList.find('a').removeClass('current');
 				$childList.find('a[data-path="'+pageInfo.path+'"]').addClass('current');
 
-				$preview.css( {'height': $(window).height() - $pageinfo.height() - 15} );
 				$(window).resize();
 			})
 		;
@@ -109,14 +108,20 @@ window.contApp = new (function( px ){
 	function onWindowResize(){
 		$editor
 			.css({
-				'height':$(window).height()
+				'height':$(window).height() -5
 			})
 		;
 		$('.cont_workspace_container')
 			.css({
-				'height':$(window).height() -15
+				'height':$(window).height() - $('.container').height() -15
 			})
 		;
+		$preview
+			.css({
+				'height': $('.cont_workspace_container').height() - $pageinfo.height() - 40
+			})
+		;
+
 	}
 
 

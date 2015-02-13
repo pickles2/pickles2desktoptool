@@ -83,6 +83,17 @@ window.contApp = new (function( px ){
 							return false;
 						})
 					)
+					.append( $('<a class="icon">')
+						.text( '外部テキストエディタで編集' )
+						.attr({
+							'data-content': pageInfo.content ,
+							'href':'javascript:;'
+						})
+						.click(function(){
+							px.openInTextEditor( _pj.get_realpath_controot()+$(this).attr('data-content') );
+							return false;
+						})
+					)
 				;
 				$pageinfo.html( $html );
 				$childList.find('a').removeClass('current');

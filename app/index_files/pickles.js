@@ -67,10 +67,17 @@ new (function($, window){
 			JSON.stringify(
 				{
 					"commands":{} ,
+					"apps":{
+						"texteditor": null,
+						"texteditorForDir": null
+					} ,
 					"projects":[] ,
 					"network":{
 						"preview":{
 							"port": 8080
+						},
+						"appserver":{
+							"port": 8081
 						}
 					}
 				}
@@ -138,6 +145,10 @@ new (function($, window){
 		if(!_db.projects){_db.projects = [];}
 		if(!_db.network){_db.network = {};}
 		if(!_db.network.preview){_db.network.preview = {};}
+		if(!_db.network.appserver){_db.network.appserver = {};}
+		if(!_db.apps){_db.apps = {};}
+		if(!_db.apps.texteditor){_db.apps.texteditor = {};}
+		if(!_db.apps.texteditorForDir){_db.apps.texteditorForDir = {};}
 
 		if( !_utils.isDirectory( _path_data_dir+'commands/' ) ){
 			_fs.mkdirSync( _path_data_dir+'commands/' );
@@ -329,6 +340,47 @@ new (function($, window){
 	 */
 	this.getDb = function(){
 		return _db;
+	}
+
+
+	/**
+	 * ブラウザで開く
+	 */
+	this.openInBrowser = function(){
+		var px = this;
+		this.preview.serverStandby(function(){
+			px.utils.openURL( px.preview.getUrl() );
+		});
+	}
+
+	/**
+	 * 外部テキストエディタで開く
+	 */
+	this.openInTextEditor = function( path ){
+		if( !this.getDb().apps ){
+			alert('ERROR: 外部エディタが設定されていません。');
+		}
+		var pathEditor = '';
+		if( this.utils.isDirectory(path) ){
+			pathEditor = this.getDb().apps.texteditorForDir;
+		}else if( px.utils.isFile(path) ){
+			pathEditor = this.getDb().apps.texteditor;
+		}else{
+			alert('ERROR: 編集対象のパスが存在しません。');
+			return false;
+		}
+		if( !pathEditor.length && !this.utils.isDirectory(pathEditor) ){
+			alert('ERROR: 外部エディタが設定されていないか、存在しません。');
+		}
+		px.utils.spawn(
+			'open',
+			[
+				path,
+				'-a',
+				pathEditor
+			],
+	 		{}
+		);
 	}
 
 	/**

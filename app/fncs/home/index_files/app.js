@@ -2,6 +2,7 @@ window.px = $.px = window.parent.px;
 window.contApp = new (function(){
 	var _this = this;
 	var pj = px.getCurrentProject();
+	this.pj = pj;
 	var status = pj.status();
 
 	/**
@@ -155,15 +156,6 @@ window.contApp = new (function(){
 				} )
 			]
 		} );
-	}
-
-	/**
-	 * イベント
-	 */
-	this.openInBrowser = function(){
-		px.preview.serverStandby(function(){
-			px.utils.openURL( px.preview.getUrl() );
-		});
 	}
 
 	/**

@@ -44,10 +44,7 @@ window.contApp = new (function( px ){
 				var contProcType = _this.pj.getPageContentProcType( pageInfo.path );
 				var $html = $('<div>')
 					.append( $('<div>')
-						.text( pageInfo.title+'('+pageInfo.path+')' )
-					)
-					.append( $('<div>')
-						.text( contProcType )
+						.text( pageInfo.title+'('+pageInfo.path+')'+' - '+contProcType )
 					)
 					.append( $('<button>')
 						.text( '編集する' )
@@ -84,6 +81,32 @@ window.contApp = new (function( px ){
 								}
 							}
 							px.utils.openURL( realpathFiles );
+							return false;
+						})
+					)
+					.append( $('<a class="icon">')
+						.text( '素材フォルダを開く' )
+						.attr({
+							'data-path': pageInfo.path ,
+							'href':'javascript:;'
+						})
+						.click(function(){
+							var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( $(this).attr('data-path') ) );
+							var realpathFiles = _pj.get_realpath_controot()+pathFiles;
+							if( !px.utils.isDirectory( realpathFiles ) ){
+								px.fs.mkdirSync( realpathFiles );
+								if( !px.utils.isDirectory( realpathFiles ) ){
+									return false;
+								}
+							}
+							var realpath_matDir = realpathFiles + 'materials.ignore/';
+							if( !px.utils.isDirectory( realpath_matDir ) ){
+								px.fs.mkdirSync( realpath_matDir );
+								if( !px.utils.isDirectory( realpath_matDir ) ){
+									return false;
+								}
+							}
+							px.utils.openURL( realpath_matDir );
 							return false;
 						})
 					)

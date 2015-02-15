@@ -54,74 +54,108 @@ window.contApp = new (function( px ){
 							return false;
 						})
 					)
-					.append( $('<a class="icon">')
-						.text( 'Finderで開く' )
-						.attr({
-							'data-content': pageInfo.content ,
-							'href':'javascript:;'
-						})
-						.click(function(){
-							px.utils.openURL( px.utils.dirname( _pj.get_realpath_controot()+$(this).attr('data-content') ) );
-							return false;
-						})
-					)
-					.append( $('<a class="icon">')
-						.text( 'リソースフォルダを開く' )
-						.attr({
-							'data-path': pageInfo.path ,
-							'href':'javascript:;'
-						})
-						.click(function(){
-							var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( $(this).attr('data-path') ) );
-							var realpathFiles = _pj.get_realpath_controot()+pathFiles;
-							if( !px.utils.isDirectory( realpathFiles ) ){
-								px.fs.mkdirSync( realpathFiles );
-								if( !px.utils.isDirectory( realpathFiles ) ){
-									return false;
-								}
-							}
-							px.utils.openURL( realpathFiles );
-							return false;
-						})
-					)
-					.append( $('<a class="icon">')
-						.text( '素材フォルダを開く' )
-						.attr({
-							'data-path': pageInfo.path ,
-							'href':'javascript:;'
-						})
-						.click(function(){
-							var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( $(this).attr('data-path') ) );
-							var realpathFiles = _pj.get_realpath_controot()+pathFiles;
-							if( !px.utils.isDirectory( realpathFiles ) ){
-								px.fs.mkdirSync( realpathFiles );
-								if( !px.utils.isDirectory( realpathFiles ) ){
-									return false;
-								}
-							}
-							var realpath_matDir = realpathFiles + 'materials.ignore/';
-							if( !px.utils.isDirectory( realpath_matDir ) ){
-								px.fs.mkdirSync( realpath_matDir );
-								if( !px.utils.isDirectory( realpath_matDir ) ){
-									return false;
-								}
-							}
-							px.utils.openURL( realpath_matDir );
-							return false;
-						})
-					)
-					.append( $('<a class="icon">')
-						.text( '外部テキストエディタで編集' )
-						.attr({
-							'data-content': pageInfo.content ,
-							'href':'javascript:;'
-						})
-						.click(function(){
-							px.openInTextEditor( _pj.get_realpath_controot()+$(this).attr('data-content') );
-							return false;
-						})
-					)
 				;
+
+				if( contProcType != '.not_exists' ){
+					$html
+						.append( $('<a class="icon">')
+							.text( 'Finderで開く' )
+							.attr({
+								'data-content': pageInfo.content ,
+								'href':'javascript:;'
+							})
+							.click(function(){
+								px.utils.openURL( px.utils.dirname( _pj.get_realpath_controot()+$(this).attr('data-content') ) );
+								return false;
+							})
+						)
+						.append( $('<a class="icon">')
+							.text( 'リソースフォルダを開く' )
+							.attr({
+								'data-path': pageInfo.path ,
+								'href':'javascript:;'
+							})
+							.click(function(){
+								var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( $(this).attr('data-path') ) );
+								var realpathFiles = _pj.get_realpath_controot()+pathFiles;
+								if( !px.utils.isDirectory( realpathFiles ) ){
+									px.fs.mkdirSync( realpathFiles );
+									if( !px.utils.isDirectory( realpathFiles ) ){
+										return false;
+									}
+								}
+								px.utils.openURL( realpathFiles );
+								return false;
+							})
+						)
+						.append( $('<a class="icon">')
+							.text( '素材フォルダを開く' )
+							.attr({
+								'data-path': pageInfo.path ,
+								'href':'javascript:;'
+							})
+							.click(function(){
+								var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( $(this).attr('data-path') ) );
+								var realpathFiles = _pj.get_realpath_controot()+pathFiles;
+								if( !px.utils.isDirectory( realpathFiles ) ){
+									px.fs.mkdirSync( realpathFiles );
+									if( !px.utils.isDirectory( realpathFiles ) ){
+										return false;
+									}
+								}
+								var realpath_matDir = realpathFiles + 'materials.ignore/';
+								if( !px.utils.isDirectory( realpath_matDir ) ){
+									px.fs.mkdirSync( realpath_matDir );
+									if( !px.utils.isDirectory( realpath_matDir ) ){
+										return false;
+									}
+								}
+								px.utils.openURL( realpath_matDir );
+								return false;
+							})
+						)
+					;
+					$html
+						.append( $('<a class="icon">')
+							.text( '編集方法を変更' )
+							.attr({
+								'data-path': pageInfo.path ,
+								'href':'javascript:;'
+							})
+							.click(function(){
+								var $body = $('<div>')
+									.append( $('#template-change-proctype').html() )
+								;
+								px.dialog({
+									'title': '編集方法を変更する',
+									'body': $body,
+									'buttons':[
+										$('<button>').text('OK').click(function(){
+											px.closeDialog();
+										})
+									]
+								});
+								return false;
+							})
+						)
+					;
+					if( contProcType != 'html.gui' ){
+						$html
+							.append( $('<a class="icon">')
+								.text( '外部テキストエディタで編集' )
+								.attr({
+									'data-content': pageInfo.content ,
+									'href':'javascript:;'
+								})
+								.click(function(){
+									px.openInTextEditor( _pj.get_realpath_controot()+$(this).attr('data-content') );
+									return false;
+								})
+							)
+						;
+					}
+				}
+
 				$pageinfo.html( $html );
 				$childList.find('a').removeClass('current');
 				$childList.find('a[data-path="'+pageInfo.path+'"]').addClass('current');

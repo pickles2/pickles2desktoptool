@@ -189,10 +189,12 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		var filesDir = this.getContentFilesByPageContent( pageContent );
 		var pathContRoot = this.get_realpath_controot();
 		var rtn = '.unknown';
-		if( this.isContentDoubleExtension( pageContent ) ){
+		if( !px.utils.isFile( pathContRoot+pageContent ) ){
+			rtn = '.not_exists';
+		}else if( this.isContentDoubleExtension( pageContent ) ){
 			rtn = px.utils.getExtension( pageContent );
 		}else if( px.utils.isDirectory( pathContRoot+filesDir ) && px.utils.isFile( pathContRoot+filesDir+'/guieditor.ignore/data.json' ) ){
-			rtn = 'html.guieditor';
+			rtn = 'html.gui';
 		}else{
 			rtn = px.utils.getExtension( pageContent );
 		}
@@ -429,8 +431,8 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			return false;
 		}
 		switch( opt.proc_type ){
+			case 'html.gui':
 			case 'html':
-			case 'html_gui':
 			case 'md':
 				// OK
 				break;
@@ -482,7 +484,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				if( !px.utils.isDirectory( prop.realpath_resource_dir ) ){
 					px.fs.mkdirSync( prop.realpath_resource_dir );
 				}
-				if( prop.proc_type == 'html_gui' ){
+				if( prop.proc_type == 'html.gui' ){
 					px.fs.mkdirSync( prop.realpath_resource_dir + '/guieditor.ignore/' );
 					px.fs.writeFile( prop.realpath_resource_dir + '/guieditor.ignore/data.json', '{}', function(err){
 						if( err ){

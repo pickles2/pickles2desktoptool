@@ -41,9 +41,13 @@ window.contApp = new (function( px ){
 				to = to.replace( new RegExp( '^\\/*' ), '/' );
 
 				var pageInfo = _this.pj.site.getPageInfo(to);
+				var contProcType = _this.pj.getPageContentProcType( pageInfo.path );
 				var $html = $('<div>')
 					.append( $('<div>')
 						.text( pageInfo.title+'('+pageInfo.path+')' )
+					)
+					.append( $('<div>')
+						.text( contProcType )
 					)
 					.append( $('<button>')
 						.text( '編集する' )

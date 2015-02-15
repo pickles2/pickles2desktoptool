@@ -172,15 +172,33 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	 */
 	this.isContentDoubleExtension = function( contentPath ){
 		var rtn = false;
-
 		for( var tmpExt in _config.funcs.processor ){
 			if( contentPath.match( new RegExp( '\\.[a-zA-Z0-9\\_\\-]+?\\.'+px.utils.escapeRegExp(tmpExt)+'$' ) ) ){
 				rtn = true;
 				break;
 			}
 		}
-		return true;
+		return rtn;
 	}
+
+	/**
+	 * ページパスからコンテンツの種類(編集モード)を取得する
+	 */
+	this.getPageContentProcType = function( pagePath ){
+		var pageContent = this.findPageContent( pagePath );
+		var filesDir = this.getContentFilesByPageContent( pageContent );
+		var pathContRoot = this.get_realpath_controot();
+		var rtn = '.unknown';
+		if( this.isContentDoubleExtension( pageContent ) ){
+			rtn = px.utils.getExtension( pageContent );
+		}else if( px.utils.isDirectory( pathContRoot+filesDir ) && px.utils.isFile( pathContRoot+filesDir+'/guieditor.ignore/data.json' ) ){
+			rtn = 'html.guieditor';
+		}else{
+			rtn = px.utils.getExtension( pageContent );
+		}
+		return rtn;
+	}// getPageContentProcType()
+
 
 
 	/**

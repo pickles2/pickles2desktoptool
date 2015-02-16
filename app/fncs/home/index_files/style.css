@@ -6,3 +6,6 @@
 .contents .cont_maintask_ui{
 	padding: 3em 1em 6em;
 }
+.contents button{
+	width: 100%;
+}

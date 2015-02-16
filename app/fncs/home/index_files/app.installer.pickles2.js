@@ -16,7 +16,7 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 				'dev-master'
 			],
 			{
-				cd: pj.get_realpath_composer_root(),
+				cd: pj.get('path'),
 				title: 'Pickles のセットアップ',
 				description: $msg.text('Pickles をセットアップしています。この処理はしばらく時間がかかります。'),
 				success: function(data){

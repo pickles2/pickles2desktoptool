@@ -11,3 +11,9 @@
 	background: #f9f9f9;
 	min-height: 2em;
 }
+.cont_page_info-prop{
+	float:left;
+}
+.cont_page_info-btn{
+	float:right;
+}

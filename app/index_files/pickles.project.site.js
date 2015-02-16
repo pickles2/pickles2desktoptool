@@ -37,7 +37,7 @@ module.exports.site = function( px, pj, callbackOnStandby ) {
 	this.getPageInfo = function( $path, $key ){
 		var _config = pj.getConfig();
 
-		if( typeof($path) === typeof(null) || $path === undefined ){ return null; }
+		if( $path === null || $path === undefined ){ return null; }
 		if( _sitemap_id_map && _sitemap_id_map[$path] ){
 			//ページIDで指定された場合、パスに置き換える
 			$path = _sitemap_id_map[$path];

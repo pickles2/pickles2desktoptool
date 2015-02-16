@@ -31,6 +31,18 @@
 				<li><label><input type="radio" name="proc_type" value="md" /> Markdown</label></li>
 			</ul>
 		</script>
+		<script id="template-bootstrap3-btn-dropdown-toggle" type="text/template">
+<div class="btn-group">
+	<button type="button" class="btn btn-default btn-lg">編集する</button>
+	<button type="button" class="btn btn-default btn-lg dropdown-toggle" data-toggle="dropdown">
+		<span class="caret"></span>
+		<span class="sr-only">Toggle Dropdown</span>
+	</button>
+	<ul class="dropdown-menu" role="menu">
+	</ul>
+</div><!-- /btn-group -->
+
+		</script>
 	</head>
 	<body>
 		<div class="container">
@@ -39,7 +51,7 @@
 		<div class="contents">
 			<div class="container-fluid">
 				<div class="row">
-					<div class="col-md-3">
+					<div class="col-xs-3">
 						<div class="cont_workspace_container">
 							<p>
 								コンテンツは、サイトマップCSVに記述されたページ1つにつき1つ編集します。<br />
@@ -53,13 +65,11 @@
 							<div class="cont_sitemap_childlist"></div>
 						</div><!-- /.cont_workspace_container -->
 					</div>
-					<div class="col-md-9">
-						<div class="cont_workspace_container">
-							<div class="cont_page_info"></div>
-							<div class="preview_window_frame cont_preview">
-								<iframe></iframe>
-							</div>
-						</div><!-- /.cont_workspace_container -->
+					<div class="col-xs-9">
+						<div class="cont_page_info clearfix"></div>
+						<div class="preview_window_frame cont_preview">
+							<iframe></iframe>
+						</div>
 					</div>
 				</div>
 			</div>

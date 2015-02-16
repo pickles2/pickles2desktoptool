@@ -42,135 +42,174 @@ window.contApp = new (function( px ){
 
 				var pageInfo = _this.pj.site.getPageInfo(to);
 				var contProcType = _this.pj.getPageContentProcType( pageInfo.path );
+				var $bs3btn = $($('#template-bootstrap3-btn-dropdown-toggle').html());
 				var $html = $('<div>')
-					.append( $('<div>')
+					.append( $('<div class="cont_page_info-prop">')
 						.text( pageInfo.title+'('+pageInfo.path+')'+' - '+contProcType )
 					)
-					.append( $('<button>')
-						.text( '編集する' )
-						.attr({'data-path': pageInfo.path})
-						.click(function(){
-							_this.openEditor( $(this).attr('data-path') );
-							return false;
-						})
+					.append( $('<div class="cont_page_info-btn">')
+						.append( $bs3btn )
 					)
+				;
+				$bs3btn.find('button').eq(0)
+					.attr({'data-path': pageInfo.path})
+					.text('編集する')
+					.css({
+						'padding-left': '5em',
+						'padding-right': '5em'
+					})
+					.click(function(){
+						_this.openEditor( $(this).attr('data-path') );
+						return false;
+					})
+				;
+				$bs3btn.find('button')
+					.css({
+					})
 				;
 
 				if( contProcType != '.not_exists' ){
-					$html
-						.append( $('<a class="icon">')
-							.text( 'Finderで開く' )
-							.attr({
-								'data-content': pageInfo.content ,
-								'href':'javascript:;'
-							})
-							.click(function(){
-								px.utils.openURL( px.utils.dirname( _pj.get_realpath_controot()+$(this).attr('data-content') ) );
-								return false;
-							})
+					$bs3btn.find('ul[role=menu]')
+						.append( $('<li>')
+							.append( $('<a>')
+								.text( 'Finderで開く' )
+								.attr({
+									'data-content': pageInfo.content ,
+									'href':'javascript:;'
+								})
+								.click(function(){
+									$bs3btn.find('.dropdown-toggle').click();
+									px.utils.openURL( px.utils.dirname( _pj.get_realpath_controot()+$(this).attr('data-content') ) );
+									return false;
+								})
+							)
 						)
-						.append( $('<a class="icon">')
-							.text( 'リソースフォルダを開く' )
-							.attr({
-								'data-path': pageInfo.path ,
-								'href':'javascript:;'
-							})
-							.click(function(){
-								var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( $(this).attr('data-path') ) );
-								var realpathFiles = _pj.get_realpath_controot()+pathFiles;
-								if( !px.utils.isDirectory( realpathFiles ) ){
-									px.fs.mkdirSync( realpathFiles );
-									if( !px.utils.isDirectory( realpathFiles ) ){
-										return false;
-									}
-								}
-								px.utils.openURL( realpathFiles );
-								return false;
-							})
-						)
-						.append( $('<a class="icon">')
-							.text( '素材フォルダを開く' )
-							.attr({
-								'data-path': pageInfo.path ,
-								'href':'javascript:;'
-							})
-							.click(function(){
-								var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( $(this).attr('data-path') ) );
-								var realpathFiles = _pj.get_realpath_controot()+pathFiles;
-								if( !px.utils.isDirectory( realpathFiles ) ){
-									px.fs.mkdirSync( realpathFiles );
-									if( !px.utils.isDirectory( realpathFiles ) ){
-										return false;
-									}
-								}
-								var realpath_matDir = realpathFiles + 'materials.ignore/';
-								if( !px.utils.isDirectory( realpath_matDir ) ){
-									px.fs.mkdirSync( realpath_matDir );
-									if( !px.utils.isDirectory( realpath_matDir ) ){
-										return false;
-									}
-								}
-								px.utils.openURL( realpath_matDir );
-								return false;
-							})
-						)
-					;
-					$html
-						.append( $('<a class="icon">')
-							.text( '編集方法を変更' )
-							.attr({
-								'data-path': pageInfo.path ,
-								'data-proc_type': contProcType ,
-								'href':'javascript:;'
-							})
-							.click(function(){
-								var $this = $(this);
-								var $body = $('<div>')
-									.append( $('#template-change-proctype').html() )
-								;
-								$body.find('input[name=proc_type]').val( [$this.attr('data-proc_type')] );
-								px.dialog({
-									'title': '編集方法を変更する',
-									'body': $body,
-									'buttons':[
-										$('<button>')
-											.text('OK')
-											.click(function(){
-												var val = $body.find('input[name=proc_type]:checked').val();
-												_pj.changeContentProcType( $this.attr('data-path'), val, function(){
-													px.closeDialog();
-												} )
-											}),
-										$('<button>')
-											.text('Cancel')
-											.click(function(){
-												px.closeDialog();
-											})
-									]
-								});
-								return false;
-							})
-						)
-					;
-					if( contProcType != 'html.gui' ){
-						$html
-							.append( $('<a class="icon">')
-								.text( '外部テキストエディタで編集' )
+						.append( $('<li>')
+							.append( $('<a>')
+								.text( 'リソースフォルダを開く' )
 								.attr({
 									'data-path': pageInfo.path ,
 									'href':'javascript:;'
 								})
 								.click(function(){
-									var pathCont = _pj.findPageContent( $(this).attr('data-path') );
-									px.openInTextEditor( _pj.get_realpath_controot()+pathCont );
+									$bs3btn.find('.dropdown-toggle').click();
+									var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( $(this).attr('data-path') ) );
+									var realpathFiles = _pj.get_realpath_controot()+pathFiles;
+									if( !px.utils.isDirectory( realpathFiles ) ){
+										px.fs.mkdirSync( realpathFiles );
+										if( !px.utils.isDirectory( realpathFiles ) ){
+											return false;
+										}
+									}
+									px.utils.openURL( realpathFiles );
 									return false;
 								})
+							)
+						)
+						.append( $('<li>')
+							.append( $('<a>')
+								.text( '素材フォルダを開く' )
+								.attr({
+									'data-path': pageInfo.path ,
+									'href':'javascript:;'
+								})
+								.click(function(){
+									$bs3btn.find('.dropdown-toggle').click();
+									var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( $(this).attr('data-path') ) );
+									var realpathFiles = _pj.get_realpath_controot()+pathFiles;
+									if( !px.utils.isDirectory( realpathFiles ) ){
+										px.fs.mkdirSync( realpathFiles );
+										if( !px.utils.isDirectory( realpathFiles ) ){
+											return false;
+										}
+									}
+									var realpath_matDir = realpathFiles + 'materials.ignore/';
+									if( !px.utils.isDirectory( realpath_matDir ) ){
+										px.fs.mkdirSync( realpath_matDir );
+										if( !px.utils.isDirectory( realpath_matDir ) ){
+											return false;
+										}
+									}
+									px.utils.openURL( realpath_matDir );
+									return false;
+								})
+							)
+						)
+					;
+					$bs3btn.find('ul[role=menu]')
+						.append( $('<li class="divider">') )
+						.append( $('<li>')
+							.append( $('<a>')
+								.text( '編集方法を変更' )
+								.attr({
+									'data-path': pageInfo.path ,
+									'data-proc_type': contProcType ,
+									'href':'javascript:;'
+								})
+								.click(function(){
+									$bs3btn.find('.dropdown-toggle').click();
+									var $this = $(this);
+									var $body = $('<div>')
+										.append( $('#template-change-proctype').html() )
+									;
+									$body.find('input[name=proc_type]').val( [$this.attr('data-proc_type')] );
+									px.dialog({
+										'title': '編集方法を変更する',
+										'body': $body,
+										'buttons':[
+											$('<button>')
+												.text('OK')
+												.click(function(){
+													var val = $body.find('input[name=proc_type]:checked').val();
+													_pj.changeContentProcType( $this.attr('data-path'), val, function(){
+														_this.loadPreview( _lastPreviewPath, function(){
+															px.closeDialog();
+														}, {"force":true} );
+													} )
+												}),
+											$('<button>')
+												.text('Cancel')
+												.click(function(){
+													px.closeDialog();
+												})
+										]
+									});
+									return false;
+								})
+							)
+						)
+					;
+					if( contProcType != 'html.gui' ){
+						$bs3btn.find('ul[role=menu]')
+							.append( $('<li class="divider">') )
+							.append( $('<li>')
+								.append( $('<a>')
+									.text( '外部テキストエディタで編集' )
+									.attr({
+										'data-path': pageInfo.path ,
+										'href':'javascript:;'
+									})
+									.click(function(){
+										$bs3btn.find('.dropdown-toggle').click();
+										var pathCont = _pj.findPageContent( $(this).attr('data-path') );
+										px.openInTextEditor( _pj.get_realpath_controot()+pathCont );
+										return false;
+									})
+								)
 							)
 						;
 					}
 				}
 
 				$pageinfo.html( $html );
+
+				$bs3btn.find('li').css(
+					{
+						"max-width": $bs3btn.width(),
+						"overflow": "hidden"
+					}
+				);
+
 				$childList.find('a').removeClass('current');
 				$childList.find('a[data-path="'+pageInfo.path+'"]').addClass('current');
 
@@ -214,10 +253,13 @@ window.contApp = new (function( px ){
 	/**
 	 * プレビューウィンドウにページを表示する
 	 */
-	this.loadPreview = function( path, cb ){
+	this.loadPreview = function( path, cb, opt ){
 		cb = cb || function(){};
+		if(!opt){ opt = {}; }
+		if(!opt.force){ opt.force = false; }
+
 		if( !path ){ path = '/'; }
-		if( _lastPreviewPath == path ){
+		if( _lastPreviewPath == path && !opt.force ){
 			// 前回ロードしたpathと同じなら、リロードをスキップ
 			cb();
 			return this;
@@ -264,7 +306,7 @@ window.contApp = new (function( px ){
 						})(_sitemap[idx])
 					})
 					.click( function(){
-						_this.loadPreview( $(this).attr('data-path') );
+						_this.loadPreview( $(this).attr('data-path'), function(){}, {"force":true} );
 						// _this.openEditor( $(this).attr('data-path') );
 					} )
 				)
@@ -282,7 +324,7 @@ window.contApp = new (function( px ){
 		var pageInfo = _pj.site.getPageInfo( pagePath );
 		if( !pageInfo ){ alert('ERROR: Undefined page path.'); return this; }
 
-		var contPath = _pj.findPageContent(pagePath);
+		var contPath = _pj.findPageContent( pagePath );
 		var contRealpath = _pj.get('path')+'/'+contPath;
 		var pathInfo = px.utils.parsePath(contPath);
 

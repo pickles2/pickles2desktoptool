@@ -27,7 +27,7 @@ window.contApp = new (function( px ){
 		_this.contentsSourceData.save( function(){
 			// px.message( 'データファイルを保存しました。' );
 
-			var contPath = _pj.findPageContent( _pathContent );
+			var contPath = _pj.findPageContent( _param.page_path );
 			var contentsRealpath = px.fs.realpathSync( _pj.get('path')+'/'+contPath);
 
 			src = _this.ui.finalize();
@@ -58,7 +58,7 @@ window.contApp = new (function( px ){
 			} ,
 			function(it){
 				// コンテンツデータのロード・初期化
-				_this.contPath = _pj.findPageContent( _pathContent );
+				_this.contPath = _pj.findPageContent( _param.page_path );
 				var realpath = _pj.get('path')+'/'+_this.contPath;
 				var pathInfo = px.utils.parsePath( _this.contPath );
 				_this.contFilesDirPath = _pj.get('path')+'/'+pathInfo.dirname+'/'+pathInfo.basenameExtless+'_files/';

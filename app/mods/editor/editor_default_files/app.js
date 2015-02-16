@@ -17,7 +17,7 @@ window.contApp = new (function( px ){
 		_pathContent = _pageInfo.path;
 	}
 
-	var _cont_path = _pj.findPageContent( _pathContent );
+	var _cont_path = _pj.findPageContent( _param.page_path );
 	var _cont_realpath = _pj.get('path')+'/'+_cont_path;
 	var _cont_path_info = px.utils.parsePath(_cont_path);
 

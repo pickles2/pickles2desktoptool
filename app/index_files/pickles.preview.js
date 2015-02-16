@@ -21,6 +21,9 @@
 			return url;
 		}
 
+		/**
+		 * ポート番号を取得
+		 */
 		this.getPort = function(){
 			var port = 8080;
 			if( px.getDb().network.preview.port ){
@@ -34,20 +37,6 @@
 		 */
 		this.serverStandby = function( cb ){
 			_previewServer.start(this.getPort(), cb);
-			return this;
-		}
-
-		/**
-		 * サーバーを停止
-		 */
-		this.serverStop = function( cb ){
-			cb();
-
-			// ↓なぜかサーバーが閉じない。(server.close() が返ってこない)
-			// 　UTODO: ので、↑とりあえず cb() 返しておく。あとで調べる。→ server.close() はサーバーを落とす機能じゃなくて、コネクションを閉じる機能？
-			_previewServer.stop(function(){
-				console.log('---- server closed!! ----');
-			});
 			return this;
 		}
 

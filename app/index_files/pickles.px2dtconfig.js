@@ -31,9 +31,7 @@
 					px.getDb().network.appserver.port = $tpl.find('[name=network_appserver_port]').val();
 					px.getDb().apps.texteditor = $tpl.find('[name=apps_texteditor]').val();
 					px.getDb().apps.texteditorForDir = $tpl.find('[name=apps_texteditor_for_dir]').val();
-					px.preview.serverStop(function(){
-						px.closeDialog();
-					});
+					px.closeDialog();
 				}) ,
 				$('<button>').text('Cancel').click(function(){
 					px.closeDialog();

@@ -108,15 +108,7 @@ new (function($, window){
 			body: $('<iframe>').attr('src', 'mods/systeminfo/index.html').css({'width':'100%','height':300})
 		});}} ,
 		{"label":"Px2DT 設定",           "cond":"always",          "area":"shoulder", "app":null, "cb": function(){px.editPx2DTConfig();}} ,
-		{"label":"ヘルプ",               "cond":"always",          "area":"shoulder", "app":null, "cb": function(){
-			var port = 8081;
-			if( _path_db.network && _path_db.network.appserver && _path_db.network.appserver.port ){
-				port = _path_db.network.appserver.port;
-			}
-			_appServer.start( port, './app/server_root/', {} );
-			var win = window.open( _appServer.getUrl(), null, 'resizable=no,scrollbars=yes,status=yes' );
-			$(win).width(300).height(400);
-		} },
+		{"label":"ヘルプ",               "cond":"always",          "area":"shoulder", "app":null, "cb": function(){px.openHelp();} },
 		{"label":"終了",                 "cond":"always",          "area":"shoulder", "app":null, "cb": function(){px.exit();}}
 	];
 
@@ -361,6 +353,23 @@ new (function($, window){
 		this.preview.serverStandby(function(){
 			px.utils.openURL( px.preview.getUrl() );
 		});
+	}
+
+	/**
+	 * ヘルプページを開く
+	 */
+	this.openHelp = function(){
+		var port = 8081;
+		if( _path_db.network && _path_db.network.appserver && _path_db.network.appserver.port ){
+			port = _path_db.network.appserver.port;
+		}
+		// _appServer.start( port, './app/server_root/', {} );
+		// var win = window.open( _appServer.getUrl(), null, 'resizable=no,scrollbars=yes,status=yes' );
+		// $(win).width(300).height(400);
+
+		_appServer.serverStandby( port, './app/server_root/', function(){
+			px.utils.openURL( _appServer.getUrl() );
+		} );
 	}
 
 	/**

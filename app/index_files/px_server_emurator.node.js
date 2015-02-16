@@ -166,46 +166,4 @@
 	}// start();
 
 
-	/**
-	 * サーバーを停止
-	 */
-	exports.stop = function(cb){
-		cb = cb||function(){};
-		var _this = this;
-
-		// if( !_server ){
-		// 	console.log('Pickles2 server emurator NOT standby;');
-		// 	return false;
-		// }
-
-		// console.log(_server);
-		// console.log(_port);
-		// console.log(_pathDocumentRoot);
-		if( !_running ){
-			cb(true);
-			return this;
-		}
-		console.log('closing Pickles2 server emurator...');
-		// _server.destroy();
-		// cb(true);
-
-		_server.close(function(){
-			// delete __server;
-			_running = false;
-			console.log('Pickles2 server emurator stopped;');
-			console.log('bye!');
-			cb(true);
-		});
-		return this;
-	}//stop();
-
-	/**
-	 * サーバーが起動中か確認
-	 */
-	exports.isRunning = function(cb){
-		cb = cb||function(){};
-		cb(_running);
-		return this;
-	}//isRunning();
-
 })(exports);

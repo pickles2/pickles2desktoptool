@@ -132,13 +132,6 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		return this;
 	}
 
-	// this.serverStandby = function(cb){
-	// 	px.preview.serverStandby( cb );
-	// }
-	this.serverStop = function(cb){
-		px.server.stop(cb);
-	}
-
 	/**
 	 * Finderで開く
 	 */

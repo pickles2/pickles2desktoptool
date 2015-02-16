@@ -6,10 +6,11 @@
 	var fs = require('fs');
 	var path = require('path');
 	var _port;
+	var _pathDocumentRoot;
 
-	exports.start = function(port, pathDocumentRoot, options){
-		_port = port;
+	function start(port, pathDocumentRoot, options){
 		options = options||{};
+
 
 		var server = http.createServer(function(request, response) {
 			// アクセスされたURLを解析してパスを抽出
@@ -65,11 +66,45 @@
 		});
 
 		// 指定ポートでLISTEN状態にする
-		server.listen(port);
+		server.listen( port );
 	}// start();
 
+	/**
+	 * URLを取得
+	 */
 	exports.getUrl = function(){
 		return 'http://127.0.0.1:'+_port+'/';
 	}
+
+	/**
+	 * ポート番号を取得
+	 */
+	exports.getPort = function(){
+		if( !_port ){
+			_port = 8081;
+		}
+		return _port;
+	}
+
+	/**
+	 * サーバーを起動
+	 */
+	exports.serverStandby = function( port, pathDocumentRoot, cb ){
+		cb = cb||function(){};
+		if( _port ){
+			cb();
+			return this;
+		}
+
+		_port = port;
+		_pathDocumentRoot = pathDocumentRoot;
+		if( !_port ){
+			_port = 8081;
+		}
+		start( this.getPort(), _pathDocumentRoot, {} );
+		cb();
+		return this;
+	}
+
 
 })(exports);

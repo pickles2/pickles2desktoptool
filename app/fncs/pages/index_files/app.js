@@ -120,19 +120,32 @@ window.contApp = new (function( px ){
 							.text( '編集方法を変更' )
 							.attr({
 								'data-path': pageInfo.path ,
+								'data-proc_type': contProcType ,
 								'href':'javascript:;'
 							})
 							.click(function(){
+								var $this = $(this);
 								var $body = $('<div>')
 									.append( $('#template-change-proctype').html() )
 								;
+								$body.find('input[name=proc_type]').val( [$this.attr('data-proc_type')] );
 								px.dialog({
 									'title': '編集方法を変更する',
 									'body': $body,
 									'buttons':[
-										$('<button>').text('OK').click(function(){
-											px.closeDialog();
-										})
+										$('<button>')
+											.text('OK')
+											.click(function(){
+												var val = $body.find('input[name=proc_type]:checked').val();
+												_pj.changeContentProcType( $this.attr('data-path'), val, function(){
+													px.closeDialog();
+												} )
+											}),
+										$('<button>')
+											.text('Cancel')
+											.click(function(){
+												px.closeDialog();
+											})
 									]
 								});
 								return false;
@@ -144,11 +157,12 @@ window.contApp = new (function( px ){
 							.append( $('<a class="icon">')
 								.text( '外部テキストエディタで編集' )
 								.attr({
-									'data-content': pageInfo.content ,
+									'data-path': pageInfo.path ,
 									'href':'javascript:;'
 								})
 								.click(function(){
-									px.openInTextEditor( _pj.get_realpath_controot()+$(this).attr('data-content') );
+									var pathCont = _pj.findPageContent( $(this).attr('data-path') );
+									px.openInTextEditor( _pj.get_realpath_controot()+pathCont );
 									return false;
 								})
 							)

@@ -216,6 +216,81 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		return rtn;
 	}
 
+	/**
+	 * コンテンツの種類(編集モード)を変更する
+	 */
+	this.changeContentProcType = function( pagePath, procTypeTo, cb ){
+		cb = cb || function(){};
+
+		var pageInfo = this.site.getPageInfo( pagePath );
+		var pageInfoLocalpath = pageInfo.content;
+		var pathContent = this.findPageContent( pagePath );
+		var procTypeBefore = this.getPageContentProcType( pagePath );
+		var resourcPath = this.getContentFilesByPageContent( pathContent );
+		var contRoot = this.get_realpath_controot();
+		var codeBefore = px.fs.readFileSync( contRoot+pathContent ).toString();
+
+		if( procTypeBefore == procTypeTo ){ cb(); return; }
+
+		function mkGuiData( contRoot, resourcPath, codeBefore, procTypeBefore ){
+			if( !px.utils.isDirectory( contRoot + resourcPath ) ){
+				px.fs.mkdirSync( contRoot + resourcPath );
+			}
+			if( !px.utils.isDirectory( contRoot + resourcPath+'guieditor.ignore/' ) ){
+				px.fs.mkdirSync( contRoot + resourcPath+'guieditor.ignore/' );
+			}
+			px.fs.writeFileSync( contRoot + resourcPath+'guieditor.ignore/data.json', JSON.stringify( {
+				"bowl": {
+					"main": {
+						"modId": "_sys/root" ,
+						"fields": {
+							"main": [
+								{
+									"modId": "_sys/html" ,
+									"fields": {
+										"main": codeBefore
+									}
+								}
+							]
+						}
+					}
+				}
+			}, null, 1 ) );
+		}
+
+		if( procTypeBefore == 'html.gui' ){
+			if( procTypeTo == 'html' && pageInfo.content.match( new RegExp('\\.html$', 'i') ) ){
+				px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content );
+			}else{
+				px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content + '.' + procTypeTo );
+			}
+			px.utils.rmdir_r( contRoot + resourcPath+'guieditor.ignore/' );
+
+		}else if( procTypeBefore == 'html' ){
+			if( procTypeTo == 'html.gui' ){
+				px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content );
+				mkGuiData( contRoot, resourcPath, codeBefore, procTypeBefore );
+			}else{
+				px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content + '.' + procTypeTo );
+			}
+
+		}else{
+			if( procTypeTo == 'html.gui' || procTypeTo == 'html' ){
+				if( pageInfo.content.match( new RegExp('\\.html$', 'i') ) ){
+					px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content );
+				}else{
+					px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content + '.html' );
+				}
+				mkGuiData( contRoot, resourcPath, codeBefore, procTypeBefore );
+			}else{
+				px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content + '.' + procTypeTo );
+			}
+
+		}
+
+		cb();
+		return true;
+	}
 
 	/**
 	 * gitディレクトリの絶対パスを得る

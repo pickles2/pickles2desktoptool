@@ -31,6 +31,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 		var modIdList = [];
 		modIdList.push( '_sys/root' );
 		modIdList.push( '_sys/unknown' );
+		modIdList.push( '_sys/html' );
 
 		px.utils.iterate(
 			_pathsModTpl,
@@ -333,6 +334,8 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 			parseTpl( '{&{"module":{"name":"main"}}&}', _this, _this, cb );
 		}else if( modId == '_sys/unknown' ){
 			parseTpl( '<div style="background:#f00;padding:10px;color:#fff;text-align:center;border:1px solid #fdd;">[ERROR] 未知のモジュールテンプレートです。<!-- .error --></div>', _this, _this, cb );
+		}else if( modId == '_sys/html' ){
+			parseTpl( '{&{"input":{"type":"html","name":"main"}}&}', _this, _this, cb );
 		}else if( typeof(opt.src) === typeof('') ){
 			parseTpl( opt.src, this, opt.topThis, cb );
 		}else if( this.path ){

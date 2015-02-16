@@ -226,12 +226,67 @@
 	}
 
 	/**
+	 * ファイルの一覧を取得する
+	 */
+	exports.ls = function(path){
+		if( !this.isDirectory(path) ){ return false; }
+		return _fs.readdirSync(path);
+	}
+
+	/**
 	 * ファイルを削除する
 	 */
 	exports.rm = function(path){
 		if( !this.isFile(path) ){ return true; }
 		return _fs.unlinkSync(path);
 	}
+
+	/**
+	 * ディレクトリを再帰的に削除する。
+	 * 
+	 * このメソッドはディレクトリを再帰的に削除します。
+	 * 中身のない、空のディレクトリ以外は削除できません。
+	 * 
+	 * @param string $path 対象ディレクトリのパス
+	 * @return bool 成功時に `true`、失敗時に `false` を返します。
+	 */
+	exports.rmdir = function( $path ){
+		return _fs.rmdirSync( $path );
+	}//rmdir()
+
+	/**
+	 * ディレクトリを再帰的に削除する。
+	 * 
+	 * このメソッドはディレクトリを再帰的に削除します。
+	 * 中身のない、空のディレクトリ以外は削除できません。
+	 * 
+	 * @param string $path 対象ディレクトリのパス
+	 * @return bool 成功時に `true`、失敗時に `false` を返します。
+	 */
+	exports.rmdir_r = function( $path ){
+		$path = _fs.realpathSync( $path );
+
+		if( this.isFile( $path ) ){
+			// ファイルまたはシンボリックリンクの場合の処理
+			// ディレクトリ以外は削除できません。
+			return false;
+
+		}else if( this.isDirectory( $path ) ){
+			// ディレクトリの処理
+			var $filelist = this.ls($path);
+			for( var idx in $filelist ){
+				var $basename = $filelist[idx];
+				if( this.isFile( $path+DIRECTORY_SEPARATOR+$basename ) ){
+					this.rm( $path+DIRECTORY_SEPARATOR+$basename );
+				}else if( !this.rmdir_r( $path+DIRECTORY_SEPARATOR+$basename ) ){
+					return false;
+				}
+			}
+			return this.rmdir( $path );
+		}
+
+		return false;
+	}//rmdir_r()
 
 	/**
 	 * ファイルに行を追加する

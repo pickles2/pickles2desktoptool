@@ -42,6 +42,7 @@ new (function($, window){
 	this.fs = _fs;
 	var _path = require('path');
 	this.path = _path;
+	var _appServer = require('./index_files/app_server.js');
 
 	var _db = {};
 	var _path_data_dir = process.env.HOME + '/.pickles2desktoptool/';
@@ -107,6 +108,15 @@ new (function($, window){
 			body: $('<iframe>').attr('src', 'mods/systeminfo/index.html').css({'width':'100%','height':300})
 		});}} ,
 		{"label":"Px2DT 設定",           "cond":"always",          "area":"shoulder", "app":null, "cb": function(){px.editPx2DTConfig();}} ,
+		{"label":"ヘルプ",               "cond":"always",          "area":"shoulder", "app":null, "cb": function(){
+			var port = 8081;
+			if( _path_db.network && _path_db.network.appserver && _path_db.network.appserver.port ){
+				port = _path_db.network.appserver.port;
+			}
+			_appServer.start( port, './app/server_root/', {} );
+			var win = window.open( _appServer.getUrl(), null, 'resizable=no,scrollbars=yes,status=yes' );
+			$(win).width(300).height(400);
+		} },
 		{"label":"終了",                 "cond":"always",          "area":"shoulder", "app":null, "cb": function(){px.exit();}}
 	];
 

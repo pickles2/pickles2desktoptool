@@ -31,6 +31,18 @@ a{
 a:hover{
 	color: #666;
 }
+.contents a.icon{
+	position:relative;
+	padding-left: 0.8em;
+}
+.contents a.icon:before{
+	content: "　";
+	background:url("./fess_res/icon.svg") 0 0 no-repeat transparent;
+	position: absolute;
+	top: 0.4em;
+	left: 0;
+	background-size: 0.6em 0.6em;
+}
 
 /**
  * 選択可能領域
@@ -156,4 +168,15 @@ ul.listview li a.current{
 	position: absolute; left:0; top:0;
 	border: none;
 	box-sizing: border-box;
+}
+
+/**
+ * Bootstrap3: btn
+ */
+.contents .dropdown-menu{}
+.contents .dropdown-menu li{
+	list-style-type: inherit;
+}
+.contents .btn-group button{
+	margin: inherit;
 }

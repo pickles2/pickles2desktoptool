@@ -82,7 +82,7 @@
 					$('.cont_edit_composer_json textarea').val(src);
 					CodeMirrorInstans = CodeMirror.fromTextArea( $('.cont_edit_composer_json textarea').get(0), {
 						lineNumbers: true,
-						mode: 'text/json',
+						mode: {name:'javascript', json: true},
 						tabSize: 4,
 						indentUnit: 4,
 						indentWithTabs: true,

@@ -93,15 +93,19 @@
 						_cmdData += data;
 					},
 					complete: function(code){
-						var dataDecoded = JSON.parse(_cmdData);
-						var document_body = dataDecoded.body_base64;
+						var dataDecoded, document_body, statusCode = 500;
 						try{
+							dataDecoded = JSON.parse(_cmdData);
+							document_body = dataDecoded.body_base64;
+							statusCode = dataDecoded.status;
 							document_body = (new Buffer(document_body, 'base64')).toString();
 						}catch(e){
 							// console.log('disabled to decode Base64 data.');
+							document_body = _cmdData;
+							statusCode = 500;
 						}
 
-						response.writeHead( dataDecoded.status, 'OK', {
+						response.writeHead( statusCode, 'OK', {
 							'Connection': 'close' ,
 							'Content-Type': mime
 						});

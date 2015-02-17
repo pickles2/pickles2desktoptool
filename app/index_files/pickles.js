@@ -107,7 +107,7 @@ new (function($, window){
 			title: 'System Info',
 			body: $('<iframe>').attr('src', 'mods/systeminfo/index.html').css({'width':'100%','height':300})
 		});}} ,
-		{"label":"Px2DT 設定",           "cond":"always",          "area":"shoulder", "app":null, "cb": function(){px.editPx2DTConfig();}} ,
+		{"label":"Pickles2 DesktopTool 設定", "cond":"always",     "area":"shoulder", "app":null, "cb": function(){px.editPx2DTConfig();}} ,
 		{"label":"ヘルプ",               "cond":"always",          "area":"shoulder", "app":null, "cb": function(){px.openHelp();} },
 		{"label":"終了",                 "cond":"always",          "area":"shoulder", "app":null, "cb": function(){px.exit();}}
 	];

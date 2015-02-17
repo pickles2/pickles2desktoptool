@@ -39,7 +39,8 @@ window.contApp = new (function( px ){
 
 			theme: 'monokai',
 			keyMap: "sublime"
-		} ).on('change',function(){
+		} );
+		CodeMirrorInstans['px2config'].on('change',function(){
 			CodeMirrorInstans['px2config'].save();
 		});
 
@@ -62,7 +63,8 @@ window.contApp = new (function( px ){
 
 			theme: 'monokai',
 			keyMap: "sublime"
-		} ).on('change',function(){
+		} );
+		CodeMirrorInstans['px2dtconfig'].on('change',function(){
 			CodeMirrorInstans['px2dtconfig'].save();
 		});
 
@@ -74,12 +76,11 @@ window.contApp = new (function( px ){
 		var src = $('.cont_config_edit textarea').val();
 		src = JSON.parse( JSON.stringify( src ) );
 
-		var srcPx2DT = $('.cont_px2dtconfig_edit textarea').val();
-		srcPx2DT = JSON.parse( JSON.stringify( srcPx2DT ) );
-
-		px.fs.writeFile( confPath, src, {encoding:'utf8'}, function(err){
+		px.fs.writeFile( confPath, src, {}, function(err){
 			pj.updateConfig(function(){
-				px.fs.writeFile( configBasePath+'/px2dtconfig.json', srcPx2DT, {encoding:'utf8'}, function(err){
+				var srcPx2DT = $('.cont_px2dtconfig_edit textarea').val();
+				srcPx2DT = JSON.parse( JSON.stringify( srcPx2DT ) );
+				px.fs.writeFile( configBasePath+'/px2dtconfig.json', srcPx2DT, {}, function(err){
 					pj.updatePx2DTConfig(function(){
 						cont_init(function(){
 							$(btn).removeAttr('disabled');

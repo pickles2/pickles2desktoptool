@@ -616,6 +616,11 @@ new (function($, window){
 	// 	e.preventDefault();
 	// 	return false;
 	// } );
+	// $(window).on( 'keydown', function(e){
+	// 	e.preventDefault();
+	// 	e.stopPropagation();
+	// 	return false;
+	// } );
 
 
 	$(function(){

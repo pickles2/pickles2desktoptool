@@ -205,29 +205,31 @@ window.contApp = new (function( px ){
 
 			foldGutter: true,
 			gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-			extraKeys: {"Ctrl-E": "autocomplete","Cmd-S":function(){clearTimeout( editTimer );save();preview();}},
+			extraKeys: {"Ctrl-E": "autocomplete","Cmd-S":function(){clearTimeout(editTimer);save();preview();}},
 
 			theme: (function(pt){if(pt=='md'){return 'base16-light';}return 'monokai';})(_cont_procType),
 			keyMap: "sublime"
 		});
-		function autoSave(){
-			if(editTimer){ clearTimeout( editTimer ); }
-			editTimer = setTimeout(function(){
-				CodeMirrorInstance.save();
-				var src = $('body textarea').val();
-				if( src == _lastSourceCode ){ return; }
-				_lastSourceCode = src;
-				save(function(result){
-					if(!result){
-						px.message( 'ページの保存に失敗しました。' );
-					}
-					preview();
-				});
-			}, 3000);
-		}
-		CodeMirrorInstance.on('changes', autoSave);
-		CodeMirrorInstance.on('blur', autoSave);
-
+		// function autoSave(){
+		// 	// 頻繁過ぎると迷惑だった。
+		// 	// Cmd-S でリフレッシュできるようにしたので、それで十分。
+		// 	if(editTimer){ clearTimeout( editTimer ); }
+		// 	editTimer = setTimeout(function(){
+		// 		CodeMirrorInstance.save();
+		// 		var src = $('body textarea').val();
+		// 		if( src == _lastSourceCode ){ return; }
+		// 		_lastSourceCode = src;
+		// 		save(function(result){
+		// 			if(!result){
+		// 				px.message( 'ページの保存に失敗しました。' );
+		// 			}
+		// 			preview();
+		// 		});
+		// 	}, 3000);
+		// }
+		// CodeMirrorInstance.on('changes', autoSave);
+		// CodeMirrorInstance.on('blur', autoSave);
+		CodeMirrorInstance.focus();
 
 		preview();
 		windowResize();

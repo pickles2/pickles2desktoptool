@@ -7,6 +7,7 @@ window.contApp = new (function( px ){
 	var pj = px.getCurrentProject();
 	var configBasePath = pj.get('path')+'/'+pj.get('home_dir');
 	var confPath = configBasePath;
+	var CodeMirrorInstans = [];
 
 	function cont_init(cb){
 		cb = cb||function(){};
@@ -25,12 +26,45 @@ window.contApp = new (function( px ){
 		}
 		src = px.fs.readFileSync(confPath);
 		$('.cont_config_edit').html('').append( $('<textarea>').val(src) );
+		CodeMirrorInstans['px2config'] = CodeMirror.fromTextArea( $('.cont_config_edit textarea').get(0), {
+			lineNumbers: true,
+			mode: 'application/x-httpd-php',
+			tabSize: 4,
+			indentUnit: 4,
+			indentWithTabs: true,
+			autoCloseBrackets: true,
+			matchBrackets: true,
+			showCursorWhenSelecting: true,
+			viewportMargin: Infinity,
+
+			theme: 'monokai',
+			keyMap: "sublime"
+		} ).on('change',function(){
+			CodeMirrorInstans['px2config'].save();
+		});
+
 
 		var src = '';
 		if( px.utils.isFile(configBasePath+'/px2dtconfig.json') ){
 			src = px.fs.readFileSync( configBasePath+'/px2dtconfig.json' );
 		}
 		$('.cont_px2dtconfig_edit').html('').append( $('<textarea>').val(src) );
+		CodeMirrorInstans['px2dtconfig'] = CodeMirror.fromTextArea( $('.cont_px2dtconfig_edit textarea').get(0), {
+			lineNumbers: true,
+			mode: {name:'javascript', json: true},
+			tabSize: 4,
+			indentUnit: 4,
+			indentWithTabs: true,
+			autoCloseBrackets: true,
+			matchBrackets: true,
+			showCursorWhenSelecting: true,
+			viewportMargin: Infinity,
+
+			theme: 'monokai',
+			keyMap: "sublime"
+		} ).on('change',function(){
+			CodeMirrorInstans['px2dtconfig'].save();
+		});
 
 		cb();
 	}

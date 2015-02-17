@@ -51,7 +51,9 @@
 <!-- autoindex -->
 <div class="anchor_links">
 <p class="anchor_links-heading">目次</p><ul><li><a href="#hash_ディレクトリとファイルの構成">ディレクトリとファイルの構成</a><ul><li><a href="#hash_モジュールの単位">モジュールの単位</a></li>
-<li><a href="#hash_モジュール1つあたりのファイル構成">モジュール1つあたりのファイル構成</a></li></ul></li><li><a href="#hash_モジュールをプロジェクトに登録する">モジュールをプロジェクトに登録する</a><ul><li><a href="#hash_Config_画面を開く">Config 画面を開く</a></li>
+<li><a href="#hash_モジュール1つあたりのファイル構成">モジュール1つあたりのファイル構成</a><ul><li><a href="#hash_template.html">template.html</a></li>
+<li><a href="#hash_thumb.png">thumb.png</a></li>
+<li><a href="#hash_info.json">info.json</a></li></ul></li></ul></li><li><a href="#hash_モジュールをプロジェクトに登録する">モジュールをプロジェクトに登録する</a><ul><li><a href="#hash_Config_画面を開く">Config 画面を開く</a></li>
 <li><a href="#hash_Px2DT_Config_にディレクトリを登録">Px2DT Config にディレクトリを登録</a></li></ul>
 </li></ul>
 </div><!-- /.anchor_links -->
@@ -62,7 +64,49 @@
 
 <span id="hash_モジュールの単位"></span><h3>モジュールの単位</h3>
 
+<p>モジュールは、次のようなディレクトリ構成構成が単位となります。</p>
+
+<ul>
+<li>&lt;moduleRoot&gt;/{$mod_category}/{$mod_name}/</li>
+</ul>
+
+<p>この構成は、モジュールの識別IDに影響します。</p>
+
 <span id="hash_モジュール1つあたりのファイル構成"></span><h3>モジュール1つあたりのファイル構成</h3>
+
+<p><code>{$mod_name}</code> ディレクトリの内容は、次のようなファイルで構成されます。</p>
+
+<ul>
+<li>template.html</li>
+<li>thumb.png</li>
+<li>info.json</li>
+</ul>
+
+<span id="hash_template.html"></span><h4>template.html</h4>
+
+<p>このHTMLファイルに、テンプレートの実装を記述します。
+テンプレートは、部分だけを切り出した純粋なHTMLをベースに、フィールド(変更可能な箇所を定義するメタ構文)を埋め込むような形式で記述していきます。</p>
+
+<p>利用可能なフィールドについては、<a href="../fields/">フィールド一覧</a>のページを参照してください。</p>
+
+<span id="hash_thumb.png"></span><h4>thumb.png</h4>
+
+<p>thumb.png は、GUI編集画面上での、モジュールのサムネイルとして使用されます。</p>
+
+<p>縦横比 1:1 の画像を登録してください。大きさについては特に規定はありませんが、500px前後で作成されていれば十分でしょう。</p>
+
+<p><code>thumb.png</code> の他にも、<code>thumb.jpg</code>、<code>thumb.gif</code>、<code>thumb.svg</code> が利用できます。</p>
+
+<span id="hash_info.json"></span><h4>info.json</h4>
+
+<p>このJSONファイルには、モジュールの詳細な付加情報を記述します。</p>
+
+<p>下記は記述例です。</p>
+
+<pre><code>{
+  "name": ".cols (3カラム)"
+}
+</code></pre>
 
 <span id="hash_モジュールをプロジェクトに登録する"></span><h2>モジュールをプロジェクトに登録する</h2>
 

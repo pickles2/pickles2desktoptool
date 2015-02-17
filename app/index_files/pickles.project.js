@@ -424,7 +424,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			$path = '/';
 		}
 		$path = px.utils.get_realpath( '/'+$path );
-		if( px.utils.isDirectory('./'.$path) ){
+		if( px.utils.isDirectory('./'+$path) ){
 			$path += '/';
 		}
 		$path = px.utils.normalize_path( $path );

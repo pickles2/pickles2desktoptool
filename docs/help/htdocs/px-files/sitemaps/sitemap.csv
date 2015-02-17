@@ -1,4 +1,5 @@
 "* path","* content","* id","* title","* title_breadcrumb","* title_h1","* title_label","* title_full","* logical_path","* list_flg","* layout","* orderby","* keywords","* description","* category_top_flg","* **delete_flg"
 "/index.html",,,"ヘルプトップ",,,,,,"1","top",,,,,
-"/guieditor/index.html",,,"GUI編集",,,,,,"1",,,,,,
+"/guieditor/index.html",,,"GUI編集",,,,,,"1",,,,,"1",
+"/guieditor/designing_modules/index.html",,,"GUIモジュール定義",,,,,"/guieditor/index.html","1",,,,,,
 "/guieditor/fields/index.html",,,"フィールド一覧",,,,,"/guieditor/index.html","1",,,,,,

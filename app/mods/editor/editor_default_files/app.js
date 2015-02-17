@@ -18,6 +18,7 @@ window.contApp = new (function( px ){
 	}
 
 	var _cont_path = _pj.findPageContent( _param.page_path );
+	var _cont_procType = _pj.getPageContentProcType( _param.page_path );
 	var _cont_realpath = _pj.get('path')+'/'+_cont_path;
 	var _cont_path_info = px.utils.parsePath(_cont_path);
 
@@ -194,7 +195,7 @@ window.contApp = new (function( px ){
 		// CodeMirrorをセットアップ
 		CodeMirrorInstance = CodeMirror.fromTextArea( $('body textarea').get(0) , {
 			lineNumbers: true,
-			mode: 'htmlmixed',
+			mode: (function(pt){if(pt=='md'){return 'markdown';}return 'htmlmixed';})(_cont_procType),
 			tabSize: 4,
 			indentUnit: 4,
 			indentWithTabs: true,
@@ -206,8 +207,8 @@ window.contApp = new (function( px ){
 			gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
 			extraKeys: {"Ctrl-E": "autocomplete","Cmd-S":function(){clearTimeout( editTimer );save();preview();}},
 
-			keyMap: "sublime",
-			theme: "monokai"
+			theme: (function(pt){if(pt=='md'){return 'base16-light';}return 'monokai';})(_cont_procType),
+			keyMap: "sublime"
 		});
 		function autoSave(){
 			if(editTimer){ clearTimeout( editTimer ); }

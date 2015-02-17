@@ -32,11 +32,14 @@ window.contApp = new (function( px ){
 
 	var $preview, $iframe;
 
+	var CodeMirrorInstance;
+
 	/**
 	 * コンテンツの編集結果を保存する
 	 */
 	function save(cb){
 		cb = cb || function(){};
+		CodeMirrorInstance.save();
 		var src = $('body textarea').val();
 
 		// 文字化け問題にたいそう苦しめられた。
@@ -61,7 +64,8 @@ window.contApp = new (function( px ){
 	}
 
 	function windowResize(){
-		$('textarea')
+		// $('textarea')
+		$('.CodeMirror')
 			.css({
 				'height':$(window).height() - $('.cont_btns').height() - 10
 			})
@@ -85,45 +89,46 @@ window.contApp = new (function( px ){
 		$preview = $html.find('.cont_preview');
 		$iframe = $preview.find('iframe');
 
+		// ↓CodeMirrorへ移行するため削除
 		$html
 			.find('textarea')
-				// .attr('id', 'cont_editor')
-				.css({
-					'width':'100%' ,
-					'border':'none',
-					'resize':'none'
-				})
 				.val( _lastSourceCode )
-				// .scrollTop(0)
-				.blur( function(){
-					var src = $('body textarea').val();
-					if( src == _lastSourceCode ){ return; }
-					_lastSourceCode = src;
-					save(function(result){
-						if(!result){
-							px.message( 'ページの保存に失敗しました。' );
-						}else{
-							// px.message( 'ページを保存しました。' );
-						}
-						preview();
-					});
-				} )
-				.keydown( function(){
-					if(editTimer){ clearTimeout( editTimer ); }
-					editTimer = setTimeout(function(){
-						var src = $('body textarea').val();
-						if( src == _lastSourceCode ){ return; }
-						_lastSourceCode = src;
-						save(function(result){
-							if(!result){
-								px.message( 'ページの保存に失敗しました。' );
-							}else{
-								// px.message( 'ページを保存しました。' );
-							}
-							preview();
-						});
-					}, 1000);
-				} )
+				// // .attr('id', 'cont_editor')
+				// .css({
+				// 	'width':'100%' ,
+				// 	'border':'none',
+				// 	'resize':'none'
+				// })
+				// // .scrollTop(0)
+				// .blur( function(){
+				// 	var src = $('body textarea').val();
+				// 	if( src == _lastSourceCode ){ return; }
+				// 	_lastSourceCode = src;
+				// 	save(function(result){
+				// 		if(!result){
+				// 			px.message( 'ページの保存に失敗しました。' );
+				// 		}else{
+				// 			// px.message( 'ページを保存しました。' );
+				// 		}
+				// 		preview();
+				// 	});
+				// } )
+				// .keydown( function(){
+				// 	if(editTimer){ clearTimeout( editTimer ); }
+				// 	editTimer = setTimeout(function(){
+				// 		var src = $('body textarea').val();
+				// 		if( src == _lastSourceCode ){ return; }
+				// 		_lastSourceCode = src;
+				// 		save(function(result){
+				// 			if(!result){
+				// 				px.message( 'ページの保存に失敗しました。' );
+				// 			}else{
+				// 				// px.message( 'ページを保存しました。' );
+				// 			}
+				// 			preview();
+				// 		});
+				// 	}, 1000);
+				// } )
 		;
 		setTimeout(function(){
 			$html.find('textarea').scrollTop(0);
@@ -185,6 +190,43 @@ window.contApp = new (function( px ){
 			.html( '' )
 			.append($html)
 		;
+
+		// CodeMirrorをセットアップ
+		CodeMirrorInstance = CodeMirror.fromTextArea( $('body textarea').get(0) , {
+			lineNumbers: true,
+			mode: 'htmlmixed',
+			tabSize: 4,
+			indentUnit: 4,
+			indentWithTabs: true,
+			autoCloseBrackets: true,
+			matchBrackets: true,
+			showCursorWhenSelecting: true,
+
+			foldGutter: true,
+			gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+			extraKeys: {"Ctrl-E": "autocomplete","Cmd-S":function(){clearTimeout( editTimer );save();preview();}},
+
+			keyMap: "sublime",
+			theme: "monokai"
+		});
+		function autoSave(){
+			if(editTimer){ clearTimeout( editTimer ); }
+			editTimer = setTimeout(function(){
+				CodeMirrorInstance.save();
+				var src = $('body textarea').val();
+				if( src == _lastSourceCode ){ return; }
+				_lastSourceCode = src;
+				save(function(result){
+					if(!result){
+						px.message( 'ページの保存に失敗しました。' );
+					}
+					preview();
+				});
+			}, 3000);
+		}
+		CodeMirrorInstance.on('changes', autoSave);
+		CodeMirrorInstance.on('blur', autoSave);
+
 
 		preview();
 		windowResize();

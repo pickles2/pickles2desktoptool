@@ -1,1 +1,35 @@
 @charset "utf-8";
+
+body{
+	overflow: hidden;
+}
+.cont_btns{}
+.cont_btns ul,
+.cont_btns ul li{
+	margin:0; padding:0 20px;
+	list-style-type: none;
+	text-align:center;
+}
+.cont_btns ul li{
+	margin:0; padding:0 5px;
+	display:inline-block;
+}
+
+.editor_frame,
+.editor_frame *{
+	font-size: medium !important;
+	font-family: monospace !important;
+}
+.contents .editor_frame pre{
+	overflow: inherit;
+}
+
+.CodeMirror {
+	border-top: 1px solid #eee;
+	border-bottom: 1px solid #eee;
+}
+.CodeMirror .cm-tab {
+	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAMCAYAAAAkuj5RAAAAAXNSR0IArs4c6QAAAGFJREFUSMft1LsRQFAQheHPowAKoACx3IgEKtaEHujDjORSgWTH/ZOdnZOcM/sgk/kFFWY0qV8foQwS4MKBCS3qR6ixBJvElOobYAtivseIE120FaowJPN75GMu8j/LfMwNjh4HUpwg4LUAAAAASUVORK5CYII=);
+	background-position: right;
+	background-repeat: no-repeat;
+}

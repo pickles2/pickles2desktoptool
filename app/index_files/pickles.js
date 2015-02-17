@@ -98,8 +98,8 @@ new (function($, window){
 		{"label":"clearcache",           "cond":"pxStandby",       "area":"shoulder", "app":"fncs/clearcache/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"Config",               "cond":"pxStandby",       "area":"shoulder", "app":"fncs/config/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"Preview",              "cond":"pxStandby",       "area":"shoulder", "app":"fncs/preview/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"composer",             "cond":"pxStandby",       "area":"shoulder", "app":"fncs/composer/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"git",                  "cond":"pxStandby",       "area":"shoulder", "app":"fncs/git/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"Composer",             "cond":"pxStandby",       "area":"shoulder", "app":"fncs/composer/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"Git",                  "cond":"pxStandby",       "area":"shoulder", "app":"fncs/git/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"コンテンツを移動する", "cond":"pxStandby",       "area":"shoulder", "app":"fncs/movecontents/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"Finderで開く",         "cond":"homeDirExists",   "area":"shoulder", "app":null, "cb": function(){px.getCurrentProject().open();}},
 		// {"label":"Reload(dev)",          "cond":"always", "cb": function(){window.location.href='index.html?';}} ,
@@ -429,7 +429,7 @@ new (function($, window){
 
 			var list = this.getProjectList();
 			if( list.length ){
-				var $ul = $('<ul class="cont_projectList" data-inset="true"></ul>');
+				var $ul = $('<ul class="listview">');
 				for( var i = 0; i < list.length; i++ ){
 					$ul.append(
 						$('<li>')

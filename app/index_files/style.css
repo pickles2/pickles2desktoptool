@@ -151,20 +151,6 @@ header.theme_header .theme_header-inner{
 	margin:0;
 	padding:0;
 }
-.contents ul.cont_projectList{
-	margin: 0; padding: 0;
-	border-top: 1px solid #000;
-}
-.contents ul.cont_projectList li{
-	list-style-type: none;
-	margin: 0 0 1px 0; padding: 0;
-	border-bottom: 1px solid #000;
-}
-.contents ul.cont_projectList li a{
-	display: block;
-	font-weight: bold;
-	padding: 1em 0.5em;
-}
 
 .cont_top_jumbotron{
 	background: linear-gradient(#bbb, #999);

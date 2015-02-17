@@ -24,70 +24,23 @@
 
 		<!-- Local Resources -->
 		<link rel="stylesheet" href="./index_files/style.css" type="text/css" />
+		<script src="./index_files/app.js"></script>
 
-		<script>
-			window.px = $.px = window.parent.px;
-
-			function cont_git_init(btn){
-				$(btn).attr('disabled', 'disabled');
-				var pj = px.getCurrentProject();
-				$('.cont_console').text('');
-				window.px.utils.spawn('git',
-					['init'],
-					{
-						cd: pj.get('path'),
-						success: function(data){
-							$('.cont_console').text(
-								$('.cont_console').text() + data
-							);
-						} ,
-						error: function(data){
-							$('.cont_console').text(
-								$('.cont_console').text() + data
-							);
-						} ,
-						complete: function(code){
-							// $('.cont_console').text(
-							// 	$('.cont_console').text() + code
-							// );
-							$(btn).removeAttr('disabled');
-							px.message( 'gitを初期化しました。' );
-						}
-					}
-				);
-			}
-
-			function cont_git_status(btn){
-				$(btn).attr('disabled', 'disabled');
-				var pj = px.getCurrentProject();
-				$('.cont_console').text('');
-				px.execDialog(
-					'git status',
-					{
-						cd: pj.get_realpath_git_root(),
-						title: '$ git status',
-						description: $('<p>').text('gitのステータス状態を表示します。'),
-						complete: function(stdout){
-							$('.cont_console').text( stdout );
-							$(btn).removeAttr('disabled');
-							px.message( 'gitのステータス表示を完了しました。' );
-						}
-					}
-				);
-			}
-
+		<script id="template-toInitialize-message" type="text/template">
+			<div class="unit center">
+				<p>このプロジェクトは、Gitを使用する準備ができていません。</p>
+				<p>Gitは、作業の履歴を管理するために有用なバージョン管理ツールです。</p>
+				<p>Gitの使用を開始するには、Gitリポジトリを初期化してください。</p>
+			</div>
 		</script>
 	</head>
 	<body>
 		<div class="container">
-			<h1>git</h1>
+			<h1>Git</h1>
 		</div>
-		<div class="contents">
-			<div class="container">
-				<!-- p><button onclick="cont_git_init(this); return false;">$ git init</button></p -->
-				<p><button onclick="cont_git_status(this); return false;">$ git status</button></p>
-				<pre class="cont_console" style="max-height:360px;">console:
-</pre>
+		<div class="container">
+			<div class="contents">
+				<p>...</p>
 			</div>
 		</div>
 	</body>

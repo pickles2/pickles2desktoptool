@@ -4,3 +4,7 @@
 	border: 1px solid #eee;
 	height: auto;
 }
+
+.contents button{
+	width: 100%;
+}

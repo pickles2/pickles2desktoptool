@@ -100,9 +100,10 @@
 							statusCode = dataDecoded.status;
 							document_body = (new Buffer(document_body, 'base64')).toString();
 						}catch(e){
-							// console.log('disabled to decode Base64 data.');
 							document_body = _cmdData;
 							statusCode = 500;
+							console.log('disabled to decode Base64 data.');
+							console.log(document_body);
 						}
 
 						response.writeHead( statusCode, 'OK', {

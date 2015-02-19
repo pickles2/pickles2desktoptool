@@ -1,4 +1,4 @@
-window.px = $.px = window.parent.px;
+window.px = window.parent.px;
 window.contApp = new (function(){
 	var _this = this;
 	var pj = px.getCurrentProject();

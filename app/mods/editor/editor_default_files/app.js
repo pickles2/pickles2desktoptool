@@ -1,4 +1,4 @@
-window.px = $.px = window.parent.px;
+window.px = window.parent.px;
 window.contApp = new (function( px ){
 	if( !px ){ alert('px が宣言されていません。'); }
 
@@ -182,7 +182,8 @@ window.contApp = new (function( px ){
 
 				if( to != _param.page_path ){
 					// if(confirm( 'realy to go to "'+to+'"?' )){
-					window.location.href = './index.html?page_path='+encodeURIComponent( to );
+					window.parent.contApp.openEditor( to );
+					// window.location.href = './index.html?page_path='+encodeURIComponent( to );
 					// }
 				}
 			})
@@ -235,6 +236,7 @@ window.contApp = new (function( px ){
 		windowResize();
 
 		window.initContentsCSS($html);
+		px.progress.close();
 	}
 
 	$(function(){

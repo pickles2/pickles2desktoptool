@@ -87,7 +87,12 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				data_memo += data;
 			} ,
 			complete: function(code){
-				_config = JSON.parse(data_memo);
+				try{
+					_config = JSON.parse(data_memo);
+				}catch(e){
+					console.log( 'FAILED to PxCommand "?PX=api.get.config". Pickles2 returns not a JSON.' );
+					_config = false;
+				}
 				cb( _config );
 			}
 		} );
@@ -605,6 +610,9 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		function(itPj, pj){
 			var status = pj.status();
 			if( !status.entryScriptExists ){
+				itPj.next(pj);return;
+			}
+			if( _config === false ){
 				itPj.next(pj);return;
 			}
 

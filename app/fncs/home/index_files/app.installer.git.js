@@ -6,7 +6,7 @@ window.contApp.installer.git = new (function( px, contApp ){
 	 */
 	this.install = function( pj, param, opt ){
 
-		var path = pj.get_realpath_composer_root();
+		var path = pj.get('path');
 
 		var $msg = $('<div>');
 

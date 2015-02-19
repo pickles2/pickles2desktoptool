@@ -1,5 +1,5 @@
-window.px = $.px = window.parent.px;
-window.contApp = new (function(){
+window.px = window.parent.px;
+window.contApp = new (function(px, $){
 	var _this = this;
 	var pj = px.getCurrentProject();
 	var filelist = pj.getSitemapFilelist();
@@ -64,4 +64,4 @@ window.contApp = new (function(){
 		init();
 	});
 
-})();
+})(px, $);

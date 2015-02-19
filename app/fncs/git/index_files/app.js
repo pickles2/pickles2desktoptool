@@ -1,4 +1,4 @@
-window.px = $.px = window.parent.px;
+window.px = window.parent.px;
 window.contApp = new (function(){
 	var _this = this;
 	var pj = px.getCurrentProject();
@@ -9,51 +9,51 @@ window.contApp = new (function(){
 	/**
 	 * initialize
 	 */
-	 function init(){
-	 	$cont = $('.contents').html('');
-	 	$btnGitInit = $('<button>');
-	 	$btnGitStatus = $('<button>');
-	 	$pre = $('<pre>');
+	function init(){
+		$cont = $('.contents').html('');
+		$btnGitInit = $('<button>');
+		$btnGitStatus = $('<button>');
+		$pre = $('<pre>');
 
-	 	if( !status.gitDirExists ){
-	 		// git init しなくてはいけない場合
-	 		$cont
-	 			.append( $($('#template-toInitialize-message').html()) )
-	 			.append( $btnGitStatus
-	 				.click( function(){ git_init(this); } )
-	 				.text('gitを初期化する')
-	 				.css({
-	 					'width':'100%'
-	 				})
-	 			)
-	 			.append( $pre
-	 				.addClass( 'cont_console' )
-	 				.css({
-	 					'max-height': 360,
-	 					'height': 360
-	 				})
-	 			)
-	 		;
-	 	}else{
-	 		// gitリポジトリが存在する場合
-	 		$cont
-	 			.append( $btnGitStatus
-	 				.click( function(){ git_status(this); } )
-	 				.text('ステータスを表示する')
-	 				.css({
-	 					'width':'100%'
-	 				})
-	 			)
-	 			.append( $pre
-	 				.addClass( 'cont_console' )
-	 				.css({
-	 					'max-height': 360,
-	 					'height': 360
-	 				})
-	 			)
-	 		;
-	 	}
-	 }
+		if( !status.gitDirExists ){
+			// git init しなくてはいけない場合
+			$cont
+				.append( $($('#template-toInitialize-message').html()) )
+				.append( $btnGitStatus
+					.click( function(){ git_init(this); } )
+					.text('gitを初期化する')
+					.css({
+						'width':'100%'
+					})
+				)
+				.append( $pre
+					.addClass( 'cont_console' )
+					.css({
+						'max-height': 360,
+						'height': 360
+					})
+				)
+			;
+		}else{
+			// gitリポジトリが存在する場合
+			$cont
+				.append( $btnGitStatus
+					.click( function(){ git_status(this); } )
+					.text('ステータスを表示する')
+					.css({
+						'width':'100%'
+					})
+				)
+				.append( $pre
+					.addClass( 'cont_console' )
+					.css({
+						'max-height': 360,
+						'height': 360
+					})
+				)
+			;
+		}
+	}
 
 	function git_init(btn){
 		$(btn).attr('disabled', 'disabled');
@@ -86,6 +86,7 @@ window.contApp = new (function(){
 		$(btn).attr('disabled', 'disabled');
 		var pj = px.getCurrentProject();
 		$('.cont_console').text('');
+		px.progress.start({});
 		px.execDialog(
 			'git status',
 			{
@@ -93,6 +94,7 @@ window.contApp = new (function(){
 				title: '$ git status',
 				description: $('<p>').text('gitのステータス状態を表示します。'),
 				complete: function(stdout){
+					px.progress.close();
 					$('.cont_console').text( stdout );
 					$(btn).removeAttr('disabled');
 					px.message( 'gitのステータス表示を完了しました。' );

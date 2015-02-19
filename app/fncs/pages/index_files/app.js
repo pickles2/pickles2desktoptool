@@ -1,4 +1,4 @@
-window.px = $.px = window.parent.px;
+window.px = window.parent.px;
 window.contApp = new (function( px ){
 	if( !px ){ alert('px が宣言されていません。'); }
 
@@ -321,6 +321,11 @@ window.contApp = new (function( px ){
 	this.openEditor = function( pagePath ){
 		this.closeEditor();//一旦閉じる
 
+		// プログレスモード表示
+		px.progress.start({
+			'blindness':true
+		});
+
 		var pageInfo = _pj.site.getPageInfo( pagePath );
 		if( !pageInfo ){ alert('ERROR: Undefined page path.'); return this; }
 
@@ -330,9 +335,6 @@ window.contApp = new (function( px ){
 
 		if( px.fs.existsSync( contRealpath ) ){
 			contRealpath = px.fs.realpathSync( contRealpath );
-		}else{
-			// alert('ファイルが存在しません。');
-			// return this;
 		}
 
 		$editor = $('<div>')

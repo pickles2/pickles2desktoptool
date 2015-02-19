@@ -1,4 +1,4 @@
-window.px = $.px = window.parent.px;
+window.px = window.parent.px;
 window.contApp = new (function( px ){
 	if( !px ){ alert('px が宣言されていません。'); }
 
@@ -48,6 +48,7 @@ window.contApp = new (function( px ){
 	 * エイリアスページのためのリダイレクト処理
 	 */
 	function redirectEditor( to ){
+		// window.parent.contApp.openEditor( to );
 		window.location.href = './index.html?page_path='+encodeURIComponent( to );
 		return true;
 	}
@@ -105,6 +106,8 @@ window.contApp = new (function( px ){
 		;
 
 		resizeEvent();
+
+		px.progress.close();
 		return this;
 	}
 

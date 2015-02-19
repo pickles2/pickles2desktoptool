@@ -2,11 +2,11 @@
 	var $msgBox = $('<div>');
 	$msgBox
 		.css('position', 'fixed')
-		.css('top', 0)
+		.css('bottom', 0)
 		.css('left', 0)
 		.css('height', 'auto')
 		.css('width', '100%')
-		.css('z-index', 10000)
+		.css('z-index', 20000)
 	;
 
 	px.message = function( message, opt ){
@@ -20,7 +20,7 @@
 				'border': '1px solid #f93',
 				'color': '#f93',
 				'padding': 4,
-				'margin': 4
+				'margin': "10px 40px"
 			})
 			.hide()
 		;

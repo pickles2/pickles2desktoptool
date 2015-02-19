@@ -1,4 +1,4 @@
-window.px = $.px = window.parent.px;
+window.px = window.parent.px;
 window.contApp = new (function( px ){
 	if( !px ){ alert('px が宣言されていません。'); }
 
@@ -149,6 +149,10 @@ window.contApp = new (function( px ){
 				$(window).resize(function(){
 					_this.ui.resizeEvent();
 				});
+				it.next();
+			} ,
+			function(it){
+				px.progress.close();
 				it.next();
 			}
 		]).start();

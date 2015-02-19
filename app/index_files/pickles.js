@@ -1,6 +1,7 @@
 new (function($, window){
-	window.px = $.px = this;
+	window.px = this;
 	this.$ = $;
+	this._ = _;
 
 	/**
 	 * Pickles 2 Desktop Tool のバージョン情報を取得する。
@@ -54,6 +55,7 @@ new (function($, window){
 	var _nw_gui = require('nw.gui');
 	// this.server = require('./index_files/px_server_emurator.node.js').init(this,$);
 	var _appName = 'Pickles 2 Desktop Tool';
+	this.progress = new require('./index_files/pickles.progress.js').init(this, $);
 
 	if( !_utils.isDirectory( _path_data_dir ) ){
 		_fs.mkdirSync( _path_data_dir );
@@ -447,7 +449,7 @@ new (function($, window){
 								)
 					);
 				}
-				// $ul.listview(); // ← jQuery mobile の data-role="listview" を動的に適用
+
 				$('.cont_project_list', $cont)
 					.html('')
 					.append($ul)
@@ -617,6 +619,7 @@ new (function($, window){
 	// 	return false;
 	// } );
 	// $(window).on( 'keydown', function(e){
+	// 	// キーボード操作を無効化
 	// 	e.preventDefault();
 	// 	e.stopPropagation();
 	// 	return false;

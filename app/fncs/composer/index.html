@@ -108,6 +108,7 @@
 				window.px.utils.spawn( px.cmd('composer'),
 					['self-update'],
 					{
+						cd: pj.get_realpath_composer_root(),
 						success: function(data){
 							$('.cont_console').text(
 								$('.cont_console').text() + data

@@ -100,10 +100,11 @@ new (function($, window){
 		{"label":"clearcache",           "cond":"pxStandby",       "area":"shoulder", "app":"fncs/clearcache/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"Config",               "cond":"pxStandby",       "area":"shoulder", "app":"fncs/config/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"Preview",              "cond":"pxStandby",       "area":"shoulder", "app":"fncs/preview/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"Composer",             "cond":"pxStandby",       "area":"shoulder", "app":"fncs/composer/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"Git",                  "cond":"pxStandby",       "area":"shoulder", "app":"fncs/git/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"Composer",             "cond":"composerJsonExists", "area":"shoulder", "app":"fncs/composer/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"Git",                  "cond":"homeDirExists", "area":"shoulder", "app":"fncs/git/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"コンテンツを移動する", "cond":"pxStandby",       "area":"shoulder", "app":"fncs/movecontents/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"Finderで開く",         "cond":"homeDirExists",   "area":"shoulder", "app":null, "cb": function(){px.getCurrentProject().open();}},
+		{"label":"ブラウザで開く",        "cond":"pxStandby",       "area":"shoulder", "app":null, "cb": function(){px.openInBrowser();}},
 		// {"label":"Reload(dev)",          "cond":"always", "cb": function(){window.location.href='index.html?';}} ,
 		{"label":"System Info",          "cond":"always",          "area":"shoulder", "app":null, "cb": function(){px.dialog({
 			title: 'System Info',
@@ -481,6 +482,10 @@ new (function($, window){
 		for( var i in _menu ){
 			if( _menu[i].cond == 'projectSelected' ){
 				if( cpj === null ){
+					continue;
+				}
+			}else if( _menu[i].cond == 'composerJsonExists' ){
+				if( cpj === null || !cpj_s.composerJsonExists ){
 					continue;
 				}
 			}else if( _menu[i].cond == 'homeDirExists' ){

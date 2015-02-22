@@ -4,81 +4,123 @@
 window.contApp.resultReport = new (function(px, $){
 	var _this = this;
 
-	var $tmpRows, $tmpTable, $tmpSvg;
+	var $results, $rows, $summaries, $spentTime, $totalFileCount, $errorMessage;
 
 	/**
 	 * レポート表示の初期化
 	 */
 	this.init = function( contApp, $canvas ){
 
-		$tmpRows = $('<div>');
-		$tmpTable = $('<div>');
-		$tmpSvg = $('<svg>');
-		$tmpTotalCount = $('<div>');
+		$results = $( $('#template-after_publish-canvas').html() );
+		$canvas.append( $results );
 
-		$canvas.html('')
-			.css({
-				'position': 'relative'
-			})
-			.append( $tmpTotalCount
-			)
-			.append( $tmpRows
-				.css({
-					'overflow':'auto',
-					'height':'300px'
-				})
-				.append( $('<table class="def">') )
-			)
-			.append( $tmpTable
-				.append( $('<table class="def">')
-					.append( $('<tr class="cont_procTypes"><th>Process Type</th><td></td></tr>')
-					)
-					.append( $('<tr class="cont_statusCodes"><th>Status Code</th><td></td></tr>')
-					)
-				)
-			)
-			.append( $tmpSvg
-			)
-		;
+		$rows = $results.find('.cont_results-rows');
+		$summaries = $results.find('.cont_results-summaries');
+		$spentTime = $results.find('.cont_results-spentTime span');
+		$totalFileCount = $results.find('.cont_results-total_file_count strong');
+		$errorMessage = $results.find('.cont_results-errorMessage');
 
-		setTimeout(function(){
-			d3.csv( contApp.getRealpathPublishDir()+"publish_log.csv", function(error, csv){
-				// var csv = d3.csv.parseRows(data);
+		px.utils.iterateFnc([
+			function( it, arg ){
+				// d3.csv( contApp.getRealpathPublishDir()+"publish_log.csv", function(error, csv){
+				// 	arg.publishLogCsv = csv;
+				// 	it.next(arg);
+				// });
 
-				var status = contApp.getStatus();
-				var count = csv.length;
-				var startDateTime = csv[0]['* datetime'];
-				var endDateTime = csv[csv.length-1]['* datetime'];
-
-				$tmpTotalCount
-					.html('')
-					.append( $('<p>').text( 'total:'+count )
-					)
-					.append( $('<p>').text( startDateTime + ' 〜 ' + endDateTime )
-					)
+				d3.csv( contApp.getRealpathPublishDir()+"publish_log.csv" )
+					.row(function(d) {
+						var rtn = {};
+						rtn.datetime = d['datetime'];
+						rtn.path = d['path'];
+						rtn.procType = d['proc_type'];
+						rtn.statusCode = d['status_code'];
+						return rtn;
+					})
+					.get(function(error, csv) {
+						// console.log(csv);
+						arg.publishLogCsv = csv;
+						it.next(arg);
+					})
 				;
-				if( status.alertLogExists ){
-					$tmpTotalCount
-						.append( $('<p>').text('エラーが検出されています。').addClass('error') )
-					;
+			} ,
+			function( it, arg ){
+				var status = contApp.getStatus();
+				arg.alertLogCsv = [];
+				if( !status.alertLogExists ){
+					it.next(arg);
+					return;
 				}
+				d3.csv( contApp.getRealpathPublishDir()+"alert_log.csv" )
+					.row(function(d) {
+						var rtn = {};
+						rtn.datetime = d['datetime'];
+						rtn.path = d['path'];
+						rtn.errorMessage = d['error_message'];
+						return rtn;
+					})
+					.get(function(error, csv) {
+						// console.log(csv);
+						arg.alertLogCsv = csv;
+						it.next(arg);
+					})
+				;
+			} ,
+			function( it, arg ){
+				var status = contApp.getStatus();
+				var count = arg.publishLogCsv.length;
+				var startDateTime = arg.publishLogCsv[0].datetime;
+				var endDateTime = arg.publishLogCsv[arg.publishLogCsv.length-1].datetime;
+				var time = Date.parse( endDateTime ) - Date.parse( startDateTime );
+
+				function updateTotalFileCounter( count, i ){
+					i ++;
+					var t = 50;
+					if( t == i ){
+						// 全量完了
+						$totalFileCount.text( count );
+
+						if( status.alertLogExists ){
+							$results.addClass('cont_results-error');
+							$errorMessage
+								.text( arg.alertLogCsv.length + '件のエラーが検出されています。' )
+							;
+						}
+						return;
+					}
+					$totalFileCount.text( Math.round(count/t*i) );
+					setTimeout( function(){ updateTotalFileCounter( count, i ); }, 2 );
+				}
+				updateTotalFileCounter( count, 0 );
+
+				function updateSpentTime( time, i ){
+					i ++;
+					var t = 35;
+					if( t == i ){
+						// 全量完了
+						$spentTime.text( time + ' sec' );
+						return;
+					}
+					$spentTime.text( Math.round(time/t*i) + ' sec' );
+					setTimeout( function(){ updateSpentTime( time, i ); }, 4 );
+				}
+				updateSpentTime( (time/1000), 0 );
 
 
 				var rows = [];
-				var statistics = {
+				var summaries = {
 					'procTypes': {} ,
 					'statusCodes': {}
 				};
-				// d3.select( $canvas.get(0) ).html(csv);
+				// d3.select( $canvas.get(0) ).html(arg.publishLogCsv);
 
 				px.utils.iterate(
-					csv,
-					function( it, row, idx ){
+					arg.publishLogCsv,
+					function( it2, row2, idx2 ){
 
 						// 行データ
-						rows.push( row );
+						rows.push( row2 );
 						(function(){
-							var li = d3.select( $tmpRows.find('table').get(0) ).selectAll('tr');
+							var li = d3.select( $rows.find('table').get(0) ).selectAll('tr');
 							var update = li
 								.data(rows)
 								// .html(function(d, i){
@@ -90,9 +132,9 @@ window.contApp.resultReport = new (function(px, $){
 								.html(function(d, i){
 									var html = '';
 									html += '<th>'+(i+1) + '</th>';
-									html += '<td>'+d['* path']+'</td>';
-									html += '<td>'+d['* proc_type']+'</td>';
-									html += '<td>'+d['* status code']+'</td>';
+									html += '<td>'+d.path+'</td>';
+									html += '<td>'+d.procType+'</td>';
+									html += '<td>'+d.statusCode+'</td>';
 									return html;
 								})
 							;
@@ -104,17 +146,17 @@ window.contApp.resultReport = new (function(px, $){
 
 
 						// 統計
-						if( !statistics.procTypes[row['* proc_type']] ){ statistics.procTypes[row['* proc_type']] = 0; };
-						statistics.procTypes[row['* proc_type']] ++;
+						if( !summaries.procTypes[row2.procType] ){ summaries.procTypes[row2.procType] = 0; };
+						summaries.procTypes[row2.procType] ++;
 
-						if( !statistics.statusCodes[row['* status code']] ){ statistics.statusCodes[row['* status code']] = 0; };
-						statistics.statusCodes[row['* status code']] ++;
-						// console.log(statistics);
+						if( !summaries.statusCodes[row2.statusCode] ){ summaries.statusCodes[row2.statusCode] = 0; };
+						summaries.statusCodes[row2.statusCode] ++;
+						// console.log(summaries);
 
 						(function(){
-							var table = d3.select( $tmpTable.find('table').get(0) );
+							var table = d3.select( $summaries.find('table').get(0) );
 							table.select('tr.cont_procTypes td')
-								.data([statistics.procTypes])
+								.data([summaries.procTypes])
 								.html(
 									function(d, i){
 										var ul = $('<ul>');
@@ -126,7 +168,7 @@ window.contApp.resultReport = new (function(px, $){
 								)
 							;
 							table.select('tr.cont_statusCodes td')
-								.data([statistics.statusCodes])
+								.data([summaries.statusCodes])
 								.html(
 									function(d, i){
 										var ul = $('<ul>');
@@ -140,17 +182,17 @@ window.contApp.resultReport = new (function(px, $){
 						})();
 
 						setTimeout( function(){
-							it.next();
+							it2.next();
 						}, 0 );
 
 					} ,
 					function(){
-						// alert('complete!');
+						it.next(arg);
 					}
 				);
 
-			});
-		}, 10);
+			}
+		]).start({});
 
 	}// this.init();
 

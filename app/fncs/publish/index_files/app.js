@@ -141,6 +141,9 @@ window.contApp = new (function(px, $){
 		init();
 	});
 	$(window).resize(function(){
+		$('.cont_canvas')
+			.height( $(window).height() - $('.container').eq(0).height() - $cont.find('.cont_buttons').height() - 20 )
+		;
 	});
 
 	return this;

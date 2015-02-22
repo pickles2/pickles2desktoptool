@@ -100,13 +100,16 @@
 		opt.description = opt.description||'';
 		opt.complete = opt.complete||function(){};
 
+		var $preCont = $('<div>');
 		var $pre = $('<pre>')
 			.css({
 				'height':'12em',
 				'overflow':'auto'
 			})
-			.addClass('selectable')
-			.text('実行中...')
+			.append( $preCont
+				.addClass('selectable')
+				.text('実行中...')
+			)
 		;
 
 		dlgOpt = {};
@@ -132,8 +135,8 @@
 			cmd,
 			function(error, stdout, stderr){
 				output = stdout;
-				$pre.text(stdout);
-				dlgOpt.buttons[0].removeAttr('disabled');
+				$preCont.text(stdout);
+				dlgOpt.buttons[0].removeAttr('disabled').focus();
 			} ,
 			{
 				cd: opt.cd
@@ -158,13 +161,16 @@
 		opt.cmdComplete = opt.cmdComplete||function(){};
 		opt.complete = opt.complete||function(){};
 
+		var $preCont = $('<div>');
 		var $pre = $('<pre>')
 			.css({
 				'height':'12em',
 				'overflow':'auto'
 			})
-			.addClass('selectable')
-			.text('実行中...')
+			.append( $preCont
+				.addClass('selectable')
+				.text('実行中...')
+			)
 		;
 
 		var dlgOpt = {};
@@ -194,7 +200,9 @@
 				cd: opt.cd,
 				success: function(data){
 					stdout += data;
-					$pre.text(stdout);
+					$preCont.text(stdout);
+					// console.log( $preCont.height() );
+					$pre.scrollTop( $preCont.height() - $pre.height() );
 					opt.success(data);
 				} ,
 				error: function(data){
@@ -203,7 +211,7 @@
 				} ,
 				complete: function(code){
 					opt.cmdComplete(code);
-					dlgOpt.buttons[0].removeAttr('disabled');
+					dlgOpt.buttons[0].removeAttr('disabled').focus();
 				}
 			}
 		);

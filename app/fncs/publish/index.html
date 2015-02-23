@@ -25,6 +25,7 @@
 		<link rel="stylesheet" href="./index_files/style.css" type="text/css" />
 		<script src="./index_files/app.js"></script>
 		<script src="./index_files/app.resultReport.js"></script>
+		<script src="./index_files/app.progressReport.js"></script>
 
 		<!-- ========== templates ========== -->
 		<script id="template-before_publish" type="text/template">
@@ -32,6 +33,25 @@
 				<p>パブリッシュは実行されていません。</p>
 				<p>次のボタンを押して、パブリッシュを実行します。</p>
 				<p><button onclick="contApp.publish(); return false;">パブリッシュする</button></p>
+			</div>
+		</script>
+		<script id="template-before_publish-progress" type="text/template">
+			<div class="unit cont_progress">
+				<div class="center">
+					<p>パブリッシュしています。</p>
+					<p>そのまましばらくお待ちください...</p>
+					<div class="cont_progress-phase"></div>
+					<div class="cont_progress-row"></div>
+					<div class="cont_progress-timer"></div>
+					<div class="cont_progress-currentTask"></div>
+					<div class="cont_progress-bar">
+						<div class="progress progress-striped active">
+							<div class="progress-bar"  role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+								<span class="sr-only">0% Complete</span>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</script>
 		<script id="template-after_publish" type="text/template">

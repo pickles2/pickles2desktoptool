@@ -78,32 +78,49 @@ window.contApp = new (function(px, $){
 	 * パブリッシュを実行する
 	 */
 	this.publish = function(){
-		var $msg = $('<div>');
-		px.progress.start();
-		px.spawnDialog(
-			'php',
-			[
-				_pj.get('path')+'/'+_pj.get('entry_script') ,
-				'/?PX=publish.run'
-			] ,
+		_this.progressReport.init(
+			_this,
+			$cont,
 			{
-				cd: _pj.get('path'),
-				title: 'パブリッシュ',
-				description: $msg.text('スタティックHTMLをパブリッシュしています。'),
-				success: function(data){
-				} ,
-				error: function(data){
-				} ,
-				cmdComplete: function(code){
-					$msg.text( 'パブリッシュを完了しました。' );
-					px.progress.close();
-				} ,
-				complete: function(dataFin){
+				"spawnCmd": 'php',
+				"spawnCmdOpts": [
+					_pj.get('path')+'/'+_pj.get('entry_script') ,
+					'/?PX=publish.run'
+				] ,
+				"cmdCd": _pj.get('path'),
+				"complete": function(){
 					px.message( 'パブリッシュを完了しました。' );
 					init();
 				}
 			}
 		);
+
+		// var $msg = $('<div>');
+		// px.progress.start();
+		// px.spawnDialog(
+		// 	'php',
+		// 	[
+		// 		_pj.get('path')+'/'+_pj.get('entry_script') ,
+		// 		'/?PX=publish.run'
+		// 	] ,
+		// 	{
+		// 		cd: _pj.get('path'),
+		// 		title: 'パブリッシュ',
+		// 		description: $msg.text('静的なHTMLをパブリッシュしています。'),
+		// 		success: function(data){
+		// 		} ,
+		// 		error: function(data){
+		// 		} ,
+		// 		cmdComplete: function(code){
+		// 			$msg.text( 'パブリッシュを完了しました。' );
+		// 			px.progress.close();
+		// 		} ,
+		// 		complete: function(dataFin){
+		// 			px.message( 'パブリッシュを完了しました。' );
+		// 			init();
+		// 		}
+		// 	}
+		// );
 	}
 
 	/**

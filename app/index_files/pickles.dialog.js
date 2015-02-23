@@ -98,6 +98,7 @@
 		opt = opt||{};
 		opt.title = opt.title||'command:';
 		opt.description = opt.description||'';
+		opt.cmdComplete = opt.cmdComplete||function(){};
 		opt.complete = opt.complete||function(){};
 
 		var $preCont = $('<div>');
@@ -131,9 +132,12 @@
 		$dialog = px.dialog( dlgOpt );
 
 		output = '';
+		px.progress.start({});
 		px.utils.exec(
 			cmd,
 			function(error, stdout, stderr){
+				px.progress.close();
+				opt.cmdComplete();
 				output = stdout;
 				$preCont.text(stdout);
 				dlgOpt.buttons[0].removeAttr('disabled').focus();
@@ -193,6 +197,7 @@
 		$dialog = this.dialog( dlgOpt );
 
 		stdout = '';
+		px.progress.start({});
 		this.utils.spawn(
 			cmd,
 			cliOpts,
@@ -210,6 +215,7 @@
 					opt.error(data);
 				} ,
 				complete: function(code){
+					px.progress.close();
 					opt.cmdComplete(code);
 					dlgOpt.buttons[0].removeAttr('disabled').focus();
 				}

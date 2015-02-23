@@ -86,7 +86,6 @@ window.contApp = new (function(){
 		$(btn).attr('disabled', 'disabled');
 		var pj = px.getCurrentProject();
 		$('.cont_console').text('');
-		px.progress.start({});
 		px.execDialog(
 			'git status',
 			{
@@ -94,9 +93,8 @@ window.contApp = new (function(){
 				title: '$ git status',
 				description: $('<p>').text('gitのステータス状態を表示します。'),
 				complete: function(stdout){
-					px.progress.close();
 					$('.cont_console').text( stdout );
-					$(btn).removeAttr('disabled');
+					$(btn).removeAttr('disabled').focus();
 					px.message( 'gitのステータス表示を完了しました。' );
 				}
 			}

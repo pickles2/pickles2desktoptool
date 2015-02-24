@@ -136,6 +136,45 @@ window.contApp = new (function( px ){
 							)
 						)
 					;
+					if( contProcType != 'html.gui' ){
+						$bs3btn.find('ul[role=menu]')
+							.append( $('<li class="divider">') )
+							.append( $('<li>')
+								.append( $('<a>')
+									.text( '外部テキストエディタで編集' )
+									.attr({
+										'data-path': pageInfo.path ,
+										'href':'javascript:;'
+									})
+									.click(function(){
+										$bs3btn.find('.dropdown-toggle').click();
+										var pathCont = _pj.findPageContent( $(this).attr('data-path') );
+										px.openInTextEditor( _pj.get_realpath_controot()+pathCont );
+										return false;
+									})
+								)
+							)
+						;
+					}
+					$bs3btn.find('ul[role=menu]')
+						.append( $('<li class="divider">') )
+						.append( $('<li>')
+							.append( $('<a>')
+								.text( 'ブラウザでプレビュー' )
+								.attr({
+									'data-path': pageInfo.path ,
+									'href':'javascript:;'
+								})
+								.click(function(){
+									var $this = $(this);
+									px.preview.serverStandby(function(){
+										px.utils.openURL( px.preview.getUrl( $this.attr('data-path') ) );
+									});
+									return false;
+								})
+							)
+						)
+					;
 					$bs3btn.find('ul[role=menu]')
 						.append( $('<li class="divider">') )
 						.append( $('<li>')
@@ -179,26 +218,6 @@ window.contApp = new (function( px ){
 							)
 						)
 					;
-					if( contProcType != 'html.gui' ){
-						$bs3btn.find('ul[role=menu]')
-							.append( $('<li class="divider">') )
-							.append( $('<li>')
-								.append( $('<a>')
-									.text( '外部テキストエディタで編集' )
-									.attr({
-										'data-path': pageInfo.path ,
-										'href':'javascript:;'
-									})
-									.click(function(){
-										$bs3btn.find('.dropdown-toggle').click();
-										var pathCont = _pj.findPageContent( $(this).attr('data-path') );
-										px.openInTextEditor( _pj.get_realpath_controot()+pathCont );
-										return false;
-									})
-								)
-							)
-						;
-					}
 				}
 
 				$pageinfo.html( $html );

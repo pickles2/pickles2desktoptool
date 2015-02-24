@@ -56,6 +56,21 @@ body{
 	margin: 1px 2px;
 	font-size: small;
 }
+.cont_modulelist a{
+	display: block;
+	padding: 0.2em 1em;
+	background: #333;
+	color: #eee;
+	text-decoration: none;
+	font-weight: bold;
+	margin-top: 0.5em;
+}
+.cont_modulelist ul ul a{
+	margin: 1px 0 0 0;
+	font-weight: normal;
+	padding: 0.2em 2em;
+	background: #666;
+}
 
 .cont_btns{}
 .cont_btns ul,

@@ -22,68 +22,103 @@ window.contApp.ui = new(function(px, contApp){
 			.html('')
 			.append('<ul>')
 		;
-		var li = d3.select('.cont_modulelist ul').selectAll('li');
-		var modTpls = (function( tmpModTpls ){
-			var rtn = [];
-			for( var i in tmpModTpls ){
-				if( contApp.moduleTemplates.isSystemMod( tmpModTpls[i].id ) ){
-					// システムテンプレートを除外
-					continue;
-				}
-				rtn.push( tmpModTpls[i] );
-			}
-			return rtn;
-		})( contApp.moduleTemplates.getAll() );
+		(function(){
+			var modPackages = contApp.moduleTemplates.getPackages();
+			px.utils.iterate(
+				modPackages,
+				function( it, row, idx ){
+					var $liPackage = $('<li>');
+					$palette.find('>ul')
+						.append( $liPackage )
+					;
 
-		var update = li.data( modTpls );
-		update
-			.text(function(d, i){
-				return d.id;
-			})
-			.attr({'data-id': function(d, i){ return d.id }})
-			.attr({'draggable': true})//←HTML5のAPI http://www.htmq.com/dnd/
-			.style({'color':'inherit'})
-			.on('dragstart', function(){
-				// px.message( $(this).data('id') );
-				event.dataTransfer.setData('method', 'add' );
-				event.dataTransfer.setData('modId', $(this).data('id') );
-			})
-		;
-		update.enter()
-			.append('li')
-			.append('button')
-			.html(function(d, i){
-				var rtn = '';
-				var label = (d.info&&d.info.name ? d.info.name : d.id);
-				var thumb = 'data:image/png;base64,'+px.utils.base64encode( px.fs.readFileSync( './app/common/images/guieditor_module_thumb.png' ) );
-				if(d.thumb){
-					thumb = d.thumb;
+					var modGroups = contApp.moduleTemplates.getGroups( modPackages[idx].id );
+					var $ulGroups = $('<ul>')
+					$liPackage
+						.append( $('<a>')
+							.text( row.name )
+							.attr({'href':'javascript:;'})
+							.click(function(){
+								$ulGroups.toggle()
+							})
+						)
+						.append($ulGroups)
+					;
+
+					px.utils.iterate(
+						modGroups,
+						function( it2, group, groupId ){
+							var $liGroup = $('<li>');
+							$ulGroups.append( $liGroup );
+							var $ulMods = $('<ul>');
+							$liGroup
+								.append( $('<a>')
+									.text( group.name )
+									.attr({'href':'javascript:;'})
+									.click(function(){
+										$ulMods.toggle()
+									})
+								)
+								.append( $ulMods )
+							;
+							px.utils.iterate(
+								group.contents,
+								function( it3, modId, idx3 ){
+									var mod = contApp.moduleTemplates.get( modId );
+									var $liMod = $('<li>')
+										.append( $('<button>')
+											.text( modId )
+											.html((function(d){
+												var rtn = '';
+												var label = (d.info&&d.info.name ? d.info.name : d.id);
+												var thumb = 'data:image/png;base64,'+px.utils.base64encode( px.fs.readFileSync( './app/common/images/guieditor_module_thumb.png' ) );
+												if(d.thumb){
+													thumb = d.thumb;
+												}
+												rtn += '<img src="'+px.php.htmlspecialchars( thumb )+'" alt="'+px.php.htmlspecialchars( label )+'" style="max-height:100%; max-width:100%; margin-right:5px;" />';
+												rtn += label;
+												return rtn;
+											})(mod))
+											.css({
+												'padding':0,
+												'border':0,
+												'height':'50px',
+												'text-align':'left',
+												'color':'inherit'
+											})
+											.attr({
+												'title': (function(d){ return (d.info&&d.info.name ? d.info.name + ' - ' : '')+d.id; })(mod),
+												'data-id': mod.id,
+												'draggable': true //←HTML5のAPI http://www.htmq.com/dnd/
+											})
+											.on('dragstart', function(){
+												// px.message( $(this).data('id') );
+												event.dataTransfer.setData('method', 'add' );
+												event.dataTransfer.setData('modId', $(this).attr('data-id') );
+											})
+										)
+									;
+									$ulMods.append( $liMod );
+
+									it3.next();
+								},
+								function(){
+									it2.next();
+								}
+							);
+
+						},
+						function(){
+							it.next();
+						}
+					);
+				},
+				function(){
 				}
-				rtn += '<img src="'+px.php.htmlspecialchars( thumb )+'" alt="'+px.php.htmlspecialchars( label )+'" style="max-height:100%; max-width:100%; margin-right:5px;" />';
-				rtn += label;
-				return rtn;
-			})
-			.style({
-				'padding':0,
-				'border':0,
-				'height':'50px',
-				'text-align':'left',
-				'color':'inherit'
-			})
-			.attr({
-				'title': function(d, i){ return (d.info&&d.info.name ? d.info.name + ' - ' : '')+d.id; },
-				'data-id': function(d, i){ return d.id },
-				'draggable': true //←HTML5のAPI http://www.htmq.com/dnd/
-			})
-			.on('dragstart', function(){
-				// px.message( $(this).data('id') );
-				event.dataTransfer.setData('method', 'add' );
-				event.dataTransfer.setData('modId', $(this).data('id') );
-			})
-		;
-		update.exit()
-			.remove()//消すときはこれ。
-		;
+			);
+
+		})();
+
 
 		$preview
 			.bind('load', function(){

@@ -5,6 +5,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 	// var _pathModTpl;
 	var _modTpls = [];
 	var _modTplsIdMap = {};
+	var _modPackages = {};
 
 	/**
 	 * システムテンプレートかどうか判断する
@@ -30,9 +31,9 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 		}
 
 		var modIdList = [];
-		modIdList.push( '_sys/root' );
-		modIdList.push( '_sys/unknown' );
-		modIdList.push( '_sys/html' );
+		modIdList.push( {'id': '_sys/root'} );
+		modIdList.push( {'id': '_sys/unknown'} );
+		modIdList.push( {'id': '_sys/html'} );
 
 		px.utils.iterate(
 			_pathsModTpl,
@@ -49,7 +50,23 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 											it2.next();//テンプレートが未定義
 											return;
 										}
-										modIdList.push( modIdx+':'+dirname1+'/'+dirname2 );
+										if( !_modPackages[modIdx] ){
+											_modPackages[modIdx] = {
+												"id": modIdx,
+												"name": modIdx,
+												"contents":{}
+											};
+										}
+										if( !_modPackages[modIdx].contents[dirname1] ){
+											_modPackages[modIdx].contents[dirname1] = {
+												"id": dirname1,
+												"name": dirname1,
+												"contents":[]
+											};
+										}
+										_modPackages[modIdx].contents[dirname1].contents.push( modIdx+':'+dirname1+'/'+dirname2 );
+
+										modIdList.push( {"id": modIdx+':'+dirname1+'/'+dirname2} );
 										it2.next();
 									} ,
 									function(){
@@ -68,9 +85,9 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 			function(){
 				px.utils.iterate(
 					modIdList ,
-					function( it3, dirname3, idx3 ){
-						_modTplsIdMap[dirname3] = idx3;
-						_modTpls[idx3] = new classModTpl( dirname3, function(){
+					function( it3, modIdListRow, idx3 ){
+						_modTplsIdMap[modIdListRow.id] = idx3;
+						_modTpls[idx3] = new classModTpl( modIdListRow.id, function(){
 							it3.next();
 						} );
 					} ,
@@ -372,6 +389,20 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 		return _modTpls;
 	}
 
+	/**
+	 * パッケージの一覧を得る
+	 */
+	this.getPackages = function(){
+		var rtn = _modPackages;
+		return rtn;
+	}
 
+	/**
+	 * パッケージに含まれるグループの一覧を得る
+	 */
+	this.getGroups = function( packageId ){
+		var rtn = _modPackages[packageId].contents;
+		return rtn;
+	}
 
 })(window.px, window.contApp);

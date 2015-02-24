@@ -20,7 +20,8 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 	 * 初期化
 	 */
 	this.init = function( pathBase, pathsModTpl, cb ){
-		_pathsModTpl = JSON.parse(JSON.stringify(pathsModTpl));
+		_pathsModTpl = JSON.parse( JSON.stringify(pathsModTpl) );
+		if( typeof( _pathsModTpl ) !== typeof({}) ){ _pathsModTpl = {}; }
 		for( var modIdx in _pathsModTpl ){
 			if( !px.utils.isDirectory( pathBase+'/'+_pathsModTpl[modIdx] ) ){
 				continue;
@@ -58,25 +59,25 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 							} );
 						} ,
 						function(){
-							px.utils.iterate(
-								modIdList ,
-								function( it3, dirname3, idx3 ){
-									_modTplsIdMap[dirname3] = idx3;
-									_modTpls[idx3] = new classModTpl( dirname3, function(){
-										it3.next();
-									} );
-								} ,
-								function(){
-									it0.next();
-								}
-							);
+							it0.next();
 						}
 					);
 				} );
 
 			},
 			function(){
-				cb();
+				px.utils.iterate(
+					modIdList ,
+					function( it3, dirname3, idx3 ){
+						_modTplsIdMap[dirname3] = idx3;
+						_modTpls[idx3] = new classModTpl( dirname3, function(){
+							it3.next();
+						} );
+					} ,
+					function(){
+						cb();
+					}
+				);
 			}
 		);
 

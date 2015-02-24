@@ -52,7 +52,11 @@ window.contApp = new (function( px ){
 		px.utils.iterateFnc([
 			function(it){
 				// モジュールテンプレートのロード・初期化
-				_this.moduleTemplates.init( _pj.get('path'), _pj.getPx2DTConfig().paths_module_template, function(){
+				var pathsModTpls = {};
+				if( _pj.getPx2DTConfig() && _pj.getPx2DTConfig().paths_module_template ){
+					pathsModTpls = _pj.getPx2DTConfig().paths_module_template;
+				}
+				_this.moduleTemplates.init( _pj.get('path'), pathsModTpls, function(){
 					it.next();
 				} );
 			} ,

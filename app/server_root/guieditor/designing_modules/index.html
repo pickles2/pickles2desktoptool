@@ -52,6 +52,8 @@
 <div class="anchor_links">
 <p class="anchor_links-heading">目次</p><ul><li><a href="#hash_ディレクトリとファイルの構成">ディレクトリとファイルの構成</a><ul><li><a href="#hash_モジュールの単位">モジュールの単位</a></li>
 <li><a href="#hash_モジュール1つあたりのファイル構成">モジュール1つあたりのファイル構成</a><ul><li><a href="#hash_template.html">template.html</a></li>
+<li><a href="#hash_module.css_(module.css.scss)">module.css (module.css.scss)</a></li>
+<li><a href="#hash_module.js">module.js</a></li>
 <li><a href="#hash_thumb.png">thumb.png</a></li>
 <li><a href="#hash_info.json">info.json</a></li></ul></li></ul></li><li><a href="#hash_モジュールをプロジェクトに登録する">モジュールをプロジェクトに登録する</a><ul><li><a href="#hash_Config_画面を開く">Config 画面を開く</a></li>
 <li><a href="#hash_Px2DT_Config_にディレクトリを登録">Px2DT Config にディレクトリを登録</a></li></ul>
@@ -78,6 +80,8 @@
 
 <ul>
 <li>template.html</li>
+<li>module.css (module.css.scss)</li>
+<li>module.js</li>
 <li>thumb.png</li>
 <li>info.json</li>
 </ul>
@@ -88,6 +92,19 @@
 テンプレートは、部分だけを切り出した純粋なHTMLをベースに、フィールド(変更可能な箇所を定義するメタ構文)を埋め込むような形式で記述していきます。</p>
 
 <p>利用可能なフィールドについては、<a href="../fields/">フィールド一覧</a>のページを参照してください。</p>
+
+<span id="hash_module.css_(module.css.scss)"></span><h4>module.css (module.css.scss)</h4>
+
+<p>モジュールに関連するスタイルシートを記述します。
+ファイル名の最後に <code>.scss</code> を付加すると、SCSS形式で記述することができます。</p>
+
+<p>ここに書かれたスタイルは、Pickles2用のプラグイン px2-px2dthelper によって収集・統合し、テーマから自動的に読み込むことができます。</p>
+
+<span id="hash_module.js"></span><h4>module.js</h4>
+
+<p>モジュールの動作に関連するスクリプトを記述します。</p>
+
+<p>ここに書かれたスクリプトは、Pickles2用のプラグイン px2-px2dthelper によって収集・統合し、テーマから自動的に読み込むことができます。</p>
 
 <span id="hash_thumb.png"></span><h4>thumb.png</h4>
 
@@ -163,7 +180,7 @@
 			<div class="container theme_footer_shouldernavi">
 <ul><li><a href="/">ヘルプトップ</a></li></ul>			</div>
 			<div class="container">
-				<p style="text-align:center;">Pickles Framework is made by &copy;Tomoya Koyanagi.</p>
+				<p style="text-align:center;">Pickles 2 is made by Tomoya Koyanagi.</p>
 			</div>
 		</footer>
 	</body>

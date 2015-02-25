@@ -331,6 +331,9 @@ new (function($, window){
 	 * コマンドのパスを取得する
 	 */
 	this.cmd = function(cmd){
+		if( cmd == 'composer' ){
+			return _path_data_dir+'commands/composer/composer.phar';
+		}
 		if( !_db.commands ){
 			return cmd;
 		}

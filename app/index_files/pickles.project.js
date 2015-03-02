@@ -45,8 +45,8 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		status.homeDirExists = (status.pathExists && px.utils.isDirectory( homeDir ) ? true : false);
 		status.confFileExists = (status.homeDirExists && (px.utils.isFile( homeDir+'/config.php' )||px.utils.isFile( homeDir+'/config.json' ) ) ? true : false);
 		status.px2DTConfFileExists = (status.homeDirExists && px.utils.isFile( homeDir+'/px2dtconfig.json' ) ? true : false);
-		status.composerJsonExists = (status.pathExists && px.utils.isFile( this.get('path')+'/composer.json' ) ? true : false);
-		status.vendorDirExists = (status.pathExists && px.utils.isDirectory( this.get('path')+'/vendor/' ) ? true : false);
+		status.composerJsonExists = (status.pathExists && px.utils.isFile( this.get_realpath_composer_root()+'/composer.json' ) ? true : false);
+		status.vendorDirExists = (status.pathExists && px.utils.isDirectory( this.get_realpath_composer_root()+'/vendor/' ) ? true : false);
 		status.isPxStandby = ( status.pathExists && status.entryScriptExists && status.homeDirExists && status.confFileExists && status.composerJsonExists && status.vendorDirExists ? true : false );
 		status.gitDirExists = (function(path){
 			function checkParentDir(path){
@@ -361,7 +361,10 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	 * @return string コンテンツルートディレクトリの絶対パス(.px_execute.php の親ディレクトリ)
 	 */
 	this.get_realpath_controot = function(){
-		var pathBase = px.utils.dirname( px.fs.realpathSync( this.get('path')+'/'+this.get('entry_script') ) )+'/';
+		var pathBase = this.get('path');
+		if( px.utils.isFile( this.get('path')+'/'+this.get('entry_script') ) ){
+			pathBase = px.utils.dirname( px.fs.realpathSync( this.get('path')+'/'+this.get('entry_script') ) )+'/';
+		}
 		return pathBase;
 	}// get_realpath_composer_root()
 

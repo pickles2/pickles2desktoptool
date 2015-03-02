@@ -7,6 +7,12 @@ window.contApp.installer.git = new (function( px, contApp ){
 	this.install = function( pj, param, opt ){
 
 		var path = pj.get('path');
+		if( px.utils.isFile( path+'/.DS_Store' ) ){
+			px.fs.unlinkSync( path+'/.DS_Store' );
+		}
+		if( px.utils.isFile( path+'/Thumbs.db' ) ){
+			px.fs.unlinkSync( path+'/Thumbs.db' );
+		}
 
 		var $msg = $('<div>');
 
@@ -55,10 +61,11 @@ window.contApp.installer.git = new (function( px, contApp ){
 				} ,
 				complete: function(code){
 					$msg.text('composer をセットアップしています。この処理はしばらく時間がかかります。');
+					var path_composer = pj.get_realpath_composer_root();
 					px.utils.spawn(
 						px.cmd('composer'), ['install'],
 						{
-							cd: path,
+							cd: path_composer,
 							success: function(data){
 								stdout += data;
 								$pre.text(stdout);
@@ -71,7 +78,7 @@ window.contApp.installer.git = new (function( px, contApp ){
 								$msg.text('Pickles のセットアップが完了しました。');
 							},
 							complete: function(dataFin){
-								dlgOpt.buttons[0].removeAttr('disabled');
+								dlgOpt.buttons[0].removeAttr('disabled').focus();
 							}
 						}
 					);

@@ -37,6 +37,18 @@ window.contApp = new (function(){
 						it2.next();
 					} ,
 					function(){
+						// $('.tpl_status_table').append($('<tr>')
+						// 	.append($('<th>').text('composer.json'))
+						// 	.append($('<td>')
+						// 		.text(pj.get_realpath_composer_root())
+						// 	)
+						// );
+						// $('.tpl_status_table').append($('<tr>')
+						// 	.append($('<th>').text('.git'))
+						// 	.append($('<td>')
+						// 		.text(pj.get_realpath_git_root())
+						// 	)
+						// );
 						it.next(arg);
 					}
 				);

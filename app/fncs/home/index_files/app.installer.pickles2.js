@@ -5,6 +5,13 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 	 * インストールを実行
 	 */
 	this.install = function( pj, param, opt ){
+		var path = pj.get('path');
+		if( px.utils.isFile( path+'/.DS_Store' ) ){
+			px.fs.unlinkSync( path+'/.DS_Store' );
+		}
+		if( px.utils.isFile( path+'/Thumbs.db' ) ){
+			px.fs.unlinkSync( path+'/Thumbs.db' );
+		}
 
 		var $msg = $('<div>');
 		px.spawnDialog(
@@ -16,7 +23,7 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 				'dev-master'
 			],
 			{
-				cd: pj.get('path'),
+				cd: path,
 				title: 'Pickles のセットアップ',
 				description: $msg.text('Pickles をセットアップしています。この処理はしばらく時間がかかります。'),
 				success: function(data){

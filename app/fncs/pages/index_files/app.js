@@ -244,7 +244,7 @@ window.contApp = new (function( px ){
 				$(window).resize();
 			} );
 		});
-	}
+	}// init()
 
 	/**
 	 * ウィンドウリサイズイベントハンドラ

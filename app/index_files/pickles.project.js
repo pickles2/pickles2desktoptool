@@ -535,14 +535,13 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 					it.next(prop);
 					return;
 				}
-				px.fs.mkdir( px.utils.dirname( prop.realpath_cont ), function(err){
-					if( err ){
-						opt.error(err);
-						opt.complete();
-						return;
-					}
-					it.next(prop);
-				} );
+				// 再帰的に作る mkdirAll()
+				if( !px.utils.mkdirAll( px.utils.dirname( prop.realpath_cont ) ) ){
+					opt.error(err);
+					opt.complete();
+					return;
+				}
+				it.next(prop);
 			} ,
 			function(it, prop){
 				// コンテンツ自体を作る

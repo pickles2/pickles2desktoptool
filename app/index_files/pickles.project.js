@@ -114,7 +114,9 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		px.fs.readFile( path, {}, function(err, data){
 			try{
 				data = JSON.parse( data.toString() );
-			}catch(e){}
+			}catch(e){
+				console.log('ERROR: FAILED to parse px2dtconfig.json');
+			}
 			_px2DTConfig = data;
 			cb();
 		} );

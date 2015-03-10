@@ -109,7 +109,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 		if( contApp.moduleTemplates.isSystemMod(modId) ){
 			return false;
 		}
-		modId.match( new RegExp('^([0-9a-zA-Z]+?)\\:(.*)$') );
+		modId.match( new RegExp('^([0-9a-zA-Z\\_\\-]+?)\\:(.*)$') );
 		var rtn = _pathsModTpl[RegExp.$1]+'/'+RegExp.$2+'/';
 		if( typeof(rtn) !== typeof('') ){
 			return false;

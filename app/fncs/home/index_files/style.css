@@ -9,3 +9,12 @@
 .contents button{
 	width: 100%;
 }
+.contents button.cont_mainmenu{
+	width: 100%;
+	height: 200px;
+}
+@media all and ( max-width: 520px ){
+	.contents button.cont_mainmenu{
+		height: auto;
+	}
+}

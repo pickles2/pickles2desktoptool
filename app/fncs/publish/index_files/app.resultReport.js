@@ -120,6 +120,7 @@ window.contApp.resultReport = new (function(px, $){
 						// 行データ
 						rows.push( row2 );
 						(function(){
+							return;// ← 開発中コメントアウト
 							var li = d3.select( $rows.find('table').get(0) ).selectAll('tr');
 							var update = li
 								.data(rows)

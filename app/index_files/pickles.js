@@ -230,6 +230,20 @@ new (function($, window){
 	}
 
 	/**
+	 * ローカルのデータディレクトリのパスを得る。
+	 */
+	this.getDataDir = function(){
+		return _path_data_dir;
+	}
+
+	/**
+	 * ローカルのデータディレクトリをFinderで開く
+	 */
+	this.openDataDir = function(){
+		return px.utils.openURL( _path_data_dir );
+	}
+
+	/**
 	 * プロジェクト一覧を取得する
 	 */
 	this.getProjectList = function(){
@@ -615,7 +629,20 @@ new (function($, window){
 	 */
 	this.log = function( msg ){
 		var path = _path_data_dir + 'common_log.log';
-		var row = ( new Date().toString() ) + '	' + msg + "\n";
+		var row = ( (function(){
+			var d = new Date();
+			function pad(n){return n<10 ? '0'+n : n}
+			var rtn = '';
+			rtn +=
+				d.getUTCFullYear()+'-'
+				+ pad(d.getUTCMonth()+1)+'-'
+				+ pad(d.getUTCDate())+'T'
+				+ pad(d.getUTCHours())+':'
+				+ pad(d.getUTCMinutes())+':'
+				+ pad(d.getUTCSeconds())+'Z'
+			;
+			return rtn;
+		})() ) + '	' + msg + "\n";
 		console.log(row);
 		this.fs.appendFileSync( path, row, {} );
 		return true;

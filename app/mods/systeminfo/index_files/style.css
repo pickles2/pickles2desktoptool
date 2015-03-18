@@ -8,3 +8,6 @@ body{
 	overflow:auto;
 	white-space: pre;
 }
+.contents button{
+	width: 100%;
+}

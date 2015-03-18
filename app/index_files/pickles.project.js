@@ -93,6 +93,9 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 					console.log( 'FAILED to PxCommand "?PX=api.get.config". Pickles2 returns not a JSON.' );
 					_config = false;
 				}
+				if( _config.plugins && _config.plugins.px2dt ){
+					_px2DTConfig = _config.plugins.px2dt;
+				}
 				cb( _config );
 			}
 		} );
@@ -104,11 +107,18 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	this.updatePx2DTConfig = function( cb ){
 		cb = cb||function(){};
 
+		var conf = this.getConfig();
+		if( conf.plugins && conf.plugins.px2dt ){
+			_px2DTConfig = conf.plugins.px2dt;
+			cb( _px2DTConfig );
+			return this;
+		}
+
 		_px2DTConfig = {};
 		var path = this.get('path')+'/'+this.get('home_dir')+'/px2dtconfig.json';
 
 		if( !px.utils.isFile( path ) ){
-			cb();
+			cb( null );
 			return this;
 		}
 		px.fs.readFile( path, {}, function(err, data){
@@ -118,7 +128,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				console.log('ERROR: FAILED to parse px2dtconfig.json');
 			}
 			_px2DTConfig = data;
-			cb();
+			cb( _px2DTConfig );
 		} );
 		return this;
 	}

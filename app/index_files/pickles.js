@@ -145,6 +145,8 @@ new (function($, window){
 
 		})();
 
+		px.log( 'Application start;' );
+
 		if(!_db){_db = {};}
 		if(!_db.commands){_db.commands = {};}
 		if(!_db.projects){_db.projects = [];}
@@ -300,11 +302,14 @@ new (function($, window){
 	this.selectProject = function(num, cb){
 		cb = cb||function(){}
 		if( typeof(num) != typeof(0) ){
+			px.log( '[ERROR] FAILED to selectProject(' + typeof(num) + ')' );
 			return false;
 		}
 		_selectedProject = num;
 		// alert(num);
+		px.log( 'selectProject(' + num + ')' );
 		_pj = new (require('./index_files/pickles.project.js')).classProject( window, this, _db.projects[_selectedProject], _selectedProject, cb );
+		px.log( 'project name = ' + _pj.get('name') );
 		return true;
 	}
 
@@ -605,12 +610,22 @@ new (function($, window){
 
 	}
 
+	/**
+	 * ログをファイルに出力
+	 */
+	this.log = function( msg ){
+		var path = _path_data_dir + 'common_log.log';
+		var row = ( new Date().toString() ) + '	' + msg + "\n";
+		console.log(row);
+		this.fs.appendFileSync( path, row, {} );
+		return true;
+	}
 
 	/**
 	 * イベントセット
 	 */
 	process.on( 'exit', function(e){
-		console.log('exit');
+		px.log( 'Application exit;' );
 		px.save();
 	});
 	process.on( 'uncaughtException', function(e){

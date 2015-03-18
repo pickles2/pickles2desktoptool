@@ -45,28 +45,28 @@ window.contApp = new (function( px ){
 		});
 
 
-		var src = '';
-		if( px.utils.isFile(configBasePath+'/px2dtconfig.json') ){
-			src = px.fs.readFileSync( configBasePath+'/px2dtconfig.json' );
-		}
-		$('.cont_px2dtconfig_edit').html('').append( $('<textarea>').val(src) );
-		CodeMirrorInstans['px2dtconfig'] = CodeMirror.fromTextArea( $('.cont_px2dtconfig_edit textarea').get(0), {
-			lineNumbers: true,
-			mode: {name:'javascript', json: true},
-			tabSize: 4,
-			indentUnit: 4,
-			indentWithTabs: true,
-			autoCloseBrackets: true,
-			matchBrackets: true,
-			showCursorWhenSelecting: true,
-			viewportMargin: Infinity,
+		// var src = '';
+		// if( px.utils.isFile(configBasePath+'/px2dtconfig.json') ){
+		// 	src = px.fs.readFileSync( configBasePath+'/px2dtconfig.json' );
+		// }
+		// $('.cont_px2dtconfig_edit').html('').append( $('<textarea>').val(src) );
+		// CodeMirrorInstans['px2dtconfig'] = CodeMirror.fromTextArea( $('.cont_px2dtconfig_edit textarea').get(0), {
+		// 	lineNumbers: true,
+		// 	mode: {name:'javascript', json: true},
+		// 	tabSize: 4,
+		// 	indentUnit: 4,
+		// 	indentWithTabs: true,
+		// 	autoCloseBrackets: true,
+		// 	matchBrackets: true,
+		// 	showCursorWhenSelecting: true,
+		// 	viewportMargin: Infinity,
 
-			theme: 'monokai',
-			keyMap: "sublime"
-		} );
-		CodeMirrorInstans['px2dtconfig'].on('change',function(){
-			CodeMirrorInstans['px2dtconfig'].save();
-		});
+		// 	theme: 'monokai',
+		// 	keyMap: "sublime"
+		// } );
+		// CodeMirrorInstans['px2dtconfig'].on('change',function(){
+		// 	CodeMirrorInstans['px2dtconfig'].save();
+		// });
 
 		cb();
 	}
@@ -78,16 +78,20 @@ window.contApp = new (function( px ){
 
 		px.fs.writeFile( confPath, src, {}, function(err){
 			pj.updateConfig(function(){
-				var srcPx2DT = $('.cont_px2dtconfig_edit textarea').val();
-				srcPx2DT = JSON.parse( JSON.stringify( srcPx2DT ) );
-				px.fs.writeFile( configBasePath+'/px2dtconfig.json', srcPx2DT, {}, function(err){
-					pj.updatePx2DTConfig(function(){
-						cont_init(function(){
-							$(btn).removeAttr('disabled');
-							px.message( 'コンフィグを保存しました。' );
-						});
-					});
-				} );
+				cont_init(function(){
+					$(btn).removeAttr('disabled');
+					px.message( 'コンフィグを保存しました。' );
+				});
+				// var srcPx2DT = $('.cont_px2dtconfig_edit textarea').val();
+				// srcPx2DT = JSON.parse( JSON.stringify( srcPx2DT ) );
+				// px.fs.writeFile( configBasePath+'/px2dtconfig.json', srcPx2DT, {}, function(err){
+				// 	pj.updatePx2DTConfig(function(){
+				// 		cont_init(function(){
+				// 			$(btn).removeAttr('disabled');
+				// 			px.message( 'コンフィグを保存しました。' );
+				// 		});
+				// 	});
+				// } );
 			});
 		} );
 	}

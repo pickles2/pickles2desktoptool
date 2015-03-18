@@ -25,6 +25,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 		if( typeof( _pathsModTpl ) !== typeof({}) ){ _pathsModTpl = {}; }
 		for( var modIdx in _pathsModTpl ){
 			if( !px.utils.isDirectory( pathBase+'/'+_pathsModTpl[modIdx] ) ){
+				px.log( 'module skiped: ' + pathBase+'/'+_pathsModTpl[modIdx] );
 				continue;
 			}
 			_pathsModTpl[modIdx] = px.fs.realpathSync( pathBase+'/'+_pathsModTpl[modIdx] );
@@ -47,6 +48,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 									data,
 									function( it2, dirname2, idx2 ){
 										if( !px.utils.isFile( pathModTpl+'/'+dirname1+'/'+dirname2+'/template.html' ) ){
+											px.log( 'template.html is not exists: ' + pathModTpl+'/'+dirname1+'/'+dirname2+'/template.html' );
 											it2.next();//テンプレートが未定義
 											return;
 										}

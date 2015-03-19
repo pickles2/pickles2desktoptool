@@ -58,6 +58,8 @@ window.contApp.installer.git = new (function( px, contApp ){
 				} ,
 				error: function(data){
 					stdout += data;
+					$pre.text(stdout);
+					px.log('Composer Setup Error: '+ data);
 				} ,
 				complete: function(code){
 					$msg.text('composer をセットアップしています。この処理はしばらく時間がかかります。');
@@ -72,7 +74,8 @@ window.contApp.installer.git = new (function( px, contApp ){
 							} ,
 							error: function(data){
 								stdout += data;
-								$msg.text('ERROR: '+data);
+								$pre.text(stdout);
+								px.log('Composer Setup Error: '+ data);
 							} ,
 							cmdComplete: function(code){
 								$msg.text('Pickles のセットアップが完了しました。');

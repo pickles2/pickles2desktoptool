@@ -29,8 +29,9 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 				success: function(data){
 				} ,
 				error: function(data){
-					px.message('ERROR: '+data);
-					$msg.text('ERROR: '+data);
+					// px.message('ERROR: '+data);
+					// $msg.text('ERROR: '+data);
+					px.log('Composer Setup Error: '+ data);
 				} ,
 				cmdComplete: function(code){
 					$msg.text('Pickles のセットアップが完了しました。');

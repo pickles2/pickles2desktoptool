@@ -212,6 +212,9 @@
 				} ,
 				error: function(data){
 					stdout += data;
+					$preCont.text(stdout);
+					// console.log( $preCont.height() );
+					$pre.scrollTop( $preCont.height() - $pre.height() );
 					opt.error(data);
 				} ,
 				complete: function(code){

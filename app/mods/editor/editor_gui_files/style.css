@@ -39,6 +39,26 @@ body{
 	height:100%;
 }
 
+.cont_instanceCtrlPanel{
+	border:0;
+	text-align: center;
+	background-color: transparent;
+	display: block;
+	position: absolute;
+	z-index: 0;
+}
+.cont_instanceCtrlPanel:hover{
+	border: 3px dotted #000;
+}
+.cont_instanceCtrlPanel-ctrlpanel_selected{
+	border: 3px solid rgba(255,0,0,0.6);
+	background-color: rgba(255,0,0,0.1);
+}
+.cont_instanceCtrlPanel-ctrlpanel_dragentered{
+	border-radius: 0;
+	border: 3px dotted #99f;
+}
+
 .cont_modulelist{
 	overflow: auto;
 }

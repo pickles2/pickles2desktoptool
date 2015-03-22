@@ -6,6 +6,8 @@ window.contApp.ui = new(function(px, contApp){
 	var $palette;
 	var $editWindow;
 
+	var selectedInstance = null;
+
 	var dataViewTree = {};
 
 	/**
@@ -114,6 +116,9 @@ window.contApp.ui = new(function(px, contApp){
 					);
 				},
 				function(){
+					$ctrlPanel.on('click', function(){
+						_this.unselectInstance();
+					});
 				}
 			);
 
@@ -138,6 +143,7 @@ window.contApp.ui = new(function(px, contApp){
 
 		// 編集フィールドの初期化
 		$ctrlPanel.html('');
+		_this.unselectInstance();
 
 		$preview
 			.attr('src', px.preview.getUrl(path) )
@@ -327,13 +333,8 @@ window.contApp.ui = new(function(px, contApp){
 		this.drawCtrlPanels = function( $content ){
 			var $elm = $content.find('[data-guieditor-cont-data-path='+JSON.stringify(this.instancePath)+']');
 			var $ctrlElm = $('<div>')
+				.addClass('cont_instanceCtrlPanel')
 				.css({
-					'border':'0px dotted #99d',
-					'text-align':'center',
-					'background-color': 'transparent',
-					'display':'block',
-					'position':'absolute',
-					"z-index":0,
 					'width': $elm.outerWidth(),
 					'height': $elm.outerHeight()
 				})
@@ -345,14 +346,14 @@ window.contApp.ui = new(function(px, contApp){
 					'data-guieditor-sub-mod-name': this.moduleTemplates.subModName
 				})
 				.bind('mouseover', function(e){
-					$(this).css({
-						"border":"3px dotted #000"
-					});
+					// $(this).css({
+					// 	"border":"3px dotted #000"
+					// });
 				})
 				.bind('mouseout', function(e){
-					$(this).css({
-						"border":"0px dotted #99d"
-					});
+					// $(this).css({
+					// 	"border":"0px dotted #99d"
+					// });
 				})
 				.attr({'draggable': true})//←HTML5のAPI http://www.htmq.com/dnd/
 				.on('dragstart', function(){
@@ -402,21 +403,18 @@ window.contApp.ui = new(function(px, contApp){
 					}
 				})
 				.bind('dragenter', function(e){
-					$(this).css({
-						"border-radius":0,
-						"border":"3px dotted #99f"
-					});
+					$(this).addClass('cont_instanceCtrlPanel-ctrlpanel_dragentered');
 				})
 				.bind('dragleave', function(e){
-					$(this).css({
-						"border":0
-					});
+					$(this).removeClass('cont_instanceCtrlPanel-ctrlpanel_dragentered');
 				})
 				.bind('dragover', function(e){
 					e.preventDefault();
 				})
 				.bind('click', function(e){
 					// _this.openEditWindow( $(this).attr('data-guieditor-cont-data-path') );
+					_this.selectInstance( $(this).attr('data-guieditor-cont-data-path') );
+					e.stopPropagation();
 				})
 				.bind('dblclick', function(e){
 					_this.openEditWindow( $(this).attr('data-guieditor-cont-data-path') );
@@ -621,6 +619,32 @@ window.contApp.ui = new(function(px, contApp){
 	}
 
 	/**
+	 * モジュールインスタンスを選択状態にする
+	 */
+	this.selectInstance = function( instancePath ){
+		this.unselectInstance();//一旦選択解除
+		selectedInstance = instancePath;
+		$ctrlPanel.find('[data-guieditor-cont-data-path]')
+			.filter(function (index) {
+				return $(this).attr("data-guieditor-cont-data-path") == instancePath;
+			})
+			.addClass('cont_instanceCtrlPanel-ctrlpanel_selected')
+		;
+		return this;
+	}
+
+	/**
+	 * モジュールインスタンスの選択状態を解除する
+	 */
+	this.unselectInstance = function(){
+		selectedInstance = null;
+		$ctrlPanel.find('[data-guieditor-cont-data-path]')
+			.removeClass('cont_instanceCtrlPanel-ctrlpanel_selected')
+		;
+		return this;
+	}
+
+	/**
 	 * モジュールの編集ウィンドウを開く
 	 */
 	this.openEditWindow = function( instancePath ){
@@ -795,6 +819,7 @@ window.contApp.ui = new(function(px, contApp){
 		}
 
 		$ctrlPanel.html('');
+		_this.unselectInstance();
 		$previewDoc.find('.contents').each(function(){
 			$(this).html('');
 			var id = $(this).attr('id')||'main';

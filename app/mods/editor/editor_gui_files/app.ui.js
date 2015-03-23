@@ -10,10 +10,16 @@ window.contApp.ui = new(function(px, contApp){
 
 	var dataViewTree = {};
 
+	var _Keypress = {};
+	this.Keypress = _Keypress;
+
 	/**
 	 * フィールド初期化
 	 */
 	this.initField = function( cb ){
+		_Keypress = new window.keypress.Listener();
+		this.Keypress = _Keypress;
+
 		$preview = $('iframe.cont_field-preview');
 		$previewDoc = $($preview[0].contentWindow.document);
 		$ctrlPanel = $('.cont_field-ctrlpanel');
@@ -109,6 +115,26 @@ window.contApp.ui = new(function(px, contApp){
 								}
 							);
 
+						},
+						function(){
+							var deleteModuleInstance = function(){
+								if( selectedInstance !== null ){
+									contApp.contentsSourceData.removeInstance( selectedInstance );
+									_this.unselectInstance();
+									contApp.ui.onEditEnd();
+									px.message("モジュールインスタンスを削除しました。");
+								}
+								return;
+							}
+							_Keypress.simple_combo("backspace", function(e) {
+								deleteModuleInstance();
+								e.preventDefault();
+							});
+							_Keypress.simple_combo("delete", function(e) {
+								deleteModuleInstance();
+								e.preventDefault();
+							});
+							it.next();
 						},
 						function(){
 							it.next();

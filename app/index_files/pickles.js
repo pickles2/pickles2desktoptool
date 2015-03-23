@@ -45,6 +45,9 @@ new (function($, window){
 	this.path = _path;
 	var _appServer = require('./index_files/app_server.js');
 
+	var _Keypress = {};
+	this.Keypress = _Keypress;
+
 	var _db = {};
 	var _path_data_dir = process.env.HOME + '/.pickles2desktoptool/';
 	var _path_db = process.env.HOME + '/.pickles2desktoptool/db.json';
@@ -726,6 +729,25 @@ new (function($, window){
 						}
 					}
 				);
+				it.next(arg);
+			} ,
+			function(it, arg){
+				_Keypress = new window.keypress.Listener();
+				this.Keypress = _Keypress;
+
+				_Keypress.simple_combo("backspace", function(e) {
+					// px.message("You pressed backspace");
+					e.preventDefault();
+				});
+				_Keypress.simple_combo("delete", function(e) {
+					// px.message("You pressed delete");
+					e.preventDefault();
+				});
+				_Keypress.simple_combo("escape", function(e) {
+					// px.message("You pressed escape");
+					e.preventDefault();
+				});
+
 				it.next(arg);
 			} ,
 			function(it, arg){

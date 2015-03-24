@@ -735,18 +735,18 @@ new (function($, window){
 				_Keypress = new window.keypress.Listener();
 				this.Keypress = _Keypress;
 
-				_Keypress.simple_combo("backspace", function(e) {
-					// px.message("You pressed backspace");
-					e.preventDefault();
-				});
-				_Keypress.simple_combo("delete", function(e) {
-					// px.message("You pressed delete");
-					e.preventDefault();
-				});
-				_Keypress.simple_combo("escape", function(e) {
-					// px.message("You pressed escape");
-					e.preventDefault();
-				});
+				// _Keypress.simple_combo("backspace", function(e) {
+				// 	// px.message("You pressed backspace");
+				// 	e.preventDefault();
+				// });
+				// _Keypress.simple_combo("delete", function(e) {
+				// 	// px.message("You pressed delete");
+				// 	e.preventDefault();
+				// });
+				// _Keypress.simple_combo("escape", function(e) {
+				// 	// px.message("You pressed escape");
+				// 	e.preventDefault();
+				// });
 
 				it.next(arg);
 			} ,

@@ -28,7 +28,7 @@ window.contApp = new (function( px ){
 			// px.message( 'データファイルを保存しました。' );
 
 			var contPath = _pj.findPageContent( _param.page_path );
-			var contentsRealpath = px.fs.realpathSync( _pj.get('path')+'/'+contPath);
+			var contentsRealpath = px.fs.realpathSync( px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+'/'+contPath);
 
 			src = _this.ui.finalize();
 

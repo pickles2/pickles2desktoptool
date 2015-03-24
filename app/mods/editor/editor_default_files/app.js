@@ -19,7 +19,9 @@ window.contApp = new (function( px ){
 
 	var _cont_path = _pj.findPageContent( _param.page_path );
 	var _cont_procType = _pj.getPageContentProcType( _param.page_path );
-	var _cont_realpath = _pj.get('path')+'/'+_cont_path;
+	// var _cont_realpath = _pj.get('path')+'/'+_cont_path;
+	var _cont_realpath = px.php.realpath( px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+'/'+_cont_path );
+
 	var _cont_path_info = px.utils.parsePath(_cont_path);
 
 	if( !px.fs.existsSync( _cont_realpath ) ){
@@ -29,7 +31,7 @@ window.contApp = new (function( px ){
 	}
 	_cont_realpath = px.fs.realpathSync( _cont_realpath );
 
-	var _contentsPath = px.fs.realpathSync( _pj.get('path')+'/'+_cont_path);
+	var _contentsPath = px.fs.realpathSync( px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+'/'+_cont_path);
 
 	var $preview, $iframe;
 

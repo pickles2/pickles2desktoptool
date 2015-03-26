@@ -56,16 +56,16 @@ window.contApp = new (function( px ){
 				if( _pj.getPx2DTConfig() && _pj.getPx2DTConfig().paths_module_template ){
 					pathsModTpls = _pj.getPx2DTConfig().paths_module_template;
 				}
-				_this.moduleTemplates.init( _pj.get('path'), pathsModTpls, function(){
+				_this.moduleTemplates.init( px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') ), pathsModTpls, function(){
 					it.next();
 				} );
 			} ,
 			function(it){
 				// コンテンツデータのロード・初期化
 				_this.contPath = _pj.findPageContent( _param.page_path );
-				var realpath = _pj.get('path')+'/'+_this.contPath;
+				var realpath = px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+'/'+_this.contPath;
 				var pathInfo = px.utils.parsePath( _this.contPath );
-				_this.contFilesDirPath = _pj.get('path')+'/'+pathInfo.dirname+'/'+pathInfo.basenameExtless+'_files/';
+				_this.contFilesDirPath = px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+'/'+pathInfo.dirname+'/'+pathInfo.basenameExtless+'_files/';
 
 				_this.contentsSourceData.init( realpath, _this.contFilesDirPath, function(){
 					it.next();

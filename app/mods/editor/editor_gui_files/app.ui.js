@@ -17,8 +17,6 @@ window.contApp.ui = new(function(px, contApp){
 	 * フィールド初期化
 	 */
 	this.initField = function( cb ){
-		_Keypress = new window.keypress.Listener();
-		this.Keypress = _Keypress;
 
 		$preview = $('iframe.cont_field-preview');
 		$previewDoc = $($preview[0].contentWindow.document);
@@ -117,31 +115,49 @@ window.contApp.ui = new(function(px, contApp){
 
 						},
 						function(){
-							var deleteModuleInstance = function(){
-								if( selectedInstance !== null ){
-									contApp.contentsSourceData.removeInstance( selectedInstance );
-									_this.unselectInstance();
-									contApp.ui.onEditEnd();
-									px.message("モジュールインスタンスを削除しました。");
-								}
-								return;
-							}
-							_Keypress.simple_combo("backspace", function(e) {
-								deleteModuleInstance();
-								e.preventDefault();
-							});
-							_Keypress.simple_combo("delete", function(e) {
-								deleteModuleInstance();
-								e.preventDefault();
-							});
-							it.next();
-						},
-						function(){
 							it.next();
 						}
 					);
 				},
 				function(){
+					// キーボードイベントセット
+					_Keypress = new window.keypress.Listener();
+					this.Keypress = _Keypress;
+					var deleteModuleInstance = function(){
+						if( selectedInstance !== null ){
+							contApp.contentsSourceData.removeInstance( selectedInstance );
+							_this.unselectInstance();
+							contApp.ui.onEditEnd();
+							px.message("モジュールインスタンスを削除しました。");
+						}
+						return;
+					}
+					_Keypress.simple_combo("backspace", function(e) {
+						deleteModuleInstance();
+						e.preventDefault();
+					});
+					_Keypress.simple_combo("delete", function(e) {
+						deleteModuleInstance();
+						e.preventDefault();
+					});
+					_Keypress.simple_combo("escape", function(e) {
+						_this.unselectInstance();
+						e.preventDefault();
+					});
+					_Keypress.simple_combo("cmd z", function(e) {
+						px.message('cmd z');
+						e.preventDefault();
+					});
+					_Keypress.simple_combo("cmd c", function(e) {
+						px.message('cmd c');
+						e.preventDefault();
+					});
+					_Keypress.simple_combo("cmd x", function(e) {
+						px.message('cmd x');
+						e.preventDefault();
+					});
+
+					// 関係ないとこクリックで選択解除
 					$ctrlPanel.on('click', function(){
 						_this.unselectInstance();
 					});

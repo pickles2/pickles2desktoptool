@@ -128,7 +128,7 @@ window.contApp.ui = new(function(px, contApp){
 							contApp.contentsSourceData.removeInstance( selectedInstance );
 							_this.unselectInstance();
 							contApp.ui.onEditEnd();
-							px.message("モジュールインスタンスを削除しました。");
+							px.message("インスタンスを削除しました。");
 						}
 						return;
 					}
@@ -144,18 +144,31 @@ window.contApp.ui = new(function(px, contApp){
 						_this.unselectInstance();
 						e.preventDefault();
 					});
-					_Keypress.simple_combo("cmd z", function(e) {
-						px.message('cmd z');
-						e.preventDefault();
-					});
 					_Keypress.simple_combo("cmd c", function(e) {
-						px.message('cmd c');
+						var data = _this.getSelectedInstanceData();
+						data = JSON.stringify( data );
+						px.clipboard.set( data );
+						px.message('インスタンスをコピーしました。');
 						e.preventDefault();
 					});
-					_Keypress.simple_combo("cmd x", function(e) {
-						px.message('cmd x');
+					_Keypress.simple_combo("cmd v", function(e) {
+						var data = px.clipboard.get();
+						alert(data);
+						data = JSON.parse( data );
+						contApp.contentsSourceData.updateInstance( data, _this.getSelectedInstance(), function(){
+							px.message('インスタンスをペーストしました。');
+							contApp.ui.onEditEnd();
+						} );
 						e.preventDefault();
 					});
+					// _Keypress.simple_combo("cmd z", function(e) {
+					// 	px.message('cmd z');
+					// 	e.preventDefault();
+					// });
+					// _Keypress.simple_combo("cmd x", function(e) {
+					// 	px.message('cmd x');
+					// 	e.preventDefault();
+					// });
 
 					// 関係ないとこクリックで選択解除
 					$ctrlPanel.on('click', function(){
@@ -287,6 +300,7 @@ window.contApp.ui = new(function(px, contApp){
 										"background-color":"#eef",
 										"border-radius":5,
 										"font-size":9,
+										"color":"#000",
 										'text-align':'center',
 										'box-sizing': 'content-box'
 									})
@@ -684,6 +698,20 @@ window.contApp.ui = new(function(px, contApp){
 			.removeClass('cont_instanceCtrlPanel-ctrlpanel_selected')
 		;
 		return this;
+	}
+
+	/**
+	 * 選択されたインスタンスのパスを取得する
+	 */
+	this.getSelectedInstance = function(){
+		return selectedInstance;
+	}
+
+	/**
+	 * 選択されたインスタンスのデータを取得する
+	 */
+	this.getSelectedInstanceData = function(){
+		return contApp.contentsSourceData.get( selectedInstance );
 	}
 
 	/**

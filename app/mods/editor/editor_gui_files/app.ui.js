@@ -153,7 +153,7 @@ window.contApp.ui = new(function(px, contApp){
 					});
 					_Keypress.simple_combo("cmd v", function(e) {
 						var data = px.clipboard.get();
-						alert(data);
+						// alert(data);
 						data = JSON.parse( data );
 						contApp.contentsSourceData.updateInstance( data, _this.getSelectedInstance(), function(){
 							px.message('インスタンスをペーストしました。');

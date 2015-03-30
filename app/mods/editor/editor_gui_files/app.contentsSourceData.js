@@ -51,7 +51,10 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 			_this.resourceMgr.init(
 				_contFilesDirPath,
 				function(){
-					cb();
+					// ヒストリーマネージャーの初期化
+					_this.history.init( _contentsSourceData, function(){
+						cb();
+					} );
 				}
 			);
 		});
@@ -461,7 +464,9 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 			// リソースマネージャーの保存処理
 			_this.resourceMgr.save(
 				function(){
-					cb( !err );
+					_this.history.put( _contentsSourceData, function(){
+						cb( !err );
+					} );
 				}
 			);
 

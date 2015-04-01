@@ -34,7 +34,7 @@ new (function($, window){
 	 * @return string バージョン番号を示す文字列
 	 */
 	this.getVersion = function(){
-		return '2.0.0-beta3-nb';
+		return '2.0.0-beta4';
 	}
 
 	var _utils = require('./index_files/_utils.node.js');

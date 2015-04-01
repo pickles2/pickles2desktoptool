@@ -130,28 +130,33 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 		// console.log( '開発中: '+modId+': '+containerInstancePath );
 		cb = cb||function(){};
 
-		var newData = new (function(){
-			this.modId = modId ,
-			this.fields = {}
-			if( typeof(subModName) === typeof('') ){
-				this.subModName = subModName;
-			}
-		})(modId, subModName);
-		var modTpl = contApp.moduleTemplates.get( newData.modId, subModName );
+		var newData = {};
+		if( typeof(modId) === typeof('') ){
+			newData = new (function(){
+				this.modId = modId ,
+				this.fields = {}
+				if( typeof(subModName) === typeof('') ){
+					this.subModName = subModName;
+				}
+			})(modId, subModName);
+			var modTpl = contApp.moduleTemplates.get( newData.modId, subModName );
 
-		// 初期データ追加
-		var fieldList = _.keys( modTpl.fields );
-		for( var idx in fieldList ){
-			var fieldName = fieldList[idx];
-			if( modTpl.fields[fieldName].fieldType == 'input' ){
-				newData.fields[fieldName] = '';
-			}else if( modTpl.fields[fieldName].fieldType == 'module' ){
-				newData.fields[fieldName] = [];
-			}else if( modTpl.fields[fieldName].fieldType == 'loop' ){
-				newData.fields[fieldName] = [];
-			}else if( modTpl.fields[fieldName].fieldType == 'if' ){
-			}else if( modTpl.fields[fieldName].fieldType == 'echo' ){
+			// 初期データ追加
+			var fieldList = _.keys( modTpl.fields );
+			for( var idx in fieldList ){
+				var fieldName = fieldList[idx];
+				if( modTpl.fields[fieldName].fieldType == 'input' ){
+					newData.fields[fieldName] = '';
+				}else if( modTpl.fields[fieldName].fieldType == 'module' ){
+					newData.fields[fieldName] = [];
+				}else if( modTpl.fields[fieldName].fieldType == 'loop' ){
+					newData.fields[fieldName] = [];
+				}else if( modTpl.fields[fieldName].fieldType == 'if' ){
+				}else if( modTpl.fields[fieldName].fieldType == 'echo' ){
+				}
 			}
+		}else{
+			newData = JSON.parse( JSON.stringify(modId) );
 		}
 
 		var containerInstancePath = this.parseInstancePath( containerInstancePath );
@@ -222,7 +227,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 	 * インスタンスを更新する
 	 */
 	this.updateInstance = function( newData, containerInstancePath, cb ){
-		// console.log( '開発中: '+modId+': '+containerInstancePath );
+		// console.log( '開発中: '+containerInstancePath );
 		cb = cb||function(){};
 
 		var containerInstancePath = this.parseInstancePath( containerInstancePath );

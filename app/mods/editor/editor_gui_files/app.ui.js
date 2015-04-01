@@ -155,7 +155,7 @@ window.contApp.ui = new(function(px, contApp){
 						var data = px.clipboard.get();
 						// alert(data);
 						data = JSON.parse( data );
-						contApp.contentsSourceData.updateInstance( data, _this.getSelectedInstance(), function(){
+						contApp.contentsSourceData.addInstance( data, _this.getSelectedInstance(), function(){
 							px.message('インスタンスをペーストしました。');
 							contApp.ui.onEditEnd();
 						} );

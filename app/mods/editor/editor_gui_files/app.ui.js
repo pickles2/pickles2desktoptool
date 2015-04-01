@@ -161,10 +161,32 @@ window.contApp.ui = new(function(px, contApp){
 						} );
 						e.preventDefault();
 					});
-					// _Keypress.simple_combo("cmd z", function(e) {
-					// 	px.message('cmd z');
-					// 	e.preventDefault();
-					// });
+					_Keypress.simple_combo("cmd z", function(e) {
+						contApp.contentsSourceData.historyBack( function(){
+							contApp.save(function(result){
+								if( !result ){
+									px.message('保存に失敗しました。');
+								}
+								_this.resizeEvent( function(){
+									px.message('取り消しました。');
+								} );
+							});
+						} );
+						e.preventDefault();
+					});
+					_Keypress.simple_combo("cmd y", function(e) {
+						contApp.contentsSourceData.historyGo( function(){
+							contApp.save(function(result){
+								if( !result ){
+									px.message('保存に失敗しました。');
+								}
+								_this.resizeEvent( function(){
+									px.message('やり直しました。');
+								} );
+							});
+						} );
+						e.preventDefault();
+					});
 					// _Keypress.simple_combo("cmd x", function(e) {
 					// 	px.message('cmd x');
 					// 	e.preventDefault();
@@ -914,8 +936,11 @@ window.contApp.ui = new(function(px, contApp){
 			if( $editWindow ){
 				$editWindow.height( fieldheight );
 			}
-			cb();
 		// }, 200);
+
+		setTimeout(function(){
+			cb();
+		}, 10);
 
 		return;
 	} // resizeEvent()

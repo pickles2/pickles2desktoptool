@@ -32,8 +32,9 @@ window.contApp = new (function( px ){
 
 			src = _this.ui.finalize();
 
+			px.message( contentsRealpath );
 			px.fs.writeFile( contentsRealpath, src, {encoding:'utf8'}, function(err){
-				// px.message( 'HTMLファイルを保存しました。' );
+				px.message( 'HTMLファイルを保存しました。' );
 				cb( !err );
 			} );
 

@@ -459,6 +459,36 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 	}
 
 	/**
+	 * history: 取り消し
+	 */
+	this.historyBack = function( cb ){
+		cb = cb || function(){};
+		var data = this.history.back();
+		if( data === false ){
+			cb(false);
+			return this;
+		}
+		_contentsSourceData = data;
+		cb(true);
+		return this;
+	}
+
+	/**
+	 * history: やりなおし
+	 */
+	this.historyGo = function( cb ){
+		cb = cb || function(){};
+		var data = this.history.go();
+		if( data === false ){
+			cb(false);
+			return this;
+		}
+		_contentsSourceData = data;
+		cb(true);
+		return this;
+	}
+
+	/**
 	 * データを保存する
 	 */
 	this.save = function(cb){

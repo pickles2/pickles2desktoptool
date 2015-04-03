@@ -1,10 +1,11 @@
 {
   "name": "pickles2desktoptool",
-  "version": "2.0.0-beta3",
+  "version": "2.0.0-beta4",
   "description": "",
   "main": "app/index.html",
   "scripts": {
-    "start" : "node_modules/nodewebkit/bin/nodewebkit"
+    "start" : "node_modules/nodewebkit/bin/nodewebkit",
+    "build" : "sh build-osx.sh"
   },
   "author": "Tomoya Koyanagi",
   "license": "BSD",

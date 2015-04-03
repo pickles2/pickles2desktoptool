@@ -117,7 +117,7 @@
 			);
 			return ;
 		}else{
-			fs.readFile(pj.get('path') + path, function(error, bin){
+			fs.readFile( px.utils.dirname( pj.get('path')+'/'+pj.get('entry_script') ) + path, function(error, bin){
 				if(error) {
 					response.writeHead(404, 'Not Found', {
 						'Connection': 'close' ,

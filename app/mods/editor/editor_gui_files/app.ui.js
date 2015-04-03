@@ -378,9 +378,10 @@ window.contApp.ui = new(function(px, contApp){
 			var isRootElement = this.moduleTemplates.isRootElement;
 
 			if( mode == 'finalize' ){
-				rtn = $('<div>');
-				rtn.append( tmpSrc );
-				rtn = rtn.get(0).innerHTML;
+				// rtn = $('<div>');
+				// rtn.append( tmpSrc );
+				// rtn = rtn.get(0).innerHTML;
+				rtn = tmpSrc;
 			}else{
 				rtn = $('<div>');
 				rtn.append( tmpSrc );

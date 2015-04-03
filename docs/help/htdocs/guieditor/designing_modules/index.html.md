@@ -26,7 +26,7 @@ Pickles2 Desktop Tool のGUI編集機能は、個別に設計された小さな�
 `{$mod_name}` ディレクトリの内容は、次のようなファイルで構成されます。
 
 - template.html
-- module.css (module.css.scss)
+- module.css (または module.css.scss)
 - module.js
 - thumb.png
 - info.json
@@ -40,7 +40,7 @@ Pickles2 Desktop Tool のGUI編集機能は、個別に設計された小さな�
 利用可能なフィールドについては、<a href="../fields/">フィールド一覧</a>のページを参照してください。
 
 
-#### module.css (module.css.scss)
+#### module.css (または module.css.scss)
 
 モジュールに関連するスタイルシートを記述します。
 ファイル名の最後に `.scss` を付加すると、SCSS形式で記述することができます。

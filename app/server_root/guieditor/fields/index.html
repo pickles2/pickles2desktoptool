@@ -56,7 +56,8 @@
 <li><a href="#hash_html_attr_text">html_attr_text</a></li>
 <li><a href="#hash_href">href</a></li>
 <li><a href="#hash_wysiwyg_tinymce">wysiwyg_tinymce</a></li>
-<li><a href="#hash_wysiwyg_rte">wysiwyg_rte</a></li></ul></li><li><a href="#hash_moduleフィールド">moduleフィールド</a></li>
+<li><a href="#hash_wysiwyg_rte">wysiwyg_rte</a></li>
+<li><a href="#hash_select">select</a></li></ul></li><li><a href="#hash_moduleフィールド">moduleフィールド</a></li>
 <li><a href="#hash_loopフィールド">loopフィールド</a></li>
 <li><a href="#hash_if_フィールド">if フィールド</a></li>
 <li><a href="#hash_echoフィールド">echoフィールド</a></li></ul>
@@ -134,6 +135,20 @@
 <span id="hash_wysiwyg_rte"></span><h3>wysiwyg_rte</h3>
 
 <p>wkrteライブラリによるWYSIWYG入力欄を作成します。</p>
+
+<span id="hash_select"></span><h3>select</h3>
+
+<p>selectフィールドは、選択式の入力欄を作成します。</p>
+
+<p>selectフィールドには、特別な設定値 <code>options</code> が定義されています。<code>options</code> には、プロパティに <code>value</code> と <code>label</code> を持ったオブジェクトを配列に格納して設定します。</p>
+
+<pre><code>&lt;!-- 実装例 --&gt;
+&lt;div style="text-align:{&amp;{"input":{"type":"select", "name":"text-align", "options":[
+    {"value":"left", "label":"左寄せ"},
+    {"value":"center", "label":"中央寄せ"},
+    {"value":"right", "label":"右寄せ"}
+]}}&amp;};"&gt;inner html.&lt;/div&gt;
+</code></pre>
 
 <span id="hash_moduleフィールド"></span><h2>moduleフィールド</h2>
 

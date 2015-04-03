@@ -1,0 +1,23 @@
+{
+ "bowl": {
+  "main": {
+   "modId": "_sys/root",
+   "fields": {
+    "main": [
+     {
+      "modId": "FESS:parts/md",
+      "fields": {
+       "md_src": "GUI編集機能の使い方について説明します。"
+      }
+     },
+     {
+      "modId": "_sys/html",
+      "fields": {
+       "main": "<ul>\n<?php\n$children = $px->site()->get_children();\nforeach( $children as $child ){\n?>\n\t<li><?php print $px->mk_link( $child ); ?></li>\n<?php\n}\n?>\n</ul>"
+      }
+     }
+    ]
+   }
+  }
+ }
+}

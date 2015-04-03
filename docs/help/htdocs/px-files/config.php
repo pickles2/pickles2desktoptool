@@ -149,5 +149,16 @@ return call_user_func( function(){
 	];
 
 
+	// config for Plugins.
+	$conf->plugins = new stdClass;
+
+	// config for Pickles2 Desktop Tool.
+	$conf->plugins->px2dt = new stdClass;
+	$conf->plugins->px2dt->paths_module_template = [
+		"SELF" => "./px-files/resources/module_templates/",
+		"FESS" => "./vendor/tomk79/fess/resources/px2dt_modules/"
+	];
+
+
 	return $conf;
 } );

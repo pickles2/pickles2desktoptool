@@ -205,6 +205,7 @@ window.contApp = new (function( px ){
 			autoCloseBrackets: true,
 			matchBrackets: true,
 			showCursorWhenSelecting: true,
+			lineWrapping : (_cont_procType=='md'?true:false) ,
 
 			foldGutter: true,
 			gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],

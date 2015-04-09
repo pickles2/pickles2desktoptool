@@ -30,6 +30,7 @@ Pickles2 Desktop Tool のGUI編集機能は、個別に設計された小さな�
 - module.js
 - thumb.png
 - info.json
+- README.html (または README.md)
 
 
 #### template.html
@@ -76,6 +77,11 @@ thumb.png は、GUI編集画面上での、モジュールのサムネイルと�
 }
 ```
 
+#### README.html (または README.md)
+
+モジュールに関する説明などがあれば、このファイルに記述します。
+
+この記述は、px2-px2dthelper が自動生成するスタイルガイドに記載されます。
 
 
 ## モジュールをプロジェクトに登録する
@@ -86,23 +92,22 @@ thumb.png は、GUI編集画面上での、モジュールのサムネイルと�
 
 サブメニュー内にある `Config` を開きます。
 
-### Px2DT Config にディレクトリを登録
 
-Pickles2 Desktop Tool の設定ファイルは、JSON形式です。次の例を参考に、`paths_module_template` 欄に、モジュールのパスを設定してください。
+### Config にディレクトリを登録
+
+Pickles2 Desktop Tool の設定は、Pickles2 の Config `$conf->plugins->px2dt` に記述します。 次の例を参考に、`paths_module_template` 欄にモジュールのパスを設定してください。
 
 ```
-{
-    "paths_module_template": {
-        "SELF": "./px-files/resources/module_templates/"
-    }
-}
+@$conf->plugins->px2dt->paths_module_template = [
+	"SELF" => "./px-files/resources/module_templates/"
+];
 ```
 
 モジュールのセットは、1つのプロジェクトにつき複数登録することができます。
 
 `paths_module_template` の添字(上記の例では、"SELF")は、モジュールのIDの一部として利用されます。コンテンツに使用した後から変更すると、モジュール構造が壊れますので注意してください。添字には、半角英数字と、ハイフン、アンダースコア が使えます。
 
-Px2DTコンフィグは、`./px-files/px2dtconfig.json` に保存されます。
+Pickles2 のコンフィグは、`./px-files/config.php` に保存されます。
 
 
 

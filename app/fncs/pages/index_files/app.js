@@ -51,9 +51,9 @@ window.contApp = new (function( px ){
 						.append( $bs3btn )
 					)
 				;
-				$bs3btn.find('button').eq(0)
+				$bs3btn.find('button.btn--edit').eq(0)
 					.attr({'data-path': pageInfo.path})
-					.text('編集する')
+					// .text('編集する')
 					.css({
 						'padding-left': '5em',
 						'padding-right': '5em'
@@ -63,8 +63,20 @@ window.contApp = new (function( px ){
 						return false;
 					})
 				;
-				$bs3btn.find('button')
-					.css({
+				$bs3btn.find('button.btn--resources').eq(0)
+					.attr({'data-path': pageInfo.path})
+					// .text('リソース')
+					.click(function(){
+						_this.openResourcesDirectory( $(this).attr('data-path') );
+						return false;
+					})
+				;
+				$bs3btn.find('button.btn--materials').eq(0)
+					.attr({'data-path': pageInfo.path})
+					// .text('素材')
+					.click(function(){
+						_this.openMaterialsDirectory( $(this).attr('data-path') );
+						return false;
 					})
 				;
 
@@ -84,57 +96,34 @@ window.contApp = new (function( px ){
 								})
 							)
 						)
-						.append( $('<li>')
-							.append( $('<a>')
-								.text( 'リソースフォルダを開く' )
-								.attr({
-									'data-path': pageInfo.path ,
-									'href':'javascript:;'
-								})
-								.click(function(){
-									$bs3btn.find('.dropdown-toggle').click();
-									var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( $(this).attr('data-path') ) );
-									var realpathFiles = _pj.get_realpath_controot()+pathFiles;
-									if( !px.utils.isDirectory( realpathFiles ) ){
-										px.fs.mkdirSync( realpathFiles );
-										if( !px.utils.isDirectory( realpathFiles ) ){
-											return false;
-										}
-									}
-									px.utils.openURL( realpathFiles );
-									return false;
-								})
-							)
-						)
-						.append( $('<li>')
-							.append( $('<a>')
-								.text( '素材フォルダを開く' )
-								.attr({
-									'data-path': pageInfo.path ,
-									'href':'javascript:;'
-								})
-								.click(function(){
-									$bs3btn.find('.dropdown-toggle').click();
-									var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( $(this).attr('data-path') ) );
-									var realpathFiles = _pj.get_realpath_controot()+pathFiles;
-									if( !px.utils.isDirectory( realpathFiles ) ){
-										px.fs.mkdirSync( realpathFiles );
-										if( !px.utils.isDirectory( realpathFiles ) ){
-											return false;
-										}
-									}
-									var realpath_matDir = realpathFiles + 'materials.ignore/';
-									if( !px.utils.isDirectory( realpath_matDir ) ){
-										px.fs.mkdirSync( realpath_matDir );
-										if( !px.utils.isDirectory( realpath_matDir ) ){
-											return false;
-										}
-									}
-									px.utils.openURL( realpath_matDir );
-									return false;
-								})
-							)
-						)
+						// .append( $('<li>')
+						// 	.append( $('<a>')
+						// 		.text( 'リソースフォルダを開く' )
+						// 		.attr({
+						// 			'data-path': pageInfo.path ,
+						// 			'href':'javascript:;'
+						// 		})
+						// 		.click(function(){
+						// 			$bs3btn.find('.dropdown-toggle').click();
+						// 			_this.openResourcesDirectory( $(this).attr('data-path') );
+						// 			return false;
+						// 		})
+						// 	)
+						// )
+						// .append( $('<li>')
+						// 	.append( $('<a>')
+						// 		.text( '素材フォルダを開く' )
+						// 		.attr({
+						// 			'data-path': pageInfo.path ,
+						// 			'href':'javascript:;'
+						// 		})
+						// 		.click(function(){
+						// 			$bs3btn.find('.dropdown-toggle').click();
+						// 			_this.openMaterialsDirectory( $(this).attr('data-path') );
+						// 			return false;
+						// 		})
+						// 	)
+						// )
 					;
 					if( contProcType != 'html.gui' ){
 						$bs3btn.find('ul[role=menu]')
@@ -247,6 +236,45 @@ window.contApp = new (function( px ){
 	}// init()
 
 	/**
+	 * 素材フォルダを開く
+	 */
+	this.openMaterialsDirectory = function( path ){
+		var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( path ) );
+		var realpathFiles = _pj.get_realpath_controot()+pathFiles;
+		if( !px.utils.isDirectory( realpathFiles ) ){
+			px.fs.mkdirSync( realpathFiles );
+			if( !px.utils.isDirectory( realpathFiles ) ){
+				return false;
+			}
+		}
+		var realpath_matDir = realpathFiles + 'materials.ignore/';
+		if( !px.utils.isDirectory( realpath_matDir ) ){
+			px.fs.mkdirSync( realpath_matDir );
+			if( !px.utils.isDirectory( realpath_matDir ) ){
+				return false;
+			}
+		}
+		px.utils.openURL( realpath_matDir );
+		return this;
+	}
+
+	/**
+	 * 素材フォルダを開く
+	 */
+	this.openResourcesDirectory = function( path ){
+		var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( path ) );
+		var realpathFiles = _pj.get_realpath_controot()+pathFiles;
+		if( !px.utils.isDirectory( realpathFiles ) ){
+			px.fs.mkdirSync( realpathFiles );
+			if( !px.utils.isDirectory( realpathFiles ) ){
+				return false;
+			}
+		}
+		px.utils.openURL( realpathFiles );
+		return this;
+	}
+
+	/**
 	 * ウィンドウリサイズイベントハンドラ
 	 */
 	function onWindowResize(){
@@ -283,6 +311,7 @@ window.contApp = new (function( px ){
 			cb();
 			return this;
 		}
+		$pageinfo.html('<div style="text-align:center;">now loading ...</div>');
 
 		_lastPreviewPath = path;
 		px.preview.serverStandby( function(){

@@ -71,6 +71,14 @@ window.contApp = new (function( px ){
 						return false;
 					})
 				;
+				$bs3btn.find('button.btn--comment').eq(0)
+					.attr({'data-path': pageInfo.path})
+					// .text('コメント')
+					.click(function(){
+						_this.openCommentFile( $(this).attr('data-path') );
+						return false;
+					})
+				;
 				$bs3btn.find('button.btn--materials').eq(0)
 					.attr({'data-path': pageInfo.path})
 					// .text('素材')
@@ -259,7 +267,7 @@ window.contApp = new (function( px ){
 	}
 
 	/**
-	 * 素材フォルダを開く
+	 * リソースフォルダを開く
 	 */
 	this.openResourcesDirectory = function( path ){
 		var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( path ) );
@@ -271,6 +279,36 @@ window.contApp = new (function( px ){
 			}
 		}
 		px.utils.openURL( realpathFiles );
+		return this;
+	}
+
+	/**
+	 * コメントファイルを開く
+	 */
+	this.openCommentFile = function( path ){
+		var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( path ) );
+		var realpathFiles = _pj.get_realpath_controot()+pathFiles;
+		if( !px.utils.isDirectory( realpathFiles ) ){
+			px.fs.mkdirSync( realpathFiles );
+			if( !px.utils.isDirectory( realpathFiles ) ){
+				return false;
+			}
+		}
+		var realpath_matDir = realpathFiles + 'comments.ignore/';
+		if( !px.utils.isDirectory( realpath_matDir ) ){
+			px.fs.mkdirSync( realpath_matDir );
+			if( !px.utils.isDirectory( realpath_matDir ) ){
+				return false;
+			}
+		}
+		var realpath_comment_file = realpath_matDir + 'comment.md';
+		if( !px.utils.isFile( realpath_comment_file ) ){
+			px.fs.writeFileSync( realpath_comment_file, '# comment: '+path );
+			if( !px.utils.isFile( realpath_comment_file ) ){
+				return false;
+			}
+		}
+		px.utils.openURL( realpath_comment_file );
 		return this;
 	}
 

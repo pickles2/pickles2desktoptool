@@ -11,16 +11,7 @@ window.contApp.fieldDefinitions.select = _.defaults( new (function( px, contApp 
 			rtn += fieldData;
 		}
 		if( mode == 'canvas' && !rtn.length ){
-			rtn = $('<span>')
-				.text('(ダブルクリックして選択してください)')
-				.css({
-					'color':'#999',
-					'background-color':'#ddd',
-					'font-size':'10px',
-					'padding':'0 1em'
-				})
-				.get(0).outerHTML
-			;
+			rtn = '(ダブルクリックして選択してください)';
 		}
 		return rtn;
 	}

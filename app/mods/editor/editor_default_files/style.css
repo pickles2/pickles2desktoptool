@@ -15,6 +15,26 @@ body{
 	display:inline-block;
 }
 
+.cont_editor_header{
+	margin: 0;
+}
+.cont_editor_header ul{
+	margin: 0; padding: 0;
+}
+.cont_editor_header ul li{
+	margin: 0; padding: 0;
+	list-style-type: none;
+	display: inline-block;
+	text-align:center;
+	width:32%;
+}
+.cont_editor_header ul li button{
+	display: block;
+	width: 100%;
+	height:auto;
+	padding:0;
+}
+
 .editor_frame,
 .editor_frame *{
 	font-size: medium !important;

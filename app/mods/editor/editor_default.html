@@ -71,7 +71,21 @@
 		<script type="text/template" id="cont_tpl_editor">
 			<div class="row">
 				<div class="col-xs-6">
-					<div class="editor_frame"><textarea></textarea></div>
+					<div class="cont_editor_header">
+						<div class="cont_editor_header-contents_info"></div>
+						<div class="switch_tab">
+							<ul>
+								<li><button data-switch="html">HTML</button></li>
+								<li><button data-switch="css">CSS (SCSS)</button></li>
+								<li><button data-switch="js">JavaScript</button></li>
+							</ul>
+						</div>
+					</div>
+					<div class="editor_frame">
+						<div class="editor_frame-html"><textarea></textarea></div>
+						<div class="editor_frame-css"><textarea></textarea></div>
+						<div class="editor_frame-js"><textarea></textarea></div>
+					</div>
 					<div class="cont_btns">
 						<ul>
 							<li><button class="cont_btn_resources">リソース</button></li>

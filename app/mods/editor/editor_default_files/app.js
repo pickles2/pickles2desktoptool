@@ -2,9 +2,10 @@ window.px = window.parent.px;
 window.contApp = new (function( px ){
 	if( !px ){ alert('px が宣言されていません。'); }
 
-	var _lastSourceCode;
 	var _this = this;
 	var _pj = px.getCurrentProject();
+
+	var editTimer;
 
 	var _param = px.utils.parseUriParam( window.location.href );
 
@@ -32,27 +33,77 @@ window.contApp = new (function( px ){
 	_cont_realpath = px.fs.realpathSync( _cont_realpath );
 
 	var _contentsPath = px.fs.realpathSync( px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+'/'+_cont_path);
+	var _pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( _pathContent ) );
+	var strLoaderCSS = '<?php ob_start(); ?><link rel="stylesheet" href="./' + px.php.basename( _pathFiles ) + '/style.css" /><?php $px->bowl()->send( ob_get_clean(), \'head\' );?>'+"\n";
+	var strLoaderJS = '<?php ob_start(); ?><script src="./' + px.php.basename( _pathFiles ) + '/script.js"></script><?php $px->bowl()->send( ob_get_clean(), \'head\' );?>'+"\n";
 
 	var $preview, $iframe;
+	var $textarea_html, $textarea_css, $textarea_js;
+	var $editor_header;
 
-	var CodeMirrorInstance;
+	var CodeMirrorInstance_html, CodeMirrorInstance_css, CodeMirrorInstance_js;
 
 	/**
 	 * コンテンツの編集結果を保存する
 	 */
 	function save(cb){
 		cb = cb || function(){};
-		CodeMirrorInstance.save();
-		var src = $('body textarea').val();
+		CodeMirrorInstance_html.save();
+		CodeMirrorInstance_css.save();
+		CodeMirrorInstance_js.save();
 
-		// 文字化け問題にたいそう苦しめられた。
-		// どういうわけか、一旦JSON文字列にしてからデコードすると、
-		// ちゃんと保存できた。
-		src = JSON.parse( JSON.stringify( src ) );
+		var src_html = JSON.parse( JSON.stringify( $textarea_html.val() ) );
+		var src_css = JSON.parse( JSON.stringify( $textarea_css.val() ) );
+		var src_js = JSON.parse( JSON.stringify( $textarea_js.val() ) );
+		var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( _pathContent ) );
 
-		px.fs.writeFile( _contentsPath, src, {encoding:'utf8'}, function(err){
-			cb( !err );
-		} );
+		px.utils.iterateFnc([
+			function(it){
+				var head = '';
+				if( px.php.strlen( src_css ) ){
+					head += strLoaderCSS;
+				}
+				if( px.php.strlen( src_js ) ){
+					head += strLoaderJS;
+				}
+				src_html = head + src_html;
+				px.fs.writeFile( _contentsPath, src_html, {encoding:'utf8'}, function(err){
+					it.next();
+				} );
+			} ,
+			function(it){
+				var path = px.php.dirname(_contentsPath) + '/' + px.php.basename( pathFiles ) + '/style.css.scss';
+				if( px.php.strlen( src_css ) ){
+					px.fs.writeFile( path, src_css, {encoding:'utf8'}, function(err){
+						it.next();
+					} );
+				}else if( px.utils.isFile( path ) ){
+					px.fs.unlink( path, function(err){
+						it.next();
+					} );
+				}else{
+					it.next();
+				}
+			} ,
+			function(it){
+				var path = px.php.dirname(_contentsPath) + '/' + px.php.basename( pathFiles ) + '/script.js';
+				if( px.php.strlen( src_js ) ){
+					px.fs.writeFile( path, src_js, {encoding:'utf8'}, function(err){
+						it.next();
+					} );
+				}else if( px.utils.isFile( path ) ){
+					px.fs.unlink( path, function(err){
+						it.next();
+					} );
+				}else{
+					it.next();
+				}
+			} ,
+			function(it){
+				cb(true);
+			}
+		]).start();
+
 		return this;
 	}
 
@@ -67,13 +118,14 @@ window.contApp = new (function( px ){
 	}
 
 	function windowResize(){
-		// $('textarea')
 		$('.CodeMirror')
 			.css({
-				'height':$(window).height() - $('.cont_btns').height() - 10
+				'height':$(window).height() - $('.cont_btns').height() - $editor_header.height() - 10
 			})
-			.focus()
 		;
+		var selectedTab = $('.switch_tab button[disabled=disabled]').attr('data-switch');
+		$('.editor_frame-'+selectedTab+' .CodeMirror').focus();
+
 		$preview
 			.css({
 				'height': $(window).height()
@@ -86,55 +138,37 @@ window.contApp = new (function( px ){
 	 */
 	function init(){
 		var $html = $( $('#cont_tpl_editor').html() );
-		var editTimer;
-		_lastSourceCode = px.fs.readFileSync(_contentsPath);
 
 		$preview = $html.find('.cont_preview');
 		$iframe = $preview.find('iframe');
 
-		// ↓CodeMirrorへ移行するため削除
-		$html
-			.find('textarea')
-				.val( _lastSourceCode )
-				// // .attr('id', 'cont_editor')
-				// .css({
-				// 	'width':'100%' ,
-				// 	'border':'none',
-				// 	'resize':'none'
-				// })
-				// // .scrollTop(0)
-				// .blur( function(){
-				// 	var src = $('body textarea').val();
-				// 	if( src == _lastSourceCode ){ return; }
-				// 	_lastSourceCode = src;
-				// 	save(function(result){
-				// 		if(!result){
-				// 			px.message( 'ページの保存に失敗しました。' );
-				// 		}else{
-				// 			// px.message( 'ページを保存しました。' );
-				// 		}
-				// 		preview();
-				// 	});
-				// } )
-				// .keydown( function(){
-				// 	if(editTimer){ clearTimeout( editTimer ); }
-				// 	editTimer = setTimeout(function(){
-				// 		var src = $('body textarea').val();
-				// 		if( src == _lastSourceCode ){ return; }
-				// 		_lastSourceCode = src;
-				// 		save(function(result){
-				// 			if(!result){
-				// 				px.message( 'ページの保存に失敗しました。' );
-				// 			}else{
-				// 				// px.message( 'ページを保存しました。' );
-				// 			}
-				// 			preview();
-				// 		});
-				// 	}, 1000);
-				// } )
-		;
+		$editor_header = $html.find('.cont_editor_header');
+
+		$textarea_html = $html.find('.editor_frame-html textarea');
+		$textarea_css = $html.find('.editor_frame-css textarea');
+		$textarea_js = $html.find('.editor_frame-js textarea');
+
+		$html.find('.switch_tab button').click(function(e){
+			var switchTo = $(this).attr('data-switch');
+			_this.selectTab( switchTo );
+		});
+
+		var htmlSrc = px.fs.readFileSync(_contentsPath);
+		$textarea_html.val( htmlSrc );
+		htmlSrc = $textarea_html.val();
+		htmlSrc = htmlSrc.replace( strLoaderCSS, '' );
+		htmlSrc = htmlSrc.replace( strLoaderJS, '' );
+		$textarea_html.val( htmlSrc );
+
+		if( px.utils.isFile( px.php.dirname(_contentsPath) + '/' + px.php.basename( _pathFiles ) + '/style.css.scss' ) ){
+			$textarea_css.val( px.fs.readFileSync( px.php.dirname(_contentsPath) + '/' + px.php.basename( _pathFiles ) + '/style.css.scss' ) );
+		}
+		if( px.utils.isFile( px.php.dirname(_contentsPath) + '/' + px.php.basename( _pathFiles ) + '/script.js' ) ){
+			$textarea_js.val( px.fs.readFileSync( px.php.dirname(_contentsPath) + '/' + px.php.basename( _pathFiles ) + '/script.js' ) );
+		}
+
 		setTimeout(function(){
-			$html.find('textarea').scrollTop(0);
+			$textarea_html.scrollTop(0);
 		}, 10);
 		$html
 			.find('button.cont_btn_resources')
@@ -152,7 +186,7 @@ window.contApp = new (function( px ){
 							px.message( 'ページを保存しました。' );
 						}
 						preview();
-						$('textarea').focus();
+						$textarea_html.focus();
 					});
 				})
 		;
@@ -200,11 +234,35 @@ window.contApp = new (function( px ){
 			.html( '' )
 			.append($html)
 		;
+		_this.selectTab('html');
 
 		// CodeMirrorをセットアップ
-		CodeMirrorInstance = CodeMirror.fromTextArea( $('body textarea').get(0) , {
+		CodeMirrorInstance_html = setupCodeMirror( $textarea_html.get(0), 'html' );
+		CodeMirrorInstance_css = setupCodeMirror( $textarea_css.get(0), 'css' );
+		CodeMirrorInstance_js = setupCodeMirror( $textarea_js.get(0), 'js' );
+
+		CodeMirrorInstance_html.focus();
+
+		preview();
+		windowResize();
+
+		window.initContentsCSS($html);
+		px.progress.close();
+	}
+
+	function setupCodeMirror( textarea, type ){
+		var rtn = CodeMirror.fromTextArea( textarea , {
 			lineNumbers: true,
-			mode: (function(pt){if(pt=='md'){return 'markdown';}return 'htmlmixed';})(_cont_procType),
+			mode: (function(pt, type){
+				if(type=='css'){
+					return 'text/x-scss';
+				}else if(type=='js'){
+					return 'text/javascript';
+				}else if(pt=='md'){
+					return 'markdown';
+				}
+				return 'htmlmixed';
+			})(_cont_procType, type),
 			tabSize: 4,
 			indentUnit: 4,
 			indentWithTabs: true,
@@ -217,35 +275,17 @@ window.contApp = new (function( px ){
 			gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
 			extraKeys: {"Ctrl-E": "autocomplete","Cmd-S":function(){clearTimeout(editTimer);save();preview();}},
 
-			theme: (function(pt){if(pt=='md'){return 'base16-light';}return 'monokai';})(_cont_procType),
+			theme: (function(pt, type){
+				if(type=='css' || type=='js'){
+					return 'monokai';
+				}else if(pt=='md'){
+					return 'base16-light';
+				}
+				return 'monokai';
+			})(_cont_procType, type),
 			keyMap: "sublime"
 		});
-		// function autoSave(){
-		// 	// 頻繁過ぎると迷惑だった。
-		// 	// Cmd-S でリフレッシュできるようにしたので、それで十分。
-		// 	if(editTimer){ clearTimeout( editTimer ); }
-		// 	editTimer = setTimeout(function(){
-		// 		CodeMirrorInstance.save();
-		// 		var src = $('body textarea').val();
-		// 		if( src == _lastSourceCode ){ return; }
-		// 		_lastSourceCode = src;
-		// 		save(function(result){
-		// 			if(!result){
-		// 				px.message( 'ページの保存に失敗しました。' );
-		// 			}
-		// 			preview();
-		// 		});
-		// 	}, 3000);
-		// }
-		// CodeMirrorInstance.on('changes', autoSave);
-		// CodeMirrorInstance.on('blur', autoSave);
-		CodeMirrorInstance.focus();
-
-		preview();
-		windowResize();
-
-		window.initContentsCSS($html);
-		px.progress.close();
+		return rtn;
 	}
 
 	/**
@@ -264,6 +304,20 @@ window.contApp = new (function( px ){
 		return this;
 	}
 
+	/**
+	 * タブを選択
+	 */
+	this.selectTab = function( switchTo ){
+		$editor_header.find('.switch_tab button').removeAttr('disabled');
+		$editor_header.find('.switch_tab button[data-switch='+switchTo+']').attr('disabled', 'disabled');
+		$('.editor_frame > div').hide();
+		$('.editor_frame .editor_frame-'+switchTo+'').show();
+		setTimeout(function(){
+			$('.editor_frame .editor_frame-'+switchTo+' textarea').focus();
+			$('.editor_frame .editor_frame-'+switchTo+' .CodeMirror').focus();
+		}, 1000);
+		return this;
+	}
 
 	$(function(){
 		px.preview.serverStandby( function(){

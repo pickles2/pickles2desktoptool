@@ -137,6 +137,12 @@ window.contApp = new (function( px ){
 			$html.find('textarea').scrollTop(0);
 		}, 10);
 		$html
+			.find('button.cont_btn_resources')
+				.click(function(){
+					_this.openResourcesDirectory();
+				})
+		;
+		$html
 			.find('button.cont_btn_save')
 				.click(function(){
 					save(function(result){
@@ -241,6 +247,23 @@ window.contApp = new (function( px ){
 		window.initContentsCSS($html);
 		px.progress.close();
 	}
+
+	/**
+	 * リソースフォルダを開く
+	 */
+	this.openResourcesDirectory = function(){
+		var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( _pathContent ) );
+		var realpathFiles = _pj.get_realpath_controot()+pathFiles;
+		if( !px.utils.isDirectory( realpathFiles ) ){
+			px.fs.mkdirSync( realpathFiles );
+			if( !px.utils.isDirectory( realpathFiles ) ){
+				return false;
+			}
+		}
+		px.utils.openURL( realpathFiles );
+		return this;
+	}
+
 
 	$(function(){
 		px.preview.serverStandby( function(){

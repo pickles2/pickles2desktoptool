@@ -26,6 +26,7 @@ function cont_createProject(form){
 				}
 			},
 			success: function(){
+				alert('プロジェクトを追加しました。');
 				px.subapp();
 			}
 		}

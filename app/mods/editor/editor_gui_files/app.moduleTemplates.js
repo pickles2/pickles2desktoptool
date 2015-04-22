@@ -207,10 +207,10 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 					var tmpVal = '';
 					if( contApp.fieldDefinitions[field.input.type] ){
 						// フィールドタイプ定義を呼び出す
-						tmpVal += contApp.fieldDefinitions[field.input.type].bind( fieldData[field.input.name], mode );
+						tmpVal += contApp.fieldDefinitions[field.input.type].bind( fieldData[field.input.name], mode, field.input );
 					}else{
 						// ↓未定義のフィールドタイプの場合のデフォルトの挙動
-						tmpVal += contApp.fieldBase.bind( fieldData[field.input.name], mode );
+						tmpVal += contApp.fieldBase.bind( fieldData[field.input.name], mode, field.input );
 					}
 					if( !field.input.hidden ){//← "hidden": true だったら、非表示(=出力しない)
 						rtn += tmpVal;

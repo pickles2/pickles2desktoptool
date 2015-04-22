@@ -3,12 +3,18 @@ window.contApp.fieldDefinitions.select = _.defaults( new (function( px, contApp 
 	/**
 	 * データをバインドする
 	 */
-	this.bind = function( fieldData, mode ){
+	this.bind = function( fieldData, mode, mod ){
 		var rtn = ''
 		if( typeof(fieldData) === typeof([]) ){
 			rtn += fieldData.join('');
 		}else{
 			rtn += fieldData;
+		}
+		if( !rtn.length && mod.options ){
+			for( var idx in mod.options ){
+				rtn = mod.options[idx].value;
+				break;
+			}
 		}
 		if( mode == 'canvas' && !rtn.length ){
 			rtn = '(ダブルクリックして選択してください)';

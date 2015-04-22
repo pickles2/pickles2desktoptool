@@ -48,19 +48,19 @@
 
 <p>ここでは、ドキュメントモジュールのテンプレートを定義する方法について説明します。</p>
 
-<!-- autoindex -->
-<div class="anchor_links">
-<p class="anchor_links-heading">目次</p><ul><li><a href="#hash_ディレクトリとファイルの構成">ディレクトリとファイルの構成</a><ul><li><a href="#hash_モジュールの単位">モジュールの単位</a></li>
-<li><a href="#hash_モジュール1つあたりのファイル構成">モジュール1つあたりのファイル構成</a><ul><li><a href="#hash_template.html">template.html</a></li>
-<li><a href="#hash_module.css_(または_module.css.scss)">module.css (または module.css.scss)</a></li>
-<li><a href="#hash_module.js">module.js</a></li>
-<li><a href="#hash_thumb.png">thumb.png</a></li>
-<li><a href="#hash_info.json">info.json</a></li>
-<li><a href="#hash_README.html_(または_README.md)">README.html (または README.md)</a></li></ul></li></ul></li><li><a href="#hash_モジュールをプロジェクトに登録する">モジュールをプロジェクトに登録する</a><ul><li><a href="#hash_Config_画面を開く">Config 画面を開く</a></li>
-<li><a href="#hash_Config_にディレクトリを登録">Config にディレクトリを登録</a></li></ul>
+<!-- == autoindex == -->
+<div style="margin:2em 5%; border:1px solid #bbb; padding:1em; background:rgba(124, 124, 124, 0.05); border-radius:5px;">
+<div style="margin:0; padding:0; text-align:center; font-weight:bold;">INDEX</div><ul style="margin:0; padding:0 0 0 2em;"><li style="list-style-type:disc; display:list-item;"><a href="#hash_ディレクトリとファイルの構成">ディレクトリとファイルの構成</a><ul style="margin:0; padding:0 0 0 2em;"><li style="list-style-type:disc; display:list-item;"><a href="#hash_モジュールの単位">モジュールの単位</a></li>
+<li style="list-style-type:disc; display:list-item;"><a href="#hash_パッケージ1つあたりのファイル構成">パッケージ1つあたりのファイル構成</a><ul style="margin:0; padding:0 0 0 2em;"><li style="list-style-type:disc; display:list-item;"><a href="#hash_info.json">info.json</a></li></ul></li><li style="list-style-type:disc; display:list-item;"><a href="#hash_カテゴリ1つあたりのファイル構成">カテゴリ1つあたりのファイル構成</a><ul style="margin:0; padding:0 0 0 2em;"><li style="list-style-type:disc; display:list-item;"><a href="#hash_2_info.json">info.json</a></li></ul></li><li style="list-style-type:disc; display:list-item;"><a href="#hash_モジュール1つあたりのファイル構成">モジュール1つあたりのファイル構成</a><ul style="margin:0; padding:0 0 0 2em;"><li style="list-style-type:disc; display:list-item;"><a href="#hash_template.html">template.html</a></li>
+<li style="list-style-type:disc; display:list-item;"><a href="#hash_module.css_(または_module.css.scss)">module.css (または module.css.scss)</a></li>
+<li style="list-style-type:disc; display:list-item;"><a href="#hash_module.js">module.js</a></li>
+<li style="list-style-type:disc; display:list-item;"><a href="#hash_thumb.png">thumb.png</a></li>
+<li style="list-style-type:disc; display:list-item;"><a href="#hash_3_info.json">info.json</a></li>
+<li style="list-style-type:disc; display:list-item;"><a href="#hash_README.html_(または_README.md)">README.html (または README.md)</a></li></ul></li></ul></li><li style="list-style-type:disc; display:list-item;"><a href="#hash_モジュールをプロジェクトに登録する">モジュールをプロジェクトに登録する</a><ul style="margin:0; padding:0 0 0 2em;"><li style="list-style-type:disc; display:list-item;"><a href="#hash_Config_画面を開く">Config 画面を開く</a></li>
+<li style="list-style-type:disc; display:list-item;"><a href="#hash_Config_にディレクトリを登録">Config にディレクトリを登録</a></li></ul>
 </li></ul>
-</div><!-- /.anchor_links -->
-<!-- / autoindex -->
+</div>
+<!-- / == autoindex == -->
 
 
 <span id="hash_ディレクトリとファイルの構成"></span><h2>ディレクトリとファイルの構成</h2>
@@ -70,10 +70,60 @@
 <p>モジュールは、次のようなディレクトリ構成構成が単位となります。</p>
 
 <ul>
-<li>&lt;moduleRoot&gt;/{$mod_category}/{$mod_name}/</li>
+<li>&lt;{$mod_package}&gt;/{$mod_category}/{$mod_name}/</li>
 </ul>
 
 <p>この構成は、モジュールの識別IDに影響します。</p>
+
+<span id="hash_パッケージ1つあたりのファイル構成"></span><h3>パッケージ1つあたりのファイル構成</h3>
+
+<p><code>{$mod_package}</code> ディレクトリには、各カテゴリディレクトリの他に、次のようなファイルで構成されます。</p>
+
+<ul>
+<li>info.json</li>
+</ul>
+
+<span id="hash_info.json"></span><h4>info.json</h4>
+
+<p>このJSONファイルには、パッケージの詳細な付加情報を記述します。</p>
+
+<p>下記は記述例です。</p>
+
+<pre><code>{
+  "name": "パッケージの論理名称",
+  "sort":[
+    "category1",
+    "category2"
+  ]
+}
+</code></pre>
+
+<p><code>sort</code> には、パッケージに含まれるカテゴリのディレクトリ名を配列で指定します。ここに書かれたカテゴリは優先的に上位に表示され、指定した順番に並べられます。記述のないカテゴリは、成り行き順に最後尾に続いて表示されます。</p>
+
+<span id="hash_カテゴリ1つあたりのファイル構成"></span><h3>カテゴリ1つあたりのファイル構成</h3>
+
+<p><code>{$mod_category}</code> ディレクトリには、各モジュールディレクトリの他に、次のようなファイルで構成されます。</p>
+
+<ul>
+<li>info.json</li>
+</ul>
+
+<span id="hash_2_info.json"></span><h4>info.json</h4>
+
+<p>このJSONファイルには、カテゴリの詳細な付加情報を記述します。</p>
+
+<p>下記は記述例です。</p>
+
+<pre><code>{
+  "name": "カテゴリの論理名称",
+  "sort":[
+    "module1",
+    "module2"
+  ]
+}
+</code></pre>
+
+<p><code>sort</code> には、カテゴリに含まれるモジュールのディレクトリ名を配列で指定します。ここに書かれたモジュールは優先的に上位に表示され、指定した順番に並べられます。記述のないモジュールは、成り行き順に最後尾に続いて表示されます。</p>
 
 <span id="hash_モジュール1つあたりのファイル構成"></span><h3>モジュール1つあたりのファイル構成</h3>
 
@@ -116,7 +166,7 @@
 
 <p><code>thumb.png</code> の他にも、<code>thumb.jpg</code>、<code>thumb.gif</code>、<code>thumb.svg</code> が利用できます。</p>
 
-<span id="hash_info.json"></span><h4>info.json</h4>
+<span id="hash_3_info.json"></span><h4>info.json</h4>
 
 <p>このJSONファイルには、モジュールの詳細な付加情報を記述します。</p>
 
@@ -146,15 +196,15 @@
 <p>Pickles2 Desktop Tool の設定は、Pickles2 の Config <code>$conf-&gt;plugins-&gt;px2dt</code> に記述します。 次の例を参考に、<code>paths_module_template</code> 欄にモジュールのパスを設定してください。</p>
 
 <pre><code>@$conf-&gt;plugins-&gt;px2dt-&gt;paths_module_template = [
-    "SELF" =&gt; "./px-files/resources/module_templates/"
+  "SELF" =&gt; "./px-files/resources/module_templates/"
 ];
 </code></pre>
 
 <p>モジュールのセットは、1つのプロジェクトにつき複数登録することができます。</p>
 
-<p><code>paths_module_template</code> の添字(上記の例では、"SELF")は、モジュールのIDの一部として利用されます。コンテンツに使用した後から変更すると、モジュール構造が壊れますので注意してください。添字には、半角英数字と、ハイフン、アンダースコア が使えます。</p>
+<p><code>paths_module_template</code> の添字(上記の例では、"SELF")は、モジュールのIDの一部として利用されます。コンテンツに使用した後から変更すると、モジュール構造が壊れ、作成済みのコンテンツが失われる場合がありますので注意してください。添字には、半角英数字と、ハイフン、アンダースコア が使えます。</p>
 
-<p>Pickles2 のコンフィグは、<code>./px-files/config.php</code> に保存されます。</p>
+<p>Pickles2 の Config は、<code>./px-files/config.php</code> に保存されます。</p>
 						</div>
 						<div class="theme_breadcrumb"><ul><li><a href="/">ヘルプトップ</a></li><li><a href="/contents/">コンテンツ編集</a></li><li><a href="/guieditor/">GUI編集</a></li><li><span>GUIモジュール定義</span></li></ul></div>
 					</div>

@@ -59,8 +59,8 @@
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_wysiwyg_rte">wysiwyg_rte</a></li>
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_select">select</a></li></ul></li><li style="list-style-type:disc; display:list-item;"><a href="#hash_moduleフィールド">moduleフィールド</a></li>
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_loopフィールド">loopフィールド</a></li>
-<li style="list-style-type:disc; display:list-item;"><a href="#hash_if_フィールド">if フィールド</a></li>
-<li style="list-style-type:disc; display:list-item;"><a href="#hash_echoフィールド">echoフィールド</a></li></ul>
+<li style="list-style-type:disc; display:list-item;"><a href="#hash_if_フィールド">if フィールド</a><ul style="margin:0; padding:0 0 0 2em;"><li style="list-style-type:disc; display:list-item;"><a href="#hash_cond">cond</a></li>
+<li style="list-style-type:disc; display:list-item;"><a href="#hash_is_set">is_set</a></li></ul></li><li style="list-style-type:disc; display:list-item;"><a href="#hash_echoフィールド">echoフィールド</a></li></ul>
 </div>
 <!-- / == autoindex == -->
 
@@ -182,7 +182,42 @@
 
 <p>ifフィールドは、与えた条件が真の場合にのみ、出力される領域を定義します。</p>
 
-<p>現在のところ、前出のinputフィールドが入力されたか否かの条件のみが利用できます。</p>
+<p>条件分岐領域の終了は、<code>{&amp;"endif"&amp;}</code> で宣言します。</p>
+
+<p>使用できる条件を説明します。</p>
+
+<span id="hash_cond"></span><h3>cond</h3>
+
+<p>条件式を配列で指定します。</p>
+
+<p>condは2次元配列です。1次元目は or 条件、2次元目は and 条件として評価されます。</p>
+
+<pre><code>&lt;!-- 実装例 --&gt;
+{&amp;{"input":{"type":"html","name":"sample1"}}&amp;}
+{&amp;{"input":{"type":"html","name":"sample2"}}&amp;}
+
+{&amp;{"if":{"cond":[
+    [
+        "is_set:sample1",
+        "sample2==123"
+    ]
+]}}&amp;}
+&lt;p&gt;この部分は、sample1 に値が入力され、かつ sample2 に 123 を入力した場合のみ出力されます。&lt;/p&gt;
+{&amp;"endif"&amp;}
+
+{&amp;{"if":{"cond":[
+    [
+        "sample1==123",
+        "sample2!=123"
+    ]
+]}}&amp;}
+&lt;p&gt;この部分は、sample1 に 123 が入力され、かつ sample2 に 123 以外の値が入力された場合のみ出力されます。&lt;/p&gt;
+{&amp;"endif"&amp;}
+</code></pre>
+
+<span id="hash_is_set"></span><h3>is_set</h3>
+
+<p>指定した名前のフィールドに値がセットされている場合に、内容を表示します。</p>
 
 <pre><code>&lt;!-- 実装例 --&gt;
 {&amp;{"input":{"type":"html","name":"sample1"}}&amp;}
@@ -191,8 +226,6 @@
 &lt;p&gt;この部分は、sample1 に値を入力した場合のみ出力されます。&lt;/p&gt;
 {&amp;"endif"&amp;}
 </code></pre>
-
-<p>条件分岐領域の終了は、<code>{&amp;"endif"&amp;}</code> で宣言します。</p>
 
 <span id="hash_echoフィールド"></span><h2>echoフィールド</h2>
 

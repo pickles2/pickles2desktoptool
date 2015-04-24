@@ -233,9 +233,55 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 					// if field
 					// is_set に指定されたフィールドに値があったら、という評価ロジックを取り急ぎ実装。
 					// もうちょっとマシな条件の書き方がありそうな気がするが、あとで考える。
+					// → 2015-04-25: cond のルールを追加。
 					var tmpSearchResult = searchEndTag( src, 'if' );
+					var boolResult = false;
 					src = '';
+					if( field.if.cond && typeof(field.if.cond) == typeof([]) ){
+						// cond に、2次元配列を受け取った場合。
+						// 1次元目は or 条件、2次元目は and 条件で評価する。
+						for( var condIdx in field.if.cond ){
+							var condBool = true;
+							for( var condIdx2 in field.if.cond[condIdx] ){
+								var tmpCond = field.if.cond[condIdx][condIdx2];
+								if( tmpCond.match( new RegExp('^([\\s\\S]*?)\\:([\\s\\S]*)$') ) ){
+									var tmpMethod = px.php.trim(RegExp.$1);
+									var tmpValue = px.php.trim(RegExp.$2);
+
+									if( tmpMethod == 'is_set' ){
+										if( !_this.nameSpace.vars[tmpValue] || !px.php.trim(_this.nameSpace.vars[tmpValue].val).length ){
+											condBool = false;
+											break;
+										}
+									}
+								}else if( tmpCond.match( new RegExp('^([\\s\\S]*?)(\\!\\=|\\=\\=)([\\s\\S]*)$') ) ){
+									var tmpValue = px.php.trim(RegExp.$1);
+									var tmpOpe = px.php.trim(RegExp.$2);
+									var tmpDiff = px.php.trim(RegExp.$3);
+									if( tmpOpe == '==' ){
+										if( _this.nameSpace.vars[tmpValue].val != tmpDiff ){
+											condBool = false;
+											break;
+										}
+									}else if( tmpOpe == '!=' ){
+										if( _this.nameSpace.vars[tmpValue].val == tmpDiff ){
+											condBool = false;
+											break;
+										}
+									}
+								}
+
+							}
+							if( condBool ){
+								boolResult = true;
+								break;
+							}
+						}
+					}
 					if( _this.nameSpace.vars[field.if.is_set] && px.php.trim(_this.nameSpace.vars[field.if.is_set].val).length ){
+						boolResult = true;
+					}
+					if( boolResult ){
 						src += tmpSearchResult.content;
 					}
 					src += tmpSearchResult.nextSrc;

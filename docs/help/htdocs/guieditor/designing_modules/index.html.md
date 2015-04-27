@@ -12,13 +12,41 @@ Pickles2 Desktop Tool のGUI編集機能は、個別に設計された小さな�
 
 ## ディレクトリとファイルの構成
 
-### モジュールの単位
+### モジュールの単位とディレクトリ構成
 
-モジュールは、次のようなディレクトリ構成構成が単位となります。
+モジュールは、次のようなディレクトリ構成で表現されます。
 
-- &lt;{$mod_package}&gt;/{$mod_category}/{$mod_name}/
 
-この構成は、モジュールの識別IDに影響します。
+```
+└─ package(root)
+  ├─ info.json
+  ├─ category1
+  │　├─ info.json
+  │　├─ module1
+  │　│　├─ README.md
+  │　│　├─ info.json
+  │　│　├─ template.html
+  │　│　├─ module.css
+  │　│　├─ module.js
+  │　│　└─ thumb.png
+  │　│
+  │　├─ module2
+  │　├─ module3
+  │　├─ ・・・
+  │　└─ module N
+  │
+  ├─ category2
+  ├─ category3
+  ├─ ・・・
+  └─ category N
+```
+
+
+
+この構成を元に、モジュールの識別IDが生成されます。モジュールIDは次のような形式になります。
+
+- {$mod_package}:{$mod_category}/{$mod_name}/
+
 
 
 ### パッケージ1つあたりのファイル構成
@@ -90,6 +118,15 @@ Pickles2 Desktop Tool のGUI編集機能は、個別に設計された小さな�
 このHTMLファイルに、テンプレートの実装を記述します。
 テンプレートは、部分だけを切り出した純粋なHTMLをベースに、フィールド(変更可能な箇所を定義するメタ構文)を埋め込むような形式で記述していきます。
 
+```
+<!-- template.html の実装例 -->
+<div class="sample_module">
+	<div class="sample_module-inner">
+{&{"module":{"name":"main"}}&}
+	</div>
+</div>
+```
+
 利用可能なフィールドについては、<a href="../fields/">フィールド一覧</a>のページを参照してください。
 
 
@@ -97,6 +134,19 @@ Pickles2 Desktop Tool のGUI編集機能は、個別に設計された小さな�
 
 モジュールに関連するスタイルシートを記述します。
 ファイル名の最後に `.scss` を付加すると、SCSS形式で記述することができます。
+
+```
+// module.css.scss の実装例
+.sample_module{
+	border: 1px solid #999;
+	padding: 15px;
+	margin:1em 0;
+	&-inner{
+		padding: 0;
+		margin: 0;
+	}
+}
+```
 
 ここに書かれたスタイルは、Pickles2用のプラグイン px2-px2dthelper によって収集・統合し、テーマから自動的に読み込むことができます。
 

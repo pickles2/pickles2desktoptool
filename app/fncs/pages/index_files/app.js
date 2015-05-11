@@ -51,6 +51,18 @@ window.contApp = new (function( px ){
 						.append( $bs3btn )
 					)
 				;
+
+				// サイトマップに編集者コメント欄があったら表示する
+				// 　※サイトマップ拡張項目 "editor-comment" から自動的に取得する。
+				// 　　Markdown 処理して表示する。
+				if( pageInfo['editor-comment'] ){
+					$html
+						.append( $('<div class="cont_page_info-editor_comment">')
+							.html( px.utils.markdown(pageInfo['editor-comment']) )
+						)
+					;
+				}
+
 				$bs3btn.find('button.btn--edit').eq(0)
 					.attr({'data-path': pageInfo.path})
 					// .text('編集する')

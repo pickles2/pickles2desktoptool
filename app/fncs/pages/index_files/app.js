@@ -126,11 +126,14 @@ window.contApp = new (function( px ){
 					var countFile_r = function(path){
 						var list = px.utils.ls( path );
 						for( var idx in list ){
+							if( list[idx] == '.DS_Store' || list[idx] == 'Thumbs.db' ){
+								continue;
+							}
 							if( px.utils.isFile(path+'/'+list[idx]) ){
 								matCount ++;
 								button.text('素材 ('+matCount+')');
 							}else if( px.utils.isDirectory(path+'/'+list[idx]) ){
-								setTimeout( function(){ countFile_r( path+'/'+list[idx] ); }, 10 );
+								countFile_r( path+'/'+list[idx] );
 							}
 						}
 					}
@@ -175,6 +178,7 @@ window.contApp = new (function( px ){
 						;
 					}
 				}
+
 				$bs3btn.find('ul[role=menu]')
 					.append( $('<li>')
 						.append( $('<a>')
@@ -184,10 +188,28 @@ window.contApp = new (function( px ){
 								'href':'javascript:;'
 							})
 							.click(function(){
+								$bs3btn.find('.dropdown-toggle').click();
 								var $this = $(this);
 								px.preview.serverStandby(function(){
 									px.utils.openURL( px.preview.getUrl( $this.attr('data-path') ) );
 								});
+								return false;
+							})
+						)
+					)
+					.append( $('<li class="divider">') )
+					.append( $('<li>')
+						.append( $('<a>')
+							.text( 'show DEC' )
+							.attr({
+								'data-path': pageInfo.path ,
+								'href':'javascript:;'
+							})
+							.click(function(){
+								$bs3btn.find('.dropdown-toggle').click();
+								var $this = $(this);
+								var bookmarklet = "javascript:(function(){var b=document.body;elm=document.createElement('script');elm.setAttribute('type','text/javascript');elm.src='http://tomk79.github.io/DEC/dec_show.js';b.appendChild(elm);b.removeChild(elm);return;})();";
+								$previewIframe.get(0).contentWindow.location = bookmarklet;
 								return false;
 							})
 						)

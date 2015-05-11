@@ -93,12 +93,37 @@ window.contApp = new (function( px ){
 				;
 				$bs3btn.find('button.btn--materials').eq(0)
 					.attr({'data-path': pageInfo.path})
-					// .text('素材')
+					// .text('素材(--)')
 					.click(function(){
 						_this.openMaterialsDirectory( $(this).attr('data-path') );
 						return false;
 					})
 				;
+				(function(){
+					var button = $bs3btn.find('button.btn--materials').eq(0);
+					var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( pageInfo.path ) );
+					var realpathFiles = _pj.get_realpath_controot()+pathFiles;
+					var realpath_matDir = realpathFiles + 'materials.ignore/';
+					var matCount = 0;
+					button.text('素材 ('+matCount+')');
+					if( !px.utils.isDirectory(realpath_matDir) ){
+						return;
+					}
+
+					var countFile_r = function(path){
+						var list = px.utils.ls( path );
+						for( var idx in list ){
+							if( px.utils.isFile(path+'/'+list[idx]) ){
+								matCount ++;
+								button.text('素材 ('+matCount+')');
+							}else if( px.utils.isDirectory(path+'/'+list[idx]) ){
+								countFile_r( path+'/'+list[idx] );
+							}
+						}
+					}
+					countFile_r(realpath_matDir);
+
+				})();
 
 				if( contProcType != '.not_exists' ){
 					$bs3btn.find('ul[role=menu]')

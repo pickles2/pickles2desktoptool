@@ -116,38 +116,9 @@ window.contApp = new (function( px ){
 								})
 							)
 						)
-						// .append( $('<li>')
-						// 	.append( $('<a>')
-						// 		.text( 'リソースフォルダを開く' )
-						// 		.attr({
-						// 			'data-path': pageInfo.path ,
-						// 			'href':'javascript:;'
-						// 		})
-						// 		.click(function(){
-						// 			$bs3btn.find('.dropdown-toggle').click();
-						// 			_this.openResourcesDirectory( $(this).attr('data-path') );
-						// 			return false;
-						// 		})
-						// 	)
-						// )
-						// .append( $('<li>')
-						// 	.append( $('<a>')
-						// 		.text( '素材フォルダを開く' )
-						// 		.attr({
-						// 			'data-path': pageInfo.path ,
-						// 			'href':'javascript:;'
-						// 		})
-						// 		.click(function(){
-						// 			$bs3btn.find('.dropdown-toggle').click();
-						// 			_this.openMaterialsDirectory( $(this).attr('data-path') );
-						// 			return false;
-						// 		})
-						// 	)
-						// )
 					;
 					if( contProcType != 'html.gui' ){
 						$bs3btn.find('ul[role=menu]')
-							.append( $('<li class="divider">') )
 							.append( $('<li>')
 								.append( $('<a>')
 									.text( '外部テキストエディタで編集' )
@@ -165,27 +136,79 @@ window.contApp = new (function( px ){
 							)
 						;
 					}
-					$bs3btn.find('ul[role=menu]')
-						.append( $('<li class="divider">') )
-						.append( $('<li>')
-							.append( $('<a>')
-								.text( 'ブラウザでプレビュー' )
-								.attr({
-									'data-path': pageInfo.path ,
-									'href':'javascript:;'
-								})
-								.click(function(){
-									var $this = $(this);
-									px.preview.serverStandby(function(){
-										px.utils.openURL( px.preview.getUrl( $this.attr('data-path') ) );
-									});
-									return false;
-								})
-							)
+				}
+				$bs3btn.find('ul[role=menu]')
+					.append( $('<li>')
+						.append( $('<a>')
+							.text( 'ブラウザでプレビュー' )
+							.attr({
+								'data-path': pageInfo.path ,
+								'href':'javascript:;'
+							})
+							.click(function(){
+								var $this = $(this);
+								px.preview.serverStandby(function(){
+									px.utils.openURL( px.preview.getUrl( $this.attr('data-path') ) );
+								});
+								return false;
+							})
 						)
-					;
+					)
+					.append( $('<li class="divider">') )
+					.append( $('<li>')
+						.append( $('<a>')
+							.text( '他のページから複製して取り込む' )
+							.attr({
+								'data-path': pageInfo.path ,
+								'data-proc_type': contProcType ,
+								'href':'javascript:;'
+							})
+							.click(function(){
+								$bs3btn.find('.dropdown-toggle').click();
+								if( !confirm('現状のコンテンツを破棄し、他のページを複製して取り込みます。よろしいですか？') ){
+									return false;
+								}
+								var $this = $(this);
+								var $body = $('<div>')
+									.append( $('#template-copy-from-other-page').html() )
+								;
+								px.dialog({
+									'title': '他のページから複製',
+									'body': $body,
+									'buttons':[
+										$('<button>')
+											.text('OK')
+											.click(function(){
+												var val = $body.find('input').val();
+												var pageinfo = _this.pj.site.getPageInfo(val);
+												if( !pageinfo ){
+													alert('存在しないページです。');
+													return false;
+												}
+												_this.pj.copyContentsData(
+													pageinfo.path,
+													$this.attr('data-path'),
+													function(){
+														_this.loadPreview( _lastPreviewPath, function(){
+															px.closeDialog();
+														}, {"force":true} );
+													}
+												);
+											}),
+										$('<button>')
+											.text('Cancel')
+											.click(function(){
+												px.closeDialog();
+											})
+									]
+								});
+								return false;
+							})
+						)
+					)
+				;
+				if( contProcType != '.not_exists' ){
 					$bs3btn.find('ul[role=menu]')
-						.append( $('<li class="divider">') )
 						.append( $('<li>')
 							.append( $('<a>')
 								.text( '編集方法を変更' )

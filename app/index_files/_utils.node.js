@@ -234,6 +234,39 @@
 	}
 
 	/**
+	 * ファイルを複製する
+	 */
+	exports.copy = function(pathFrom, pathTo){
+		if( !this.isFile(pathFrom) ){ return true; }
+		var res = _fs.writeFileSync(
+			pathTo,
+			_fs.readFileSync( pathFrom )
+		);
+		if( !this.isFile(pathTo) ){
+			return false;
+		}
+		return res;
+	}
+
+	/**
+	 * ファイルやディレクトリを再帰的に複製する
+	 */
+	exports.copy_r = function(pathFrom, pathTo){
+		if( this.isFile(pathFrom) ){
+			// ファイルなら単体コピーに転送
+			return this.copy(pathFrom, pathTo);
+		}
+		if( !this.isDirectory(pathFrom) ){ return true; }
+
+		this.mkdirAll( pathTo );
+		var list = this.ls( pathFrom );
+		for( var idx in list ){
+			this.copy_r( pathFrom+'/'+list[idx], pathTo+'/'+list[idx] );
+		}
+		return true;
+	}
+
+	/**
 	 * ファイルを削除する
 	 */
 	exports.rm = function(path){
@@ -242,9 +275,9 @@
 	}
 
 	/**
-	 * ディレクトリを再帰的に削除する。
+	 * ディレクトリを削除する。
 	 * 
-	 * このメソッドはディレクトリを再帰的に削除します。
+	 * このメソッドはディレクトリを削除します。
 	 * 中身のない、空のディレクトリ以外は削除できません。
 	 * 
 	 * @param string $path 対象ディレクトリのパス
@@ -257,8 +290,7 @@
 	/**
 	 * ディレクトリを再帰的に削除する。
 	 * 
-	 * このメソッドはディレクトリを再帰的に削除します。
-	 * 中身のない、空のディレクトリ以外は削除できません。
+	 * このメソッドはディレクトリを中身ごと再帰的に削除します。
 	 * 
 	 * @param string $path 対象ディレクトリのパス
 	 * @return bool 成功時に `true`、失敗時に `false` を返します。

@@ -303,6 +303,72 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	}
 
 	/**
+	 * コンテンツをコピーする
+	 */
+	this.copyContentsData = function( pathFrom, pathTo, cb ){
+		cb = cb || function(){};
+
+		var contRoot = this.get_realpath_controot();
+
+		var from = [];
+		from.pathContent = this.findPageContent( pathFrom );
+		from.pathFiles = this.getContentFilesByPageContent(from.pathContent);
+		from.procType = this.getPageContentProcType( pathFrom );
+
+		var to = [];
+		to.pathContent = this.findPageContent( pathTo );
+		to.pathFiles = this.getContentFilesByPageContent(to.pathContent);
+		to.procType = this.getPageContentProcType( pathTo );
+
+
+		// 一旦削除する
+		if( px.utils.isFile( contRoot+'/'+to.pathContent ) ){
+			px.utils.rm( contRoot+'/'+to.pathContent );
+		}
+		if( px.utils.isDirectory( contRoot+'/'+to.pathFiles ) ){
+			px.utils.rmdir_r( contRoot+'/'+to.pathFiles );
+		}
+
+		// 複製する
+		if( px.utils.isFile( contRoot+'/'+from.pathContent ) ){
+			px.utils.copy( contRoot+'/'+from.pathContent, contRoot+'/'+to.pathContent );
+		}
+		if( px.utils.isDirectory( contRoot+'/'+from.pathFiles ) ){
+			px.utils.copy_r( contRoot+'/'+from.pathFiles, contRoot+'/'+to.pathFiles );
+		}
+
+		// コンテンツのprocTypeが異なる場合
+		if( from.procType !== to.procType ){
+			// 拡張子を合わせる作業
+			var toPageInfo = this.site.getPageInfo( pathTo );
+
+			switch( from.procType ){
+				case 'html':
+				case 'html.gui':
+					var toPathContent = toPageInfo.content;
+					if( !toPageInfo.content.match( new RegExp('\\.html$', 'i') ) ){
+						toPathContent = toPageInfo.content + '.html';
+					}
+					px.fs.renameSync(
+						contRoot+'/'+to.pathContent,
+						contRoot+'/'+toPathContent
+					);
+					break;
+				default:
+					px.fs.renameSync(
+						contRoot+'/'+to.pathContent,
+						contRoot+'/'+toPageInfo.content + '.' + from.procType
+					);
+					break;
+			}
+
+		}
+
+		cb();
+		return true;
+	}
+
+	/**
 	 * gitディレクトリの絶対パスを得る
 	 * 
 	 * @return string gitディレクトリのパス(.git の親ディレクトリ)

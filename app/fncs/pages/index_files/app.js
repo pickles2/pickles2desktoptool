@@ -91,6 +91,19 @@ window.contApp = new (function( px ){
 						return false;
 					})
 				;
+				setTimeout(function(){
+					var button = $bs3btn.find('button.btn--comment').eq(0);
+					var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( pageInfo.path ) );
+					var realpathFiles = _pj.get_realpath_controot()+pathFiles;
+					var realpath_matDir = realpathFiles + 'comments.ignore/';
+					var realpath_comment_file = realpath_matDir + 'comment.md';
+					if( px.utils.isFile( realpath_comment_file ) ){
+						button.text('コメントあり');
+					}else{
+						button.text('コメントする');
+					}
+				}, 10);
+
 				$bs3btn.find('button.btn--materials').eq(0)
 					.attr({'data-path': pageInfo.path})
 					// .text('素材(--)')
@@ -99,7 +112,7 @@ window.contApp = new (function( px ){
 						return false;
 					})
 				;
-				(function(){
+				setTimeout(function(){
 					var button = $bs3btn.find('button.btn--materials').eq(0);
 					var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( pageInfo.path ) );
 					var realpathFiles = _pj.get_realpath_controot()+pathFiles;
@@ -117,13 +130,13 @@ window.contApp = new (function( px ){
 								matCount ++;
 								button.text('素材 ('+matCount+')');
 							}else if( px.utils.isDirectory(path+'/'+list[idx]) ){
-								countFile_r( path+'/'+list[idx] );
+								setTimeout( function(){ countFile_r( path+'/'+list[idx] ); }, 10 );
 							}
 						}
 					}
 					countFile_r(realpath_matDir);
 
-				})();
+				}, 10);
 
 				if( contProcType != '.not_exists' ){
 					$bs3btn.find('ul[role=menu]')

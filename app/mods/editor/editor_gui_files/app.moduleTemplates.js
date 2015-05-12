@@ -253,6 +253,11 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 											condBool = false;
 											break;
 										}
+									}else if( tmpMethod == 'is_mode' ){
+										if( tmpValue != mode ){
+											condBool = false;
+											break;
+										}
 									}
 								}else if( tmpCond.match( new RegExp('^([\\s\\S]*?)(\\!\\=|\\=\\=)([\\s\\S]*)$') ) ){
 									var tmpValue = px.php.trim(RegExp.$1);

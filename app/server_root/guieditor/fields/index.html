@@ -213,6 +213,14 @@
 ]}}&amp;}
 &lt;p&gt;この部分は、sample1 に 123 が入力され、かつ sample2 に 123 以外の値が入力された場合のみ出力されます。&lt;/p&gt;
 {&amp;"endif"&amp;}
+
+{&amp;{"if":{"cond":[
+    [
+        "is_mode:canvas"
+    ]
+]}}&amp;}
+&lt;p&gt;この部分は、編集画面でのみ表示されます。最終描画時のみ表示したい場合は、&lt;code&gt;is_mode:finalize&lt;/code&gt;と書きます。&lt;/p&gt;
+{&amp;"endif"&amp;}
 </code></pre>
 
 <span id="hash_is_set"></span><h3>is_set</h3>

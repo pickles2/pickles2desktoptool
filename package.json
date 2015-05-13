@@ -1,16 +1,17 @@
 {
   "name": "pickles2desktoptool",
-  "version": "2.0.0-beta4",
+  "version": "2.0.0-beta4-nb",
   "description": "",
   "main": "app/index.html",
   "scripts": {
     "start" : "node_modules/nodewebkit/bin/nodewebkit",
-    "build" : "sh build-osx.sh"
+    "build" : "node ./build.js"
   },
   "author": "Tomoya Koyanagi",
   "license": "BSD",
   "dependencies": {
     "nodewebkit": "0.11.*",
+    "node-webkit-builder": "1.0.*",
     "markdown": "0.5.*",
     "phpjs": "*",
     "mkdirp": "0.*"

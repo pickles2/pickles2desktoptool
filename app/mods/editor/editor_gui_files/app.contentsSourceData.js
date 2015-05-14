@@ -42,10 +42,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 				_contentsSourceData = {};
 			}
 			_contentsSourceData.bowl = _contentsSourceData.bowl||{};
-			_contentsSourceData.bowl.main = _contentsSourceData.bowl.main||{
-				'modId':'_sys/root',
-				'fields':{}
-			};
+			_this.initBowlData('main');
 
 			// リソースマネージャーの初期化
 			_this.resourceMgr.init(
@@ -436,6 +433,21 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 		containerInstancePath = containerInstancePath.split('/');
 		// console.log(containerInstancePath);
 		return containerInstancePath;
+	}
+
+	/**
+	 * bowl別のコンテンツデータを初期化する
+	 */
+	this.initBowlData = function( bowlName ){
+		bowlName = bowlName||'main';
+		if( _contentsSourceData.bowl[bowlName] ){
+			return true;
+		}
+		_contentsSourceData.bowl[bowlName] = _contentsSourceData.bowl[bowlName]||{
+			'modId':'_sys/root',
+			'fields':{}
+		};
+		return true;
 	}
 
 	/**

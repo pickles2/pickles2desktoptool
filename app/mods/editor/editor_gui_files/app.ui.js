@@ -916,9 +916,10 @@ window.contApp.ui = new(function(px, contApp){
 		$previewDoc.find('.contents').each(function(){
 			$(this).html('');
 			var id = $(this).attr('id')||'main';
+			contApp.contentsSourceData.initBowlData(id);
 			var data = contApp.contentsSourceData.getBowlData( id );
 
-			dataViewTree[id] = new classUiUnit( '/bowl.main', data );
+			dataViewTree[id] = new classUiUnit( '/bowl.'+id, data );
 			$(this).html( dataViewTree[id].bind( 'canvas' ) );
 			$(this).html( dataViewTree[id].drawCtrlPanels($(this)) );
 
@@ -950,8 +951,23 @@ window.contApp.ui = new(function(px, contApp){
 	 * 最終書き出しHTMLのソースを取得
 	 */
 	this.finalize = function(){
-		var src = dataViewTree.main.bind( 'finalize' );
-		src = JSON.parse( JSON.stringify(src) );
+		var src = '';
+		for( var bowlName in dataViewTree ){
+			// console.log(bowlName);
+			var tmpSrc = dataViewTree[bowlName].bind( 'finalize' );
+			tmpSrc = JSON.parse( JSON.stringify( tmpSrc ) );
+
+			if( bowlName == 'main' ){
+				src += tmpSrc;
+			}else{
+				src += "\n";
+				src += "\n";
+				src += '<?php ob_start(); ?>'+"\n";
+				src += tmpSrc;
+				src += '<?php $px->bowl()->send( ob_get_clean(), '+JSON.stringify(bowlName)+' ); ?>'+"\n";
+				src += "\n";
+			}
+		}
 		return src;
 	}
 

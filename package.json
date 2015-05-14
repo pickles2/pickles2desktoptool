@@ -12,9 +12,12 @@
   "dependencies": {
     "nodewebkit": "0.11.*",
     "node-webkit-builder": "1.0.*",
-    "markdown": "0.5.*",
+    "express":"*",
+    "socket.io": "*",
     "phpjs": "*",
-    "mkdirp": "0.*"
+    "glob": "*",
+    "mkdirp": "0.*",
+    "markdown": "0.5.*"
   },
   "window":{
     "title": "pickles2desktoptool",

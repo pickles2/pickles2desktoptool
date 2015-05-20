@@ -10,8 +10,7 @@ var nw = new NwBuilder({
     macIcns: './app/common/build/px2-osx.icns',
     platforms: [
       'osx32',
-      'win32',
-      'linux32'
+      'win32'
     ]
 });
 

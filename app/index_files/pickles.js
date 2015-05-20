@@ -49,12 +49,18 @@ new (function($, window){
 	this.Keypress = _Keypress;
 
 	var _db = {};
-	var _path_data_dir = process.env.HOME + '/.pickles2desktoptool/';
-	var _path_db = process.env.HOME + '/.pickles2desktoptool/db.json';
+	var _path_data_dir = (process.env.HOME||process.env.LOCALAPPDATA) + '/.pickles2desktoptool/';
+	var _path_db = (process.env.HOME||process.env.LOCALAPPDATA) + '/.pickles2desktoptool/db.json';
+	var _platform = (function(){
+		var platform = 'unknown';
+		if(process.env.LOCALAPPDATA)return 'win';
+		if(process.env.HOME)return 'mac';
+		return platform;
+	})();
 	var _current_app = null;
 	var _selectedProject = null;
 	var _pj = null;
-	this.php = require('phpjs');//めんどくさいから入れちゃった
+	this.php = require('phpjs');
 	var _nw_gui = require('nw.gui');
 	// this.server = require('./index_files/px_server_emurator.node.js').init(this,$);
 	var _appName = 'Pickles 2 Desktop Tool';
@@ -230,6 +236,14 @@ new (function($, window){
 	this.exit = function(){
 		// if(!confirm('exit?')){return;}
 		process.exit();
+	}
+
+	/**
+	 * プラットフォーム名を得る。
+	 * Pickles2 DesktopTool が動作しているPCのOS名。
+	 */
+	this.getPlatform = function(){
+		return _platform;
 	}
 
 	/**

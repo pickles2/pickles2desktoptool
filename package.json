@@ -17,7 +17,8 @@
     "phpjs": "*",
     "glob": "*",
     "mkdirp": "0.*",
-    "markdown": "0.5.*"
+    "markdown": "0.5.*",
+    "px2agent": "*"
   },
   "window":{
     "title": "pickles2desktoptool",

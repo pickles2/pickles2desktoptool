@@ -187,7 +187,7 @@ new (function($, window){
 					'buttons': []
 				};
 				px.utils.exec(
-					'php -r "readfile(\'https://getcomposer.org/installer\');" | php' ,
+					px.cmd('php') + ' -r "readfile(\'https://getcomposer.org/installer\');" | ' + px.cmd('php') ,
 					function(){
 						_db.commands.composer = _path_data_dir+'commands/composer/composer.phar';
 						px.save();

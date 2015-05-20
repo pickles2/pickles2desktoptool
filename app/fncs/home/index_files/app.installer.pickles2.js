@@ -15,8 +15,9 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 
 		var $msg = $('<div>');
 		px.spawnDialog(
-			px.cmd('composer'),
+			px.cmd('php'),
 			[
+				px.cmd('composer'),
 				'create-project',
 				'tomk79/pickles2',
 				'./',

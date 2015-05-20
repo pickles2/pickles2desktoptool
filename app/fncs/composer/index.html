@@ -105,8 +105,9 @@
 
 			function cont_update_conposer(btn){
 				$(btn).attr('disabled', 'disabled');
-				window.px.utils.spawn( px.cmd('composer'),
-					['self-update'],
+				window.px.utils.spawn(
+					px.cmd('php'),
+					[px.cmd('composer'), 'self-update'],
 					{
 						cd: pj.get_realpath_composer_root(),
 						success: function(data){
@@ -132,8 +133,9 @@
 
 			function cont_update_proj(btn){
 				$(btn).attr('disabled', 'disabled');
-				window.px.utils.spawn( px.cmd('composer'),
-					['update'],
+				window.px.utils.spawn(
+					px.cmd('php'),
+					[px.cmd('composer'), 'update'],
 					{
 						cd: pj.get_realpath_composer_root(),
 						success: function(data){
@@ -159,8 +161,9 @@
 
 			function cont_install_proj(btn){
 				$(btn).attr('disabled', 'disabled');
-				window.px.utils.spawn( px.cmd('composer'),
-					['install'],
+				window.px.utils.spawn(
+					px.cmd('php'),
+					[px.cmd('composer'), 'install'],
 					{
 						cd: pj.get_realpath_composer_root(),
 						success: function(data){

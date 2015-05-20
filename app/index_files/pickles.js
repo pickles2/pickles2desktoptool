@@ -51,6 +51,13 @@ new (function($, window){
 	var _db = {};
 	var _path_data_dir = (process.env.HOME||process.env.LOCALAPPDATA) + '/.pickles2desktoptool/';
 	var _path_db = (process.env.HOME||process.env.LOCALAPPDATA) + '/.pickles2desktoptool/db.json';
+
+	// var _OS = require("os");
+	// console.log(_OS.freemem());//<-free memory
+	// console.log(_OS.totalmem());//<-total memory
+	// console.log(_OS.platform());//<-darwin
+	// console.log(_OS.hostname());//<-domain
+
 	var _platform = (function(){
 		var platform = 'unknown';
 		if(process.env.LOCALAPPDATA)return 'win';

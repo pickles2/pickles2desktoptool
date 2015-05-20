@@ -65,7 +65,8 @@ window.contApp.installer.git = new (function( px, contApp ){
 					$msg.text('composer をセットアップしています。この処理はしばらく時間がかかります。');
 					var path_composer = pj.get_realpath_composer_root();
 					px.utils.spawn(
-						px.cmd('composer'), ['install'],
+						px.cmd('php'),
+						[px.cmd('composer'), 'install'],
 						{
 							cd: path_composer,
 							success: function(data){

@@ -145,7 +145,7 @@ window.contApp = new (function( px ){
 					$bs3btn.find('ul[role=menu]')
 						.append( $('<li>')
 							.append( $('<a>')
-								.text( 'Finderで開く' )
+								.text( 'フォルダを開く' )
 								.attr({
 									'data-content': pageInfo.content ,
 									'href':'javascript:;'

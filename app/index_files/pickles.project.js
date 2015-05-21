@@ -150,15 +150,10 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	}
 
 	/**
-	 * Finderで開く
+	 * プロジェクトのフォルダを開く
 	 */
 	this.open = function(){
-		return window.px.utils.spawn('open',
-			[this.get('path')] ,
-			{
-				complete: function(){}
-			}
-		);
+		return window.px.utils.openURL(this.get('path'));
 	}
 
 	/**

@@ -127,16 +127,7 @@ window.contApp = new (function(px, $){
 	 * パブリッシュ先ディレクトリを開く
 	 */
 	this.open_publish_dir = function(){
-		window.px.utils.spawn('open',
-			[
-				_pj.get('path')+'/'+_pj.get('home_dir')+'/_sys/ram/publish/'
-			],
-			{
-				cd: _pj.get('path') ,
-				complete: function(code){
-				}
-			}
-		);
+		window.px.utils.openURL(_pj.get('path')+'/'+_pj.get('home_dir')+'/_sys/ram/publish/');
 	}
 
 	/**

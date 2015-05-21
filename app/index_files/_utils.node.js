@@ -7,6 +7,12 @@
 	var _crypto = require('crypto');
 	var _pathCurrentDir = process.cwd();
 	var DIRECTORY_SEPARATOR = '/';
+	var _platform = (function(){
+		var platform = 'unknown';
+		if(process.env.LOCALAPPDATA)return 'win';
+		if(process.env.HOME)return 'mac';
+		return platform;
+	})();
 
 	/**
 	 * システムコマンドを実行する(exec)
@@ -51,7 +57,16 @@
 	 * URLを開く
 	 */
 	exports.openURL = function( url ){
-		this.spawn( 'open', [url], {} );
+		var cmd = 'open';
+		if(_platform=='win'){
+			cmd = 'explorer';
+			if( url.match(new RegExp('^(?:https?|data)\\:','i')) ){
+				// OS依存しないのでスルー
+			}else if( _fs.existsSync(url) ){
+				url = _fs.realpathSync(url);
+			}
+		}
+		return this.spawn( cmd, [url], {} );
 	}
 
 	/**

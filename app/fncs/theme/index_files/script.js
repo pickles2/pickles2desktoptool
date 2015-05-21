@@ -8,10 +8,10 @@ window.contApp = new (function(){
 	}
 
 	/**
-	 * Finderで表示する
+	 * フォルダを開く
 	 */
 	this.openInFinder = function(){
-		px.utils.spawn('open', [pj.get('path')+'/'+pj.get('home_dir')+'/themes/'], {});
+		px.utils.openURL( pj.get('path')+'/'+pj.get('home_dir')+'/themes/' );
 	}
 
 	/**

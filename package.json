@@ -12,6 +12,7 @@
   "dependencies": {
     "nodewebkit": "0.11.*",
     "node-webkit-builder": "1.0.*",
+    "zip-folder": "*",
     "express":"*",
     "socket.io": "*",
     "phpjs": "*",
@@ -21,7 +22,7 @@
     "px2agent": "*"
   },
   "window":{
-    "title": "pickles2desktoptool",
+    "title": "Pickles 2 Desktop Tool",
     "toolbar":true,
     "frame":true,
     "width":1024,

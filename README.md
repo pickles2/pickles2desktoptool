@@ -1,29 +1,28 @@
-Pickles 2 Desktop Tool
-======================
+# Pickles 2 Desktop Tool
 
-# Install
+## Install
 
 Copy `pickles2desktoptool.app` to your Application Folder.
 
 
-# for developer
+## for developer
 
-## Initial Setup
+### Initial Setup
 
 ```
 $ npm install
 ```
 
-## Boot(develop)
+### Boot(develop)
 
 ```
 $ npm start
 ```
 
 
-## Build
+### Build
 
 ```
-$ sh build-osx.sh
+$ npm run build
 ```
 

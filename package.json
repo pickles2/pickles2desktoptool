@@ -22,12 +22,24 @@
   },
   "window":{
     "title": "pickles2desktoptool",
-    "toolbar":false,
+    "toolbar":true,
     "frame":true,
     "width":1024,
     "height":520,
     "fullscreen":false,
     "icon": "app/common/images/icon.png",
     "position": "mouse"
+  },
+  "platformOverrides": {
+    "win": {
+      "window": {
+        "toolbar": false
+      }
+    },
+    "osx": {
+      "window": {
+        "toolbar": false
+      }
+    }
   }
 }

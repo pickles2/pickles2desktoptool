@@ -1,4 +1,5 @@
 module.exports.classProject = function( window, px, projectInfo, projectId, cbStandby ) {
+	// global.__defineGetter__('__LINE__', function () { return (new Error()).stack.split('\n')[2].split(':').reverse()[1]; }); var var_dump = function(val){ console.log(val); };
 
 	this.projectInfo = projectInfo;
 	this.projectId = projectId;
@@ -6,6 +7,8 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 
 	var _config = null;
 	var _px2DTConfig = null;
+	var _px2agentPj = null;
+	var _path = require('path');
 
 	this.validate = function(){
 		var isError = false;
@@ -80,25 +83,18 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	}
 	this.updateConfig = function( cb ){
 		cb = cb||function(){};
-		var data_memo = '';
-		this.execPx2( '/?PX=api.get.config', {
-			cd: this.get_realpath_controot() ,
-			success: function( data ){
-				data_memo += data;
-			} ,
-			complete: function(code){
-				try{
+		this.execPx2(
+			'/?PX=api.get.config',
+			{
+				complete: function(data_memo){
 					_config = JSON.parse(data_memo);
-				}catch(e){
-					console.log( 'FAILED to PxCommand "?PX=api.get.config". Pickles2 returns not a JSON.' );
-					_config = false;
+					if( _config.plugins && _config.plugins.px2dt ){
+						_px2DTConfig = _config.plugins.px2dt;
+					}
+					cb( _config );
 				}
-				if( _config.plugins && _config.plugins.px2dt ){
-					_px2DTConfig = _config.plugins.px2dt;
-				}
-				cb( _config );
 			}
-		} );
+		);
 		return this;
 	}
 	this.getPx2DTConfig = function(){
@@ -139,13 +135,25 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		return this.site.updateSitemap( cb );
 	}
 	this.execPx2 = function( cmd, opts ){
-		window.px.utils.spawn('php',
-			[
-				this.get('path') + '/' + this.get('entry_script'),
-				cmd
-			] ,
-			opts
+		opts = opts||{};
+		opts.complete = opts.complete||function(){};
+		_px2agentPj.query(
+			cmd,
+			{
+				"output": "json",
+				"userAgent": "Mozilla/5.0",
+				"complete": function(data, code){
+					opts.complete(data);
+				}
+			}
 		);
+		// window.px.utils.spawn(px.cmd('php'),
+		// 	[
+		// 		this.get('path') + '/' + this.get('entry_script'),
+		// 		cmd
+		// 	] ,
+		// 	opts
+		// );
 		return this;
 	}
 
@@ -439,7 +447,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			pathBase = px.utils.dirname( px.fs.realpathSync( this.get('path')+'/'+this.get('entry_script') ) )+'/';
 		}
 		return pathBase;
-	}// get_realpath_composer_root()
+	}// get_realpath_controot()
 
 
 
@@ -662,6 +670,15 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	 * projectオブジェクトを初期化
 	 */
 	px.utils.iterateFnc([
+		function(itPj, pj){
+			_px2agentPj = px.px2agent.createProject(
+				_path.resolve( pj.get('path') + '/' + pj.get('entry_script') ) ,
+				{'bin': px.cmd('php')}
+			);
+			pj.px2agentPj = _px2agentPj;
+
+			itPj.next(pj);
+		},
 		function(itPj, pj){
 			// コンフィグをロード
 			var status = pj.status();

@@ -45,6 +45,9 @@ new (function($, window){
 	this.path = _path;
 	var _appServer = require('./index_files/app_server.js');
 
+	var _px2agent = require('px2agent');
+	this.px2agent = _px2agent;
+
 	var _Keypress = {};
 	this.Keypress = _Keypress;
 

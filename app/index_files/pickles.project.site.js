@@ -2,6 +2,7 @@
  * px.prject.site
  */
 module.exports.site = function( px, pj, callbackOnStandby ) {
+	global.__defineGetter__('__LINE__', function () { return (new Error()).stack.split('\n')[2].split(':').reverse()[1]; }); var var_dump = function(val){ console.log(val); };
 
 	var _this = this;
 	var _sitemap = null;
@@ -117,14 +118,9 @@ module.exports.site = function( px, pj, callbackOnStandby ) {
 	 * サイトマップ情報を更新する
 	 */
 	this.updateSitemap = function( cb ){
-		var sitemap_data_memo = '';
-		pj.execPx2( '/?PX=api.get.sitemap', {
-			cd: pj.get('path') ,
-			success: function( data ){
-				sitemap_data_memo += data;
-			} ,
-			complete: function(code){
-				_sitemap = JSON.parse(sitemap_data_memo);
+		pj.px2agentPj.get_sitemap(
+			function(sitemap_data_memo){
+				_sitemap = sitemap_data_memo;
 
 				_sitemap_dynamic_paths = [];
 				for( var idx in _sitemap ){
@@ -172,7 +168,7 @@ module.exports.site = function( px, pj, callbackOnStandby ) {
 
 				cb( _sitemap );
 			}
-		} );
+		);
 		return this;
 	}
 

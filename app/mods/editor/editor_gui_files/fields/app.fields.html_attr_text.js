@@ -7,6 +7,7 @@ window.contApp.fieldDefinitions.html_attr_text = _.defaults( new (function( px, 
 		var rtn = ''
 		if(typeof(fieldData)===typeof('')){
 			rtn = px.$('<div>').text( fieldData ).html(); // ←HTML特殊文字変換
+			rtn = rtn.replace(new RegExp('\"','g'), '&quot;'); // ← jqueryで `.html()` しても、ダブルクオートは変換してくれないみたい。
 			// rtn = rtn.replace(new RegExp('\r\n|\r|\n','g'), '<br />'); // ← 属性値などに使うので、改行コードは改行コードのままじゃないとマズイ。
 		}
 		if( mode == 'canvas' && !rtn.length ){

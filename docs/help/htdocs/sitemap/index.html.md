@@ -40,9 +40,8 @@
 </table>
 </div><!-- /.unit -->
 
-<h2>その他のヒント</h2>
-<ul>
-	<li>定義列は、任意に並べ替えることができます。</li>
-	<li>定義は任意の名称で追加することができ、コンテンツやテーマから簡単に参照できます。例えば、 <code>* custom_col</code> と定義した列の値は、<code class="selectable">$px->site()->get_page_info( 'page_id', 'custom_col' )</code> や <code class="selectable">$px->site()->get_current_page_info( 'custom_col' )</code> で取得することができます。</li>
-	<li>サイトマップCSVを、グラフィカルなExcelの形式(*.xlsx)で編集することができます。<a href="https://github.com/tomk79/pickles-sitemap-excel-2" onclick="px.utils.openURL( this.href ); return false;">pickles-sitemap-excel-2 プラグイン</a>をプロジェクトに設定してください。</li>
-</ul>
+## その他のヒント
+
+- 定義列は、任意に並べ替えることができます。
+- 定義は任意の名称で追加することができ、コンテンツやテーマから簡単に参照できます。例えば、 <code>* custom_col</code> と定義した列の値は、<code class="selectable">$px->site()->get_page_info( 'page_id', 'custom_col' )</code> や <code class="selectable">$px->site()->get_current_page_info( 'custom_col' )</code> で取得することができます。
+- サイトマップの拡張項目 `* editor-comment` に文字列を入力しておくと、コンテンツの編集画面上に表示することができます。コンテンツを編集する担当者へのメッセージ欄として利用できます。

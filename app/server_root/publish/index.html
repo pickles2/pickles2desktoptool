@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8" />
-		<title>GUI編集 | Pickles 2 Desktop Tool - HELP</title>
+		<title>パブリッシュ | Pickles 2 Desktop Tool - HELP</title>
 
 		<meta name="viewport" content="width=device-width" />
 		<meta name="keywords" content="" />
@@ -33,7 +33,7 @@
 				<div class="theme_shouldernavi">
 <ul></ul>				</div>
 				<div class="theme_globalnavi">
-<ul><li><a href="/intro/">概要</a></li><li><a href="/sitemap/">サイトマップ編集</a></li><li><a href="/theme/">テーマ編集</a></li><li><a href="/contents/" class="current">コンテンツ編集</a></li><li><a href="/publish/">パブリッシュ</a></li><li><a href="/other/">その他の機能</a></li></ul>
+<ul><li><a href="/intro/">概要</a></li><li><a href="/sitemap/">サイトマップ編集</a></li><li><a href="/theme/">テーマ編集</a></li><li><a href="/contents/">コンテンツ編集</a></li><li><a href="/publish/" class="current">パブリッシュ</a></li><li><a href="/other/">その他の機能</a></li></ul>
 				</div>
 			</div>
 		</header>
@@ -41,26 +41,36 @@
 			<div class="container">
 				<div class="row">
 					<div class="col-sm-9">
-						<div class="theme_breadcrumb"><ul><li><a href="/">ヘルプトップ</a></li><li><a href="/contents/">コンテンツ編集</a></li><li><span>GUI編集</span></li></ul></div>
-						<h1>GUI編集</h1>
+						<div class="theme_breadcrumb"><ul><li><a href="/">ヘルプトップ</a></li><li><span>パブリッシュ</span></li></ul></div>
+						<h1>パブリッシュ</h1>
 						<div class="contents">
-<p>GUI編集機能の使い方について説明します。</p>
-<ul>
-	<li><a href="/guieditor/designing_modules/">GUIモジュール定義</a></li>
-	<li><a href="/guieditor/fields/">フィールド一覧</a></li>
-</ul>						</div>
-						<div class="theme_breadcrumb"><ul><li><a href="/">ヘルプトップ</a></li><li><a href="/contents/">コンテンツ編集</a></li><li><span>GUI編集</span></li></ul></div>
+<!-- == autoindex == -->
+<div style="margin:2em 5%; border:1px solid #bbb; padding:1em; background:rgba(124, 124, 124, 0.05); border-radius:5px;">
+<div style="margin:0; padding:0; text-align:center; font-weight:bold;">INDEX</div><ul style="margin:0; padding:0 0 0 2em;"><li style="list-style-type:disc; display:list-item;"><a href="#hash_パブリッシュの手順">パブリッシュの手順</a></li>
+<li style="list-style-type:disc; display:list-item;"><a href="#hash_コマンドラインから実行する">コマンドラインから実行する</a></li></ul>
+</div>
+<!-- / == autoindex == -->
+
+
+<p>パブリッシュは、制作したウェブコンテンツを静的なHTMLファイルに書き出す処理です。</p>
+
+<span id="hash_パブリッシュの手順"></span><h2>パブリッシュの手順</h2>
+
+<p>パブリッシュタブをクリックして、パブリッシュ画面へ進みます。</p>
+
+<span id="hash_コマンドラインから実行する"></span><h2>コマンドラインから実行する</h2>
+
+<p>次のコマンドからもパブリッシュを実行することができます。</p>
+
+<pre><code>$ cd {$path_controot}
+$ php .px_execute.php /?PX=publish.run
+</code></pre>
+						</div>
+						<div class="theme_breadcrumb"><ul><li><a href="/">ヘルプトップ</a></li><li><span>パブリッシュ</span></li></ul></div>
 					</div>
 					<div class="col-sm-3">
 						<nav class="theme_common_navi">
-							<p><a href="/contents/">コンテンツ編集</a></p>
-<ul>
-<li><a href="/guieditor/" class="current">GUI編集</a><ul>
-<li><a href="/guieditor/designing_modules/">GUIモジュール定義</a></li>
-<li><a href="/guieditor/fields/">フィールド一覧</a></li>
-</ul>
-</li>
-</ul>
+							<p><a href="/publish/">パブリッシュ</a></p>
 						</nav>
 
 <a class="twitter-timeline" href="https://twitter.com/pxfw" data-widget-id="567316803953504256">@pxfwさんのツイート</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
@@ -76,11 +86,11 @@
 <li><a href="/intro/">概要</a></li>
 <li><a href="/sitemap/">サイトマップ編集</a></li>
 <li><a href="/theme/">テーマ編集</a></li>
-<li><a href="/contents/" class="current">コンテンツ編集</a><ul>
-<li><a href="/guieditor/" class="current">GUI編集</a></li>
+<li><a href="/contents/">コンテンツ編集</a><ul>
+<li><a href="/guieditor/">GUI編集</a></li>
 </ul>
 </li>
-<li><a href="/publish/">パブリッシュ</a></li>
+<li><a href="/publish/" class="current">パブリッシュ</a></li>
 <li><a href="/other/">その他の機能</a><ul>
 <li><a href="/other/clearcache/">キャッシュを削除する</a></li>
 </ul>

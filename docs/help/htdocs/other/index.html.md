@@ -1,7 +1,5 @@
 
 
-Pickles 2 Desktop Tool のヘルプへようこそ。
-
 
 <?php
 $children = $px->site()->get_children();
@@ -11,3 +9,5 @@ foreach( $children as $child ){
 <?php
 }
 ?>
+
+

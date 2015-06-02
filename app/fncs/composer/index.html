@@ -184,6 +184,31 @@
 				);
 			}
 
+			function cont_show_packages(btn, opt){
+				$(btn).attr('disabled', 'disabled');
+				window.px.utils.spawn(
+					px.cmd('php'),
+					[px.cmd('composer'), 'show', opt],
+					{
+						cd: pj.get_realpath_composer_root(),
+						success: function(data){
+							$('.cont_console').text(
+								$('.cont_console').text() + data
+							);
+						} ,
+						error: function(data){
+							$('.cont_console').text(
+								$('.cont_console').text() + data
+							);
+						} ,
+						complete: function(code){
+							$(btn).removeAttr('disabled');
+							px.message( 'composer show 完了しました。' );
+						}
+					}
+				);
+			}
+
 			/**
 			 * composer.json の編集を保存
 			 */
@@ -213,9 +238,11 @@
 		<div class="contents">
 			<div class="container">
 
-				<p><button onclick="cont_update_conposer(this); return false;">composer を更新 (self-update)</button></p>
+				<p><button onclick="cont_update_conposer(this); return false;">composer 自体を更新 (self-update)</button></p>
 				<p><button onclick="cont_update_proj(this); return false;">composer プロジェクト を更新 (update)</button></p>
 				<p><button onclick="cont_install_proj(this); return false;">composer プロジェクト をインストール (install)</button></p>
+				<p><button onclick="cont_show_packages(this,'-i'); return false;">インストール済みパッケージの一覧を表示 (show -i)</button></p>
+				<p><button onclick="cont_show_packages(this,'-p'); return false;">プラットフォームパッケージの一覧を表示 (show -p)</button></p>
 				<pre class="cont_console" style="max-height:360px;">console:
 </pre>
 				<h2>Edit composer.json</h2>

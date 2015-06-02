@@ -7,7 +7,7 @@ window.contApp = new (function( px ){
 	var _config = null;
 	var $parent, $current, $childList;
 	var $editor = $('<div>');
-	var $preview, $previewIframe, $pageinfo;
+	var $preview, $previewIframe, $pageinfo, $commentView;
 
 	var _param = px.utils.parseUriParam( window.location.href );
 	var _pj = this.pj = px.getCurrentProject();
@@ -21,6 +21,7 @@ window.contApp = new (function( px ){
 		$preview = $('.cont_preview');
 		$previewIframe = $preview.find('iframe');
 		$pageinfo = $('.cont_page_info');
+		$commentView = $('.cont_comment_view');
 
 		$preview
 			.css({
@@ -62,6 +63,24 @@ window.contApp = new (function( px ){
 						)
 					;
 				}
+
+				$commentView.html('...');
+				setTimeout(function(){
+					var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( pageInfo.path ) );
+					var realpathFiles = _pj.get_realpath_controot()+pathFiles;
+					var realpath_matDir = realpathFiles + 'comments.ignore/';
+					var realpath_comment_file = realpath_matDir + 'comment.md';
+					if(!px.utils.isFile( realpath_comment_file )){
+						$commentView.text('no comment.');
+						return;
+					}
+					$commentView.text('コメントをロードしています...');
+					px.fs.readFile(realpath_comment_file, {'encoding':'utf8'}, function(err, data){
+						var html = px.utils.markdown( data );
+						$commentView.html(html);
+					});
+					return;
+				}, 10);
 
 				$bs3btn.find('button.btn--edit').eq(0)
 					.attr({'data-path': pageInfo.path})
@@ -413,17 +432,23 @@ window.contApp = new (function( px ){
 	function onWindowResize(){
 		$editor
 			.css({
-				'height':$(window).height() -5
+				'height': $(window).innerHeight() -0
 			})
+		;
+		$commentView
+			// .css({
+			// 	'height': $(window).innerHeight() - $('.container').outerHeight() -10
+			// })
 		;
 		$('.cont_workspace_container')
 			.css({
-				'height':$(window).height() - $('.container').height() -15
+				'height': $(window).innerHeight() - $('.container').outerHeight() - $commentView.outerHeight() -20,
+				'margin-top': 10
 			})
 		;
 		$preview
 			.css({
-				'height': $('.cont_workspace_container').height() - $pageinfo.height() - 40
+				'height': $('.cont_workspace_container').parent().outerHeight() - $pageinfo.outerHeight() - 3
 			})
 		;
 

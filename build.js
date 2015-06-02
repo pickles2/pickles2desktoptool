@@ -1,6 +1,8 @@
 var _utils = require('./app/index_files/_utils.node.js');
 var NwBuilder = require('node-webkit-builder');
 var zipFolder = require('zip-folder');
+var packageJson = require('./package.json');
+
 
 console.log('== build "Pickles 2 Desktop Tool" ==');
 
@@ -47,7 +49,7 @@ nw.build().then(function () {
         console.log('ZIP mac32...');
         zipFolder(
           __dirname + '/build/pickles2desktoptool/osx32/',
-          __dirname + '/build/Pickles2DesktopTool-osx32.zip',
+          __dirname + '/build/Pickles2DesktopTool-'+packageJson.version+'-osx32.zip',
           function(err) {
             if(err) {
                 console.log('ERROR!', err);
@@ -61,7 +63,7 @@ nw.build().then(function () {
         console.log('ZIP win32...');
         zipFolder(
           __dirname + '/build/pickles2desktoptool/win32/',
-          __dirname + '/build/Pickles2DesktopTool-win32.zip',
+          __dirname + '/build/Pickles2DesktopTool-'+packageJson.version+'-win32.zip',
           function(err) {
             if(err) {
                 console.log('ERROR!', err);

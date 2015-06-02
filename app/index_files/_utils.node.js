@@ -639,9 +639,23 @@
 	 * Markdown形式のテキストをHTMLに変換
 	 */
 	exports.markdown = function( src ){
-		var markdown = require( "markdown" ).markdown;
-		var rtn = markdown.toHTML( src );
-		return rtn;
+		var marked = require('marked');
+		marked.setOptions({
+			renderer: new marked.Renderer(),
+			gfm: true,
+			tables: true,
+			breaks: false,
+			pedantic: false,
+			sanitize: false,
+			smartLists: true,
+			smartypants: false
+		});
+
+		return marked(src);
+
+		// var markdown = require( "markdown" ).markdown;
+		// var rtn = markdown.toHTML( src );
+		// return rtn;
 	}
 
 	/**

@@ -18,7 +18,7 @@
     "phpjs": "*",
     "glob": "*",
     "mkdirp": "0.*",
-    "markdown": "0.5.*",
+    "marked": "0.3.*",
     "px2agent": "*"
   },
   "window":{

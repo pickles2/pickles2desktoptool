@@ -118,7 +118,7 @@ module.exports.site = function( px, pj, callbackOnStandby ) {
 	 * サイトマップ情報を更新する
 	 */
 	this.updateSitemap = function( cb ){
-		pj.px2agentPj.get_sitemap(
+		pj.px2proj.get_sitemap(
 			function(sitemap_data_memo){
 				_sitemap = sitemap_data_memo;
 

@@ -7,7 +7,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 
 	var _config = null;
 	var _px2DTConfig = null;
-	var _px2agentPj = null;
+	var _px2proj = null;
 	var _path = require('path');
 
 	this.validate = function(){
@@ -137,7 +137,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	this.execPx2 = function( cmd, opts ){
 		opts = opts||{};
 		opts.complete = opts.complete||function(){};
-		_px2agentPj.query(
+		_px2proj.query(
 			cmd,
 			{
 				"output": "json",
@@ -671,11 +671,11 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	 */
 	px.utils.iterateFnc([
 		function(itPj, pj){
-			_px2agentPj = px.px2agent.createProject(
+			_px2proj = px.px2agent.createProject(
 				_path.resolve( pj.get('path') + '/' + pj.get('entry_script') ) ,
 				{'bin': px.cmd('php')}
 			);
-			pj.px2agentPj = _px2agentPj;
+			pj.px2proj = _px2proj;
 
 			itPj.next(pj);
 		},

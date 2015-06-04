@@ -245,6 +245,9 @@ window.contApp = new (function( px ){
 
 		preview();
 		windowResize();
+		$(window).resize(function(){
+			windowResize();
+		});
 
 		window.initContentsCSS($html);
 		px.progress.close();
@@ -324,8 +327,5 @@ window.contApp = new (function( px ){
 			init();
 		} );
 	})
-	$(window).resize(function(){
-		windowResize();
-	});
 
 })( window.parent.px );

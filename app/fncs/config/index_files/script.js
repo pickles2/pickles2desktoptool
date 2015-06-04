@@ -15,8 +15,8 @@ window.contApp = new (function( px ){
 		var $tpl = $( $('#template-main').html() );
 		$('.contents').html('').append( $tpl );
 
-		$('.cont_config_json_preview pre').text( JSON.stringify( pj.getConfig() ) );
-		$('.cont_px2dtconfig_json_preview pre').text( JSON.stringify( pj.getPx2DTConfig() ) );
+		// $('.cont_config_json_preview pre').text( JSON.stringify( pj.getConfig() ) );
+		// $('.cont_px2dtconfig_json_preview pre').text( JSON.stringify( pj.getPx2DTConfig() ) );
 
 		var src = '';
 		if( px.utils.isFile(configBasePath+'/config.json') ){
@@ -44,30 +44,10 @@ window.contApp = new (function( px ){
 			CodeMirrorInstans['px2config'].save();
 		});
 
-
-		// var src = '';
-		// if( px.utils.isFile(configBasePath+'/px2dtconfig.json') ){
-		// 	src = px.fs.readFileSync( configBasePath+'/px2dtconfig.json' );
-		// }
-		// $('.cont_px2dtconfig_edit').html('').append( $('<textarea>').val(src) );
-		// CodeMirrorInstans['px2dtconfig'] = CodeMirror.fromTextArea( $('.cont_px2dtconfig_edit textarea').get(0), {
-		// 	lineNumbers: true,
-		// 	mode: {name:'javascript', json: true},
-		// 	tabSize: 4,
-		// 	indentUnit: 4,
-		// 	indentWithTabs: true,
-		// 	autoCloseBrackets: true,
-		// 	matchBrackets: true,
-		// 	showCursorWhenSelecting: true,
-		// 	viewportMargin: Infinity,
-
-		// 	theme: 'monokai',
-		// 	keyMap: "sublime"
-		// } );
-		// CodeMirrorInstans['px2dtconfig'].on('change',function(){
-		// 	CodeMirrorInstans['px2dtconfig'].save();
-		// });
-
+		windowResize();
+		$(window).resize(function(){
+			windowResize();
+		});
 		cb();
 	}
 	this.save = function( btn ){
@@ -82,18 +62,16 @@ window.contApp = new (function( px ){
 					$(btn).removeAttr('disabled');
 					px.message( 'コンフィグを保存しました。' );
 				});
-				// var srcPx2DT = $('.cont_px2dtconfig_edit textarea').val();
-				// srcPx2DT = JSON.parse( JSON.stringify( srcPx2DT ) );
-				// px.fs.writeFile( configBasePath+'/px2dtconfig.json', srcPx2DT, {}, function(err){
-				// 	pj.updatePx2DTConfig(function(){
-				// 		cont_init(function(){
-				// 			$(btn).removeAttr('disabled');
-				// 			px.message( 'コンフィグを保存しました。' );
-				// 		});
-				// 	});
-				// } );
 			});
 		} );
+	}
+
+	function windowResize(){
+		$('.CodeMirror')
+			.css({
+				'height':$(window).height() - $('.container').outerHeight() - $('.cont_btn_save').parent().outerHeight() - 10
+			})
+		;
 	}
 
 	$(function(){

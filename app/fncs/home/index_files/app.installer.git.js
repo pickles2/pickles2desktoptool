@@ -47,48 +47,67 @@ window.contApp.installer.git = new (function( px, contApp ){
 
 		$dialog = px.dialog( dlgOpt );
 
-		// stdout = '';
-		px.utils.spawn(
-			px.cmd('git'), ['clone', param.repositoryUrl, './'],
-			{
-				cd: path,
-				success: function(data){
-					stdout += data;
-					$pre.text(stdout);
-				} ,
-				error: function(data){
-					stdout += data;
-					$pre.text(stdout);
-					px.log('Composer Setup Error: '+ data);
-				} ,
-				complete: function(code){
-					$msg.text('composer をセットアップしています。この処理はしばらく時間がかかります。');
-					var path_composer = pj.get_realpath_composer_root();
-					px.utils.spawn(
-						px.cmd('php'),
-						[px.cmd('composer'), 'install'],
-						{
-							cd: path_composer,
-							success: function(data){
-								stdout += data;
-								$pre.text(stdout);
-							} ,
-							error: function(data){
-								stdout += data;
-								$pre.text(stdout);
-								px.log('Composer Setup Error: '+ data);
-							} ,
-							cmdComplete: function(code){
-								$msg.text('Pickles のセットアップが完了しました。');
-							},
-							complete: function(dataFin){
-								dlgOpt.buttons[0].removeAttr('disabled').focus();
-							}
+		px.utils.iterateFnc([
+			function(it, prop){
+				// `$ git clone` しています。
+				// px.git.Clone(prop.param.repositoryUrl, path)
+				// 	.then(function(repository) {
+				// 		// Work with the repository object here.
+				// 		it.next(prop);
+				// 	})
+				// ;
+
+				px.utils.spawn(
+					px.cmd('git'), ['clone', param.repositoryUrl, './'],
+					{
+						cd: path,
+						success: function(data){
+							stdout += data;
+							$pre.text(stdout);
+						} ,
+						error: function(data){
+							stdout += data;
+							$pre.text(stdout);
+							px.log('Composer Setup Error: '+ data);
+						} ,
+						complete: function(code){
+							it.next(prop);
 						}
-					);
-				}
+					}
+				);
+
+			} ,
+			function(it, prop){
+				$msg.text('composer をセットアップしています。この処理はしばらく時間がかかります。');
+				var path_composer = pj.get_realpath_composer_root();
+				px.utils.spawn(
+					px.cmd('php'),
+					[px.cmd('composer'), 'install'],
+					{
+						cd: path_composer,
+						success: function(data){
+							stdout += data;
+							$pre.text(stdout);
+						} ,
+						error: function(data){
+							stdout += data;
+							$pre.text(stdout);
+							px.log('Composer Setup Error: '+ data);
+						} ,
+						cmdComplete: function(code){
+							$msg.text('Pickles のセットアップが完了しました。');
+						},
+						complete: function(dataFin){
+							it.next(prop);
+						}
+					}
+				);
+			} ,
+			function(it, prop){
+				dlgOpt.buttons[0].removeAttr('disabled').focus();
+				it.next(prop);
 			}
-		);
+		]).start({param: param});
 
 		return this;
 	}

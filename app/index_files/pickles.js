@@ -43,6 +43,9 @@ new (function($, window){
 	this.fs = _fs;
 	var _path = require('path');
 	this.path = _path;
+	// var _git = require('nodegit');
+	// this.git = _git;
+
 	var _appServer = require('./index_files/app_server.js');
 
 	var _px2agent = require('px2agent');

@@ -15,6 +15,13 @@ window.contApp = new (function(){
 	}
 
 	/**
+	 * 外部テキストエディタで開く
+	 */
+	this.openInTextEditor = function(){
+		px.openInTextEditor( pj.get('path')+'/'+pj.get('home_dir')+'/themes/' );
+	}
+
+	/**
 	 * イベント
 	 */
 	$(function(){

@@ -57,7 +57,16 @@
 				<p>
 					テンプレートの格納フォルダは、下記をクリックして開いてください。<br />
 				</p>
-				<p class="center"><button onclick="contApp.openInFinder(); return false;">themes フォルダを開く</button></p>
+
+				<div class="btn-group btn-group-justified" role="group">
+					<div class="btn-group" role="group">
+						<button class="btn btn-default" onclick="contApp.openInFinder(); return false;">themes フォルダを開く</button>
+					</div>
+					<div class="btn-group" role="group">
+						<button class="btn btn-default" onclick="contApp.openInTextEditor(); return false;">外部テキストエディタで開く</button>
+					</div>
+				</div>
+
 			</div>
 		</div>
 	</body>

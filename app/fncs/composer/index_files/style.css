@@ -5,6 +5,7 @@
 	height: auto;
 }
 
-.contents button{
-	width: 100%;
+.cont_console{
+	min-height:120px;
+	max-height:360px;
 }

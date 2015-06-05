@@ -27,7 +27,7 @@
 		<script src="../../common/codemirror-4.12/mode/markdown/markdown.js"></script>
 
 		<!-- CodeMirror addon: foldGutter -->
-		<link rel="stylesheet" href="./codemirror-4.12/addon/fold/foldgutter.css" />
+		<link rel="stylesheet" href="../../common/codemirror-4.12/addon/fold/foldgutter.css" />
 		<script src="../../common/codemirror-4.12/addon/fold/foldcode.js"></script>
 		<script src="../../common/codemirror-4.12/addon/fold/foldgutter.js"></script>
 		<script src="../../common/codemirror-4.12/addon/fold/brace-fold.js"></script>
@@ -63,173 +63,8 @@
 
 		<!-- Local Resources -->
 		<link rel="stylesheet" href="./index_files/style.css" type="text/css" />
+		<script src="./index_files/script.js"></script>
 
-		<script>
-			window.px = window.parent.px;
-
-			var pj = px.getCurrentProject();
-			var cont_pathComposerJson = pj.get('path')+'composer.json';
-			var CodeMirrorInstans;
-			if( px.utils.isDirectory( pj.get_realpath_composer_root() ) ){
-				cont_pathComposerJson = pj.get_realpath_composer_root()+'composer.json';
-			}
-
-			function cont_init(){
-				px.fs.readFile(cont_pathComposerJson, function(err, src){
-					if(err){
-						px.message(err);
-					}
-					$('.cont_edit_composer_json textarea').val(src);
-					CodeMirrorInstans = CodeMirror.fromTextArea( $('.cont_edit_composer_json textarea').get(0), {
-						lineNumbers: true,
-						mode: {name:'javascript', json: true},
-						tabSize: 4,
-						indentUnit: 4,
-						indentWithTabs: true,
-						autoCloseBrackets: true,
-						matchBrackets: true,
-						showCursorWhenSelecting: true,
-
-						foldGutter: true,
-						gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-
-						theme: 'monokai',
-						keyMap: "sublime"
-					} );
-					CodeMirrorInstans.on('change',function(){
-						CodeMirrorInstans.save();
-					});
-				});
-
-			}
-
-			function cont_update_conposer(btn){
-				$(btn).attr('disabled', 'disabled');
-				window.px.utils.spawn(
-					px.cmd('php'),
-					[px.cmd('composer'), 'self-update'],
-					{
-						cd: pj.get_realpath_composer_root(),
-						success: function(data){
-							$('.cont_console').text(
-								$('.cont_console').text() + data
-							);
-						} ,
-						error: function(data){
-							$('.cont_console').text(
-								$('.cont_console').text() + data
-							);
-						} ,
-						complete: function(code){
-							// $('.cont_console').text(
-							// 	$('.cont_console').text() + code
-							// );
-							$(btn).removeAttr('disabled');
-							px.message( 'composer self-update 完了しました。' );
-						}
-					}
-				);
-			}
-
-			function cont_update_proj(btn){
-				$(btn).attr('disabled', 'disabled');
-				window.px.utils.spawn(
-					px.cmd('php'),
-					[px.cmd('composer'), 'update'],
-					{
-						cd: pj.get_realpath_composer_root(),
-						success: function(data){
-							$('.cont_console').text(
-								$('.cont_console').text() + data
-							);
-						} ,
-						error: function(data){
-							$('.cont_console').text(
-								$('.cont_console').text() + data
-							);
-						} ,
-						complete: function(code){
-							// $('.cont_console').text(
-							// 	$('.cont_console').text() + code
-							// );
-							$(btn).removeAttr('disabled');
-							px.message( 'composer update 完了しました。' );
-						}
-					}
-				);
-			}
-
-			function cont_install_proj(btn){
-				$(btn).attr('disabled', 'disabled');
-				window.px.utils.spawn(
-					px.cmd('php'),
-					[px.cmd('composer'), 'install'],
-					{
-						cd: pj.get_realpath_composer_root(),
-						success: function(data){
-							$('.cont_console').text(
-								$('.cont_console').text() + data
-							);
-						} ,
-						error: function(data){
-							$('.cont_console').text(
-								$('.cont_console').text() + data
-							);
-						} ,
-						complete: function(code){
-							$(btn).removeAttr('disabled');
-							px.message( 'composer install 完了しました。' );
-						}
-					}
-				);
-			}
-
-			function cont_show_packages(btn, opt){
-				$(btn).attr('disabled', 'disabled');
-				window.px.utils.spawn(
-					px.cmd('php'),
-					[px.cmd('composer'), 'show', opt],
-					{
-						cd: pj.get_realpath_composer_root(),
-						success: function(data){
-							$('.cont_console').text(
-								$('.cont_console').text() + data
-							);
-						} ,
-						error: function(data){
-							$('.cont_console').text(
-								$('.cont_console').text() + data
-							);
-						} ,
-						complete: function(code){
-							$(btn).removeAttr('disabled');
-							px.message( 'composer show 完了しました。' );
-						}
-					}
-				);
-			}
-
-			/**
-			 * composer.json の編集を保存
-			 */
-			function cont_save_composerJson(form){
-				var $form = $(form);
-				var src = $form.find('textarea').val();
-				src = JSON.parse( JSON.stringify( src ) );
-				px.fs.writeFile( cont_pathComposerJson, src, {encoding:'utf8'}, function(err){
-					if(err){
-						px.message( 'composer.json の保存に失敗しました。' );
-					}else{
-						px.message( 'composer.json を保存しました。 $ composer update を実行してください。' );
-					}
-				} );
-			}
-
-			$(function(){
-				cont_init();
-			});
-
-		</script>
 	</head>
 	<body>
 		<div class="container">
@@ -237,19 +72,62 @@
 		</div>
 		<div class="contents">
 			<div class="container">
+				<div role="tabpanel">
 
-				<p><button onclick="cont_update_conposer(this); return false;">composer 自体を更新 (self-update)</button></p>
-				<p><button onclick="cont_update_proj(this); return false;">composer プロジェクト を更新 (update)</button></p>
-				<p><button onclick="cont_install_proj(this); return false;">composer プロジェクト をインストール (install)</button></p>
-				<p><button onclick="cont_show_packages(this,'-i'); return false;">インストール済みパッケージの一覧を表示 (show -i)</button></p>
-				<p><button onclick="cont_show_packages(this,'-p'); return false;">プラットフォームパッケージの一覧を表示 (show -p)</button></p>
-				<pre class="cont_console" style="max-height:360px;">console:
-</pre>
-				<h2>Edit composer.json</h2>
-				<form action="javascript:;" method="get" class="cont_edit_composer_json" onsubmit="cont_save_composerJson(this); return false;">
-					<textarea></textarea>
-					<p><button>composer.json の変更を保存する</button></p>
-				</form>
+					<!-- Nav tabs -->
+					<ul class="nav nav-tabs" role="tablist">
+						<li role="presentation" class="active"><a href="#cont_update" role="tab" data-toggle="tab">更新</a></li>
+						<li role="presentation"><a href="#cont_edit" role="tab" data-toggle="tab">編集</a></li>
+						<li role="presentation"><a href="#cont_status" role="tab" data-toggle="tab">情報</a></li>
+						<li role="presentation"><a href="#cont_maintenance" role="tab" data-toggle="tab">メンテナンス</a></li>
+					</ul>
+
+					<!-- Tab panes -->
+					<div class="tab-content">
+						<div role="tabpanel" class="tab-pane active" id="cont_update">
+							<div class="btn-group btn-group-justified" role="group">
+								<div class="btn-group" role="group">
+									<button class="btn btn-default" onclick="cont_update_proj(this); return false;" title="`$ composer update` を実行します。">composer プロジェクト を更新する</button>
+								</div>
+							</div>
+							<!-- p><button onclick="cont_install_proj(this); return false;">composer プロジェクト をインストール (install)</button></p -->
+							<pre class="cont_console"></pre>
+						</div>
+						<div role="tabpanel" class="tab-pane" id="cont_edit">
+							<form action="javascript:;" method="get" class="cont_edit_composer_json" onsubmit="cont_save_composerJson(this); return false;">
+								<div class="btn-group btn-group-justified" role="group">
+									<div class="btn-group" role="group">
+										<button class="btn btn-default">composer.json の変更を保存する</button>
+									</div>
+								</div>
+								<textarea></textarea>
+							</form>
+						</div>
+						<div role="tabpanel" class="tab-pane" id="cont_status">
+							<div class="btn-group btn-group-justified" role="group">
+								<div class="btn-group" role="group">
+									<button class="btn btn-default" onclick="cont_show_packages(this,'-i'); return false;" title="`$ composer show -i` を実行します。">インストール済みパッケージの一覧を表示する</button>
+								</div>
+								<div class="btn-group" role="group">
+									<button class="btn btn-default" onclick="cont_show_packages(this,'-p'); return false;" title="`$ composer show -p` を実行します。">プラットフォームパッケージの一覧を表示する</button>
+								</div>
+							</div>
+							<pre class="cont_console"></pre>
+						</div>
+						<div role="tabpanel" class="tab-pane" id="cont_maintenance">
+							<div class="btn-group btn-group-justified" role="group">
+								<div class="btn-group" role="group">
+									<button class="btn btn-default" onclick="cont_selfupdate_conposer(this); return false;" title="`$ composer self-update` を実行します。 1ヶ月に1回程度実行してください。">composer 自体を更新</button>
+								</div>
+							</div>
+							<pre class="cont_console"></pre>
+						</div>
+					</div>
+
+				</div>
+
+
+
 			</div>
 		</div>
 	</body>

@@ -23,6 +23,9 @@ window.contApp = new (function( px ){
 		$pageinfo = $('.cont_page_info');
 		$commentView = $('.cont_comment_view');
 
+		// bootstrap
+		$('*').tooltip();
+
 		$preview
 			.css({
 				height: 600

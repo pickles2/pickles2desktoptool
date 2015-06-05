@@ -29,7 +29,7 @@ window.contApp.installer.git = new (function( px, contApp ){
 		;
 
 		var dlgOpt = {};
-		dlgOpt.title = 'Pickles のセットアップ';
+		dlgOpt.title = 'Pickles 2 のセットアップ';
 		dlgOpt.body = $('<div>')
 			.append( $msg.text('Gitリポジトリからクローンしています。この処理はしばらく時間がかかります。') )
 			.append( $pre )

@@ -25,7 +25,7 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 			],
 			{
 				cd: path,
-				title: 'Pickles のセットアップ',
+				title: 'Pickles 2 のセットアップ',
 				description: $msg.text('Pickles をセットアップしています。この処理はしばらく時間がかかります。'),
 				success: function(data){
 				} ,

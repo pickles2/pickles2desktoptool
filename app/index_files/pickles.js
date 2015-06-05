@@ -126,7 +126,7 @@ new (function($, window){
 		{"label":"git",                  "cond":"homeDirExists",      "area":"shoulder", "app":"fncs/git/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"プレビュー",           "cond":"pxStandby",          "area":"shoulder", "app":"fncs/preview/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"コンテンツを移動する", "cond":"pxStandby",          "area":"shoulder", "app":"fncs/movecontents/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"clearcache",           "cond":"pxStandby",          "area":"shoulder", "app":"fncs/clearcache/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"キャッシュを消去",     "cond":"pxStandby",          "area":"shoulder", "app":"fncs/clearcache/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		// {"label":"Reload(dev)",          "cond":"always", "cb": function(){window.location.href='index.html?';}} ,
 		{"label":"システム情報",         "cond":"always",             "area":"shoulder", "app":null, "cb": function(){px.dialog({
 			title: 'システム情報',
@@ -382,6 +382,10 @@ new (function($, window){
 	this.cmd = function(cmd){
 		if( cmd == 'composer' ){
 			return _path_data_dir+'commands/composer/composer.phar';
+		}else if( cmd == 'open' ){
+			if(_platform=='win'){
+				return 'explorer';
+			}
 		}
 		if( !_db.commands ){
 			return cmd;
@@ -446,15 +450,25 @@ new (function($, window){
 		if( !pathEditor.length && !this.utils.isDirectory(pathEditor) ){
 			alert('ERROR: 外部エディタが設定されていないか、存在しません。');
 		}
-		px.utils.spawn(
-			'open',
-			[
-				path,
-				'-a',
-				pathEditor
-			],
-	 		{}
-		);
+		if(_platform=='win'){
+			px.utils.spawn(
+				pathEditor,
+				[
+					path
+				],
+				{}
+			);
+		}else{
+			px.utils.spawn(
+				px.cmd('open'),
+				[
+					path,
+					'-a',
+					pathEditor
+				],
+				{}
+			);
+		}
 	}
 
 	/**

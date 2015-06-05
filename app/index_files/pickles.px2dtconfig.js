@@ -16,6 +16,7 @@
 		if( !px.getDb().apps.texteditorForDir ){ px.getDb().apps.texteditorForDir = null; }
 
 		$tpl.find('[name=php]').val( px.getDb().commands.php );
+		$tpl.find('[name=git]').val( px.getDb().commands.git );
 		$tpl.find('[name=network_preview_port]').val( px.getDb().network.preview.port );
 		$tpl.find('[name=network_appserver_port]').val( px.getDb().network.appserver.port );
 		$tpl.find('[name=apps_texteditor]').val( px.getDb().apps.texteditor );
@@ -27,6 +28,7 @@
 			buttons: [
 				$('<button>').text('OK').click(function(){
 					px.getDb().commands.php = $tpl.find('[name=php]').val();
+					px.getDb().commands.git = $tpl.find('[name=git]').val();
 					px.getDb().network.preview.port = $tpl.find('[name=network_preview_port]').val();
 					px.getDb().network.appserver.port = $tpl.find('[name=network_appserver_port]').val();
 					px.getDb().apps.texteditor = $tpl.find('[name=apps_texteditor]').val();

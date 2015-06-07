@@ -70,7 +70,7 @@ function cont_selfupdate_conposer(btn){
 
 function cont_update_proj(btn){
 	$(btn).attr('disabled', 'disabled');
-	$('#cont_update .cont_console').text();
+	$('#cont_update .cont_console').html('');
 	window.px.utils.spawn(
 		px.cmd('php'),
 		[px.cmd('composer'), 'update'],
@@ -99,7 +99,7 @@ function cont_update_proj(btn){
 
 function cont_install_proj(btn){
 	$(btn).attr('disabled', 'disabled');
-	$('#cont_status .cont_console').text();
+	$('#cont_status .cont_console').html('');
 	window.px.utils.spawn(
 		px.cmd('php'),
 		[px.cmd('composer'), 'install'],
@@ -125,7 +125,7 @@ function cont_install_proj(btn){
 
 function cont_show_packages(btn, opt){
 	$(btn).attr('disabled', 'disabled');
-	$('#cont_status .cont_console').text();
+	$('#cont_status .cont_console').html('');
 	window.px.utils.spawn(
 		px.cmd('php'),
 		[px.cmd('composer'), 'show', opt],

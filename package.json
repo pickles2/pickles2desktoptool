@@ -20,6 +20,7 @@
     "glob": "*",
     "mkdirp": "0.*",
     "marked": "0.3.*",
+    "execsyncs": "*",
     "px2agent": "*"
   },
   "window":{

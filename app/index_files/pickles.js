@@ -73,7 +73,14 @@ new (function($, window){
 	var _current_app = null;
 	var _selectedProject = null;
 	var _pj = null;
-	this.php = require('phpjs');
+
+	var _php = require('phpjs');
+	this.php = _php;
+
+	// var _execSync = require('exec-sync');
+	var _execSync = require('execsyncs')
+	this.execSync = _execSync;
+
 	var _nw_gui = require('nw.gui');
 	// this.server = require('./index_files/px_server_emurator.node.js').init(this,$);
 	var _appName = 'Pickles 2 Desktop Tool';

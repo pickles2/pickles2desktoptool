@@ -50,7 +50,7 @@ window.contApp.contentsSourceData.resourceMgr = new(function(px, contApp){
 			px.utils.mkdir( _resourcesDirPath+'/'+resKey );
 			px.fs.writeFileSync(
 				_resourcesDirPath+'/'+resKey+'/res.json',
-				JSON.stringify( _resourceDb[resKey] )
+				JSON.stringify( _resourceDb[resKey], null, 1 )
 			);
 
 			if(_resourceDb[resKey].base64){
@@ -123,6 +123,17 @@ window.contApp.contentsSourceData.resourceMgr = new(function(px, contApp){
 		var res = this.getResource( resKey );
 		var basename = px.utils.basename( px.fs.realpathSync(_contFilesDirPath) );
 		var rtn = './'+basename+'/resources/'+resKey+'.'+res.ext;
+		return rtn;
+	}
+
+	/**
+	 * get resource public path
+	 */
+	this.getResourceOriginalRealpath = function( resKey ){
+		var res = this.getResource( resKey );
+		var basename = px.utils.basename( px.fs.realpathSync(_contFilesDirPath) );
+		var rtn = _resourcesDirPath+'/'+resKey+'/bin.'+_resourceDb[resKey].ext;
+		// var rtn = './'+basename+'/resources/'+resKey+'.'+res.ext;
 		return rtn;
 	}
 

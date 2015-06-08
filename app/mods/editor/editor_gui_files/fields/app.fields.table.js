@@ -67,7 +67,6 @@ window.contApp.fieldDefinitions.table = _.defaults( new (function( px, contApp )
 		if( typeof(fieldData) !== typeof({}) ){
 			rtn = {
 				"resKey":'',
-				"realpath":'about:blank',
 				"header_row":0,
 				"header_col":0,
 				"cell_renderer":'text',
@@ -88,12 +87,25 @@ window.contApp.fieldDefinitions.table = _.defaults( new (function( px, contApp )
 		}
 		// if( typeof(data.original) !== typeof({}) ){ data.original = {}; }
 		var res = _resMgr.getResource( data.resKey );
-		var path = 'data:'+res.type+';base64,' + res.base64;
 
 		var $excel = $('<div>');
-		rtn.append( $excel
-			.text('')
-		);
+		rtn.append( $excel );
+		// console.log(data);
+		if( data.resKey ){
+			$excel.html('')
+				.append( $('<button type="button">エクセルで開く</button>')
+					.attr({
+						'title': _resMgr.getResourceOriginalRealpath( data.resKey ),
+						'data-excel-realpath': _resMgr.getResourceOriginalRealpath( data.resKey )
+					})
+					.click(function(){
+						var realpath = $(this).attr('data-excel-realpath');
+						px.utils.openURL(realpath);
+					})
+				)
+			;
+		}
+
 		rtn.append( $('<input>')
 			.attr({
 				"name":mod.name ,
@@ -208,9 +220,10 @@ window.contApp.fieldDefinitions.table = _.defaults( new (function( px, contApp )
 		if( realpathSelected ){
 			var tmpResInfo = parseResource( realpathSelected );
 			_resMgr.updateResource( data.resKey, tmpResInfo );
+		}else if( data.resKey ){
+			_resMgr.resetBase64FromBin( data.resKey );
 		}
 		// var res = _resMgr.getResource( data.resKey );
-		data.realpath = _resMgr.getResourceOriginalRealpath( data.resKey );
 		data.header_row = $dom.find('input[name="'+mod.name+':header_row"]').val();
 		data.header_col = $dom.find('input[name="'+mod.name+':header_col"]').val();
 		data.cell_renderer = $dom.find('input[name="'+mod.name+':cell_renderer"]:checked').val();

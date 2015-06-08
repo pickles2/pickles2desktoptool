@@ -4,7 +4,7 @@ window.contApp.fieldBase = new (function( px, contApp ){
 	 * データをバインドする
 	 */
 	this.bind = function( fieldData, mode, mod ){
-		var rtn = ''
+		var rtn = '';
 		if( typeof(fieldData) === typeof([]) ){
 			rtn += fieldData.join('');
 		}else{

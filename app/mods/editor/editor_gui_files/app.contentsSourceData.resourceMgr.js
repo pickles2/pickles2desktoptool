@@ -117,6 +117,36 @@ window.contApp.contentsSourceData.resourceMgr = new(function(px, contApp){
 	}
 
 	/**
+	 * Reset bin from base64
+	 */
+	this.resetBinFromBase64 = function( resKey ){
+		if( typeof(_resourceDb[resKey]) !== typeof({}) ){
+			// 未登録の resKey
+			return false;
+		}
+		var realpath = this.getResourceOriginalRealpath( resKey );
+
+		var bin = px.utils.base64decode( _resourceDb[resKey].base64 );
+		return px.fs.writeFileSync( realpath, bin, {} );
+	}
+
+	/**
+	 * Reset base64 from bin
+	 */
+	this.resetBase64FromBin = function( resKey ){
+		if( typeof(_resourceDb[resKey]) !== typeof({}) ){
+			// 未登録の resKey
+			return false;
+		}
+		var realpath = this.getResourceOriginalRealpath( resKey );
+
+		var bin = px.fs.readFileSync( realpath, {} );
+		_resourceDb[resKey].base64 = px.utils.base64encode( bin );
+
+		return true;
+	}
+
+	/**
 	 * get resource public path
 	 */
 	this.getResourcePublicPath = function( resKey ){

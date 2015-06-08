@@ -18,6 +18,7 @@ window.contApp.fieldDefinitions.image = _.defaults( new (function( px, contApp )
 			default:
 				tmpResInfo.type = 'image/gif'; break;
 		}
+		tmpResInfo.isPrivateMaterial = false;
 		return tmpResInfo;
 	}
 

@@ -17,6 +17,10 @@ window.contApp.contentsSourceData.resourceMgr = new(function(px, contApp){
 		} );
 		return this;
 	}
+
+	/**
+	 * Loading resource list
+	 */
 	function loadResourceList( cb ){
 		_resourceDb = {};
 		if( !px.utils.isDirectory( _resourcesDirPath ) ){
@@ -61,10 +65,12 @@ window.contApp.contentsSourceData.resourceMgr = new(function(px, contApp){
 				);
 
 				// 公開ファイル
-				px.fs.writeFileSync(
-					_resourcesPublishDirPath+'/'+resKey+'.'+_resourceDb[resKey].ext,
-					bin
-				);
+				if( !_resourceDb[resKey].isPrivateMaterial ){
+					px.fs.writeFileSync(
+						_resourcesPublishDirPath+'/'+resKey+'.'+_resourceDb[resKey].ext,
+						bin
+					);
+				}
 			}
 		}
 		cb();

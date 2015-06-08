@@ -21,6 +21,7 @@ window.contApp.fieldDefinitions.table = _.defaults( new (function( px, contApp )
 			default:
 				tmpResInfo.type = 'text/csv'; break;
 		}
+		tmpResInfo.isPrivateMaterial = true;
 
 		return tmpResInfo;
 	}

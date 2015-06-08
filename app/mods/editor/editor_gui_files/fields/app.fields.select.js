@@ -65,7 +65,7 @@ window.contApp.fieldDefinitions.select = _.defaults( new (function( px, contApp 
 	/**
 	 * エディタUIで編集した内容を保存
 	 */
-	this.saveEditorContent = function( $dom, data ){
+	this.saveEditorContent = function( $dom, data, mod ){
 		var src = $dom.find('select').val();
 		src = JSON.parse( JSON.stringify(src) );
 		return src;

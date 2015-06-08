@@ -64,7 +64,7 @@ window.contApp.fieldBase = new (function( px, contApp ){
 	/**
 	 * エディタUIで編集した内容を保存
 	 */
-	this.saveEditorContent = function( $dom, data ){
+	this.saveEditorContent = function( $dom, data, mod ){
 		var src = $dom.find('textarea').val();
 		src = JSON.parse( JSON.stringify(src) );
 		return src;

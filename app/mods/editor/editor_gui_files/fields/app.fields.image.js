@@ -120,7 +120,7 @@ window.contApp.fieldDefinitions.image = _.defaults( new (function( px, contApp )
 	/**
 	 * エディタUIで編集した内容を保存
 	 */
-	this.saveEditorContent = function( $dom, data ){
+	this.saveEditorContent = function( $dom, data, mod ){
 		if( typeof(data) !== typeof({}) ){
 			data = {};
 		}

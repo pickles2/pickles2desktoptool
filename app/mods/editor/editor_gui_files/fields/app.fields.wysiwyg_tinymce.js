@@ -52,7 +52,7 @@ window.contApp.fieldDefinitions.wysiwyg_tinymce = _.defaults( new (function( px,
 	/**
 	 * エディタUIで編集した内容を保存
 	 */
-	this.saveEditorContent = function( $dom, data ){
+	this.saveEditorContent = function( $dom, data, mod ){
 		var win = $iframe.get(0).contentWindow;
 		var src = win.tinymce.get('tinymce_editor').getContent()
 		if( typeof(src) !== typeof('') ){ src = ''; }

@@ -71,7 +71,7 @@ window.contApp.fieldDefinitions.wysiwyg_rte = _.defaults( new (function( px, con
 	/**
 	 * エディタUIで編集した内容を保存
 	 */
-	this.saveEditorContent = function( $dom, data ){
+	this.saveEditorContent = function( $dom, data, mod ){
 		// var win = $iframe.get(0).contentWindow;
 		// var src = win.tinymce.get('tinymce_editor').getContent()
 		var src = editors[0].get_content();

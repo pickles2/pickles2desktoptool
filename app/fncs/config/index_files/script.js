@@ -26,23 +26,13 @@ window.contApp = new (function( px ){
 		}
 		src = px.fs.readFileSync(confPath);
 		$('.cont_config_edit').html('').append( $('<textarea>').val(src) );
-		CodeMirrorInstans['px2config'] = CodeMirror.fromTextArea( $('.cont_config_edit textarea').get(0), {
-			lineNumbers: true,
-			mode: 'application/x-httpd-php',
-			tabSize: 4,
-			indentUnit: 4,
-			indentWithTabs: true,
-			autoCloseBrackets: true,
-			matchBrackets: true,
-			showCursorWhenSelecting: true,
-			viewportMargin: Infinity,
-
-			theme: 'monokai',
-			keyMap: "sublime"
-		} );
-		CodeMirrorInstans['px2config'].on('change',function(){
-			CodeMirrorInstans['px2config'].save();
-		});
+		CodeMirrorInstans['px2config'] = px.attachTextEditor(
+			$('.cont_config_edit textarea').get(0),
+			'php',
+			{
+				save: function(){ save(); }
+			}
+		);
 
 		windowResize();
 		$(window).resize(function(){
@@ -51,7 +41,7 @@ window.contApp = new (function( px ){
 		cb();
 	}
 	this.save = function( btn ){
-		$(btn).attr('disabled', 'disabled');
+		if(btn){ $(btn).attr('disabled', 'disabled'); }
 
 		var src = $('.cont_config_edit textarea').val();
 		src = JSON.parse( JSON.stringify( src ) );
@@ -59,7 +49,7 @@ window.contApp = new (function( px ){
 		px.fs.writeFile( confPath, src, {}, function(err){
 			pj.updateConfig(function(){
 				cont_init(function(){
-					$(btn).removeAttr('disabled');
+					if(btn){ $(btn).removeAttr('disabled'); }
 					px.message( 'コンフィグを保存しました。' );
 				});
 			});

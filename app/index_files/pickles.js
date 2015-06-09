@@ -479,6 +479,74 @@ new (function($, window){
 	}
 
 	/**
+	 * textarea にテキストエディタ(CodeMirror)を適用する
+	 */
+	this.attachTextEditor = function( textarea, ext, options ){
+		options = options||{};
+		options.save = options.save||function(){};
+		var rtn = CodeMirror.fromTextArea( textarea , {
+			lineNumbers: true,
+			mode: (function(ext){
+				switch(ext){
+					case 'css': return 'text/x-scss'; break;
+					case 'js': case 'json': return 'text/javascript'; break;
+					case 'html': return 'htmlmixed'; break;
+					case 'md': case 'markdown': return 'markdown'; break;
+					default: return ext; break;
+				}
+				return 'htmlmixed';
+			})(ext),
+			tabSize: 4,
+			indentUnit: 4,
+			indentWithTabs: true,
+			autoCloseBrackets: true,
+			matchBrackets: true,
+			showCursorWhenSelecting: true,
+			lineWrapping : (ext=='md'?true:false) ,
+
+			foldGutter: true,
+			gutters: [
+				"CodeMirror-linenumbers",
+				"CodeMirror-foldgutter"
+			],
+
+			keyMap: "sublime",
+			extraKeys: {
+				"Ctrl-E": "autocomplete",
+				"Cmd-S":options.save
+			},
+
+			theme: (function(ext){
+				if(ext=='css' || ext=='js'){
+					return 'monokai';
+				}else if(ext=='md'){
+					return 'base16-light';
+				}
+				return 'monokai';
+			})(ext)
+		});
+		rtn.on('change',function(){
+			rtn.save();
+		});
+		return rtn;
+	}// attachTextEditor()
+
+	/**
+	 * common header
+	 */
+	this.get_include_common_header = function(root){
+		// ========== CodeMirror ==========
+		var rtn = '';
+		rtn += '<link rel="stylesheet" href="'+root+'/common/codemirror-5.3/lib/codemirror.css" />';
+		rtn += '<link rel="stylesheet" href="'+root+'/common/codemirror-5.3/addon/fold/foldgutter.css" />';
+		rtn += '<link rel="stylesheet" href="'+root+'/common/codemirror-5.3/addon/hint/show-hint.css">';
+		rtn += '<link rel="stylesheet" href="'+root+'/common/codemirror-5.3/addon/dialog/dialog.css">';
+		rtn += '<link rel="stylesheet" href="'+root+'/common/codemirror-5.3/theme/monokai.css">';
+		rtn += '<link rel="stylesheet" href="'+root+'/common/codemirror-5.3/theme/base16-light.css">';
+		return rtn;
+	}
+
+	/**
 	 * サブアプリケーション
 	 */
 	this.subapp = function(appName){

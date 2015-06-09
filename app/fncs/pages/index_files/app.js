@@ -592,7 +592,7 @@ window.contApp = new (function( px ){
 			)
 			.append(
 				$('<a>')
-					.text('☓')
+					.html('&times;')
 					.attr('href', 'javascript:;')
 					.click( function(){
 						// if(!confirm('編集中の内容は破棄されます。エディタを閉じますか？')){ return false; }
@@ -610,7 +610,8 @@ window.contApp = new (function( px ){
 						'text-align':'center',
 						'opacity':0.4,
 						'width':'1.5em',
-						'height':'1.5em'
+						'height':'1.5em',
+						'text-decoration': 'none'
 					})
 					.hover(function(){
 						$(this).animate({

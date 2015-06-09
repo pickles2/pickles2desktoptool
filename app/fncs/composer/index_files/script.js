@@ -16,26 +16,23 @@ function cont_init(){
 			px.message(err);
 		}
 		$('.cont_edit_composer_json textarea').val(src);
-		CodeMirrorInstans = CodeMirror.fromTextArea( $('.cont_edit_composer_json textarea').get(0), {
-			lineNumbers: true,
-			mode: {name:'javascript', json: true},
-			tabSize: 4,
-			indentUnit: 4,
-			indentWithTabs: true,
-			autoCloseBrackets: true,
-			matchBrackets: true,
-			showCursorWhenSelecting: true,
 
-			foldGutter: true,
-			gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+		$('a.cont_edit[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+			// console.log( e.target ); // newly activated tab
+			// console.log( e.relatedTarget ); // previous active tab
+			if( CodeMirrorInstans === null ){
+				CodeMirrorInstans = px.attachTextEditor(
+					$('.cont_edit_composer_json textarea').get(0),
+					'json',
+					{
+						save: function(){ cont_save_composerJson(); }
+					}
+				);
+			}
 
-			theme: 'monokai',
-			keyMap: "sublime"
-		} );
-		CodeMirrorInstans.on('change',function(){
-			CodeMirrorInstans.save();
 		});
 	});
+
 
 }
 
@@ -153,8 +150,9 @@ function cont_show_packages(btn, opt){
  * composer.json の編集を保存
  */
 function cont_save_composerJson(form){
-	var $form = $(form);
+	var $form = $('form.cont_edit_composer_json');
 	var src = $form.find('textarea').val();
+
 	src = JSON.parse( JSON.stringify( src ) );
 	px.fs.writeFile( cont_pathComposerJson, src, {encoding:'utf8'}, function(err){
 		if(err){

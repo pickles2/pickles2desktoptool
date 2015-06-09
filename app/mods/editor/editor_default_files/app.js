@@ -5,8 +5,6 @@ window.contApp = new (function( px ){
 	var _this = this;
 	var _pj = px.getCurrentProject();
 
-	var editTimer;
-
 	var _param = px.utils.parseUriParam( window.location.href );
 
 	var _pageInfo = _pj.site.getPageInfo( _param.page_path );
@@ -38,23 +36,23 @@ window.contApp = new (function( px ){
 	var strLoaderJS = '<?php ob_start(); ?><script src="./' + px.php.basename( _pathFiles ) + '/script.js"></script><?php $px->bowl()->send( ob_get_clean(), \'head\' );?>'+"\n";
 
 	var $preview, $iframe;
-	var $textarea_html, $textarea_css, $textarea_js;
+	var $textareas = {'html':null, 'css': null, 'js': null};
 	var $editor_header;
 
-	var CodeMirrorInstance_html, CodeMirrorInstance_css, CodeMirrorInstance_js;
+	var CodeMirrorInstances = {'html':null, 'css': null, 'js': null};
 
 	/**
 	 * コンテンツの編集結果を保存する
 	 */
 	function save(cb){
 		cb = cb || function(){};
-		CodeMirrorInstance_html.save();
-		CodeMirrorInstance_css.save();
-		CodeMirrorInstance_js.save();
+		// CodeMirrorInstances['html'].save();
+		// CodeMirrorInstances['css'].save();
+		// CodeMirrorInstances['js'].save();
 
-		var src_html = JSON.parse( JSON.stringify( $textarea_html.val() ) );
-		var src_css = JSON.parse( JSON.stringify( $textarea_css.val() ) );
-		var src_js = JSON.parse( JSON.stringify( $textarea_js.val() ) );
+		var src_html = JSON.parse( JSON.stringify( $textareas['html'].val() ) );
+		var src_css = JSON.parse( JSON.stringify( $textareas['css'].val() ) );
+		var src_js = JSON.parse( JSON.stringify( $textareas['js'].val() ) );
 		var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( _pathContent ) );
 
 		px.utils.iterateFnc([
@@ -144,9 +142,9 @@ window.contApp = new (function( px ){
 
 		$editor_header = $html.find('.cont_editor_header');
 
-		$textarea_html = $html.find('.editor_frame-html textarea');
-		$textarea_css = $html.find('.editor_frame-css textarea');
-		$textarea_js = $html.find('.editor_frame-js textarea');
+		$textareas['html'] = $html.find('.editor_frame-html textarea');
+		$textareas['css'] = $html.find('.editor_frame-css textarea');
+		$textareas['js'] = $html.find('.editor_frame-js textarea');
 
 		$html.find('.switch_tab button').click(function(e){
 			var switchTo = $(this).attr('data-switch');
@@ -154,21 +152,21 @@ window.contApp = new (function( px ){
 		});
 
 		var htmlSrc = px.fs.readFileSync(_contentsPath);
-		$textarea_html.val( htmlSrc );
-		htmlSrc = $textarea_html.val();
+		$textareas['html'].val( htmlSrc );
+		htmlSrc = $textareas['html'].val();
 		htmlSrc = htmlSrc.replace( strLoaderCSS, '' );
 		htmlSrc = htmlSrc.replace( strLoaderJS, '' );
-		$textarea_html.val( htmlSrc );
+		$textareas['html'].val( htmlSrc );
 
 		if( px.utils.isFile( px.php.dirname(_contentsPath) + '/' + px.php.basename( _pathFiles ) + '/style.css.scss' ) ){
-			$textarea_css.val( px.fs.readFileSync( px.php.dirname(_contentsPath) + '/' + px.php.basename( _pathFiles ) + '/style.css.scss' ) );
+			$textareas['css'].val( px.fs.readFileSync( px.php.dirname(_contentsPath) + '/' + px.php.basename( _pathFiles ) + '/style.css.scss' ) );
 		}
 		if( px.utils.isFile( px.php.dirname(_contentsPath) + '/' + px.php.basename( _pathFiles ) + '/script.js' ) ){
-			$textarea_js.val( px.fs.readFileSync( px.php.dirname(_contentsPath) + '/' + px.php.basename( _pathFiles ) + '/script.js' ) );
+			$textareas['js'].val( px.fs.readFileSync( px.php.dirname(_contentsPath) + '/' + px.php.basename( _pathFiles ) + '/script.js' ) );
 		}
 
 		setTimeout(function(){
-			$textarea_html.scrollTop(0);
+			$textareas['html'].scrollTop(0);
 		}, 10);
 		$html
 			.find('button.cont_btn_resources')
@@ -186,7 +184,7 @@ window.contApp = new (function( px ){
 							px.message( 'ページを保存しました。' );
 						}
 						preview();
-						$textarea_html.focus();
+						$textareas['html'].focus();
 					});
 				})
 		;
@@ -236,13 +234,6 @@ window.contApp = new (function( px ){
 		;
 		_this.selectTab('html');
 
-		// CodeMirrorをセットアップ
-		CodeMirrorInstance_html = setupCodeMirror( $textarea_html.get(0), 'html' );
-		CodeMirrorInstance_css = setupCodeMirror( $textarea_css.get(0), 'css' );
-		CodeMirrorInstance_js = setupCodeMirror( $textarea_js.get(0), 'js' );
-
-		CodeMirrorInstance_html.focus();
-
 		preview();
 		windowResize();
 		$(window).resize(function(){
@@ -253,43 +244,6 @@ window.contApp = new (function( px ){
 		px.progress.close();
 	}
 
-	function setupCodeMirror( textarea, type ){
-		var rtn = CodeMirror.fromTextArea( textarea , {
-			lineNumbers: true,
-			mode: (function(pt, type){
-				if(type=='css'){
-					return 'text/x-scss';
-				}else if(type=='js'){
-					return 'text/javascript';
-				}else if(pt=='md'){
-					return 'markdown';
-				}
-				return 'htmlmixed';
-			})(_cont_procType, type),
-			tabSize: 4,
-			indentUnit: 4,
-			indentWithTabs: true,
-			autoCloseBrackets: true,
-			matchBrackets: true,
-			showCursorWhenSelecting: true,
-			lineWrapping : (_cont_procType=='md'?true:false) ,
-
-			foldGutter: true,
-			gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-			extraKeys: {"Ctrl-E": "autocomplete","Cmd-S":function(){clearTimeout(editTimer);save();preview();}},
-
-			theme: (function(pt, type){
-				if(type=='css' || type=='js'){
-					return 'monokai';
-				}else if(pt=='md'){
-					return 'base16-light';
-				}
-				return 'monokai';
-			})(_cont_procType, type),
-			keyMap: "sublime"
-		});
-		return rtn;
-	}
 
 	/**
 	 * リソースフォルダを開く
@@ -319,6 +273,29 @@ window.contApp = new (function( px ){
 			$('.editor_frame .editor_frame-'+switchTo+' textarea').focus();
 			$('.editor_frame .editor_frame-'+switchTo+' .CodeMirror').focus();
 		}, 1000);
+
+		// CodeMirrorをセットアップ
+		if( CodeMirrorInstances[switchTo] === null ){
+			CodeMirrorInstances[switchTo] = px.attachTextEditor(
+				$textareas[switchTo].get(0),
+				(function(_cont_procType, switchTo){
+					if(switchTo=='css' || switchTo=='js'){
+						return switchTo;
+					}else if(_cont_procType=='md'){
+						return _cont_procType;
+					}
+					return 'html';
+				})(_cont_procType, switchTo),
+				{
+					save: function(){
+						save();
+						preview();
+					}
+				}
+			);
+		}
+		CodeMirrorInstances[switchTo].focus();
+		windowResize();
 		return this;
 	}
 

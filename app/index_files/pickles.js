@@ -542,10 +542,10 @@ new (function($, window){
 	this.get_include_common_header = function(root){
 		// ========== CodeMirror ==========
 		var rtn = '';
-		rtn += '<link rel="stylesheet" href="'+root+'/common/codemirror-5.3/lib/codemirror.css" />';
-		rtn += '<link rel="stylesheet" href="'+root+'/common/codemirror-5.3/addon/fold/foldgutter.css" />';
-		rtn += '<link rel="stylesheet" href="'+root+'/common/codemirror-5.3/addon/hint/show-hint.css">';
-		rtn += '<link rel="stylesheet" href="'+root+'/common/codemirror-5.3/addon/dialog/dialog.css">';
+		rtn += '<link rel="stylesheet" href="'+root+'/common/codemirror/lib/codemirror.css" />';
+		rtn += '<link rel="stylesheet" href="'+root+'/common/codemirror/addon/fold/foldgutter.css" />';
+		rtn += '<link rel="stylesheet" href="'+root+'/common/codemirror/addon/hint/show-hint.css">';
+		rtn += '<link rel="stylesheet" href="'+root+'/common/codemirror/addon/dialog/dialog.css">';
 		var themeList = [
 			'monokai',
 			'base16-dark',
@@ -555,7 +555,7 @@ new (function($, window){
 			'ttcn'
 		];
 		for( var idx in themeList ){
-			rtn += '<link rel="stylesheet" href="'+root+'/common/codemirror-5.3/theme/'+themeList[idx]+'.css" />';
+			rtn += '<link rel="stylesheet" href="'+root+'/common/codemirror/theme/'+themeList[idx]+'.css" />';
 		}
 		return rtn;
 	}

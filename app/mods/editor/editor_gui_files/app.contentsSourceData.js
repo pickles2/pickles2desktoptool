@@ -143,7 +143,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 			for( var idx in fieldList ){
 				var fieldName = fieldList[idx];
 				if( modTpl.fields[fieldName].fieldType == 'input' ){
-					newData.fields[fieldName] = '';
+					newData.fields[fieldName] = contApp.fieldDefinitions[modTpl.fields[fieldName].type].normalizeData('');
 				}else if( modTpl.fields[fieldName].fieldType == 'module' ){
 					newData.fields[fieldName] = [];
 				}else if( modTpl.fields[fieldName].fieldType == 'loop' ){

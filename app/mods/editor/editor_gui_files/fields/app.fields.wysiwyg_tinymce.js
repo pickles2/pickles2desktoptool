@@ -44,7 +44,7 @@ window.contApp.fieldDefinitions.wysiwyg_tinymce = _.defaults( new (function( px,
 	/**
 	 * エディタUIが描画されたら呼ばれるコールバック
 	 */
-	this.onEditorUiDrawn = function( mod, data ){
+	this.onEditorUiDrawn = function( $dom, mod, data ){
 		// window.top.tinymce = tinymce;
 		return;
 	}

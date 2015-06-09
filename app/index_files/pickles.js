@@ -86,6 +86,8 @@ new (function($, window){
 	var _appName = 'Pickles 2 Desktop Tool';
 	this.progress = new require('./index_files/pickles.progress.js').init(this, $);
 
+	this.textEditor = window.textEditor;
+
 	if( !_utils.isDirectory( _path_data_dir ) ){
 		_fs.mkdirSync( _path_data_dir );
 		if( !_utils.isDirectory( _path_data_dir ) ){

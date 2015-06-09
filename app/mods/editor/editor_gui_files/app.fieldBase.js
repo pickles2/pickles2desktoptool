@@ -51,13 +51,14 @@ window.contApp.fieldBase = new (function( px, contApp ){
 				.val(data)
 				.css({'width':'100%','height':'auto'})
 		);
+
 		return rtn;
 	}
 
 	/**
 	 * エディタUIが描画されたら呼ばれるコールバック
 	 */
-	this.onEditorUiDrawn = function( mod, data ){
+	this.onEditorUiDrawn = function( $dom, mod, data ){
 		return;
 	}
 

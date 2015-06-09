@@ -58,7 +58,7 @@ window.contApp.fieldDefinitions.select = _.defaults( new (function( px, contApp 
 	/**
 	 * エディタUIが描画されたら呼ばれるコールバック
 	 */
-	this.onEditorUiDrawn = function( mod, data ){
+	this.onEditorUiDrawn = function( $dom, mod, data ){
 		return;
 	}
 

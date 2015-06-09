@@ -58,7 +58,7 @@ window.contApp.fieldDefinitions.wysiwyg_rte = _.defaults( new (function( px, con
 	/**
 	 * エディタUIが描画されたら呼ばれるコールバック
 	 */
-	this.onEditorUiDrawn = function( mod, data ){
+	this.onEditorUiDrawn = function( $dom, mod, data ){
 		// editors = $textarea.rte({
 		// 	width: 720,
 		// 	height: 520,

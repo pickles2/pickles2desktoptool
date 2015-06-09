@@ -14,9 +14,8 @@ window.textEditor = new (function(){
 					case 'js': case 'json': return 'text/javascript'; break;
 					case 'html': return 'htmlmixed'; break;
 					case 'md': case 'markdown': return 'markdown'; break;
-					default: return ext; break;
 				}
-				return 'htmlmixed';
+				return ext;
 			})(ext),
 			tabSize: 4,
 			indentUnit: 4,
@@ -44,9 +43,10 @@ window.textEditor = new (function(){
 
 			theme: (function(ext){
 				switch(ext){
+					case 'txt': case 'text': return 'default';break;
 					case 'js': return 'ambiance';break;
 					case 'css': return 'mdn-like';break;
-					case 'md': return 'ttcn';break;
+					case 'md': case 'markdown': return 'ttcn';break;
 				}
 				return 'monokai';
 			})(ext)

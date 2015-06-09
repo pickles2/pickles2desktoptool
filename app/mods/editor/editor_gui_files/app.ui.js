@@ -876,7 +876,7 @@ window.contApp.ui = new(function(px, contApp){
 			var field = modTpl.fields[idx];
 			if( field.fieldType == 'input' ){
 				if( contApp.fieldDefinitions[field.type] ){
-					return contApp.fieldDefinitions[field.type].onEditorUiDrawn( field, data.fields[modTpl.fields[idx].name] );
+					return contApp.fieldDefinitions[field.type].onEditorUiDrawn( $editWindow.find('div[data-field-unit="'+modTpl.fields[idx].name+'"]'), field, data.fields[modTpl.fields[idx].name] );
 				}
 			}
 		}

@@ -36,11 +36,14 @@ window.contApp.fieldDefinitions.table = _.defaults( new (function( px, contApp )
 			var res = _resMgr.getResource( fieldData.resKey );
 			// console.log(res);
 
-			// rtn += res.realpath;
+			var realpath = _resMgr.getResourceOriginalRealpath( fieldData.resKey );
+			if(!px.utils.isFile(realpath)){
+				realpath = res.realpath;
+			}
 			var cmd = px.cmd('php');
 			cmd += ' '+px.path.resolve( _pj.get('path') + '/' + _pj.get('entry_script') );
 			cmd += ' "/?PX=px2dthelper.convert_table_excel2html';
-			cmd += '&path=' + px.php.urlencode(_resMgr.getResourceOriginalRealpath( fieldData.resKey ));
+			cmd += '&path=' + px.php.urlencode(realpath);
 			cmd += '&header_row=' + px.php.urlencode( fieldData.header_row );
 			cmd += '&header_col=' + px.php.urlencode( fieldData.header_col );
 			cmd += '&cell_renderer=' + px.php.urlencode( fieldData.cell_renderer );

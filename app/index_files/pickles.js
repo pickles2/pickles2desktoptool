@@ -514,7 +514,10 @@ new (function($, window){
 			keyMap: "sublime",
 			extraKeys: {
 				"Ctrl-E": "autocomplete",
-				"Cmd-S": options.save
+				"Cmd-S": function(){
+					rtn.save();
+					options.save();
+				}
 			},
 
 			theme: (function(ext){
@@ -526,9 +529,10 @@ new (function($, window){
 				return 'monokai';
 			})(ext)
 		});
-		rtn.on('change',function(){
+		rtn.on('blur',function(){
 			rtn.save();
 		});
+		rtn.focus();
 		return rtn;
 	}// attachTextEditor()
 

@@ -21,7 +21,7 @@ function cont_init(){
 			// console.log( e.target ); // newly activated tab
 			// console.log( e.relatedTarget ); // previous active tab
 			if( !CodeMirrorInstans ){
-				CodeMirrorInstans = px.attachTextEditor(
+				CodeMirrorInstans = window.textEditor.attachTextEditor(
 					$('.cont_edit_composer_json textarea').get(0),
 					'json',
 					{

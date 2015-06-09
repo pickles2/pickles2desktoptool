@@ -276,7 +276,7 @@ window.contApp = new (function( px ){
 
 		// CodeMirrorをセットアップ
 		if( CodeMirrorInstances[switchTo] === null ){
-			CodeMirrorInstances[switchTo] = px.attachTextEditor(
+			CodeMirrorInstances[switchTo] = window.textEditor.attachTextEditor(
 				$textareas[switchTo].get(0),
 				(function(_cont_procType, switchTo){
 					if(switchTo=='css' || switchTo=='js'){

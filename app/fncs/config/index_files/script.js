@@ -26,7 +26,7 @@ window.contApp = new (function( px ){
 		}
 		src = px.fs.readFileSync(confPath);
 		$('.cont_config_edit').html('').append( $('<textarea>').val(src) );
-		CodeMirrorInstans['px2config'] = px.attachTextEditor(
+		CodeMirrorInstans['px2config'] = window.textEditor.attachTextEditor(
 			$('.cont_config_edit textarea').get(0),
 			'php',
 			{

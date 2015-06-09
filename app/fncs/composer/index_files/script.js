@@ -20,7 +20,7 @@ function cont_init(){
 		$('a.cont_edit[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 			// console.log( e.target ); // newly activated tab
 			// console.log( e.relatedTarget ); // previous active tab
-			if( CodeMirrorInstans === null ){
+			if( !CodeMirrorInstans ){
 				CodeMirrorInstans = px.attachTextEditor(
 					$('.cont_edit_composer_json textarea').get(0),
 					'json',

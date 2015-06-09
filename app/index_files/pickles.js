@@ -500,6 +500,7 @@ new (function($, window){
 			indentUnit: 4,
 			indentWithTabs: true,
 			autoCloseBrackets: true,
+			styleActiveLine: true,
 			matchBrackets: true,
 			showCursorWhenSelecting: true,
 			lineWrapping : (ext=='md'?true:false) ,
@@ -513,14 +514,14 @@ new (function($, window){
 			keyMap: "sublime",
 			extraKeys: {
 				"Ctrl-E": "autocomplete",
-				"Cmd-S":options.save
+				"Cmd-S": options.save
 			},
 
 			theme: (function(ext){
-				if(ext=='css' || ext=='js'){
-					return 'monokai';
-				}else if(ext=='md'){
-					return 'base16-light';
+				switch(ext){
+					case 'js': return 'ambiance';break;
+					case 'css': return 'mdn-like';break;
+					case 'md': return 'ttcn';break;
 				}
 				return 'monokai';
 			})(ext)
@@ -541,8 +542,17 @@ new (function($, window){
 		rtn += '<link rel="stylesheet" href="'+root+'/common/codemirror-5.3/addon/fold/foldgutter.css" />';
 		rtn += '<link rel="stylesheet" href="'+root+'/common/codemirror-5.3/addon/hint/show-hint.css">';
 		rtn += '<link rel="stylesheet" href="'+root+'/common/codemirror-5.3/addon/dialog/dialog.css">';
-		rtn += '<link rel="stylesheet" href="'+root+'/common/codemirror-5.3/theme/monokai.css">';
-		rtn += '<link rel="stylesheet" href="'+root+'/common/codemirror-5.3/theme/base16-light.css">';
+		var themeList = [
+			'monokai',
+			'base16-dark',
+			'base16-light',
+			'mdn-like',
+			'ambiance',
+			'ttcn'
+		];
+		for( var idx in themeList ){
+			rtn += '<link rel="stylesheet" href="'+root+'/common/codemirror-5.3/theme/'+themeList[idx]+'.css" />';
+		}
 		return rtn;
 	}
 

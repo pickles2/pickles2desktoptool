@@ -32,27 +32,8 @@ window.px2dtGuiEditor.fieldDefinitions.table = _.defaults( new (function( px, px
 	this.bind = function( fieldData, mode ){
 		fieldData = fieldData||{};
 		var rtn = '';
-		if( fieldData.resKey ){
-			var res = _resMgr.getResource( fieldData.resKey );
-			// console.log(res);
-
-			var realpath = _resMgr.getResourceOriginalRealpath( fieldData.resKey );
-			if(!px.utils.isFile(realpath)){
-				realpath = res.realpath;
-			}
-			var cmd = px.cmd('php');
-			cmd += ' '+px.path.resolve( _pj.get('path') + '/' + _pj.get('entry_script') );
-			cmd += ' "/?PX=px2dthelper.convert_table_excel2html';
-			cmd += '&path=' + px.php.urlencode(realpath);
-			cmd += '&header_row=' + px.php.urlencode( fieldData.header_row );
-			cmd += '&header_col=' + px.php.urlencode( fieldData.header_col );
-			cmd += '&cell_renderer=' + px.php.urlencode( fieldData.cell_renderer );
-			cmd += '&renderer=' + px.php.urlencode( fieldData.renderer );
-			cmd += '"';
-			// console.log(cmd);
-			var table = px.execSync( cmd );
-			// console.log(table);
-			rtn += JSON.parse(table);
+		if( fieldData.output ){
+			rtn += fieldData.output;
 		}
 
 		if( mode == 'canvas' ){
@@ -71,6 +52,7 @@ window.px2dtGuiEditor.fieldDefinitions.table = _.defaults( new (function( px, px
 		if( typeof(fieldData) !== typeof({}) ){
 			rtn = {
 				"resKey":'',
+				"output":"",
 				"header_row":0,
 				"header_col":0,
 				"cell_renderer":'text',
@@ -232,6 +214,25 @@ window.px2dtGuiEditor.fieldDefinitions.table = _.defaults( new (function( px, px
 		data.header_col = $dom.find('input[name="'+mod.name+':header_col"]').val();
 		data.cell_renderer = $dom.find('input[name="'+mod.name+':cell_renderer"]:checked').val();
 		data.renderer = $dom.find('input[name="'+mod.name+':renderer"]:checked').val();
+
+		var res = _resMgr.getResource( data.resKey );
+		// console.log(res);
+
+		var realpath = _resMgr.getResourceOriginalRealpath( data.resKey );
+		if(!px.utils.isFile(realpath)){
+			realpath = res.realpath;
+		}
+		var cmd = px.cmd('php');
+		cmd += ' '+px.path.resolve( _pj.get('path') + '/' + _pj.get('entry_script') );
+		cmd += ' "/?PX=px2dthelper.convert_table_excel2html';
+		cmd += '&path=' + px.php.urlencode(realpath);
+		cmd += '&header_row=' + px.php.urlencode( data.header_row );
+		cmd += '&header_col=' + px.php.urlencode( data.header_col );
+		cmd += '&cell_renderer=' + px.php.urlencode( data.cell_renderer );
+		cmd += '&renderer=' + px.php.urlencode( data.renderer );
+		cmd += '"';
+		data.output = px.execSync( cmd );
+		data.output = JSON.parse(data.output+'');
 
 		return data;
 	}// this.saveEditorContent()

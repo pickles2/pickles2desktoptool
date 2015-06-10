@@ -9,8 +9,7 @@ window.px2dtGuiEditor = new (function(px){
 	var _this = this;
 	var _pj = px.getCurrentProject();
 
-
-	var root = (function() {
+	var _path_base = (function() {
 		if (document.currentScript) {
 			return document.currentScript.src;
 		} else {
@@ -20,8 +19,7 @@ window.px2dtGuiEditor = new (function(px){
 				return script.src;
 			}
 		}
-	})();
-	this.path_base = px.utils.dirname(root);
+	})().replace(/\\/g, '/').replace(/\/[^\/]*\/?$/, '');
 
 	var _param = px.utils.parseUriParam( window.location.href );
 
@@ -70,23 +68,23 @@ window.px2dtGuiEditor = new (function(px){
 		var rtn = '';
 
 		// ========== GUI Editor ==========
-		rtn += '<link rel="stylesheet" href="'+this.path_base+'/style.css" type="text/css" />';
-		rtn += '<scri'+'pt src="'+this.path_base+'/app.moduleTemplates.js"></scri'+'pt>';
-		rtn += '<scri'+'pt src="'+this.path_base+'/app.contentsSourceData.js"></scri'+'pt>';
-		rtn += '<scri'+'pt src="'+this.path_base+'/app.contentsSourceData.resourceMgr.js"></scri'+'pt>';
-		rtn += '<scri'+'pt src="'+this.path_base+'/app.contentsSourceData.history.js"></scri'+'pt>';
-		rtn += '<scri'+'pt src="'+this.path_base+'/app.ui.js"></scri'+'pt>';
-		rtn += '<scri'+'pt src="'+this.path_base+'/app.fieldBase.js"></scri'+'pt>';
-		rtn += '<scri'+'pt src="'+this.path_base+'/fields/app.fields.html.js"></scri'+'pt>';
-		rtn += '<scri'+'pt src="'+this.path_base+'/fields/app.fields.html_attr_text.js"></scri'+'pt>';
-		rtn += '<scri'+'pt src="'+this.path_base+'/fields/app.fields.href.js"></scri'+'pt>';
-		rtn += '<scri'+'pt src="'+this.path_base+'/fields/app.fields.text.js"></scri'+'pt>';
-		rtn += '<scri'+'pt src="'+this.path_base+'/fields/app.fields.markdown.js"></scri'+'pt>';
-		rtn += '<scri'+'pt src="'+this.path_base+'/fields/app.fields.image.js"></scri'+'pt>';
-		rtn += '<scri'+'pt src="'+this.path_base+'/fields/app.fields.table.js"></scri'+'pt>';
-		rtn += '<scri'+'pt src="'+this.path_base+'/fields/app.fields.wysiwyg_rte.js"></scri'+'pt>';//← WYSIWYGエディタ
-		rtn += '<scri'+'pt src="'+this.path_base+'/fields/app.fields.wysiwyg_tinymce.js"></scri'+'pt>';//← WYSIWYGエディタ
-		rtn += '<scri'+'pt src="'+this.path_base+'/fields/app.fields.select.js"></scri'+'pt>';
+		rtn += '<link rel="stylesheet" href="'+_path_base+'/style.css" type="text/css" />';
+		rtn += '<scri'+'pt src="'+_path_base+'/app.moduleTemplates.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+_path_base+'/app.contentsSourceData.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+_path_base+'/app.contentsSourceData.resourceMgr.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+_path_base+'/app.contentsSourceData.history.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+_path_base+'/app.ui.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+_path_base+'/app.fieldBase.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+_path_base+'/fields/app.fields.html.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+_path_base+'/fields/app.fields.html_attr_text.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+_path_base+'/fields/app.fields.href.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+_path_base+'/fields/app.fields.text.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+_path_base+'/fields/app.fields.markdown.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+_path_base+'/fields/app.fields.image.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+_path_base+'/fields/app.fields.table.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+_path_base+'/fields/app.fields.wysiwyg_rte.js"></scri'+'pt>';//← WYSIWYGエディタ
+		rtn += '<scri'+'pt src="'+_path_base+'/fields/app.fields.wysiwyg_tinymce.js"></scri'+'pt>';//← WYSIWYGエディタ
+		rtn += '<scri'+'pt src="'+_path_base+'/fields/app.fields.select.js"></scri'+'pt>';
 
 		return rtn;
 	}
@@ -143,7 +141,7 @@ window.px2dtGuiEditor = new (function(px){
 				template_editor += '			</ul>';
 				template_editor += '		</div>';
 				template_editor += '	</div><!-- / .cont_editorframe-ctrlpanel -->';
-				template_editor += '/div><!-- / .cont_editorframe -->';
+				template_editor += '</div><!-- / .cont_editorframe -->';
 
 				var $html = $( template_editor );// ←テンプレートをロード
 				$html

@@ -214,7 +214,22 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		return rtn;
 	}// getPageContentProcType()
 
+	/**
+	 * GUI編集のコンテンツをビルドする
+	 */
+	this.buildGuiEditContent = function( pagePath, cb ){
+		cb = cb||function(){};
+		if( this.getPageContentProcType(pagePath) != 'html.gui' ){
+			cb(false);
+			return this;
+		}
 
+		var pageContent = this.findPageContent( pagePath );
+		console.log( pageContent );
+
+		cb(true);
+		return this;
+	}// buildGuiEditContent()
 
 	/**
 	 * コンテンツパスから専有リソースディレクトリパスを探す

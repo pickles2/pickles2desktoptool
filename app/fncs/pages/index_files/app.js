@@ -193,25 +193,25 @@ window.contApp = new (function( px ){
 									)
 								)
 							;
-							if( contProcType != 'html.gui' ){
-								$bs3btn.find('ul[role=menu]')
-									.append( $('<li>')
-										.append( $('<a>')
-											.text( '外部テキストエディタで編集' )
-											.attr({
-												'data-path': prop.pageInfo.path ,
-												'href':'javascript:;'
-											})
-											.click(function(){
-												$bs3btn.find('.dropdown-toggle').click();
-												var pathCont = _pj.findPageContent( $(this).attr('data-path') );
-												px.openInTextEditor( _pj.get_realpath_controot()+pathCont );
-												return false;
-											})
-										)
+						}
+						if( contProcType != 'html.gui' ){
+							$bs3btn.find('ul[role=menu]')
+								.append( $('<li>')
+									.append( $('<a>')
+										.text( '外部テキストエディタで編集' )
+										.attr({
+											'data-path': prop.pageInfo.path ,
+											'href':'javascript:;'
+										})
+										.click(function(){
+											$bs3btn.find('.dropdown-toggle').click();
+											var pathCont = _pj.findPageContent( $(this).attr('data-path') );
+											px.openInTextEditor( _pj.get_realpath_controot()+pathCont );
+											return false;
+										})
 									)
-								;
-							}
+								)
+							;
 						}
 
 						$bs3btn.find('ul[role=menu]')
@@ -302,6 +302,30 @@ window.contApp = new (function( px ){
 								)
 							)
 						;
+						if( contProcType == 'html.gui' ){
+							$bs3btn.find('ul[role=menu]')
+								.append( $('<li>')
+									.append( $('<a>')
+										.text( 'GUI編集コンテンツを再構成する' )
+										.attr({
+											'title':'モジュールの変更を反映させます。',
+											'data-path': prop.pageInfo.path ,
+											'href':'javascript:;'
+										})
+										.click(function(){
+											$bs3btn.find('.dropdown-toggle').click();
+											var pagePath = $(this).attr('data-path');
+											_pj.buildGuiEditContent( pagePath, function(result){
+												alert('※この機能は開発中です。');
+												alert(result);
+												_this.loadPreview( pagePath, function(){}, {'force':true} );
+											} );
+											return false;
+										})
+									)
+								)
+							;
+						}
 						if( contProcType != '.not_exists' ){
 							$bs3btn.find('ul[role=menu]')
 								.append( $('<li>')
@@ -346,6 +370,23 @@ window.contApp = new (function( px ){
 								)
 							;
 						}
+						$bs3btn.find('ul[role=menu]')
+							.append( $('<li>')
+								.append( $('<a>')
+									.text( 'ページをリロード' )
+									.attr({
+										'data-path': prop.pageInfo.path ,
+										'href':'javascript:;'
+									})
+									.click(function(){
+										$bs3btn.find('.dropdown-toggle').click();
+										var pagePath = $(this).attr('data-path');
+										_this.loadPreview( pagePath, function(){}, {'force':true} );
+										return false;
+									})
+								)
+							)
+						;
 
 						$pageinfo.html( $html );
 

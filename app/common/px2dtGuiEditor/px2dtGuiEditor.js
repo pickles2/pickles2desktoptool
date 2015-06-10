@@ -6,9 +6,6 @@ if(window.parent){ window.px = window.parent.px; }
 window.px2dtGuiEditor = new (function(px){
 	if( !px ){ alert('px が宣言されていません。'); }
 
-	var _this = this;
-	var _pj = px.getCurrentProject();
-
 	var _path_base = (function() {
 		if (document.currentScript) {
 			return document.currentScript.src;
@@ -21,50 +18,10 @@ window.px2dtGuiEditor = new (function(px){
 		}
 	})().replace(/\\/g, '/').replace(/\/[^\/]*\/?$/, '');
 
-	var _param = px.utils.parseUriParam( window.location.href );
-
-	var _pageInfo = _pj.site.getPageInfo( _param.page_path );
-	if( !_pageInfo ){
-		alert('ERROR: Undefined page path.'); return this;
-	}
-	var _pathContent = _pageInfo.content;
-	if( !_pathContent ){
-		_pathContent = _pageInfo.path;
-	}
-
-	this.fieldDefinitions = {};//フィールドの種類ごとの処理を外部化して、ここに入れる。
-
-	/**
-	 * 変更を保存する。
-	 */
-	function save(cb){
-		cb = cb || function(){};
-
-		_this.contentsSourceData.save( function(){
-			// px.message( 'データファイルを保存しました。' );
-
-			var contPath = _pj.findPageContent( _param.page_path );
-			var contentsRealpath = px.fs.realpathSync( px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+'/'+contPath);
-
-			src = _this.ui.finalize();
-
-			// px.message( contentsRealpath );
-			px.fs.writeFile( contentsRealpath, src, {encoding:'utf8'}, function(err){
-				px.message( 'HTMLファイルを保存しました。' );
-				cb( !err );
-			} );
-
-		} );
-
-		return this;
-	}
-	this.save = save;
-
-
 	/**
 	 * common header
 	 */
-	this.get_header_html = function(){
+	(function(){
 		var rtn = '';
 
 		// ========== GUI Editor ==========
@@ -86,13 +43,60 @@ window.px2dtGuiEditor = new (function(px){
 		rtn += '<scri'+'pt src="'+_path_base+'/fields/app.fields.wysiwyg_tinymce.js"></scri'+'pt>';//← WYSIWYGエディタ
 		rtn += '<scri'+'pt src="'+_path_base+'/fields/app.fields.select.js"></scri'+'pt>';
 
-		return rtn;
+		document.write(rtn);
+	})();
+
+	var _this = this;
+	var _pj = px.getCurrentProject();
+
+	var _param_page_path;
+	var _pageInfo;
+	var _pathContent;
+
+	this.fieldDefinitions = {};//フィールドの種類ごとの処理を外部化して、ここに入れる。
+
+	/**
+	 * 変更を保存する。
+	 */
+	function save(cb){
+		cb = cb || function(){};
+
+		_this.contentsSourceData.save( function(){
+			// px.message( 'データファイルを保存しました。' );
+
+			var contPath = _pj.findPageContent( _param_page_path );
+			var contentsRealpath = px.fs.realpathSync( px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+'/'+contPath);
+
+			src = _this.ui.finalize();
+
+			// px.message( contentsRealpath );
+			px.fs.writeFile( contentsRealpath, src, {encoding:'utf8'}, function(err){
+				px.message( 'HTMLファイルを保存しました。' );
+				cb( !err );
+			} );
+
+		} );
+
+		return this;
 	}
+	this.save = save;
+
+
 
 	/**
 	 * initialize
 	 */
-	this.init = function(){
+	this.init = function(param_page_path){
+		_param_page_path = param_page_path;
+
+		_pageInfo = _pj.site.getPageInfo( _param_page_path );
+		if( !_pageInfo ){
+			alert('ERROR: Undefined page path.'); return this;
+		}
+		_pathContent = _pageInfo.content;
+		if( !_pathContent ){
+			_pathContent = _pageInfo.path;
+		}
 
 		px.utils.iterateFnc([
 			function(it){
@@ -112,7 +116,7 @@ window.px2dtGuiEditor = new (function(px){
 			} ,
 			function(it){
 				// コンテンツデータのロード・初期化
-				_this.contPath = _pj.findPageContent( _param.page_path );
+				_this.contPath = _pj.findPageContent( _param_page_path );
 				var realpath = px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+'/'+_this.contPath;
 				var pathInfo = px.utils.parsePath( _this.contPath );
 				_this.contFilesDirPath = px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+'/'+pathInfo.dirname+'/'+pathInfo.basenameExtless+'_files/';
@@ -153,22 +157,22 @@ window.px2dtGuiEditor = new (function(px){
 								}else{
 									px.message( 'ページを保存しました。' );
 								}
-								_this.ui.preview( _param.page_path );
+								_this.ui.preview( _param_page_path );
 							});
 						})
 				;
 				$html
 					.find('button.cont_btn_save_and_close')
-						.click(function(){
-							save(function(result){
-								if(!result){
+						.click( function(){
+							save( function( result ){
+								if( !result ){
 									px.message( 'ページの保存に失敗しました。' );
 								}else{
 									px.message( 'ページを保存しました。' );
 									window.parent.contApp.closeEditor();
 								}
-							});
-						})
+							} );
+						} )
 				;
 				$html
 					.find('button.cont_btn_save_and_preview_in_browser')
@@ -179,7 +183,7 @@ window.px2dtGuiEditor = new (function(px){
 								}else{
 									px.message( 'ページを保存しました。' );
 									px.preview.serverStandby(function(){
-										px.utils.openURL( px.preview.getUrl( _param.page_path ) );
+										px.utils.openURL( px.preview.getUrl( _param_page_path ) );
 									});
 								}
 							});
@@ -213,7 +217,7 @@ window.px2dtGuiEditor = new (function(px){
 						it.next();
 					});
 				} );
-				_this.ui.preview( _param.page_path );//プレビュー表示をキック
+				_this.ui.preview( _param_page_path );//プレビュー表示をキック
 
 					// ↑なんかこの辺の処理の順番が交錯してて気持ち悪いが、
 					// 　一旦意図したタイミングで次へ送っているので良しとする。
@@ -233,6 +237,57 @@ window.px2dtGuiEditor = new (function(px){
 		]).start();
 
 	}// init()
+
+	/**
+	 * build
+	 * 編集画面を表示せず、HTMLのビルドのみを行う
+	 */
+	this.build = function(param_page_path, cb){
+		_param_page_path = param_page_path;
+
+		_pageInfo = _pj.site.getPageInfo( _param_page_path );
+		if( !_pageInfo ){
+			alert('ERROR: Undefined page path.'); return this;
+		}
+		_pathContent = _pageInfo.content;
+		if( !_pathContent ){
+			_pathContent = _pageInfo.path;
+		}
+
+		px.utils.iterateFnc([
+			function(it){
+				px.preview.serverStandby( function(){
+					it.next();
+				} );
+			} ,
+			function(it){
+				// モジュールテンプレートのロード・初期化
+				var pathsModTpls = {};
+				if( _pj.getPx2DTConfig() && _pj.getPx2DTConfig().paths_module_template ){
+					pathsModTpls = _pj.getPx2DTConfig().paths_module_template;
+				}
+				_this.moduleTemplates.init( px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') ), pathsModTpls, function(){
+					it.next();
+				} );
+			} ,
+			function(it){
+				// コンテンツデータのロード・初期化
+				_this.contPath = _pj.findPageContent( _param_page_path );
+				var realpath = px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+'/'+_this.contPath;
+				var pathInfo = px.utils.parsePath( _this.contPath );
+				_this.contFilesDirPath = px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+'/'+pathInfo.dirname+'/'+pathInfo.basenameExtless+'_files/';
+
+				_this.contentsSourceData.init( realpath, _this.contFilesDirPath, function(){
+					it.next();
+				} );
+			} ,
+			function(it){
+				cb(true);
+				it.next();
+			}
+		]).start();
+
+	}// build()
 
 
 })(window.px);

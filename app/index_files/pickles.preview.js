@@ -26,8 +26,9 @@
 		 */
 		this.getPort = function(){
 			var port = 8080;
-			if( px.getDb().network.preview.port ){
-				port = px.getDb().network.preview.port;
+			var db = px.getDb();
+			if( db.network && db.network.preview && db.network.preview.port ){
+				port = db.network.preview.port;
 			}
 			return port;
 		}
@@ -41,4 +42,5 @@
 		}
 
 	})();
+
 })(px, jQuery);

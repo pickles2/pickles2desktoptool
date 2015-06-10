@@ -746,9 +746,23 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 		var data = px2dtGuiEditor.contentsSourceData.get( instancePath );
 		var modTpl = px2dtGuiEditor.moduleTemplates.get( data.modId, data.subModName );
 
+		// モジュール別編集画面
+		var template_module_editor = '';
+		template_module_editor += '<form action="javascript:;" method="get">';
+		template_module_editor += '	<div class="cont_tpl_module_editor-canvas">';
+		template_module_editor += '	</div>';
+		template_module_editor += '	<p style="text-align:center;">';
+		template_module_editor += '		<button class="cont_tpl_module_editor-submit">保存する</button>';
+		template_module_editor += '	</p>';
+		template_module_editor += '	<p style="text-align:right;">';
+		template_module_editor += '		<button class="cont_tpl_module_editor-cancel">キャンセル</button>';
+		template_module_editor += '		<button class="cont_tpl_module_editor-remove">このモジュールを削除</button>';
+		template_module_editor += '	</p>';
+		template_module_editor += '</form>';
+
 		if( $editWindow ){ $editWindow.remove(); }
 		$editWindow = $('<div>')
-			.append( $('#cont_tpl_module_editor').html() )
+			.append( template_module_editor )
 		;
 		$editWindow.find('form')
 			.attr({

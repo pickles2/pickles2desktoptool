@@ -40,45 +40,6 @@
 		<link href="./editor_gui_files/style.css" rel="stylesheet" type="text/css" />
 		<script src="./editor_gui_files/script.js"></script>
 
-
-		<!-- エディタ画面の全体レイアウト -->
-		<script type="text/template" id="cont_tpl_editor">
-			<div class="cont_editorframe">
-				<div class="cont_editorframe-preview">
-					<div class="cont_field">
-						<iframe class="cont_field-preview"></iframe>
-						<div class="cont_field-ctrlpanel"></div>
-					</div>
-				</div><!-- //.cont_editorframe-preview -->
-				<div class="cont_editorframe-ctrlpanel">
-					<div class="cont_modulelist">
-					</div>
-					<div class="cont_btns">
-						<ul>
-							<!-- /* <li><button class="cont_btn_save">保存する</button></li> */ -->
-							<li><button class="cont_btn_save_and_preview_in_browser">ブラウザでプレビュー</button></li>
-							<li><button class="cont_btn_save_and_close">閉じる</button></li>
-						</ul>
-					</div>
-				</div><!-- //.cont_editorframe-ctrlpanel -->
-			</div><!-- //.cont_editorframe -->
-		</script>
-
-		<!-- モジュール別編集画面 -->
-		<script type="text/template" id="cont_tpl_module_editor">
-			<form action="javascript:;" method="get">
-				<div class="cont_tpl_module_editor-canvas">
-				</div>
-				<p style="text-align:center;">
-					<button class="cont_tpl_module_editor-submit">保存する</button>
-				</p>
-				<p style="text-align:right;">
-					<button class="cont_tpl_module_editor-cancel">キャンセル</button>
-					<button class="cont_tpl_module_editor-remove">このモジュールを削除</button>
-				</p>
-			</form>
-		</script>
-
 	</head>
 	<body class="contents">
 	</body>

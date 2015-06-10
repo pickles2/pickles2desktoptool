@@ -1,4 +1,4 @@
-window.contApp.fieldBase = new (function( px, contApp ){
+window.px2dtGuiEditor.fieldBase = new (function( px, px2dtGuiEditor ){
 
 	/**
 	 * データをバインドする
@@ -71,4 +71,4 @@ window.contApp.fieldBase = new (function( px, contApp ){
 		return src;
 	}
 
-})( window.px, window.contApp );
+})( window.px, window.px2dtGuiEditor );

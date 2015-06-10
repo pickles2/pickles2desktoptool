@@ -1,4 +1,4 @@
-window.contApp.fieldDefinitions.html_attr_text = _.defaults( new (function( px, contApp ){
+window.px2dtGuiEditor.fieldDefinitions.html_attr_text = _.defaults( new (function( px, px2dtGuiEditor ){
 
 	/**
 	 * データをバインドする
@@ -38,4 +38,4 @@ window.contApp.fieldDefinitions.html_attr_text = _.defaults( new (function( px, 
 		return;
 	}
 
-})( window.px, window.contApp ), window.contApp.fieldBase );
+})( window.px, window.px2dtGuiEditor ), window.px2dtGuiEditor.fieldBase );

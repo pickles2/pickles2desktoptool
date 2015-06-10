@@ -2,7 +2,7 @@
  * WYSIWYG Editor "TinyMCE" field
  * @see http://www.tinymce.com/
  */
-window.contApp.fieldDefinitions.wysiwyg_tinymce = _.defaults( new (function( px, contApp ){
+window.px2dtGuiEditor.fieldDefinitions.wysiwyg_tinymce = _.defaults( new (function( px, px2dtGuiEditor ){
 	var editors;
 	var $iframe = $('<iframe>');
 
@@ -61,4 +61,4 @@ window.contApp.fieldDefinitions.wysiwyg_tinymce = _.defaults( new (function( px,
 	}
 
 
-})( window.px, window.contApp ), window.contApp.fieldBase );
+})( window.px, window.px2dtGuiEditor ), window.px2dtGuiEditor.fieldBase );

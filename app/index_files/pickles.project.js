@@ -215,23 +215,6 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	}// getPageContentProcType()
 
 	/**
-	 * GUI編集のコンテンツをビルドする
-	 */
-	this.buildGuiEditContent = function( pagePath, cb ){
-		cb = cb||function(){};
-		if( this.getPageContentProcType(pagePath) != 'html.gui' ){
-			cb(false);
-			return this;
-		}
-
-		var pageContent = this.findPageContent( pagePath );
-		console.log( pageContent );
-
-		cb(true);
-		return this;
-	}// buildGuiEditContent()
-
-	/**
 	 * コンテンツパスから専有リソースディレクトリパスを探す
 	 */
 	this.getContentFilesByPageContent = function( contentPath ){
@@ -319,6 +302,23 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		cb();
 		return true;
 	}
+
+	/**
+	 * GUI編集のコンテンツをビルドする
+	 */
+	this.buildGuiEditContent = function( pagePath, cb ){
+		cb = cb||function(){};
+		if( this.getPageContentProcType(pagePath) != 'html.gui' ){
+			cb(false);
+			return this;
+		}
+
+		var pageContent = this.findPageContent( pagePath );
+		console.log( pageContent );
+
+		cb(true);
+		return this;
+	}// buildGuiEditContent()
 
 	/**
 	 * コンテンツをコピーする

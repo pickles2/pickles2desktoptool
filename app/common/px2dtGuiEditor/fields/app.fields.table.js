@@ -1,6 +1,6 @@
-window.contApp.fieldDefinitions.table = _.defaults( new (function( px, contApp ){
+window.px2dtGuiEditor.fieldDefinitions.table = _.defaults( new (function( px, px2dtGuiEditor ){
 
-	var _resMgr = contApp.contentsSourceData.resourceMgr;
+	var _resMgr = px2dtGuiEditor.contentsSourceData.resourceMgr;
 	var _pj = px.getCurrentProject();
 
 	/**
@@ -236,4 +236,4 @@ window.contApp.fieldDefinitions.table = _.defaults( new (function( px, contApp )
 		return data;
 	}// this.saveEditorContent()
 
-})( window.px, window.contApp ), window.contApp.fieldBase );
+})( window.px, window.px2dtGuiEditor ), window.px2dtGuiEditor.fieldBase );

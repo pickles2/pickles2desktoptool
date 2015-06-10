@@ -2,7 +2,7 @@
  * WYSIWYG Editor "wkrte" field
  * @see https://code.google.com/p/wkrte/
  */
-window.contApp.fieldDefinitions.wysiwyg_rte = _.defaults( new (function( px, contApp ){
+window.px2dtGuiEditor.fieldDefinitions.wysiwyg_rte = _.defaults( new (function( px, px2dtGuiEditor ){
 	var editors;
 	var $iframe = $('<iframe>');
 	// var $textarea = px.$('<textarea>');
@@ -81,4 +81,4 @@ window.contApp.fieldDefinitions.wysiwyg_rte = _.defaults( new (function( px, con
 	}
 
 
-})( window.px, window.contApp ), window.contApp.fieldBase );
+})( window.px, window.px2dtGuiEditor ), window.px2dtGuiEditor.fieldBase );

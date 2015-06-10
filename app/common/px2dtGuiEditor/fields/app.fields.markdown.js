@@ -1,4 +1,4 @@
-window.contApp.fieldDefinitions.markdown = _.defaults( new (function( px, contApp ){
+window.px2dtGuiEditor.fieldDefinitions.markdown = _.defaults( new (function( px, px2dtGuiEditor ){
 
 	/**
 	 * データをバインドする
@@ -34,4 +34,4 @@ window.contApp.fieldDefinitions.markdown = _.defaults( new (function( px, contAp
 		return;
 	}
 
-})( window.px, window.contApp ), window.contApp.fieldBase );
+})( window.px, window.px2dtGuiEditor ), window.px2dtGuiEditor.fieldBase );

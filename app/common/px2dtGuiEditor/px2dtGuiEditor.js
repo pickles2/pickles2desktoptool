@@ -1,9 +1,27 @@
-window.px = window.parent.px;
-window.contApp = new (function( px ){
+if(window.parent){ window.px = window.parent.px; }
+
+/**
+ * GUIエディタ
+ */
+window.px2dtGuiEditor = new (function(px){
 	if( !px ){ alert('px が宣言されていません。'); }
 
 	var _this = this;
 	var _pj = px.getCurrentProject();
+
+
+	var root = (function() {
+		if (document.currentScript) {
+			return document.currentScript.src;
+		} else {
+			var scripts = document.getElementsByTagName('script'),
+			script = scripts[scripts.length-1];
+			if (script.src) {
+				return script.src;
+			}
+		}
+	})();
+	this.path_base = px.utils.dirname(root);
 
 	var _param = px.utils.parseUriParam( window.location.href );
 
@@ -46,11 +64,44 @@ window.contApp = new (function( px ){
 
 
 	/**
+	 * common header
+	 */
+	this.get_header_html = function(){
+		var rtn = '';
+
+		// ========== GUI Editor ==========
+		rtn += '<link rel="stylesheet" href="'+this.path_base+'/style.css" type="text/css" />';
+		rtn += '<scri'+'pt src="'+this.path_base+'/app.moduleTemplates.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+this.path_base+'/app.contentsSourceData.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+this.path_base+'/app.contentsSourceData.resourceMgr.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+this.path_base+'/app.contentsSourceData.history.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+this.path_base+'/app.ui.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+this.path_base+'/app.fieldBase.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+this.path_base+'/fields/app.fields.html.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+this.path_base+'/fields/app.fields.html_attr_text.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+this.path_base+'/fields/app.fields.href.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+this.path_base+'/fields/app.fields.text.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+this.path_base+'/fields/app.fields.markdown.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+this.path_base+'/fields/app.fields.image.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+this.path_base+'/fields/app.fields.table.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+this.path_base+'/fields/app.fields.wysiwyg_rte.js"></scri'+'pt>';//← WYSIWYGエディタ
+		rtn += '<scri'+'pt src="'+this.path_base+'/fields/app.fields.wysiwyg_tinymce.js"></scri'+'pt>';//← WYSIWYGエディタ
+		rtn += '<scri'+'pt src="'+this.path_base+'/fields/app.fields.select.js"></scri'+'pt>';
+
+		return rtn;
+	}
+
+	/**
 	 * initialize
 	 */
-	function init(){
+	this.init = function(){
 
 		px.utils.iterateFnc([
+			function(it){
+				px.preview.serverStandby( function(){
+					it.next();
+				} );
+			} ,
 			function(it){
 				// モジュールテンプレートのロード・初期化
 				var pathsModTpls = {};
@@ -164,10 +215,5 @@ window.contApp = new (function( px ){
 
 	}// init()
 
-	$(function(){
-		px.preview.serverStandby( function(){
-			init();
-		} );
-	})
 
-})( window.parent.px );
+})(window.px);

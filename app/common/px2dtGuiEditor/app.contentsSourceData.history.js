@@ -1,4 +1,4 @@
-window.contApp.contentsSourceData.history = new(function(px, contApp){
+window.px2dtGuiEditor.contentsSourceData.history = new(function(px, px2dtGuiEditor){
 
 	var historyDataArray = [];
 	var historyIdx = 0;
@@ -56,4 +56,4 @@ window.contApp.contentsSourceData.history = new(function(px, contApp){
 	}
 
 
-})(window.px, window.contApp);
+})(window.px, window.px2dtGuiEditor);

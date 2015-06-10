@@ -1,4 +1,4 @@
-window.contApp.contentsSourceData = new(function(px, contApp){
+window.px2dtGuiEditor.contentsSourceData = new(function(px, px2dtGuiEditor){
 	var _contentsSourceData;
 	var _contentsRealPath;
 	var _contFilesDirPath;
@@ -80,7 +80,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 		var tmpCur = cur.split('.');
 		var container = tmpCur[0];
 		var fieldName = tmpCur[1];
-		var modTpl = contApp.moduleTemplates.get( data.modId, data.subModName );
+		var modTpl = px2dtGuiEditor.moduleTemplates.get( data.modId, data.subModName );
 
 		if( container == 'bowl' ){
 			return this.get( aryPath, data.bowl[fieldName] );
@@ -136,14 +136,14 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 					this.subModName = subModName;
 				}
 			})(modId, subModName);
-			var modTpl = contApp.moduleTemplates.get( newData.modId, subModName );
+			var modTpl = px2dtGuiEditor.moduleTemplates.get( newData.modId, subModName );
 
 			// 初期データ追加
 			var fieldList = _.keys( modTpl.fields );
 			for( var idx in fieldList ){
 				var fieldName = fieldList[idx];
 				if( modTpl.fields[fieldName].fieldType == 'input' ){
-					newData.fields[fieldName] = contApp.fieldDefinitions[modTpl.fields[fieldName].type].normalizeData('');
+					newData.fields[fieldName] = px2dtGuiEditor.fieldDefinitions[modTpl.fields[fieldName].type].normalizeData('');
 				}else if( modTpl.fields[fieldName].fieldType == 'module' ){
 					newData.fields[fieldName] = [];
 				}else if( modTpl.fields[fieldName].fieldType == 'loop' ){
@@ -172,7 +172,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 			var tmpCur = cur.split('.');
 			var container = tmpCur[0];
 			var fieldName = tmpCur[1];
-			var modTpl = contApp.moduleTemplates.get( data.modId, data.subModName );
+			var modTpl = px2dtGuiEditor.moduleTemplates.get( data.modId, data.subModName );
 
 			if( container == 'bowl' ){
 				return set_r( aryPath, data.bowl[fieldName], newData );
@@ -243,7 +243,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 			var tmpCur = cur.split('.');
 			var container = tmpCur[0];
 			var fieldName = tmpCur[1];
-			var modTpl = contApp.moduleTemplates.get( data.modId, data.subModName );
+			var modTpl = px2dtGuiEditor.moduleTemplates.get( data.modId, data.subModName );
 
 			if( container == 'bowl' ){
 				return set_r( aryPath, data.bowl[fieldName], newData );
@@ -372,7 +372,7 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 			var tmpCur = cur.split('.');
 			var container = tmpCur[0];
 			var fieldName = tmpCur[1];
-			var modTpl = contApp.moduleTemplates.get( data.modId, data.subModName );
+			var modTpl = px2dtGuiEditor.moduleTemplates.get( data.modId, data.subModName );
 
 			if( container == 'bowl' ){
 				return remove_r( aryPath, data.bowl[fieldName] );
@@ -521,4 +521,4 @@ window.contApp.contentsSourceData = new(function(px, contApp){
 		return this;
 	}
 
-})(window.px, window.contApp);
+})(window.px, window.px2dtGuiEditor);

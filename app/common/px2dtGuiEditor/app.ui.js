@@ -1,4 +1,4 @@
-window.contApp.ui = new(function(px, contApp){
+window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 	var _this = this;
 	var $preview;
 	var $previewDoc;
@@ -29,7 +29,7 @@ window.contApp.ui = new(function(px, contApp){
 			.append('<ul>')
 		;
 		(function(){
-			var modPackages = contApp.moduleTemplates.getPackages();
+			var modPackages = px2dtGuiEditor.moduleTemplates.getPackages();
 			px.utils.iterate(
 				modPackages,
 				function( it, row, idx ){
@@ -38,7 +38,7 @@ window.contApp.ui = new(function(px, contApp){
 						.append( $liPackage )
 					;
 
-					var modGroups = contApp.moduleTemplates.getGroups( modPackages[idx].id );
+					var modGroups = px2dtGuiEditor.moduleTemplates.getGroups( modPackages[idx].id );
 					var $ulGroups = $('<ul>')
 					$liPackage
 						.append( $('<a>')
@@ -70,7 +70,7 @@ window.contApp.ui = new(function(px, contApp){
 							px.utils.iterate(
 								group.contents,
 								function( it3, modId, idx3 ){
-									var mod = contApp.moduleTemplates.get( modId );
+									var mod = px2dtGuiEditor.moduleTemplates.get( modId );
 									var $liMod = $('<li>')
 										.append( $('<button>')
 											.text( modId )
@@ -125,9 +125,9 @@ window.contApp.ui = new(function(px, contApp){
 					this.Keypress = _Keypress;
 					var deleteModuleInstance = function(){
 						if( selectedInstance !== null ){
-							contApp.contentsSourceData.removeInstance( selectedInstance );
+							px2dtGuiEditor.contentsSourceData.removeInstance( selectedInstance );
 							_this.unselectInstance();
-							contApp.ui.onEditEnd();
+							px2dtGuiEditor.ui.onEditEnd();
 							px.message("インスタンスを削除しました。");
 						}
 						return;
@@ -155,15 +155,15 @@ window.contApp.ui = new(function(px, contApp){
 						var data = px.clipboard.get();
 						// alert(data);
 						data = JSON.parse( data );
-						contApp.contentsSourceData.addInstance( data, _this.getSelectedInstance(), function(){
+						px2dtGuiEditor.contentsSourceData.addInstance( data, _this.getSelectedInstance(), function(){
 							px.message('インスタンスをペーストしました。');
-							contApp.ui.onEditEnd();
+							px2dtGuiEditor.ui.onEditEnd();
 						} );
 						e.preventDefault();
 					});
 					_Keypress.simple_combo("cmd z", function(e) {
-						contApp.contentsSourceData.historyBack( function(){
-							contApp.save(function(result){
+						px2dtGuiEditor.contentsSourceData.historyBack( function(){
+							px2dtGuiEditor.save(function(result){
 								if( !result ){
 									px.message('保存に失敗しました。');
 								}
@@ -175,8 +175,8 @@ window.contApp.ui = new(function(px, contApp){
 						e.preventDefault();
 					});
 					_Keypress.simple_combo("cmd y", function(e) {
-						contApp.contentsSourceData.historyGo( function(){
-							contApp.save(function(result){
+						px2dtGuiEditor.contentsSourceData.historyGo( function(){
+							px2dtGuiEditor.save(function(result){
 								if( !result ){
 									px.message('保存に失敗しました。');
 								}
@@ -230,7 +230,7 @@ window.contApp.ui = new(function(px, contApp){
 
 	/**
 	 * プレビューのロード完了イベント
-	 * contApp.contentsSourceData のデータをもとに、コンテンツと編集ツール描画のリセットも行います。
+	 * px2dtGuiEditor.contentsSourceData のデータをもとに、コンテンツと編集ツール描画のリセットも行います。
 	 */
 	this.onPreviewLoad = function( cb ){
 		cb = cb || function(){};
@@ -253,9 +253,9 @@ window.contApp.ui = new(function(px, contApp){
 	function classUiUnit( instancePath, data ){
 		instancePath = instancePath.replace( new RegExp('^\\/*'), '/' );
 		this.instancePath = instancePath;
-		this.moduleTemplates = contApp.moduleTemplates.get( data.modId, data.subModName );
+		this.moduleTemplates = px2dtGuiEditor.moduleTemplates.get( data.modId, data.subModName );
 		if( this.moduleTemplates === false ){
-			this.moduleTemplates = contApp.moduleTemplates.get( '_sys/unknown' );
+			this.moduleTemplates = px2dtGuiEditor.moduleTemplates.get( '_sys/unknown' );
 		}
 		this.fieldList = _.keys( this.moduleTemplates.fields );
 
@@ -296,10 +296,10 @@ window.contApp.ui = new(function(px, contApp){
 			for( var idx in this.fieldList ){
 				var fieldName = this.fieldList[idx];
 				if( this.moduleTemplates.fields[fieldName].fieldType == 'input' ){
-					if( contApp.fieldDefinitions[this.moduleTemplates.fields[fieldName].type] ){
-						fieldData[fieldName] = contApp.fieldDefinitions[this.moduleTemplates.fields[fieldName].type].normalizeData( this.fields[fieldName], mode );
+					if( px2dtGuiEditor.fieldDefinitions[this.moduleTemplates.fields[fieldName].type] ){
+						fieldData[fieldName] = px2dtGuiEditor.fieldDefinitions[this.moduleTemplates.fields[fieldName].type].normalizeData( this.fields[fieldName], mode );
 					}else{
-						fieldData[fieldName] = contApp.fieldBase.normalizeData( this.fields[fieldName], mode );
+						fieldData[fieldName] = px2dtGuiEditor.fieldBase.normalizeData( this.fields[fieldName], mode );
 					}
 				}else if( this.moduleTemplates.fields[fieldName].fieldType == 'module' ){
 					fieldData[fieldName] = (function( fieldData, mode, opt ){
@@ -457,9 +457,9 @@ window.contApp.ui = new(function(px, contApp){
 							px.message('ここにモジュールを追加することはできません。');
 							return;
 						}
-						contApp.contentsSourceData.addInstance( modId, moveTo, function(){
+						px2dtGuiEditor.contentsSourceData.addInstance( modId, moveTo, function(){
 							// px.message('インスタンスを追加しました。');
-							contApp.ui.onEditEnd();
+							px2dtGuiEditor.ui.onEditEnd();
 						} );
 					}else if( method == 'moveTo' ){
 						function isSubMod( subModName ){
@@ -475,9 +475,9 @@ window.contApp.ui = new(function(px, contApp){
 							px.message('並べ替え以外の移動操作はできません。');
 							return;
 						}
-						contApp.contentsSourceData.moveInstanceTo( moveFrom, moveTo, function(){
+						px2dtGuiEditor.contentsSourceData.moveInstanceTo( moveFrom, moveTo, function(){
 							// px.message('インスタンスを移動しました。');
-							contApp.ui.onEditEnd();
+							px2dtGuiEditor.ui.onEditEnd();
 						} );
 					}
 				})
@@ -546,9 +546,9 @@ window.contApp.ui = new(function(px, contApp){
 							var method = event.dataTransfer.getData("method");
 							if( method === 'moveTo' ){
 								var moveFrom = event.dataTransfer.getData("data-guieditor-cont-data-path");
-								contApp.contentsSourceData.moveInstanceTo( moveFrom, $(this).attr('data-guieditor-cont-data-path'), function(){
+								px2dtGuiEditor.contentsSourceData.moveInstanceTo( moveFrom, $(this).attr('data-guieditor-cont-data-path'), function(){
 									// px.message('インスタンスを移動しました。');
-									contApp.ui.onEditEnd();
+									px2dtGuiEditor.ui.onEditEnd();
 								} );
 								return;
 							}
@@ -557,9 +557,9 @@ window.contApp.ui = new(function(px, contApp){
 								return;
 							}
 							var modId = event.dataTransfer.getData("modId");
-							contApp.contentsSourceData.addInstance( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
+							px2dtGuiEditor.contentsSourceData.addInstance( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
 								// px.message('インスタンスを追加しました。');
-								contApp.ui.onEditEnd();
+								px2dtGuiEditor.ui.onEditEnd();
 							} );
 						})
 						.bind('dragenter', function(e){
@@ -644,9 +644,9 @@ window.contApp.ui = new(function(px, contApp){
 									return;
 								}
 
-								contApp.contentsSourceData.moveInstanceTo( moveFrom, moveTo, function(){
+								px2dtGuiEditor.contentsSourceData.moveInstanceTo( moveFrom, moveTo, function(){
 									// px.message('インスタンスを移動しました。');
-									contApp.ui.onEditEnd();
+									px2dtGuiEditor.ui.onEditEnd();
 								} );
 								return;
 							}
@@ -673,8 +673,8 @@ window.contApp.ui = new(function(px, contApp){
 						.bind('dblclick', function(e){
 							var modId = $(this).attr("data-guieditor-mod-id");
 							var subModName = $(this).attr("data-guieditor-sub-mod-name");
-							contApp.contentsSourceData.addInstance( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
-								contApp.ui.onEditEnd();
+							px2dtGuiEditor.contentsSourceData.addInstance( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
+								px2dtGuiEditor.ui.onEditEnd();
 							}, subModName );
 							e.preventDefault();
 						})
@@ -691,7 +691,7 @@ window.contApp.ui = new(function(px, contApp){
 	 */
 	this.onEditEnd = function( cb ){
 		cb = cb||function(){};
-		contApp.save();
+		px2dtGuiEditor.save();
 		this.resizeEvent();
 		cb();
 		return;
@@ -734,7 +734,7 @@ window.contApp.ui = new(function(px, contApp){
 	 * 選択されたインスタンスのデータを取得する
 	 */
 	this.getSelectedInstanceData = function(){
-		return contApp.contentsSourceData.get( selectedInstance );
+		return px2dtGuiEditor.contentsSourceData.get( selectedInstance );
 	}
 
 	/**
@@ -743,8 +743,8 @@ window.contApp.ui = new(function(px, contApp){
 	this.openEditWindow = function( instancePath ){
 		// px.message( '開発中: このモジュールを選択して、編集できるようになる予定です。' );
 		// px.message( instancePath );
-		var data = contApp.contentsSourceData.get( instancePath );
-		var modTpl = contApp.moduleTemplates.get( data.modId, data.subModName );
+		var data = px2dtGuiEditor.contentsSourceData.get( instancePath );
+		var modTpl = px2dtGuiEditor.moduleTemplates.get( data.modId, data.subModName );
 
 		if( $editWindow ){ $editWindow.remove(); }
 		$editWindow = $('<div>')
@@ -759,10 +759,10 @@ window.contApp.ui = new(function(px, contApp){
 				for( var idx in modTpl.fields ){
 					var field = modTpl.fields[idx];
 					if( field.fieldType == 'input' ){
-						if( contApp.fieldDefinitions[field.type] ){
-							data.fields[field.name] = contApp.fieldDefinitions[field.type].saveEditorContent( $editWindow.find('form [data-field-unit='+JSON.stringify( modTpl.fields[idx].name )+']'), data.fields[field.name], field );
+						if( px2dtGuiEditor.fieldDefinitions[field.type] ){
+							data.fields[field.name] = px2dtGuiEditor.fieldDefinitions[field.type].saveEditorContent( $editWindow.find('form [data-field-unit='+JSON.stringify( modTpl.fields[idx].name )+']'), data.fields[field.name], field );
 						}else{
-							data.fields[field.name] = contApp.fieldBase.saveEditorContent( $editWindow.find('form [data-field-unit='+JSON.stringify( modTpl.fields[idx].name )+']'), data.fields[field.name], field );
+							data.fields[field.name] = px2dtGuiEditor.fieldBase.saveEditorContent( $editWindow.find('form [data-field-unit='+JSON.stringify( modTpl.fields[idx].name )+']'), data.fields[field.name], field );
 						}
 					}else if( field.fieldType == 'module' ){
 						// module: 特に処理なし
@@ -772,7 +772,7 @@ window.contApp.ui = new(function(px, contApp){
 				}
 				$editWindow.remove();
 				px.closeDialog();
-				contApp.ui.onEditEnd();
+				px2dtGuiEditor.ui.onEditEnd();
 				return false;
 			})
 		;
@@ -786,11 +786,11 @@ window.contApp.ui = new(function(px, contApp){
 		$editWindow.find('form .cont_tpl_module_editor-remove')
 			.attr({'data-guieditor-cont-data-path':instancePath})
 			.click(function(){
-				contApp.contentsSourceData.removeInstance( $(this).attr('data-guieditor-cont-data-path') );
+				px2dtGuiEditor.contentsSourceData.removeInstance( $(this).attr('data-guieditor-cont-data-path') );
 				delete data;
 				$editWindow.remove();
 				px.closeDialog();
-				contApp.ui.onEditEnd();
+				px2dtGuiEditor.ui.onEditEnd();
 				return false;
 			})
 		;
@@ -822,8 +822,8 @@ window.contApp.ui = new(function(px, contApp){
 							.html( mkEditFieldLabel( modTpl.fields[idx] ) )
 						)
 						.append( ((function( field, mod, data ){
-							if( contApp.fieldDefinitions[field.type] ){
-								return contApp.fieldDefinitions[field.type].mkEditor( mod, data );
+							if( px2dtGuiEditor.fieldDefinitions[field.type] ){
+								return px2dtGuiEditor.fieldDefinitions[field.type].mkEditor( mod, data );
 							}
 							return $('<div>')
 								.append( $('<textarea>')
@@ -875,8 +875,8 @@ window.contApp.ui = new(function(px, contApp){
 		for( var idx in modTpl.fields ){
 			var field = modTpl.fields[idx];
 			if( field.fieldType == 'input' ){
-				if( contApp.fieldDefinitions[field.type] ){
-					return contApp.fieldDefinitions[field.type].onEditorUiDrawn( $editWindow.find('div[data-field-unit="'+modTpl.fields[idx].name+'"]'), field, data.fields[modTpl.fields[idx].name] );
+				if( px2dtGuiEditor.fieldDefinitions[field.type] ){
+					return px2dtGuiEditor.fieldDefinitions[field.type].onEditorUiDrawn( $editWindow.find('div[data-field-unit="'+modTpl.fields[idx].name+'"]'), field, data.fields[modTpl.fields[idx].name] );
 				}
 			}
 		}
@@ -916,8 +916,8 @@ window.contApp.ui = new(function(px, contApp){
 		$previewDoc.find('.contents').each(function(){
 			$(this).html('');
 			var id = $(this).attr('id')||'main';
-			contApp.contentsSourceData.initBowlData(id);
-			var data = contApp.contentsSourceData.getBowlData( id );
+			px2dtGuiEditor.contentsSourceData.initBowlData(id);
+			var data = px2dtGuiEditor.contentsSourceData.getBowlData( id );
 
 			dataViewTree[id] = new classUiUnit( '/bowl.'+id, data );
 			$(this).html( dataViewTree[id].bind( 'canvas' ) );
@@ -971,4 +971,4 @@ window.contApp.ui = new(function(px, contApp){
 		return src;
 	}
 
-})(window.px, window.contApp);
+})(window.px, window.px2dtGuiEditor);

@@ -1,4 +1,4 @@
-window.contApp.moduleTemplates = new(function(px, contApp){
+window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 	var _this = this;
 	// var _pathBase;
 	var _pathsModTpl;
@@ -108,7 +108,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 	 */
 	function getPathModTpl( modId ){
 		// modId の形式は、 {$idx}:{$dir}/{$name}
-		if( contApp.moduleTemplates.isSystemMod(modId) ){
+		if( px2dtGuiEditor.moduleTemplates.isSystemMod(modId) ){
 			return false;
 		}
 		modId.match( new RegExp('^([0-9a-zA-Z\\_\\-]+?)\\:(.*)$') );
@@ -133,7 +133,7 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 		this.id = modId;
 		this.isRootElement = false;
 		this.path = null;
-		if( !contApp.moduleTemplates.isSystemMod(modId) && !opt.src ){
+		if( !px2dtGuiEditor.moduleTemplates.isSystemMod(modId) && !opt.src ){
 			this.path = px.fs.realpathSync( getPathModTpl(modId) );
 		}
 		this.fields = {};
@@ -205,12 +205,12 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 				}else if( field.input ){
 					// input field
 					var tmpVal = '';
-					if( contApp.fieldDefinitions[field.input.type] ){
+					if( px2dtGuiEditor.fieldDefinitions[field.input.type] ){
 						// フィールドタイプ定義を呼び出す
-						tmpVal += contApp.fieldDefinitions[field.input.type].bind( fieldData[field.input.name], mode, field.input );
+						tmpVal += px2dtGuiEditor.fieldDefinitions[field.input.type].bind( fieldData[field.input.name], mode, field.input );
 					}else{
 						// ↓未定義のフィールドタイプの場合のデフォルトの挙動
-						tmpVal += contApp.fieldBase.bind( fieldData[field.input.name], mode, field.input );
+						tmpVal += px2dtGuiEditor.fieldBase.bind( fieldData[field.input.name], mode, field.input );
 					}
 					if( !field.input.hidden ){//← "hidden": true だったら、非表示(=出力しない)
 						rtn += tmpVal;
@@ -458,4 +458,4 @@ window.contApp.moduleTemplates = new(function(px, contApp){
 		return rtn;
 	}
 
-})(window.px, window.contApp);
+})(window.px, window.px2dtGuiEditor);

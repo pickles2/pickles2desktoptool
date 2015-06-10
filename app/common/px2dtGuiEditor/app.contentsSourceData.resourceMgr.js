@@ -1,4 +1,4 @@
-window.contApp.contentsSourceData.resourceMgr = new(function(px, contApp){
+window.px2dtGuiEditor.contentsSourceData.resourceMgr = new(function(px, px2dtGuiEditor){
 	var _this = this;
 	var _contFilesDirPath;
 	var _resourcesDirPath;
@@ -182,4 +182,4 @@ window.contApp.contentsSourceData.resourceMgr = new(function(px, contApp){
 		return true;
 	}
 
-})(window.px, window.contApp);
+})(window.px, window.px2dtGuiEditor);

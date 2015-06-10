@@ -1,4 +1,4 @@
-window.contApp.fieldDefinitions.select = _.defaults( new (function( px, contApp ){
+window.px2dtGuiEditor.fieldDefinitions.select = _.defaults( new (function( px, px2dtGuiEditor ){
 
 	/**
 	 * データをバインドする
@@ -71,4 +71,4 @@ window.contApp.fieldDefinitions.select = _.defaults( new (function( px, contApp 
 		return src;
 	}
 
-})( window.px, window.contApp ), window.contApp.fieldBase );
+})( window.px, window.px2dtGuiEditor ), window.px2dtGuiEditor.fieldBase );

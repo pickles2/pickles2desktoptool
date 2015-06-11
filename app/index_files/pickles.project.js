@@ -198,13 +198,14 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	 * ページパスからコンテンツの種類(編集モード)を取得する
 	 */
 	this.getPageContentProcType = function( pagePath ){
-		var pageContent = this.findPageContent( pagePath );
-		var filesDir = this.getContentFilesByPageContent( pageContent );
-		var pathContRoot = this.get_realpath_controot();
 		var rtn = '.unknown';
+		var pathContRoot = this.get_realpath_controot();
+		var pageContent = this.findPageContent( pagePath );
 		if( !px.utils.isFile( pathContRoot+pageContent ) ){
-			rtn = '.not_exists';
-		}else if( this.isContentDoubleExtension( pageContent ) ){
+			return '.not_exists';
+		}
+		var filesDir = this.getContentFilesByPageContent( pageContent );
+		if( this.isContentDoubleExtension( pageContent ) ){
 			rtn = px.utils.getExtension( pageContent );
 		}else if( px.utils.isDirectory( pathContRoot+filesDir ) && px.utils.isFile( pathContRoot+filesDir+'/guieditor.ignore/data.json' ) ){
 			rtn = 'html.gui';
@@ -682,6 +683,13 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	}
 
 	/**
+	 * 検索オブジェクトを生成・取得する
+	 */
+	this.createSearcher = function(){
+		return new (require('./pickles.project.searcher.js'))(px, this);
+	}
+
+	/**
 	 * projectオブジェクトを初期化
 	 */
 	px.utils.iterateFnc([
@@ -726,7 +734,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			/**
 			 * px.site
 			 */
-			pj.site = new (require('./pickles.project.site.js')).site(px, pj, function(){
+			pj.site = new (require('./pickles.project.site.js'))(px, pj, function(){
 				itPj.next(pj);
 			});
 

@@ -1,7 +1,7 @@
 /**
- * px.prject.site
+ * px.project.site
  */
-module.exports.site = function( px, pj, callbackOnStandby ) {
+module.exports = function( px, pj, callbackOnStandby ) {
 	global.__defineGetter__('__LINE__', function () { return (new Error()).stack.split('\n')[2].split(':').reverse()[1]; }); var var_dump = function(val){ console.log(val); };
 
 	var _this = this;

@@ -316,8 +316,6 @@ window.contApp = new (function( px ){
 											$bs3btn.find('.dropdown-toggle').click();
 											var pagePath = $(this).attr('data-path');
 											_pj.buildGuiEditContent( pagePath, function(result){
-												alert('※この機能は開発中です。');
-												alert(result);
 												_this.loadPreview( pagePath, function(){}, {'force':true} );
 											} );
 											return false;

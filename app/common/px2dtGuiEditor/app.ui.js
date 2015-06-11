@@ -966,9 +966,13 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 	 */
 	this.finalize = function(){
 		var src = '';
-		for( var bowlName in dataViewTree ){
+		var bowlList = px2dtGuiEditor.contentsSourceData.getBowlList();
+		for( var bowlIdx in bowlList ){
+			var bowlName = bowlList[bowlIdx];
 			// console.log(bowlName);
-			var tmpSrc = dataViewTree[bowlName].bind( 'finalize' );
+			var data = px2dtGuiEditor.contentsSourceData.getBowlData(bowlName);
+			var BowlTree = new classUiUnit( '/bowl.'+bowlName, data );
+			var tmpSrc = BowlTree.bind( 'finalize' );
 			tmpSrc = JSON.parse( JSON.stringify( tmpSrc ) );
 
 			if( bowlName == 'main' ){

@@ -471,6 +471,17 @@ window.px2dtGuiEditor.contentsSourceData = new(function(px, px2dtGuiEditor){
 	}
 
 	/**
+	 * bowlの一覧を取得
+	 */
+	this.getBowlList = function(){
+		var rtn = [];
+		for(var bowlName in _contentsSourceData.bowl){
+			rtn.push(bowlName);
+		}
+		return rtn;
+	}
+
+	/**
 	 * history: 取り消し
 	 */
 	this.historyBack = function( cb ){
@@ -506,18 +517,21 @@ window.px2dtGuiEditor.contentsSourceData = new(function(px, px2dtGuiEditor){
 	this.save = function(cb){
 		var _this = this;
 		cb = cb||function(){};
-		px.fs.writeFile( _contentsSourceDataJsonPath, JSON.stringify(_contentsSourceData, null, 1), {encoding:'utf8'}, function(err){
-
-			// リソースマネージャーの保存処理
-			_this.resourceMgr.save(
-				function(){
-					_this.history.put( _contentsSourceData, function(){
-						cb( !err );
-					} );
-				}
-			);
-
-		} );
+		px.fs.writeFile(
+			_contentsSourceDataJsonPath,
+			JSON.stringify(_contentsSourceData, null, 1),
+			{encoding:'utf8'},
+			function(err){
+				// リソースマネージャーの保存処理
+				_this.resourceMgr.save(
+					function(){
+						_this.history.put( _contentsSourceData, function(){
+							cb( !err );
+						} );
+					}
+				);
+			}
+		);
 		return this;
 	}
 

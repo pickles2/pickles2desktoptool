@@ -47,7 +47,7 @@ window.px2dtGuiEditor = new (function(px){
 	})();
 
 	var _this = this;
-	var _pj = px.getCurrentProject();
+	var _pj;
 
 	var _param_page_path;
 	var _pageInfo;
@@ -89,6 +89,7 @@ window.px2dtGuiEditor = new (function(px){
 	this.init = function(param_page_path){
 		_param_page_path = param_page_path;
 
+		_pj = px.getCurrentProject();
 		_pageInfo = _pj.site.getPageInfo( _param_page_path );
 		if( !_pageInfo ){
 			alert('ERROR: Undefined page path.'); return this;
@@ -245,6 +246,7 @@ window.px2dtGuiEditor = new (function(px){
 	this.build = function(param_page_path, cb){
 		_param_page_path = param_page_path;
 
+		_pj = px.getCurrentProject();
 		_pageInfo = _pj.site.getPageInfo( _param_page_path );
 		if( !_pageInfo ){
 			alert('ERROR: Undefined page path.'); return this;
@@ -253,13 +255,16 @@ window.px2dtGuiEditor = new (function(px){
 		if( !_pathContent ){
 			_pathContent = _pageInfo.path;
 		}
+		// console.log(_pj);
+		// console.log(_pageInfo);
+		// console.log(_pathContent);
 
 		px.utils.iterateFnc([
-			function(it){
-				px.preview.serverStandby( function(){
-					it.next();
-				} );
-			} ,
+			// function(it){
+			// 	px.preview.serverStandby( function(){
+			// 		it.next();
+			// 	} );
+			// } ,
 			function(it){
 				// モジュールテンプレートのロード・初期化
 				var pathsModTpls = {};
@@ -280,6 +285,17 @@ window.px2dtGuiEditor = new (function(px){
 				_this.contentsSourceData.init( realpath, _this.contFilesDirPath, function(){
 					it.next();
 				} );
+			} ,
+			// function(it){
+			// 	_this.ui.initField( function(){
+			// 		it.next();
+			// 	} );
+			// } ,
+			function(it){
+				// src = _this.ui.finalize();
+				save(function(){
+					it.next();
+				});
 			} ,
 			function(it){
 				cb(true);

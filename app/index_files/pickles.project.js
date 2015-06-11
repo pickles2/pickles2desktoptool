@@ -313,10 +313,10 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			return this;
 		}
 
-		var pageContent = this.findPageContent( pagePath );
-		console.log( pageContent );
+		window.px2dtGuiEditor.build(pagePath, function(result){
+			cb(result);
+		});
 
-		cb(true);
 		return this;
 	}// buildGuiEditContent()
 

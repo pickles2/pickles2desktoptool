@@ -81,10 +81,12 @@ window.textEditor = new (function(){
 	 * textarea にテキストエディタ(CodeMirror)を適用する
 	 */
 	this.attachTextEditor = function( textarea, ext, options ){
+		var height = $(textarea).height();
 		options = options||{};
 		options.save = options.save||function(){};
 		var rtn = CodeMirror.fromTextArea( textarea , {
 			lineNumbers: true,
+			viewportMargin: Infinity,
 			mode: (function(ext){
 				switch(ext){
 					case 'css': return 'text/x-scss'; break;
@@ -131,7 +133,9 @@ window.textEditor = new (function(){
 		rtn.on('blur',function(){
 			rtn.save();
 		});
+		rtn.setSize('100%', height);
 		rtn.focus();
+
 		return rtn;
 	}// attachTextEditor()
 

@@ -8,6 +8,10 @@ window.px2dtGuiEditor.fieldDefinitions.html = _.defaults( new (function( px, px2
 			$dom.find('textarea').get(0),
 			'html'
 		);
+		$dom.find('.CodeMirror').css({
+			'border': '1px solid #ccc',
+			'border-radius': '3px'
+		});
 		return;
 	}
 

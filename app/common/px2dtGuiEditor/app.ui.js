@@ -886,14 +886,14 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 
 		// DOMに配置後にコールバックを呼ぶ
 		// UI系のライブラリを使う場合に不都合がある場合があるので追加した機能。
-		for( var idx in modTpl.fields ){
+		Object.keys(modTpl.fields).forEach(function (idx) {
 			var field = modTpl.fields[idx];
 			if( field.fieldType == 'input' ){
 				if( px2dtGuiEditor.fieldDefinitions[field.type] ){
 					return px2dtGuiEditor.fieldDefinitions[field.type].onEditorUiDrawn( $editWindow.find('div[data-field-unit="'+modTpl.fields[idx].name+'"]'), field, data.fields[modTpl.fields[idx].name] );
 				}
 			}
-		}
+		});
 
 		return this;
 	}// openEditWindow()

@@ -33,6 +33,10 @@ window.px2dtGuiEditor.fieldDefinitions.text = _.defaults( new (function( px, px2
 			$dom.find('textarea').get(0),
 			'text'
 		);
+		$dom.find('.CodeMirror').css({
+			'border': '1px solid #ccc',
+			'border-radius': '3px'
+		});
 		return;
 	}
 

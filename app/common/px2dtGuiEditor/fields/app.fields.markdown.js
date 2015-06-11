@@ -31,6 +31,10 @@ window.px2dtGuiEditor.fieldDefinitions.markdown = _.defaults( new (function( px,
 			$dom.find('textarea').get(0),
 			'md'
 		);
+		$dom.find('.CodeMirror').css({
+			'border': '1px solid #ccc',
+			'border-radius': '3px'
+		});
 		return;
 	}
 

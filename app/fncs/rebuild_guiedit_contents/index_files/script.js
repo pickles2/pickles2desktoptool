@@ -33,16 +33,68 @@ window.contApp = new (function(px){
 		$(btn).attr('disabled', 'disabled');
 		$pre.text('');
 
-		pj.createSearcher().getGuiEditPages( {
-			success: function(msg){
-				// console.log(msg);
-				$pre.text( $pre.text() + msg );
-			} ,
-			complete: function(result){
-				$pre.text( $pre.text() + 'completed!' );
-				$(btn).removeAttr('disabled').focus();
-				px.message( '完了しました。' );
-			}
+		pj.createSearcher().getGuiEditPages( function(pageList){
+
+			px.utils.iterate(
+				pageList ,
+				function( it1, sitemapRow, idx1 ){
+					console.log(sitemapRow);
+					$pre.text( $pre.text() + sitemapRow.path );
+
+					px.utils.iterateFnc([
+						function(it2, arg2){
+							var procType = pj.get_path_proc_type( arg2.pageInfo.path );
+							$pre.text( $pre.text() + ' -> ' + procType );
+							switch( procType ){
+								case 'html':
+								case 'htm':
+									it2.next(arg2);
+									break;
+								default:
+									$pre.text( $pre.text() + ' -> SKIP' );
+									$pre.text( $pre.text() + "\n" );
+									it1.next();
+									break;
+							}
+						} ,
+						function(it2, arg2){
+							var procType = pj.getPageContentProcType( arg2.pageInfo.path );
+							$pre.text( $pre.text() + ' -> ' + procType );
+							switch( procType ){
+								case 'html.gui':
+									it2.next(arg2);
+									break;
+								default:
+									$pre.text( $pre.text() + ' -> SKIP' );
+									$pre.text( $pre.text() + "\n" );
+									it1.next();
+									break;
+							}
+						} ,
+						function(it2, arg2){
+							pj.buildGuiEditContent( arg2.pageInfo.path, function(result){
+								if(result){
+									$pre.text( $pre.text() + ' -> done' );
+								}else{
+									$pre.text( $pre.text() + ' -> ERROR!' );
+								}
+								$pre.text( $pre.text() + "\n" );
+								it2.next(arg2);
+							} );
+						} ,
+						function(it2, arg2){
+							it1.next();
+						}
+					]).start({"pageInfo": sitemapRow});
+
+				} ,
+				function(){
+					$pre.text( $pre.text() + 'completed!' );
+					$(btn).removeAttr('disabled').focus();
+					px.message( '完了しました。' );
+				}
+			);
+
 		} );
 	}
 

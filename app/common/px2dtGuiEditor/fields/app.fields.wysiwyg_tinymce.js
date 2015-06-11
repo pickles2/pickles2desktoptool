@@ -17,7 +17,7 @@ window.px2dtGuiEditor.fieldDefinitions.wysiwyg_tinymce = _.defaults( new (functi
 		var rtn = $('<div>')
 			.append( $iframe
 				.attr({
-					"src": './mods/editor/editor_gui_files/fields/app.fields.wysiwyg_tinymce.form.html'
+					"src": px2dtGuiEditor.path_base+'/fields/app.fields.wysiwyg_tinymce.form.html'
 				})
 				.css({'width':'100%'})
 				.load(function(){

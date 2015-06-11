@@ -17,6 +17,7 @@ window.px2dtGuiEditor = new (function(px){
 			}
 		}
 	})().replace(/\\/g, '/').replace(/\/[^\/]*\/?$/, '');
+	this.path_base = _path_base;
 
 	/**
 	 * common header

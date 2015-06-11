@@ -18,7 +18,7 @@ window.px2dtGuiEditor.fieldDefinitions.wysiwyg_rte = _.defaults( new (function( 
 		var rtn = $('<div>')
 			.append( $iframe
 				.attr({
-					"src": './mods/editor/editor_gui_files/fields/app.fields.wysiwyg_rte.form.html'
+					"src": px2dtGuiEditor.path_base+'/fields/app.fields.wysiwyg_rte.form.html'
 				})
 				.css({'width':'100%'})
 				.load(function(){

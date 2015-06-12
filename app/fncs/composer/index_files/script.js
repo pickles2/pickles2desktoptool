@@ -29,8 +29,12 @@ function cont_init(){
 					}
 				);
 			}
+			cont_resizeEvent();
 
 		});
+
+		$(window).resize(cont_resizeEvent);
+		cont_resizeEvent();
 	});
 
 
@@ -161,6 +165,19 @@ function cont_save_composerJson(form){
 			px.message( 'composer.json を保存しました。 $ composer update を実行してください。' );
 		}
 	} );
+}
+
+/**
+ * window resize
+ */
+function cont_resizeEvent(){
+	var cmHeight = $(window).innerHeight() - $('#cont_edit button').offset().top - $('#cont_edit button').outerHeight() -20;
+	if( cmHeight < 120 ){ cmHeight = 'auto'; }
+	$('.cont_edit_composer_json .CodeMirror')
+		.css({
+			'height': cmHeight
+		})
+	;
 }
 
 $(function(){

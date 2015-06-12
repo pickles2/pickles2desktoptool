@@ -1,6 +1,6 @@
 {
   "name": "pickles2desktoptool",
-  "version": "2.0.0-beta5",
+  "version": "2.0.0-beta5-nb",
   "description": "",
   "main": "app/index.html",
   "scripts": {

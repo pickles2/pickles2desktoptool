@@ -47,8 +47,16 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 								px.utils.iterate(
 									data,
 									function( it2, dirname2, idx2 ){
-										if( !px.utils.isFile( pathModTpl+'/'+dirname1+'/'+dirname2+'/template.html' ) ){
-											px.log( 'template.html is not exists: ' + pathModTpl+'/'+dirname1+'/'+dirname2+'/template.html' );
+										var pathTemplateDir = pathModTpl+'/'+dirname1+'/'+dirname2+'/';
+										if( !px.utils.isDirectory( pathTemplateDir ) ){
+											it2.next();//ディレクトリではなかった場合
+											return;
+										}
+										if(
+											!px.utils.isFile( pathTemplateDir+'template.html' )
+											&& !px.utils.isFile( pathTemplateDir+'template.html.twig' )
+										){
+											px.log( 'template.html is not exists: ' + pathTemplateDir+'template.html' );
 											it2.next();//テンプレートが未定義
 											return;
 										}
@@ -300,6 +308,15 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 				}
 
 			}
+
+			// 実験中: Twigテンプレート
+			rtn = px.twig.compile(rtn,{
+				"filename": this.templateFilename,
+				"settings": {
+					"twig options": {}
+				}
+			})(fieldData);
+
 			return rtn;
 		}
 
@@ -319,6 +336,24 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 					var tmpJson = JSON.parse( px.fs.readFileSync( _this.path+'/info.json' ) );
 					if( tmpJson.name ){
 						_this.info.name = tmpJson.name;
+					}
+					if( tmpJson.interface ){
+						if( tmpJson.interface.fields ){
+							_this.fields = tmpJson.interface.fields;
+							for( var tmpIdx in _this.fields ){
+								// name属性を自動補完
+								_this.fields[tmpIdx].name = tmpIdx;
+							}
+						}
+						if( tmpJson.interface.subModule ){
+							_this.subModule = tmpJson.interface.subModule;
+							for( var tmpIdx in _this.subModule ){
+								for( var tmpIdx2 in _this.subModule[tmpIdx] ){
+									// name属性を自動補完
+									_this.subModule[tmpIdx][tmpIdx2].name = tmpIdx2;
+								}
+							}
+						}
 					}
 				}
 				if( px.utils.isFile( _this.path+'/thumb.png' ) ){
@@ -398,6 +433,7 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 					// _this.fields[field.echo.name].fieldType = 'echo';
 				}
 			}
+			// console.log(_this.fields);
 			cb();
 		}
 
@@ -410,7 +446,14 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 		}else if( typeof(opt.src) === typeof('') ){
 			parseTpl( opt.src, this, opt.topThis, cb );
 		}else if( this.path ){
-			var tmpTplSrc = px.fs.readFileSync( this.path+'/template.html' );
+			var tmpTplSrc = null;
+			if( px.utils.isFile( this.path+'/template.html' ) ){
+				this.templateFilename = this.path+'/template.html';
+				tmpTplSrc = px.fs.readFileSync( this.templateFilename );
+			}else if( px.utils.isFile( this.path+'/template.html.twig' ) ){
+				this.templateFilename = this.path+'/template.html.twig';
+				tmpTplSrc = px.fs.readFileSync( this.templateFilename );
+			}
 			if( !tmpTplSrc ){
 				tmpTplSrc = '<div style="background:#f00;padding:10px;color:#fff;text-align:center;border:1px solid #fdd;">[ERROR] モジュールテンプレートの読み込みエラーです。<!-- .error --></div>';
 			}

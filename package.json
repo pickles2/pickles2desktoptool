@@ -21,6 +21,7 @@
     "mkdirp": "0.*",
     "marked": "0.3.*",
     "execsyncs": "*",
+    "twig": "^0.8.2",
     "px2agent": "*"
   },
   "window":{

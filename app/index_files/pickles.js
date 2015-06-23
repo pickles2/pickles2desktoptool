@@ -45,6 +45,8 @@ new (function($, window){
 	this.path = _path;
 	// var _git = require('nodegit');
 	// this.git = _git;
+	var _twig = require('twig');
+	this.twig = _twig;
 
 	var _appServer = require('./index_files/app_server.js');
 

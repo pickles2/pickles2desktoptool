@@ -310,12 +310,19 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 			}
 
 			// 実験中: Twigテンプレート
-			rtn = px.twig.compile(rtn,{
-				"filename": this.templateFilename,
-				"settings": {
-					"twig options": {}
-				}
-			})(fieldData);
+			if( this.templateType == 'twig' ){
+				rtn = px.twig.compile(rtn, {
+					"filename": this.templateFilename,
+					"settings": {
+						"twig options": {
+							"strict_variables": true,
+							"autoescape": false,
+							"allowInlineIncludes":false,
+							"rethrow":false
+						}
+					}
+				})(fieldData);
+			}
 
 			return rtn;
 		}
@@ -449,9 +456,11 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 			var tmpTplSrc = null;
 			if( px.utils.isFile( this.path+'/template.html' ) ){
 				this.templateFilename = this.path+'/template.html';
+				this.templateType = 'px2dtGuiEditor';
 				tmpTplSrc = px.fs.readFileSync( this.templateFilename );
 			}else if( px.utils.isFile( this.path+'/template.html.twig' ) ){
 				this.templateFilename = this.path+'/template.html.twig';
+				this.templateType = 'twig';
 				tmpTplSrc = px.fs.readFileSync( this.templateFilename );
 			}
 			if( !tmpTplSrc ){

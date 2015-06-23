@@ -11,9 +11,19 @@ window.px2dtGuiEditor.fieldDefinitions.select = _.defaults( new (function( px, p
 			rtn += fieldData;
 		}
 		if( !rtn.length && mod.options ){
+			var isHit = false;
 			for( var idx in mod.options ){
-				rtn = mod.options[idx].value;
-				break;
+				if( rtn == mod.options[idx].value ){
+					isHit = true;
+					break;
+				}
+			}
+			if( !isHit ){
+				// 選択値が空白で、空白の選択肢がなければ、1件目のオプションを選ぶ。
+				for( var idx in mod.options ){
+					rtn = mod.options[idx].value;
+					break;
+				}
 			}
 		}
 		if( mode == 'canvas' && !rtn.length ){

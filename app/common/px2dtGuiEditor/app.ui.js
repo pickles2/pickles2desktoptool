@@ -403,6 +403,18 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 				;
 				rtn = rtn.get(0).outerHTML;
 			}
+
+			// ビルトイン・DECフィールド
+			if( data.dec ){
+				rtn = (function(html, dec){
+					var $tmp = $('<div>').html(html);
+					$tmp.find('>*').eq(0).attr({
+						'data-dec': (dec?dec:'')
+					});
+					return $tmp.html();
+				})(rtn, data.dec);
+			}
+
 			return rtn;
 		} // this.bind();
 
@@ -784,6 +796,9 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 						// loop: 特に処理なし
 					}
 				}
+				var decValue = $editWindow.find('*[data-dec-field-unit] textarea').val();
+				data.dec = decValue;
+
 				$editWindow.remove();
 				px.closeDialog();
 				px2dtGuiEditor.ui.onEditEnd();
@@ -826,10 +841,11 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 			return rtn;
 		}
 
+		$module_editor_canvas = $editWindow.find('div.cont_tpl_module_editor-canvas');
 		for( var idx in modTpl.fields ){
 			var field = modTpl.fields[idx];
 			if( field.fieldType == 'input' ){
-				$editWindow.find('div.cont_tpl_module_editor-canvas')
+				$module_editor_canvas
 					.append($('<div>')
 						.attr( 'data-field-unit', modTpl.fields[idx].name )
 						.append($('<h2>')
@@ -850,7 +866,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					)
 				;
 			}else if( field.fieldType == 'module' ){
-				$editWindow.find('div.cont_tpl_module_editor-canvas')
+				$module_editor_canvas
 					.append($('<div>')
 						.attr( 'data-field-unit', modTpl.fields[idx].name )
 						.append($('<h2>')
@@ -863,7 +879,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					)
 				;
 			}else if( field.fieldType == 'loop' ){
-				$editWindow.find('div.cont_tpl_module_editor-canvas')
+				$module_editor_canvas
 					.append($('<div>')
 						.append($('<h2>')
 							// .text(field.fieldType+' ('+modTpl.fields[idx].name+')')
@@ -877,6 +893,30 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 
 			}
 		}
+
+		// ビルトイン・DECフィールド
+		$module_editor_canvas
+			.append($('<div>')
+				.attr( {'data-dec-field-unit': 'data-dec-field-unit'} )
+				.css( {
+					'border': '1px solid #6d6',
+					'background-color': '#efe',
+					'padding': '1em',
+					'margin': '1em'
+				} )
+				.append($('<h2>')
+					.text( 'DEC' )
+				)
+				.append( ((function( field, data ){
+					return $('<div>')
+						.append( $('<textarea>')
+							.val(data)
+							.css({'width':'100%','height':'6em'})
+						)
+					;
+				})( field, (data.dec?data.dec:'') ) ) )
+			)
+		;
 
 		px.dialog({
 			"title": "編集" ,

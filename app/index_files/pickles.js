@@ -699,7 +699,7 @@ new (function($, window){
 				+ pad(d.getUTCSeconds())+'Z'
 			;
 			return rtn;
-		})() ) + '	' + msg + "\n";
+		})() ) + '	' + process.pid + '	' + msg + "\n";
 		console.log(row);
 		this.fs.appendFileSync( path, row, {} );
 		return true;

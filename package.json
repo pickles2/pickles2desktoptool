@@ -4,33 +4,32 @@
   "description": "",
   "main": "app/index.html",
   "scripts": {
-    "start" : "node_modules/nodewebkit/bin/nodewebkit",
-    "build" : "node ./build.js"
+    "start": "nw",
+    "build": "node ./build.js"
   },
   "author": "Tomoya Koyanagi",
   "license": "BSD",
   "dependencies": {
-    "nodewebkit": "0.11.*",
-    "node-webkit-builder": "1.0.*",
-    "nodegit":"^0.3.*",
-    "zip-folder": "^1.0.0",
-    "express":"^4.13.0",
-    "socket.io": "^1.3.5",
-    "phpjs": "^1.3.2",
-    "glob": "^5.0.10",
-    "mkdirp": "0.*",
-    "marked": "0.3.*",
     "execsyncs": "^0.1.1",
+    "express": "^4.13.0",
+    "glob": "^5.0.10",
+    "marked": "0.3.*",
+    "mkdirp": "0.*",
+    "node-webkit-builder": "1.0.*",
+    "nw": "^0.12.2",
+    "phpjs": "^1.3.2",
+    "px2agent": "*",
+    "socket.io": "^1.3.5",
     "twig": "^0.8.2",
-    "px2agent": "*"
+    "zip-folder": "^1.0.0"
   },
-  "window":{
+  "window": {
     "title": "Pickles 2 Desktop Tool",
-    "toolbar":true,
-    "frame":true,
-    "width":1024,
-    "height":520,
-    "fullscreen":false,
+    "toolbar": true,
+    "frame": true,
+    "width": 1024,
+    "height": 520,
+    "fullscreen": false,
     "icon": "app/common/images/icon.png",
     "position": "mouse"
   },

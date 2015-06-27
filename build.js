@@ -29,7 +29,7 @@ var nw = new NwBuilder({
       './app/**',
       './node_modules/**'
     ], // use the glob format
-    version: 'v0.11.6',// <- version number of node-webkit
+    version: 'v0.12.2',// <- version number of node-webkit
     macIcns: './app/common/build/px2-osx.icns',
     platforms: [
       'osx32',

@@ -15,13 +15,15 @@
     "glob": "^5.0.10",
     "marked": "0.3.*",
     "mkdirp": "0.*",
-    "node-webkit-builder": "1.0.*",
-    "nw": "^0.12.2",
     "phpjs": "^1.3.2",
-    "px2agent": "*",
+    "px2agent": "^2.0.0",
     "socket.io": "^1.3.5",
     "twig": "^0.8.2",
     "zip-folder": "^1.0.0"
+  },
+  "devDependencies": {
+    "nw": "^0.12.2",
+    "node-webkit-builder": "1.0.*"
   },
   "window": {
     "title": "Pickles 2 Desktop Tool",

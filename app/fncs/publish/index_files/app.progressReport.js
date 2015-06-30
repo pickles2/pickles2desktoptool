@@ -28,7 +28,7 @@ window.contApp.progressReport = new (function(px, $){
 			{
 				cd: opts.cmdCd,
 				success: function(data){
-					var data = new Buffer(data).toString();
+					var data = data.toString();
 					var rows = data.split(new RegExp('(\r\n|\r|\n)+'));
 					for( var idx in rows ){
 						var row = px.php.trim( rows[idx] );
@@ -70,7 +70,7 @@ window.contApp.progressReport = new (function(px, $){
 					}
 				} ,
 				error: function(data){
-					var row = new Buffer(data).toString();
+					var row = new data.toString();
 					row = px.php.trim( row );
 					console.log( 'ERROR: '+ row );
 				} ,

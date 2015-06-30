@@ -80,7 +80,14 @@ window.contApp = new (function( px ){
 							;
 						}
 
-						$commentView.html('...');
+						$commentView
+							.html('...')
+							.attr({'data-path': prop.pageInfo.path})
+							.dblclick(function(){
+								_this.openCommentFile( $(this).attr('data-path') );
+								return false;
+							})
+						;
 						setTimeout(function(){
 							var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( prop.pageInfo.path ) );
 							var realpathFiles = _pj.get_realpath_controot()+pathFiles;
@@ -93,7 +100,12 @@ window.contApp = new (function( px ){
 							$commentView.text('コメントをロードしています...');
 							px.fs.readFile(realpath_comment_file, {'encoding':'utf8'}, function(err, data){
 								var html = px.utils.markdown( data );
-								$commentView.html(html);
+								var $html = $('<div>').html(html);
+								$html.find('a[href]').click(function(){
+									px.utils.openURL(this.href);
+									return false;
+								});
+								$commentView.html($html);
 							});
 							return;
 						}, 10);
@@ -118,26 +130,26 @@ window.contApp = new (function( px ){
 								return false;
 							})
 						;
-						$bs3btn.find('button.btn--comment').eq(0)
-							.attr({'data-path': prop.pageInfo.path})
-							// .text('コメント')
-							.click(function(){
-								_this.openCommentFile( $(this).attr('data-path') );
-								return false;
-							})
-						;
-						setTimeout(function(){
-							var button = $bs3btn.find('button.btn--comment').eq(0);
-							var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( prop.pageInfo.path ) );
-							var realpathFiles = _pj.get_realpath_controot()+pathFiles;
-							var realpath_matDir = realpathFiles + 'comments.ignore/';
-							var realpath_comment_file = realpath_matDir + 'comment.md';
-							if( px.utils.isFile( realpath_comment_file ) ){
-								button.text('コメントあり');
-							}else{
-								button.text('コメントする');
-							}
-						}, 10);
+						// $bs3btn.find('button.btn--comment').eq(0)
+						// 	.attr({'data-path': prop.pageInfo.path})
+						// 	// .text('コメント')
+						// 	.click(function(){
+						// 		_this.openCommentFile( $(this).attr('data-path') );
+						// 		return false;
+						// 	})
+						// ;
+						// setTimeout(function(){
+						// 	var button = $bs3btn.find('button.btn--comment').eq(0);
+						// 	var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( prop.pageInfo.path ) );
+						// 	var realpathFiles = _pj.get_realpath_controot()+pathFiles;
+						// 	var realpath_matDir = realpathFiles + 'comments.ignore/';
+						// 	var realpath_comment_file = realpath_matDir + 'comment.md';
+						// 	if( px.utils.isFile( realpath_comment_file ) ){
+						// 		button.text('コメントあり');
+						// 	}else{
+						// 		button.text('コメントする');
+						// 	}
+						// }, 10);
 
 						$bs3btn.find('button.btn--materials').eq(0)
 							.attr({'data-path': prop.pageInfo.path})

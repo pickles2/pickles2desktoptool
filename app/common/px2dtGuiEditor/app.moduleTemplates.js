@@ -134,6 +134,7 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 	 * モジュールテンプレートオブジェクト
 	 */
 	function classModTpl( modId, cb, opt ){
+		console.log('classModTpl -> '+modId);
 		var _this = this;
 		cb = cb || function(){};
 		opt = opt || {};

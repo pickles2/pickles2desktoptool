@@ -30,7 +30,7 @@ window.contApp = new (function( px ){
 			$('.cont_config_edit textarea').get(0),
 			'php',
 			{
-				save: function(){ save(); }
+				save: function(){ window.contApp.save(); }
 			}
 		);
 

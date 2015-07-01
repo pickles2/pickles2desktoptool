@@ -99,7 +99,7 @@
 	 */
 	exports.moveContent = function(px, pj, task, cb){
 		cb = cb||function(){};
-		var mkdirp = require('mkdirp');
+		// var mkdirp = require('mkdirp');
 		var pathBase = px.fs.realpathSync( pj.get_realpath_controot() )+'/';
 		// console.log( pathBase );
 		// console.log( task );
@@ -128,7 +128,7 @@
 		// console.log( pathBase+task.to );
 		px.utils.iterateFnc([
 			function( it, arg ){
-				mkdirp( px.utils.dirname(pathBase+task.to), function(){
+				px.mkdirp( px.utils.dirname(pathBase+task.to), function(){
 					it.next( arg );
 				} );
 			} ,
@@ -177,7 +177,7 @@
 				for( var idx in arg.fromList ){
 					(function( idx, fromListRow ){
 						px.fs.readFile( pathBase+fromListRow.to, {}, function(err, data){
-							var src = new Buffer(data).toString();
+							var src = data.toString();
 							src = replaceContentSrc(px, pj, src, pathBase, fromListRow, arg.resourceDir);
 							if( src === data ){
 								done ++;
@@ -204,4 +204,4 @@
 	}
 
 
-})(exports);
+})(window.contApp.moveCont = {});

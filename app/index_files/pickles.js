@@ -48,6 +48,9 @@ new (function($, window){
 	var _twig = require('twig');
 	this.twig = _twig;
 
+	var _mkdirp = require('mkdirp');
+	this.mkdirp = _mkdirp;
+
 	var _appServer = require('./index_files/app_server.js');
 
 	var _px2agent = require('px2agent');

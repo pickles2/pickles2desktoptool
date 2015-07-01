@@ -59,18 +59,25 @@ window.contApp = new (function( px ){
 			return true;
 		}
 
-		var path = require('path');
-		var moveCont = require( path.resolve('./app/fncs/movecontents/index_files/app.moveContent.js') );
-		var relink = require( path.resolve('./app/fncs/movecontents/index_files/app.relink.js') );
+		// var path = require('path');
+		// window.contApp.moveCont = require( path.resolve('./app/fncs/movecontents/index_files/app.moveContent.js') );
+		// window.contApp.relink = require( path.resolve('./app/fncs/movecontents/index_files/app.relink.js') );
 
 		px.utils.iterate(
 			queue ,
 			function(it, row, idx){
-				moveCont.moveContent( px, _pj, row, function( result ){
-					if(!result){ it.next(); return; }
+				$body.text(row.from+'->'+row.to+' : コンテンツを移動しています。');
+				window.contApp.moveCont.moveContent( px, _pj, row, function( result ){
+					if(!result){
+						$body.text(row.from+'->'+row.to+' : コンテンツの移動に失敗しました。');
+						$btnOk.removeAttr('disabled');
+						it.next();
+						return;
+					}
 					var filelist = getContentsFileList();
 					// var filelist = [];
-					relink.relink( px, _pj, row, filelist, function( result ){
+					$body.text(row.from+'->'+row.to+' : リンクを張り替えています。');
+					window.contApp.relink.relink( px, _pj, row, filelist, function( result ){
 						it.next();
 					} );
 				} );

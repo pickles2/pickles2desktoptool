@@ -150,4 +150,4 @@
 	}
 
 
-})(exports);
+})(window.contApp.relink = {});

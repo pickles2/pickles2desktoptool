@@ -78,6 +78,8 @@ window.contApp = new (function(px, $){
 	 * パブリッシュを実行する
 	 */
 	this.publish = function(){
+		var region = prompt('パブリッシュ対象のパスを指定してください。スラッシュから始まるパスで指定します。省略時、すべてのファイルが対象になります。','/');
+		// alert(px.php.urlencode(region));
 		_this.progressReport.init(
 			_this,
 			$cont,
@@ -85,7 +87,7 @@ window.contApp = new (function(px, $){
 				"spawnCmd": 'php',
 				"spawnCmdOpts": [
 					_pj.get('path')+'/'+_pj.get('entry_script') ,
-					'/?PX=publish.run'
+					'/?PX=publish.run&path_region='+px.php.urlencode(region)
 				] ,
 				"cmdCd": _pj.get('path'),
 				"complete": function(){

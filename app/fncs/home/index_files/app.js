@@ -74,6 +74,26 @@ window.contApp = new (function(){
 								return false;
 							})
 					;
+				}else if( status.pathExists && !status.vendorDirExists ){
+					// `composer install` ボタン
+					$('.cont_maintask_ui')
+						.html( $('#template-install-composer').html() )
+						.find('form')
+							.submit(function(){
+								install(this);
+								return false;
+							})
+					;
+				}else if( status.pathExists && !status.confFileExists ){
+					// 何らかのエラーがある可能性があります
+					$('.cont_maintask_ui')
+						.html( $('#template-conf-not-exists').html() )
+						.find('form')
+							.submit(function(){
+								install(this);
+								return false;
+							})
+					;
 				}else{
 					// ちゃんとインストールできてます
 					$('.cont_maintask_ui')

@@ -128,7 +128,7 @@ new (function($, window){
 	_path_db = _fs.realpathSync( _path_db );
 	var $header, $footer, $main, $contents, $shoulderMenu;
 	var _menu = [
-		{"label":"HOME",                 "cond":"pxStandby",          "area":"mainmenu", "app":"fncs/home/index.html", "cb": function(){px.subapp();}} ,
+		{"label":"HOME",                 "cond":"projectSelected",    "area":"mainmenu", "app":"fncs/home/index.html", "cb": function(){px.subapp();}} ,
 		{"label":"サイトマップ",         "cond":"pxStandby",          "area":"mainmenu", "app":"fncs/sitemap/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"テーマ",               "cond":"pxStandby",          "area":"mainmenu", "app":"fncs/theme/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"コンテンツ",           "cond":"pxStandby",          "area":"mainmenu", "app":"fncs/pages/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,

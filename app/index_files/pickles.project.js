@@ -46,8 +46,12 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		status.entryScriptExists = (status.pathExists && px.utils.isFile( this.get('path')+'/'+this.get('entry_script') ) ? true : false);
 		var homeDir = this.get('path')+'/'+this.get('home_dir');
 		status.homeDirExists = (status.pathExists && px.utils.isDirectory( homeDir ) ? true : false);
-		status.confFileExists = (status.homeDirExists && (px.utils.isFile( homeDir+'/config.php' )||px.utils.isFile( homeDir+'/config.json' ) ) ? true : false);
-		status.px2DTConfFileExists = (status.homeDirExists && px.utils.isFile( homeDir+'/px2dtconfig.json' ) ? true : false);
+		// status.confFileExists = (status.homeDirExists && (px.utils.isFile( homeDir+'/config.php' )||px.utils.isFile( homeDir+'/config.json' ) ) ? true : false);
+		status.confFileExists = false;
+		if(typeof(_config) === typeof({})){ status.confFileExists = true; }
+		// status.px2DTConfFileExists = (status.homeDirExists && px.utils.isFile( homeDir+'/px2dtconfig.json' ) ? true : false);
+		status.px2DTConfFileExists = false;
+		if(typeof(_px2DTConfig) === typeof({})){ status.px2DTConfFileExists = true; }
 		status.composerJsonExists = (status.pathExists && px.utils.isFile( this.get_realpath_composer_root()+'/composer.json' ) ? true : false);
 		status.vendorDirExists = (status.pathExists && px.utils.isDirectory( this.get_realpath_composer_root()+'/vendor/' ) ? true : false);
 		status.isPxStandby = ( status.pathExists && status.entryScriptExists && status.homeDirExists && status.confFileExists && status.composerJsonExists && status.vendorDirExists ? true : false );
@@ -87,9 +91,16 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			'/?PX=api.get.config',
 			{
 				complete: function(data_memo){
-					_config = JSON.parse(data_memo);
-					if( _config.plugins && _config.plugins.px2dt ){
-						_px2DTConfig = _config.plugins.px2dt;
+					_config = false;
+					_px2DTConfig = false;
+					try{
+						_config = JSON.parse(data_memo);
+						if( _config.plugins && _config.plugins.px2dt ){
+							_px2DTConfig = _config.plugins.px2dt;
+						}
+					}catch(e){
+						_config = false;
+						_px2DTConfig = false;
 					}
 					cb( _config );
 				}
@@ -121,6 +132,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			try{
 				data = JSON.parse( data.toString() );
 			}catch(e){
+				data = false;
 				console.log('ERROR: FAILED to parse px2dtconfig.json');
 			}
 			_px2DTConfig = data;
@@ -704,20 +716,20 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		},
 		function(itPj, pj){
 			// コンフィグをロード
-			var status = pj.status();
-			if( !status.entryScriptExists ){
-				itPj.next(pj);return;
-			}
+			// var status = pj.status();
+			// if( !status.entryScriptExists ){
+			// 	itPj.next(pj);return;
+			// }
 			pj.updateConfig(function(){
 				itPj.next(pj);
 			});
 		} ,
 		function(itPj, pj){
 			// Px2DTコンフィグをロード
-			var status = pj.status();
-			if( !status.px2DTConfFileExists ){
-				itPj.next(pj);return;
-			}
+			// var status = pj.status();
+			// if( !status.px2DTConfFileExists ){
+			// 	itPj.next(pj);return;
+			// }
 			pj.updatePx2DTConfig(function(){
 				itPj.next(pj);
 			});

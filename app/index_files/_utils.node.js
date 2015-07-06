@@ -285,8 +285,10 @@
 	 * ファイルを削除する
 	 */
 	exports.rm = function(path){
+		if( this.isDirectory(path) ){ return false; }
 		if( !this.isFile(path) ){ return true; }
-		return _fs.unlinkSync(path);
+		_fs.unlinkSync(path);
+		return !this.isFile(path);
 	}
 
 	/**
@@ -298,8 +300,11 @@
 	 * @param string $path 対象ディレクトリのパス
 	 * @return bool 成功時に `true`、失敗時に `false` を返します。
 	 */
-	exports.rmdir = function( $path ){
-		return _fs.rmdirSync( $path );
+	exports.rmdir = function( path ){
+		if( this.isFile(path) ){ return false; }
+		if( !this.isDirectory(path) ){ return true; }
+		_fs.rmdirSync( path );
+		return !this.isDirectory(path);
 	}//rmdir()
 
 	/**
@@ -324,9 +329,13 @@
 			for( var idx in $filelist ){
 				var $basename = $filelist[idx];
 				if( this.isFile( $path+DIRECTORY_SEPARATOR+$basename ) ){
-					this.rm( $path+DIRECTORY_SEPARATOR+$basename );
-				}else if( !this.rmdir_r( $path+DIRECTORY_SEPARATOR+$basename ) ){
-					return false;
+					if( !this.rm( $path+DIRECTORY_SEPARATOR+$basename ) ){
+						console.log('FAILED to delete file: '+ $path+DIRECTORY_SEPARATOR+$basename);
+					}
+				}else if( this.isDirectory( $path+DIRECTORY_SEPARATOR+$basename ) ){
+					if( !this.rmdir_r( $path+DIRECTORY_SEPARATOR+$basename ) ){
+						console.log('FAILED to delete directory: '+ $path+DIRECTORY_SEPARATOR+$basename);
+					}
 				}
 			}
 			return this.rmdir( $path );

@@ -34,9 +34,10 @@ new (function($, window){
 	 * @return string バージョン番号を示す文字列
 	 */
 	this.getVersion = function(){
-		return '2.0.0-beta5-nb';
+		return _packageJson.version;
 	}
 
+	var _packageJson = require('../package.json');
 	var _utils = require('./index_files/_utils.node.js');
 	this.utils = _utils;
 	var _fs = require('fs');

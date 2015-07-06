@@ -134,7 +134,8 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 	 * モジュールテンプレートオブジェクト
 	 */
 	function classModTpl( modId, cb, opt ){
-		console.log('classModTpl -> '+modId);
+		// console.log('classModTpl -> '+modId);
+		// px.log('classModTpl -> '+modId);
 		var _this = this;
 		cb = cb || function(){};
 		opt = opt || {};
@@ -206,7 +207,14 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 				}
 				rtn += RegExp.$1;
 				field = RegExp.$2;
-				field = JSON.parse( field );
+				try{
+					field = JSON.parse( field );
+				}catch(e){
+					field = {'input':{
+						'type':'html',
+						'name':'__error__'
+					}};
+				}
 				src = RegExp.$3;
 
 				if( typeof(field) == typeof('') ){
@@ -341,7 +349,12 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 
 			if( _this.path && px.utils.isDirectory( _this.path ) ){
 				if( px.utils.isFile( _this.path+'/info.json' ) ){
-					var tmpJson = JSON.parse( px.fs.readFileSync( _this.path+'/info.json' ) );
+					var tmpJson = {};
+					try{
+						tmpJson = JSON.parse( px.fs.readFileSync( _this.path+'/info.json' ) );
+					}catch(e){
+						px.log( 'module info.json parse error: ' + _this.path+'/info.json' );
+					}
 					if( tmpJson.name ){
 						_this.info.name = tmpJson.name;
 					}
@@ -395,7 +408,16 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 				field = RegExp.$2;
 				src = RegExp.$3;
 
-				field = JSON.parse( field );
+				try{
+					field = JSON.parse( field );
+				}catch(e){
+					alert('module template parse error: ' + _this.templateFilename);
+					px.log( 'module template parse error: ' + _this.templateFilename );
+					field = {'input':{
+						'type':'html',
+						'name':'__error__'
+					}};
+				}
 				if( field.input ){
 					_this.fields[field.input.name] = field.input;
 					_this.fields[field.input.name].fieldType = 'input';

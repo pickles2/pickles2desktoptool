@@ -4,14 +4,15 @@ var zipFolder = require('zip-folder');
 var packageJson = require('./package.json');
 var phpjs = require('phpjs');
 var date = new Date();
+var appName = packageJson.name;
 
-console.log('== build "Pickles 2 Desktop Tool" ==');
+console.log('== build "'+appName+'" ==');
 
 console.log('Cleanup...');
 (function(base){
   var ls = _utils.ls(base);
   for(var idx in ls){
-    if( base+'/'+ls[idx] == '.gitkeep' ){continue;}
+    if( ls[idx] == '.gitkeep' ){continue;}
     if( _utils.isDirectory(base+'/'+ls[idx]) ){
       _utils.rmdir_r(base+'/'+ls[idx]);
     }else if( _utils.isFile(base+'/'+ls[idx]) ){
@@ -24,11 +25,16 @@ console.log('');
 
 console.log('Build...');
 var nw = new NwBuilder({
-    files: [
-      './package.json',
-      './app/**',
-      './node_modules/**'
-    ], // use the glob format
+    files: (function(dep){
+      var rtn = [
+        './package.json',
+        './app/**'
+      ];
+      for(var i in dep){
+        rtn.push( './node_modules/'+i+'/**' );
+      }
+      return rtn;
+    })(packageJson.dependencies) , // use the glob format
     version: 'v0.12.2',// <- version number of node-webkit
     macIcns: './app/common/build/px2-osx.icns',
     platforms: [

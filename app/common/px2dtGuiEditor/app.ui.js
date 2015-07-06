@@ -466,6 +466,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					// px.message( 'modId "'+modId+'" が "'+method+'" のためにドロップされました。' );
 					if( method == 'add' ){
 						if( typeof(subModNameTo) === typeof('') ){
+							// loopフィールドの配列を追加するエリアの場合
 							px.message('ここにモジュールを追加することはできません。');
 							return;
 						}
@@ -503,7 +504,6 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					e.preventDefault();
 				})
 				.bind('click', function(e){
-					// _this.openEditWindow( $(this).attr('data-guieditor-cont-data-path') );
 					_this.selectInstance( $(this).attr('data-guieditor-cont-data-path') );
 					e.stopPropagation();
 				})
@@ -565,7 +565,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 								return;
 							}
 							if( method !== 'add' ){
-								px.message('追加するモジュールをドロップしてください。ここに移動することはできません。');
+								px.message('追加するモジュールをドラッグしてください。ここに移動することはできません。');
 								return;
 							}
 							var modId = event.dataTransfer.getData("modId");
@@ -590,9 +590,16 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 						})
 						.bind('click', function(e){
 							// 特に処理なし
+							var dataPath = $(this).attr('data-guieditor-cont-data-path');
+							dataPath = px.php.dirname(dataPath);
+							_this.selectInstance( dataPath );
+							e.stopPropagation();
 						})
 						.bind('dblclick', function(e){
-							px.message( 'ここに追加したいモジュールをドロップしてください。' );
+							// px.message( 'ここに追加したいモジュールをドラッグしてください。' );
+							var dataPath = $(this).attr('data-guieditor-cont-data-path');
+							dataPath = px.php.dirname(dataPath);
+							_this.openEditWindow( dataPath );
 							e.preventDefault();
 						})
 					;
@@ -757,10 +764,14 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 		// px.message( instancePath );
 		var data = px2dtGuiEditor.contentsSourceData.get( instancePath );
 		var modTpl = px2dtGuiEditor.moduleTemplates.get( data.modId, data.subModName );
+		// console.log(modTpl);
 
 		// モジュール別編集画面
 		var template_module_editor = '';
 		template_module_editor += '<form action="javascript:;" method="get">';
+		template_module_editor += '	<p style="text-align:right;">';
+		template_module_editor += '		<button class="cont_tpl_module_editor-submit">保存する</button>';
+		template_module_editor += '	</p>';
 		template_module_editor += '	<div class="cont_tpl_module_editor-canvas">';
 		template_module_editor += '	</div>';
 		template_module_editor += '	<p style="text-align:center;">';
@@ -919,7 +930,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 		;
 
 		px.dialog({
-			"title": "編集" ,
+			"title": modTpl.info.name||data.modId ,
 			"body": $editWindow ,
 			"buttons":[]
 		});

@@ -27,7 +27,10 @@ window.px2dtGuiEditor.fieldDefinitions.select = _.defaults( new (function( px, p
 			}
 		}
 		if( mode == 'canvas' && !rtn.length ){
-			rtn = '(ダブルクリックして選択してください)';
+			// rtn = '(ダブルクリックして選択してください)';
+				// ↑未選択時のダミー文はなしにした。
+				// 　クラス名の modifier 部分の拡張などに使用する場合に、
+				// 　クラス名とダミー文が合体して存在しないクラス名になってしまうので。
 		}
 		return rtn;
 	}

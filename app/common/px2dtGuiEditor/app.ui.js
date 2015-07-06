@@ -429,6 +429,10 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					'width': $elm.outerWidth(),
 					'height': $elm.outerHeight()
 				})
+				.append( $('<div>')
+					.addClass('cont_instanceCtrlPanel-module_name')
+					.text(this.moduleTemplates.info.name||this.moduleTemplates.id)
+				)
 				.width($elm.outerWidth())
 				.height($elm.outerHeight())
 				.offset($elm.offset())

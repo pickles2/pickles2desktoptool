@@ -58,6 +58,21 @@ body{
 	border-radius: 0;
 	border: 3px dotted #99f;
 }
+.cont_instanceCtrlPanel .cont_instanceCtrlPanel-module_name{
+	display:none;
+}
+.cont_instanceCtrlPanel:hover .cont_instanceCtrlPanel-module_name,
+.cont_instanceCtrlPanel-ctrlpanel_selected .cont_instanceCtrlPanel-module_name{
+	display:block;
+	position: absolute;
+	left: -5px; top: -5px;
+	border: 1px solid #000;
+	background: #fff;
+	color: #000;
+	padding: 2px 10px;
+	font-size: 8px;
+	font-weight: normal;
+}
 
 .cont_modulelist{
 	overflow: auto;

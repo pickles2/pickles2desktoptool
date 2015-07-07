@@ -792,7 +792,6 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 				// bowl自体だったら
 				label = instPathMemo[instPathMemo.length-1];
 			}
-console.log(mod);
 			if( mod.subModName ){
 				// サブモジュールだったら
 				label = '@'+mod.subModName;

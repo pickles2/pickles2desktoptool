@@ -444,21 +444,46 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 		 */
 		this.drawCtrlPanels = function( $content ){
 			var $elm = $content.find('[data-guieditor-cont-data-path='+JSON.stringify(this.instancePath)+']');
+			var posInfo = (function($elm){
+				var rtn = {
+					't':$elm.offset().top,
+					'l':$elm.offset().left,
+					'h':$elm.offset().top+$elm.outerHeight(),
+					'w':$elm.offset().left+$elm.outerWidth()
+				};
+				var tmp = {};
+				$elm.find('*').each(function(){
+					tmp = {
+						't':$(this).offset().top,
+						'l':$(this).offset().left,
+						'h':$(this).offset().top+$(this).outerHeight(),
+						'w':$(this).offset().left+$(this).outerWidth()
+					};
+					rtn.t = (rtn.t>tmp.t ? tmp.t : rtn.t);
+					rtn.l = (rtn.l>tmp.l ? tmp.l : rtn.l);
+					rtn.h = (rtn.h<tmp.h ? tmp.h : rtn.h);
+					rtn.w = (rtn.w<tmp.w ? tmp.w : rtn.w);
+				});
+				return rtn;
+			})($elm);
 			var $ctrlElm = $('<div>')
 				.addClass('cont_instanceCtrlPanel')
 				.css({
 					'min-width': 10,
 					'min-height': 10,
-					'width': $elm.outerWidth(),
-					'height': $elm.outerHeight()
+					'width': (posInfo.w-posInfo.l),
+					'height': (posInfo.h-posInfo.t)
 				})
 				.append( $('<div>')
 					.addClass('cont_instanceCtrlPanel-module_name')
 					.text(this.moduleTemplates.info.name||this.moduleTemplates.id)
 				)
-				.width($elm.outerWidth())
-				.height($elm.outerHeight())
-				.offset($elm.offset())
+				.width(posInfo.w-posInfo.l)
+				.height(posInfo.h-posInfo.t)
+				.offset({
+					'top': posInfo.t,
+					'left': posInfo.l
+				})
 				.attr({
 					'data-guieditor-cont-data-path': this.instancePath ,
 					'data-guieditor-sub-mod-name': this.moduleTemplates.subModName

@@ -141,7 +141,7 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 		opt = opt || {};
 
 		this.id = modId;
-		this.isRootElement = false;
+		this.isSingleRootElement = false;
 		this.path = null;
 		if( !px2dtGuiEditor.moduleTemplates.isSystemMod(modId) && !opt.src ){
 			this.path = px.fs.realpathSync( getPathModTpl(modId) );
@@ -382,7 +382,7 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 				}
 			}
 
-			_this.isRootElement = (function(tplSrc){
+			_this.isSingleRootElement = (function(tplSrc){
 				// 単一のルート要素を持っているかどうか判定。
 				tplSrc = JSON.parse( JSON.stringify(tplSrc) );
 				tplSrc = tplSrc.replace( new RegExp('\\<\\!\\-\\-.*?\\-\\-\\>','g'), '' );

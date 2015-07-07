@@ -377,7 +377,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 			var tmpSrc = this.moduleTemplates.bind( fieldData, mode );
 			var rtn = $('<div>');
 
-			var isRootElement = this.moduleTemplates.isRootElement;
+			var isSingleRootElement = this.moduleTemplates.isSingleRootElement;
 
 			if( mode == 'finalize' ){
 				// rtn = $('<div>');
@@ -387,15 +387,30 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 			}else{
 				rtn = $('<div>');
 				rtn.append( tmpSrc );
-				if( isRootElement ){
+				if( isSingleRootElement ){
 					// 要素が1つだったら、追加した<div>ではなくて、
 					// 最初の要素にマークする。
 					// li要素とか、display:blockではない場合にレイアウトを壊さない目的。
 					// 要素が複数の場合、または存在しないテキストノードのみの場合、
 					// 要素がテキストノードで囲われている場合、なども考えられる。
 					// これらの場合は、divで囲ってあげないとハンドルできないので、しかたなし。
+
 					rtn = $(tmpSrc);
+				}else{
+					var tagName = ''+($(tmpSrc).eq(0).prop("tagName"));
+					switch( tagName.toLowerCase() ){
+						// 特定の親タグに入れられていることが前提となるタグ
+						// isSingleRootElement が false の場合でも、
+						// 1つ目のタグがこれらに該当する場合、divでくくるとレイアウトが壊れるので、
+						// 1つ目のタグにマークすることに。
+						case 'tbody': case 'thead': case 'tfoot': case 'tr': case 'th': case 'td': case 'colgroup': case 'caption':
+						case 'li': case 'dl': case 'dt':
+						case 'option':
+							rtn = $(tmpSrc);
+							break;
+					}
 				}
+
 				rtn
 					.attr("data-guieditor-cont-data-path", this.instancePath)
 					.css({
@@ -403,7 +418,11 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 						'margin-bottom':5
 					})
 				;
-				rtn = rtn.get(0).outerHTML;
+
+				// rtn = rtn.get(0).outerHTML;
+				rtn = $('<div>').append(rtn).html();
+					// ↑ルートノードが複数ある状態でここへ来れるようになってしまったので、
+					// 　outHTML を取得する方法を変更。
 			}
 
 			// ビルトイン・DECフィールド
@@ -428,6 +447,8 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 			var $ctrlElm = $('<div>')
 				.addClass('cont_instanceCtrlPanel')
 				.css({
+					'min-width': 10,
+					'min-height': 10,
 					'width': $elm.outerWidth(),
 					'height': $elm.outerHeight()
 				})

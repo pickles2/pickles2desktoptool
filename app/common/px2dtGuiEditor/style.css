@@ -39,6 +39,29 @@ body{
 	height:100%;
 }
 
+.cont_field .cont_field-instans_path{
+	position:fixed; left:0; bottom:0;
+	min-width:1em;
+	min-height:1em;
+	opacity: 0.7;
+	border: 1px solid #000;
+	background: #fff;
+}
+.cont_field .cont_field-instans_path ul{
+	margin: 0; padding: 3px 10px;
+	font-size: 11px;
+}
+.cont_field .cont_field-instans_path ul li{
+	margin: 0; padding: 0; list-style-type: none;
+	display: inline;
+}
+.cont_field .cont_field-instans_path ul li:before{
+	content: ' > ';
+}
+.cont_field .cont_field-instans_path:hover{
+	opacity: 1;
+}
+
 .cont_instanceCtrlPanel{
 	border:0;
 	text-align: center;

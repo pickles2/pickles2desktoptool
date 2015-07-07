@@ -1,10 +1,11 @@
 window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 	var _this = this;
-	var $preview;
-	var $previewDoc;
-	var $ctrlPanel;
-	var $palette;
-	var $editWindow;
+	var $preview,
+		$previewDoc,
+		$ctrlPanel,
+		$instansPath,
+		$palette,
+		$editWindow;
 
 	var selectedInstance = null;
 
@@ -21,6 +22,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 		$preview = $('iframe.cont_field-preview');
 		$previewDoc = $($preview[0].contentWindow.document);
 		$ctrlPanel = $('.cont_field-ctrlpanel');
+		$instansPath = $('.cont_field-instans_path');
 		$palette = $('.cont_modulelist');
 
 		// モジュールパレットの初期化
@@ -732,6 +734,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 			})
 			.addClass('cont_instanceCtrlPanel-ctrlpanel_selected')
 		;
+		this.updateInstancePathView();
 		return this;
 	}
 
@@ -743,6 +746,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 		$ctrlPanel.find('[data-guieditor-cont-data-path]')
 			.removeClass('cont_instanceCtrlPanel-ctrlpanel_selected')
 		;
+		this.updateInstancePathView();
 		return this;
 	}
 
@@ -758,6 +762,40 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 	 */
 	this.getSelectedInstanceData = function(){
 		return px2dtGuiEditor.contentsSourceData.get( selectedInstance );
+	}
+
+	/**
+	 * インスタンスパスビューを更新する
+	 */
+	this.updateInstancePathView = function(){
+		var selectedInstance = this.getSelectedInstance();
+		if( selectedInstance === null ){
+			$instansPath.text('').hide();
+			return true;
+		}
+		var instPath = selectedInstance.split('/');
+		// console.log(instPath);
+		// console.log(instPath.join('/'));
+		var $ul = $('<ul>');
+		var instPathMemo = [];
+		for( var idx in instPath ){
+			instPathMemo.push(instPath[idx]);
+			if( instPathMemo.length <= 1 ){ continue; }
+			$ul.append( $('<li>')
+				.append( $('<a href="javascript:;">')
+					.attr({
+						'data-guieditor-cont-data-path': instPathMemo.join('/')
+					})
+					.click(function(){
+						_this.selectInstance( $(this).attr('data-guieditor-cont-data-path') );
+						// alert($(this).attr('data-guieditor-cont-data-path'));
+					})
+					.text(instPathMemo[instPathMemo.length-1])
+				)
+			);
+		}
+		$instansPath.html('').append($ul).show();
+		return true;
 	}
 
 	/**

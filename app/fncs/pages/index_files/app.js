@@ -34,10 +34,8 @@ window.contApp = new (function( px ){
 		$previewIframe
 			.bind('load', function(){
 
-
 				px.utils.iterateFnc([
 					function(it, prop){
-
 
 						var loc = $previewIframe.get(0).contentWindow.location;
 						switch( loc.href ){
@@ -50,9 +48,19 @@ window.contApp = new (function( px ){
 						to = to.replace( new RegExp( '^'+px.utils.escapeRegExp( pathControot ) ), '' );
 						to = to.replace( new RegExp( '^\\/*' ), '/' );
 
-						var pageInfo = _this.pj.px2proj.get_page_info(to, function(pageInfo){
+						_this.pj.px2proj.get_page_info(to, function(pageInfo){
 							prop.pageInfo = pageInfo;
-							it.next(prop);
+							if( prop.pageInfo === null ){
+								_this.pj.px2proj.get_page_info('', function(pageInfo){
+									prop.pageInfo = pageInfo;
+									if( prop.pageInfo === null ){
+										prop.pageInfo = {};
+									}
+									it.next(prop);
+								});
+							}else{
+								it.next(prop);
+							}
 						});
 
 					} ,
@@ -539,7 +547,11 @@ window.contApp = new (function( px ){
 		if(!opt){ opt = {}; }
 		if(!opt.force){ opt.force = false; }
 
-		if( !path ){ path = '/'; }
+		if( !path ){
+			path = _pj.getConfig().path_top;
+			// path = '/';
+		}
+
 		if( _lastPreviewPath == path && !opt.force ){
 			// 前回ロードしたpathと同じなら、リロードをスキップ
 			cb();

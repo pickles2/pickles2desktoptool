@@ -774,6 +774,10 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 			return true;
 		}
 		var instPath = selectedInstance.split('/');
+		// if( instPath.length <=2 ){
+		// 	$instansPath.text('').hide();
+		// 	return true;
+		// }
 		// console.log(instPath);
 		// console.log(instPath.join('/'));
 		var $ul = $('<ul>');
@@ -781,6 +785,18 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 		for( var idx in instPath ){
 			instPathMemo.push(instPath[idx]);
 			if( instPathMemo.length <= 1 ){ continue; }
+			var contData = window.px2dtGuiEditor.contentsSourceData.get(instPathMemo.join('/'));
+			var mod = window.px2dtGuiEditor.moduleTemplates.get(contData.modId, contData.subModName);
+			var label = mod.info.name||mod.id;
+			if(instPathMemo.length==2){
+				// bowl自体だったら
+				label = instPathMemo[instPathMemo.length-1];
+			}
+console.log(mod);
+			if( mod.subModName ){
+				// サブモジュールだったら
+				label = '@'+mod.subModName;
+			}
 			$ul.append( $('<li>')
 				.append( $('<a href="javascript:;">')
 					.attr({
@@ -790,7 +806,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 						_this.selectInstance( $(this).attr('data-guieditor-cont-data-path') );
 						// alert($(this).attr('data-guieditor-cont-data-path'));
 					})
-					.text(instPathMemo[instPathMemo.length-1])
+					.text(label)
 				)
 			);
 		}

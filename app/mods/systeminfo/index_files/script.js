@@ -6,7 +6,7 @@
 				{"title":"Pickles 2 Desktop Tool version", "val": px.getVersion()},
 				{"title":"Platform", "val": px.getPlatform()},
 				{"title":"PHP version", "cmd": px.cmd('php') + ' -v'},
-				{"title":"PHP path", "cmd": 'which php'},
+				{"title":"PHP path", "cmd": 'which ' + px.cmd('php')},
 				{"title":"composer version", "cmd": px.cmd('php') + ' ' + px.cmd('composer') + ' --version'},
 				{"title":"node version", "cmd": 'node -v'},
 				{"title":"git version", "cmd": 'git --version'},

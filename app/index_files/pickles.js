@@ -403,13 +403,13 @@ new (function($, window){
 				return 'explorer';
 			}
 		}
-		if( !_db.commands ){
-			return cmd;
+		if( _db.commands && _db.commands[cmd] ){
+			return _db.commands[cmd];
 		}
-		if( !_db.commands[cmd] ){
-			return cmd;
+		if( cmd == 'php' ){
+			return require('node-php-bin').get().getPath();
 		}
-		return _db.commands[cmd];
+		return cmd;
 	}
 
 	/**

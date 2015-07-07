@@ -406,9 +406,9 @@ new (function($, window){
 		if( _db.commands && _db.commands[cmd] ){
 			return _db.commands[cmd];
 		}
-		if( cmd == 'php' ){
-			return require('node-php-bin').get().getPath();
-		}
+		// if( cmd == 'php' ){
+		// 	return require('node-php-bin').get().getPath();
+		// }
 		return cmd;
 	}
 

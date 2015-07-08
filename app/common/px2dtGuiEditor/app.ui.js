@@ -397,7 +397,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 
 					rtn = $(tmpSrc);
 				}else{
-					var tagName = ''+($(tmpSrc).eq(0).prop("tagName"));
+					var tagName = ''+(rtn.find('>*').eq(0).prop("tagName"));
 					switch( tagName.toLowerCase() ){
 						// 特定の親タグに入れられていることが前提となるタグ
 						// isSingleRootElement が false の場合でも、

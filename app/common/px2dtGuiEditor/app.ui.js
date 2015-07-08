@@ -95,7 +95,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 												'color':'inherit'
 											})
 											.attr({
-												'title': (function(d){ return (d.info&&d.info.name ? d.info.name + ' - ' : '')+d.id; })(mod),
+												'title': (function(d){ return (d.info&&d.info.name ? d.info.name+' ('+d.id+')' : d.id); })(mod),
 												'data-id': mod.id,
 												'draggable': true //←HTML5のAPI http://www.htmq.com/dnd/
 											})
@@ -104,6 +104,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 												event.dataTransfer.setData('method', 'add' );
 												event.dataTransfer.setData('modId', $(this).attr('data-id') );
 											})
+											.tooltip({'placement':'left'})
 										)
 									;
 									$ulMods.append( $liMod );

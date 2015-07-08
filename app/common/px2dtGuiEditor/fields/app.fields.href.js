@@ -77,13 +77,13 @@ window.px2dtGuiEditor.fieldDefinitions.href = _.defaults( new (function( px, px2
 			.keyup( onChange )
 			.focus(function(){
 				clearTimeout( blurTimer );
-				$palatte.show();
+				$palatte.show('fast');
 			})
 			.blur(function(){
 				clearTimeout( blurTimer );
 				blurTimer = setTimeout( function(){
-					$palatte.hide('slow');
-				}, 500 );
+					$palatte.hide();
+				}, 10 );
 			})
 			.change()
 		;
@@ -94,7 +94,8 @@ window.px2dtGuiEditor.fieldDefinitions.href = _.defaults( new (function( px, px2
 				'position':'absolute',
 				'background':'#f9f9f9',
 				'opacity':'0.9',
-				'width':'100%'
+				'width':'100%',
+				'z-index': 1000
 			})
 			.hide()
 		;

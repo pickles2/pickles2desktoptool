@@ -327,7 +327,9 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 										"font-size":9,
 										"color":"#000",
 										'text-align':'center',
-										'box-sizing': 'content-box'
+										'box-sizing': 'content-box',
+										'clear': 'both',
+										'white-space': 'nowrap'
 									})
 								)
 								.css({
@@ -363,7 +365,9 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 									"border-radius":5,
 									"font-size":9,
 									'text-align':'center',
-									'box-sizing': 'content-box'
+									'box-sizing': 'content-box',
+									'clear': 'both',
+									'white-space': 'nowrap'
 								})
 							)
 							.css({

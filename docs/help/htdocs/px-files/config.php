@@ -146,6 +146,19 @@ return call_user_func( function(){
 
 	// funcs: Before output
 	$conf->funcs->before_output = [
+		// px2-path-resolver - 相対パス・絶対パスを変換して出力する
+		'tomk79\pickles2\pathResolver\main::exec('.json_encode(array(
+		  'to' => 'relate',
+		  'supply_index_filename' => true
+		)).')' ,
+		  // options
+		  //   string 'to':
+		  //     - relate: 相対パスへ変換
+		  //     - absolute: 絶対パスへ変換
+		  //     - pass: 変換を行わない(default)
+		  //   bool 'supply_index_filename':
+		  //     - true: 省略されたindexファイル名を補う
+		  //     - false: 補わない (default)
 	];
 
 

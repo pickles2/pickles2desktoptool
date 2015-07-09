@@ -37,6 +37,7 @@ window.px2dtGuiEditor = new (function(px){
 		rtn += '<scri'+'pt src="'+_path_base+'/fields/app.fields.html_attr_text.js"></scri'+'pt>';
 		rtn += '<scri'+'pt src="'+_path_base+'/fields/app.fields.href.js"></scri'+'pt>';
 		rtn += '<scri'+'pt src="'+_path_base+'/fields/app.fields.text.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+_path_base+'/fields/app.fields.multitext.js"></scri'+'pt>';
 		rtn += '<scri'+'pt src="'+_path_base+'/fields/app.fields.markdown.js"></scri'+'pt>';
 		rtn += '<scri'+'pt src="'+_path_base+'/fields/app.fields.image.js"></scri'+'pt>';
 		rtn += '<scri'+'pt src="'+_path_base+'/fields/app.fields.table.js"></scri'+'pt>';

@@ -169,14 +169,6 @@ html, body {
    * Remove most spacing between table cells.
    */
   /* ライブラリ同士の衝突吸収 */
-  @charset "UTF-8";
-  /**
-   * FESS 1.2.0
-   * @author Tomoya Koyanagi <tomk79@gmail.com>
-   */
-  /**
-   * [static] 文字組み
-   */
   /**
    * [static] まわりこみ制御
    */
@@ -484,6 +476,13 @@ html, body {
     margin: 0;
     display: inline; }
   .contents .center {
+    /**
+     * FESS 1.2.0
+     * @author Tomoya Koyanagi <tomk79@gmail.com>
+     */
+    /**
+     * [static] 文字組み
+     */
     text-align: center; }
   .contents .left {
     text-align: left; }

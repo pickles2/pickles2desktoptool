@@ -16,7 +16,8 @@
         "tomk79/px-fw-2.x": "dev-develop",
         "tomk79/px2-fess": "dev-develop",
         "tomk79/px2-px2dthelper": "dev-develop",
-        "tomk79/pickles-sitemap-excel-2": "2.*"
+        "tomk79/pickles-sitemap-excel-2": "2.*",
+		"tomk79/px2-path-resolver": "2.*"
     },
     "require-dev": {
         "phpunit/phpunit": "4.1.*"

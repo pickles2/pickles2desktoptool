@@ -67,7 +67,7 @@ nw.build().then(function () {
       function(itPj, param){
         console.log('ZIP mac32...');
         zipFolder(
-          __dirname + '/build/pickles2desktoptool/osx32/',
+          __dirname + '/build/Pickles2DesktopTool/osx32/',
           __dirname + '/build/Pickles2DesktopTool-'+versionSign+'-osx32.zip',
           function(err) {
             if(err) {
@@ -81,7 +81,7 @@ nw.build().then(function () {
       function(itPj, param){
         console.log('ZIP win32...');
         zipFolder(
-          __dirname + '/build/pickles2desktoptool/win32/',
+          __dirname + '/build/Pickles2DesktopTool/win32/',
           __dirname + '/build/Pickles2DesktopTool-'+versionSign+'-win32.zip',
           function(err) {
             if(err) {
@@ -94,7 +94,7 @@ nw.build().then(function () {
       },
       function(itPj, param){
         console.log('cleanup...');
-        _utils.rmdir_r(__dirname+'/build/pickles2desktoptool/');
+        _utils.rmdir_r(__dirname+'/build/Pickles2DesktopTool/');
         itPj.next();
       },
       function(itPj, param){

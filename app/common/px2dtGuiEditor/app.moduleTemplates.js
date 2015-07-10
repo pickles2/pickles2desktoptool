@@ -229,7 +229,7 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 
 					}else if( field.fieldType == 'loop' ){
 						// loop field
-						tplDataObj[field.name] = fieldData[field.name].join('');
+						tplDataObj[field.name] = fieldData[field.name];
 
 					}
 				}
@@ -407,9 +407,9 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 						if( tmpJson.interface.subModule ){
 							_this.subModule = tmpJson.interface.subModule;
 							for( var tmpIdx in _this.subModule ){
-								for( var tmpIdx2 in _this.subModule[tmpIdx] ){
+								for( var tmpIdx2 in _this.subModule[tmpIdx].fields ){
 									// name属性を自動補完
-									_this.subModule[tmpIdx][tmpIdx2].name = tmpIdx2;
+									_this.subModule[tmpIdx].fields[tmpIdx2].name = tmpIdx2;
 								}
 							}
 						}
@@ -420,85 +420,105 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 				}
 			}
 
-			_this.isSingleRootElement = (function(tplSrc){
-				// 単一のルート要素を持っているかどうか判定。
-				tplSrc = JSON.parse( JSON.stringify(tplSrc) );
-				tplSrc = tplSrc.replace( new RegExp('\\<\\!\\-\\-.*?\\-\\-\\>','g'), '' );
-				tplSrc = tplSrc.replace( new RegExp('\\{\\&.*?\\&\\}','g'), '' );
-				tplSrc = tplSrc.replace( new RegExp('\r\n|\r|\n','g'), '' );
-				tplSrc = tplSrc.replace( new RegExp('\t','g'), '' );
-				tplSrc = tplSrc.replace( new RegExp('^[\s\r\n]*'), '' );
-				tplSrc = tplSrc.replace( new RegExp('[\s\r\n]*$'), '' );
-				if( tplSrc.length && tplSrc.indexOf('<') === 0 && tplSrc.match(new RegExp('\\>$')) ){
-					var $jq = $(tplSrc);
-					if( $jq.size() == 1 ){
-						return true;
+			if( src ){
+				_this.isSingleRootElement = (function(tplSrc){
+					// 単一のルート要素を持っているかどうか判定。
+					tplSrc = JSON.parse( JSON.stringify(tplSrc) );
+					tplSrc = tplSrc.replace( new RegExp('\\<\\!\\-\\-.*?\\-\\-\\>','g'), '' );
+					tplSrc = tplSrc.replace( new RegExp('\\{\\&.*?\\&\\}','g'), '' );
+					tplSrc = tplSrc.replace( new RegExp('\r\n|\r|\n','g'), '' );
+					tplSrc = tplSrc.replace( new RegExp('\t','g'), '' );
+					tplSrc = tplSrc.replace( new RegExp('^[\s\r\n]*'), '' );
+					tplSrc = tplSrc.replace( new RegExp('[\s\r\n]*$'), '' );
+					if( tplSrc.length && tplSrc.indexOf('<') === 0 && tplSrc.match(new RegExp('\\>$')) ){
+						var $jq = $(tplSrc);
+						if( $jq.size() == 1 ){
+							return true;
+						}
 					}
-				}
-				return false;
-			})(src);
+					return false;
+				})(src);
+			}
 
 			var field = null;
-			while( 1 ){
-				if( !src.match(new RegExp('^((?:.|\r|\n)*?)\\{\\&((?:.|\r|\n)*?)\\&\\}((?:.|\r|\n)*)$') ) ){
-					break;
-				}
-				field = RegExp.$2;
-				src = RegExp.$3;
 
-				try{
-					field = JSON.parse( field );
-				}catch(e){
-					alert('module template parse error: ' + _this.templateFilename);
-					px.log( 'module template parse error: ' + _this.templateFilename );
-					field = {'input':{
-						'type':'html',
-						'name':'__error__'
-					}};
+			if( _topThis.templateType == 'twig' ){
+				// Twigテンプレート
+				if( _this.subModName ){
+					_this.fields = _topThis.subModule[_this.subModName].fields;
 				}
-				if( field.input ){
-					_this.fields[field.input.name] = field.input;
-					_this.fields[field.input.name].fieldType = 'input';
-				}else if( field.module ){
-					_this.fields[field.module.name] = field.module;
-					_this.fields[field.module.name].fieldType = 'module';
-				}else if( field.loop ){
-					_this.fields[field.loop.name] = field.loop;
-					_this.fields[field.loop.name].fieldType = 'loop';
-					var tmpSearchResult = searchEndTag( src, 'loop' );
-					if( typeof(_this.subModule) !== typeof({}) ){
-						_this.subModule = {};
+				for( var tmpFieldName in _this.fields ){
+					if( _this.fields[tmpFieldName].fieldType == 'loop' ){
+						_topThis.subModule[tmpFieldName] = new classModTpl( _this.id, function(){}, {
+							"src": '',
+							"subModName": tmpFieldName,
+							"topThis":_topThis
+						} );
 					}
-					_topThis.subModule[field.loop.name] = new classModTpl( _this.id, function(){}, {
-						"src": tmpSearchResult.content,
-						"subModName": field.loop.name,
-						"topThis":_topThis
-					} );
-					src = tmpSearchResult.nextSrc;
-				}else if( field == 'endloop' ){
-					// ループ構造の閉じタグ
-					// 本来ここは通らないはず。
-					// ここを通る場合は、対応する開始タグがない endloop がある場合。
-				}else if( field.if ){
-					// _this.fields[field.if.name] = field.if;
-					// _this.fields[field.if.name].fieldType = 'if';
-					// var tmpSearchResult = searchEndTag( src, 'if' );
-					// if( typeof(_this.subModule) !== typeof({}) ){
-					// 	_this.subModule = {};
-					// }
-					// _topThis.subModule[field.if.name] = new classModTpl( _this.id, function(){}, {
-					// 	"src": tmpSearchResult.content,
-					// 	"subModName": field.if.name,
-					// 	"topThis":_topThis
-					// } );
-					// src = tmpSearchResult.nextSrc;
-				}else if( field == 'endif' ){
-					// 分岐構造の閉じタグ
-					// 本来ここは通らないはず。
-					// ここを通る場合は、対応する開始タグがない endloop がある場合。
-				}else if( field.echo ){
-					// _this.fields[field.echo.name] = field.echo;
-					// _this.fields[field.echo.name].fieldType = 'echo';
+				}
+
+			}else{
+				while( 1 ){
+					if( !src.match(new RegExp('^((?:.|\r|\n)*?)\\{\\&((?:.|\r|\n)*?)\\&\\}((?:.|\r|\n)*)$') ) ){
+						break;
+					}
+					field = RegExp.$2;
+					src = RegExp.$3;
+
+					try{
+						field = JSON.parse( field );
+					}catch(e){
+						alert('module template parse error: ' + _this.templateFilename);
+						px.log( 'module template parse error: ' + _this.templateFilename );
+						field = {'input':{
+							'type':'html',
+							'name':'__error__'
+						}};
+					}
+					if( field.input ){
+						_this.fields[field.input.name] = field.input;
+						_this.fields[field.input.name].fieldType = 'input';
+					}else if( field.module ){
+						_this.fields[field.module.name] = field.module;
+						_this.fields[field.module.name].fieldType = 'module';
+					}else if( field.loop ){
+						_this.fields[field.loop.name] = field.loop;
+						_this.fields[field.loop.name].fieldType = 'loop';
+						var tmpSearchResult = searchEndTag( src, 'loop' );
+						if( typeof(_this.subModule) !== typeof({}) ){
+							_this.subModule = {};
+						}
+						_topThis.subModule[field.loop.name] = new classModTpl( _this.id, function(){}, {
+							"src": tmpSearchResult.content,
+							"subModName": field.loop.name,
+							"topThis":_topThis
+						} );
+						src = tmpSearchResult.nextSrc;
+					}else if( field == 'endloop' ){
+						// ループ構造の閉じタグ
+						// 本来ここは通らないはず。
+						// ここを通る場合は、対応する開始タグがない endloop がある場合。
+					}else if( field.if ){
+						// _this.fields[field.if.name] = field.if;
+						// _this.fields[field.if.name].fieldType = 'if';
+						// var tmpSearchResult = searchEndTag( src, 'if' );
+						// if( typeof(_this.subModule) !== typeof({}) ){
+						// 	_this.subModule = {};
+						// }
+						// _topThis.subModule[field.if.name] = new classModTpl( _this.id, function(){}, {
+						// 	"src": tmpSearchResult.content,
+						// 	"subModName": field.if.name,
+						// 	"topThis":_topThis
+						// } );
+						// src = tmpSearchResult.nextSrc;
+					}else if( field == 'endif' ){
+						// 分岐構造の閉じタグ
+						// 本来ここは通らないはず。
+						// ここを通る場合は、対応する開始タグがない endloop がある場合。
+					}else if( field.echo ){
+						// _this.fields[field.echo.name] = field.echo;
+						// _this.fields[field.echo.name].fieldType = 'echo';
+					}
 				}
 			}
 			// console.log(_this.fields);

@@ -304,6 +304,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					}else{
 						fieldData[fieldName] = px2dtGuiEditor.fieldBase.normalizeData( this.fields[fieldName], mode );
 					}
+
 				}else if( this.moduleTemplates.fields[fieldName].fieldType == 'module' ){
 					fieldData[fieldName] = (function( fieldData, mode, opt ){
 						var rtn = [];
@@ -343,6 +344,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 						"instancePath": this.instancePath ,
 						"fieldName": fieldName
 					} );
+
 				}else if( this.moduleTemplates.fields[fieldName].fieldType == 'loop' ){
 					fieldData[fieldName] = [];
 					for( var idx2 in this.fields[fieldName] ){
@@ -449,13 +451,17 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 		 */
 		this.drawCtrlPanels = function( $content ){
 			var $elm = $content.find('[data-guieditor-cont-data-path='+JSON.stringify(this.instancePath)+']');
+
 			var posInfo = (function($elm){
-				var rtn = {
-					't':$elm.offset().top,
-					'l':$elm.offset().left,
-					'h':$elm.offset().top+$elm.outerHeight(),
-					'w':$elm.offset().left+$elm.outerWidth()
-				};
+				var rtn = {};
+				if( $elm.size() ){
+					rtn = {
+						't':$elm.offset().top,
+						'l':$elm.offset().left,
+						'h':$elm.offset().top+$elm.outerHeight(),
+						'w':$elm.offset().left+$elm.outerWidth()
+					};
+				}
 				var tmp = {};
 				$elm.find('*').each(function(){
 					tmp = {

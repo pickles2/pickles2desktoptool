@@ -200,137 +200,171 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 			var field = {};
 			var rtn = '';
 
-			while( 1 ){
-				if( !src.match( new RegExp('^((?:.|\r|\n)*?)\\{\\&((?:.|\r|\n)*?)\\&\\}((?:.|\r|\n)*)$') ) ){
-					rtn += src;
-					break;
-				}
-				rtn += RegExp.$1;
-				field = RegExp.$2;
-				try{
-					field = JSON.parse( field );
-				}catch(e){
-					field = {'input':{
-						'type':'html',
-						'name':'__error__'
-					}};
-				}
-				src = RegExp.$3;
-
-				if( typeof(field) == typeof('') ){
-					// end系：無視
-				}else if( field.input ){
-					// input field
-					var tmpVal = '';
-					if( px2dtGuiEditor.fieldDefinitions[field.input.type] ){
-						// フィールドタイプ定義を呼び出す
-						tmpVal += px2dtGuiEditor.fieldDefinitions[field.input.type].bind( fieldData[field.input.name], mode, field.input );
-					}else{
-						// ↓未定義のフィールドタイプの場合のデフォルトの挙動
-						tmpVal += px2dtGuiEditor.fieldBase.bind( fieldData[field.input.name], mode, field.input );
-					}
-					if( !field.input.hidden ){//← "hidden": true だったら、非表示(=出力しない)
-						rtn += tmpVal;
-					}
-					_this.nameSpace.vars[field.input.name] = {
-						fieldType: "input", type: field.input.type, val: tmpVal
-					}
-
-				}else if( field.module ){
-					// module field
-					rtn += fieldData[field.module.name].join('');
-
-				}else if( field.loop ){
-					// loop field
-					var tmpSearchResult = searchEndTag( src, 'loop' );
-					rtn += fieldData[field.loop.name].join('');
-					src = tmpSearchResult.nextSrc;
-
-				}else if( field.if ){
-					// if field
-					// is_set に指定されたフィールドに値があったら、という評価ロジックを取り急ぎ実装。
-					// もうちょっとマシな条件の書き方がありそうな気がするが、あとで考える。
-					// → 2015-04-25: cond のルールを追加。
-					var tmpSearchResult = searchEndTag( src, 'if' );
-					var boolResult = false;
-					src = '';
-					if( field.if.cond && typeof(field.if.cond) == typeof([]) ){
-						// cond に、2次元配列を受け取った場合。
-						// 1次元目は or 条件、2次元目は and 条件で評価する。
-						for( var condIdx in field.if.cond ){
-							var condBool = true;
-							for( var condIdx2 in field.if.cond[condIdx] ){
-								var tmpCond = field.if.cond[condIdx][condIdx2];
-								if( tmpCond.match( new RegExp('^([\\s\\S]*?)\\:([\\s\\S]*)$') ) ){
-									var tmpMethod = px.php.trim(RegExp.$1);
-									var tmpValue = px.php.trim(RegExp.$2);
-
-									if( tmpMethod == 'is_set' ){
-										if( !_this.nameSpace.vars[tmpValue] || !px.php.trim(_this.nameSpace.vars[tmpValue].val).length ){
-											condBool = false;
-											break;
-										}
-									}else if( tmpMethod == 'is_mode' ){
-										if( tmpValue != mode ){
-											condBool = false;
-											break;
-										}
-									}
-								}else if( tmpCond.match( new RegExp('^([\\s\\S]*?)(\\!\\=|\\=\\=)([\\s\\S]*)$') ) ){
-									var tmpValue = px.php.trim(RegExp.$1);
-									var tmpOpe = px.php.trim(RegExp.$2);
-									var tmpDiff = px.php.trim(RegExp.$3);
-									if( tmpOpe == '==' ){
-										if( _this.nameSpace.vars[tmpValue].val != tmpDiff ){
-											condBool = false;
-											break;
-										}
-									}else if( tmpOpe == '!=' ){
-										if( _this.nameSpace.vars[tmpValue].val == tmpDiff ){
-											condBool = false;
-											break;
-										}
-									}
-								}
-
-							}
-							if( condBool ){
-								boolResult = true;
-								break;
-							}
-						}
-					}
-					if( _this.nameSpace.vars[field.if.is_set] && px.php.trim(_this.nameSpace.vars[field.if.is_set].val).length ){
-						boolResult = true;
-					}
-					if( boolResult ){
-						src += tmpSearchResult.content;
-					}
-					src += tmpSearchResult.nextSrc;
-
-				}else if( field.echo ){
-					// echo field
-					if( _this.nameSpace.vars[field.echo.ref] && _this.nameSpace.vars[field.echo.ref].val ){
-						rtn += _this.nameSpace.vars[field.echo.ref].val;
-					}
-
-				}
-
-			}
-
-			// 実験中: Twigテンプレート
+			// Twigテンプレート
 			if( this.templateType == 'twig' ){
-				rtn = px.twig.compile(rtn, {
+				var tplDataObj = {};
+				for( var fieldName in this.fields ){
+					field = this.fields[fieldName];
+
+					if( field.fieldType == 'input' ){
+						// input field
+						var tmpVal = '';
+						if( px2dtGuiEditor.fieldDefinitions[field.type] ){
+							// フィールドタイプ定義を呼び出す
+							tmpVal += px2dtGuiEditor.fieldDefinitions[field.type].bind( fieldData[field.name], mode, field );
+						}else{
+							// ↓未定義のフィールドタイプの場合のデフォルトの挙動
+							tmpVal += px2dtGuiEditor.fieldBase.bind( fieldData[field.name], mode, field );
+						}
+						if( !field.hidden ){//← "hidden": true だったら、非表示(=出力しない)
+							tplDataObj[field.name] = tmpVal;
+						}
+						_this.nameSpace.vars[field.name] = {
+							fieldType: "input", type: field.type, val: tmpVal
+						}
+
+					}else if( field.fieldType == 'module' ){
+						// module field
+						tplDataObj[field.name] = fieldData[field.name].join('');
+
+					}else if( field.fieldType == 'loop' ){
+						// loop field
+						tplDataObj[field.name] = fieldData[field.name].join('');
+
+					}
+				}
+
+				rtn = px.twig.compile(src, {
 					"filename": this.templateFilename,
 					"settings": {
 						"twig options": {
-							"strict_variables": true,
+							"strict_variables": false,
 							"autoescape": false,
 							"allowInlineIncludes":false,
 							"rethrow":false
 						}
 					}
-				})(fieldData);
+				})(tplDataObj);
+
+			}else{
+				while( 1 ){
+					if( !src.match( new RegExp('^((?:.|\r|\n)*?)\\{\\&((?:.|\r|\n)*?)\\&\\}((?:.|\r|\n)*)$') ) ){
+						rtn += src;
+						break;
+					}
+					rtn += RegExp.$1;
+					field = RegExp.$2;
+					try{
+						field = JSON.parse( field );
+					}catch(e){
+						field = {'input':{
+							'type':'html',
+							'name':'__error__'
+						}};
+					}
+					src = RegExp.$3;
+
+					if( typeof(field) == typeof('') ){
+						// end系：無視
+					}else if( field.input ){
+						// input field
+						var tmpVal = '';
+						if( px2dtGuiEditor.fieldDefinitions[field.input.type] ){
+							// フィールドタイプ定義を呼び出す
+							tmpVal += px2dtGuiEditor.fieldDefinitions[field.input.type].bind( fieldData[field.input.name], mode, field.input );
+						}else{
+							// ↓未定義のフィールドタイプの場合のデフォルトの挙動
+							tmpVal += px2dtGuiEditor.fieldBase.bind( fieldData[field.input.name], mode, field.input );
+						}
+						if( !field.input.hidden ){//← "hidden": true だったら、非表示(=出力しない)
+							rtn += tmpVal;
+						}
+						_this.nameSpace.vars[field.input.name] = {
+							fieldType: "input", type: field.input.type, val: tmpVal
+						}
+
+					}else if( field.module ){
+						// module field
+						rtn += fieldData[field.module.name].join('');
+
+					}else if( field.loop ){
+						// loop field
+						var tmpSearchResult = searchEndTag( src, 'loop' );
+						rtn += fieldData[field.loop.name].join('');
+						src = tmpSearchResult.nextSrc;
+
+					}else if( field.if ){
+						// if field
+						// is_set に指定されたフィールドに値があったら、という評価ロジックを取り急ぎ実装。
+						// もうちょっとマシな条件の書き方がありそうな気がするが、あとで考える。
+						// → 2015-04-25: cond のルールを追加。
+						var tmpSearchResult = searchEndTag( src, 'if' );
+						var boolResult = false;
+						src = '';
+						if( field.if.cond && typeof(field.if.cond) == typeof([]) ){
+							// cond に、2次元配列を受け取った場合。
+							// 1次元目は or 条件、2次元目は and 条件で評価する。
+							for( var condIdx in field.if.cond ){
+								var condBool = true;
+								for( var condIdx2 in field.if.cond[condIdx] ){
+									var tmpCond = field.if.cond[condIdx][condIdx2];
+									if( tmpCond.match( new RegExp('^([\\s\\S]*?)\\:([\\s\\S]*)$') ) ){
+										var tmpMethod = px.php.trim(RegExp.$1);
+										var tmpValue = px.php.trim(RegExp.$2);
+
+										if( tmpMethod == 'is_set' ){
+											if( !_this.nameSpace.vars[tmpValue] || !px.php.trim(_this.nameSpace.vars[tmpValue].val).length ){
+												condBool = false;
+												break;
+											}
+										}else if( tmpMethod == 'is_mode' ){
+											if( tmpValue != mode ){
+												condBool = false;
+												break;
+											}
+										}
+									}else if( tmpCond.match( new RegExp('^([\\s\\S]*?)(\\!\\=|\\=\\=)([\\s\\S]*)$') ) ){
+										var tmpValue = px.php.trim(RegExp.$1);
+										var tmpOpe = px.php.trim(RegExp.$2);
+										var tmpDiff = px.php.trim(RegExp.$3);
+										if( tmpOpe == '==' ){
+											if( _this.nameSpace.vars[tmpValue].val != tmpDiff ){
+												condBool = false;
+												break;
+											}
+										}else if( tmpOpe == '!=' ){
+											if( _this.nameSpace.vars[tmpValue].val == tmpDiff ){
+												condBool = false;
+												break;
+											}
+										}
+									}
+
+								}
+								if( condBool ){
+									boolResult = true;
+									break;
+								}
+							}
+						}
+						if( _this.nameSpace.vars[field.if.is_set] && px.php.trim(_this.nameSpace.vars[field.if.is_set].val).length ){
+							boolResult = true;
+						}
+						if( boolResult ){
+							src += tmpSearchResult.content;
+						}
+						src += tmpSearchResult.nextSrc;
+
+					}else if( field.echo ){
+						// echo field
+						if( _this.nameSpace.vars[field.echo.ref] && _this.nameSpace.vars[field.echo.ref].val ){
+							rtn += _this.nameSpace.vars[field.echo.ref].val;
+						}
+
+					}
+
+				}
+
 			}
 
 			return rtn;

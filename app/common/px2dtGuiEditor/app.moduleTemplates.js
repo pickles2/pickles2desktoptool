@@ -234,6 +234,10 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 					}
 				}
 
+				// 環境変数登録
+				tplDataObj._ENV = {
+					"mode": mode
+				};
 				rtn = px.twig.compile(src, {
 					"filename": this.templateFilename,
 					"settings": {

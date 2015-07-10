@@ -44,8 +44,13 @@ window.px2dtGuiEditor.fieldDefinitions.multitext = _.defaults( new (function( px
 	 */
 	this.normalizeData = function( fieldData, mode ){
 		// 編集画面用にデータを初期化。
-		var rtn = fieldData;
-		rtn = rtn||{};
+		var rtn = {};
+		if( typeof(fieldData) === typeof({}) ){
+			rtn = fieldData;
+		}else if( typeof(fieldData) === typeof('') ){
+			rtn.src = fieldData;
+			rtn.editor = 'html';
+		}
 		rtn.src = rtn.src||'';
 		rtn.editor = rtn.editor||'';
 		return rtn;
@@ -67,14 +72,14 @@ window.px2dtGuiEditor.fieldDefinitions.multitext = _.defaults( new (function( px
 				})
 				.css({'width':'100%','height':'auto'})
 			)
-			.append($('<ul>')
-				.append($('<li><label><input type="radio" name="editor" value="" /> HTML</label></li>'))
-				.append($('<li><label><input type="radio" name="editor" value="text" /> Text</label></li>'))
-				.append($('<li><label><input type="radio" name="editor" value="markdown" /> Markdown</label></li>'))
+			.append($('<ul class="horizontal">')
+				.append($('<li class="horizontal-li"><label><input type="radio" name="editor-'+mod.name+'" value="" /> HTML</label></li>'))
+				.append($('<li class="horizontal-li"><label><input type="radio" name="editor-'+mod.name+'" value="text" /> Text</label></li>'))
+				.append($('<li class="horizontal-li"><label><input type="radio" name="editor-'+mod.name+'" value="markdown" /> Markdown</label></li>'))
 			)
 		;
 		rtn.find('textarea').val(data.src);
-		rtn.find('input[type=radio][name=editor][value="'+data.editor+'"]').attr({'checked':'checked'});
+		rtn.find('input[type=radio][name=editor-'+mod.name+'][value="'+data.editor+'"]').attr({'checked':'checked'});
 
 		return rtn;
 	}
@@ -98,9 +103,12 @@ window.px2dtGuiEditor.fieldDefinitions.multitext = _.defaults( new (function( px
 	 * エディタUIで編集した内容を保存
 	 */
 	this.saveEditorContent = function( $dom, data, mod ){
+		if(typeof(data) !== typeof({})){
+			data = {};
+		}
 		data.src = $dom.find('textarea').val();
 		data.src = JSON.parse( JSON.stringify(data.src) );
-		data.editor = $dom.find('input[type=radio][name=editor]:checked').val();
+		data.editor = $dom.find('input[type=radio][name=editor-'+mod.name+']:checked').val();
 		return data;
 	}
 

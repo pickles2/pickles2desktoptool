@@ -901,15 +901,23 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 				// サブモジュールだったら
 				label = '@'+mod.subModName;
 			}
+			var timer;
 			$ul.append( $('<li>')
 				.append( $('<a href="javascript:;">')
 					.attr({
 						'data-guieditor-cont-data-path': instPathMemo.join('/')
 					})
-					.click(function(){
-						_this.selectInstance( $(this).attr('data-guieditor-cont-data-path') );
-						// alert($(this).attr('data-guieditor-cont-data-path'));
-					})
+					.bind('dblclick', function(e){
+						clearTimeout(timer);
+						_this.openEditWindow( $(this).attr('data-guieditor-cont-data-path') );
+					} )
+					.bind('click', function(e){
+						var dataPath = $(this).attr('data-guieditor-cont-data-path');
+						timer = setTimeout(function(){
+							_this.selectInstance( dataPath );
+						}, 10);
+						return false;
+					} )
 					.text(label)
 				)
 			);

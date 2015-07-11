@@ -121,6 +121,30 @@ window.px2dtGuiEditor.contentsSourceData = new(function(px, px2dtGuiEditor){
 	}
 
 	/**
+	 * 指定したインスタンスパスの子ノードの一覧を取得
+	 */
+	this.getChildren = function( containerInstancePath ){
+		var current = this.get(containerInstancePath);
+		var modTpl = px2dtGuiEditor.moduleTemplates.get( current.modId, current.subModName );
+		var targetFieldNames = {};
+		for( var fieldName in modTpl.fields ){
+			switch( modTpl.fields[fieldName].fieldType ){
+				case 'module':
+				case 'loop':
+					targetFieldNames[fieldName] = modTpl.fields[fieldName].fieldType;
+					break;
+			}
+		}
+		var rtn = [];
+		for( var fieldName in targetFieldNames ){
+			for( var idx in current.fields[fieldName] ){
+				rtn.push(containerInstancePath+'/fields.'+fieldName+'@'+idx);
+			}
+		}
+		return rtn;
+	}
+
+	/**
 	 * インスタンスを追加する
 	 */
 	this.addInstance = function( modId, containerInstancePath, cb, subModName ){

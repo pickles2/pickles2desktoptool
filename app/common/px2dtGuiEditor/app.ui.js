@@ -923,6 +923,41 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 			);
 		}
 		$instansPath.html('').append($ul).show();
+
+		var children = px2dtGuiEditor.contentsSourceData.getChildren( selectedInstance );
+		if(children.length){
+			var $ulChildren = $('<ul class="cont_field-instans_path_children">');
+			for(var child in children){
+				var contData = window.px2dtGuiEditor.contentsSourceData.get(children[child]);
+				var mod = window.px2dtGuiEditor.moduleTemplates.get(contData.modId, contData.subModName);
+				var label = mod.info.name||mod.id;
+				if( mod.subModName ){
+					// サブモジュールだったら
+					label = '@'+mod.subModName;
+				}
+				$ulChildren.append( $('<li>')
+					.append( $('<a href="javascript:;">')
+						.attr({
+							'data-guieditor-cont-data-path': children[child]
+						})
+						.bind('dblclick', function(e){
+							clearTimeout(timer);
+							_this.openEditWindow( $(this).attr('data-guieditor-cont-data-path') );
+						} )
+						.bind('click', function(e){
+							var dataPath = $(this).attr('data-guieditor-cont-data-path');
+							timer = setTimeout(function(){
+								_this.selectInstance( dataPath );
+							}, 10);
+							return false;
+						} )
+						.text(label)
+					)
+				);
+			}
+			$ul.find('li:last-child').append($ulChildren);
+		}
+
 		return true;
 	}
 

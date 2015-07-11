@@ -295,15 +295,37 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 				//    canvas (編集用レイアウト)
 				//    finalize (デフォルト/最終書き出し)
 
+			function getNormalizedCodeOfInputField(type, fieldData, mode){
+				var rtn = '';
+				if( px2dtGuiEditor.fieldDefinitions[type] ){
+					rtn = px2dtGuiEditor.fieldDefinitions[type].normalizeData( fieldData, mode );
+				}else{
+					rtn = px2dtGuiEditor.fieldBase.normalizeData( fieldData, mode );
+				}
+				return rtn;
+			}
+			function getBindedCodeOfInputField(fieldData, mode, mod){
+				var rtn = '';
+				try {
+					if( px2dtGuiEditor.fieldDefinitions[mod.type] ){
+						rtn = px2dtGuiEditor.fieldDefinitions[mod.type].bind( fieldData, mode, mod );
+					}else{
+						rtn = px2dtGuiEditor.fieldBase.bind( fieldData, mode, mod );
+					}
+				} catch (e) {
+				}
+				return rtn;
+			}
+
 			var fieldData = {};
 			for( var idx in this.fieldList ){
 				var fieldName = this.fieldList[idx];
 				if( this.moduleTemplates.fields[fieldName].fieldType == 'input' ){
-					if( px2dtGuiEditor.fieldDefinitions[this.moduleTemplates.fields[fieldName].type] ){
-						fieldData[fieldName] = px2dtGuiEditor.fieldDefinitions[this.moduleTemplates.fields[fieldName].type].normalizeData( this.fields[fieldName], mode );
-					}else{
-						fieldData[fieldName] = px2dtGuiEditor.fieldBase.normalizeData( this.fields[fieldName], mode );
-					}
+					fieldData[fieldName] = getNormalizedCodeOfInputField(
+						this.moduleTemplates.fields[fieldName].type,
+						this.fields[fieldName],
+						mode
+					);
 
 				}else if( this.moduleTemplates.fields[fieldName].fieldType == 'module' ){
 					fieldData[fieldName] = (function( fieldData, mode, opt ){
@@ -349,20 +371,34 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					fieldData[fieldName] = [];
 					for( var idx2 in this.fields[fieldName] ){
 						if( this.moduleTemplates.templateType == 'twig' ){
+							// テンプレートエンジンに渡す場合、
+							// サブモジュールはHTMLにビルドされているとテンプレートで処理できない。
+							// フィールド単位でビルドして渡す必要がある。
 							fieldData[fieldName][idx2] = {};
 							for( var fieldName2 in this.fields[fieldName][idx2].fields){
-								fieldData[fieldName][idx2][fieldName2] = [];
-								for( var idx3 in this.fields[fieldName][idx2].fields[fieldName2]){
-									fieldData[fieldName][idx2][fieldName2][idx3] = this.fields[fieldName][idx2].fields[fieldName2][idx3];
+								if( this.fields[fieldName][idx2].moduleTemplates.fields[fieldName2].fieldType == 'input' ){
+									fieldData[fieldName][idx2][fieldName2] = getBindedCodeOfInputField(
+										this.fields[fieldName][idx2].fields[fieldName2] ,
+										mode ,
+										this.fields[fieldName][idx2].moduleTemplates.fields[fieldName2]
+									);
+									// this.fields[fieldName][idx2].fields[fieldName2];
+
+								}else if( this.fields[fieldName][idx2].moduleTemplates.fields[fieldName2].fieldType == 'module' ){
+									// 開発中
+
+								}else if( this.fields[fieldName][idx2].moduleTemplates.fields[fieldName2].fieldType == 'loop' ){
+									// 開発中
+
 								}
-								// fieldData[fieldName][idx2][fieldName2] = this.fields[fieldName][idx2].fields[fieldName2];
 							}
-							// fieldData[fieldName][idx2] = this.fields[fieldName][idx2].fields;
+
 						}else{
 							fieldData[fieldName][idx2] = this.fields[fieldName][idx2].bind( mode );
 						}
 
 					}
+
 					if( mode == 'canvas' ){
 						var instancePathNext = this.instancePath+'/fields.'+fieldName+'@'+( this.fields[fieldName].length );
 						fieldData[fieldName].push( $('<div>')

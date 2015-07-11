@@ -143,7 +143,7 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 		this.id = modId;
 		this.isSingleRootElement = false;
 		this.path = null;
-		if( !px2dtGuiEditor.moduleTemplates.isSystemMod(modId) && !opt.src ){
+		if( !px2dtGuiEditor.moduleTemplates.isSystemMod(modId) && typeof(opt.src) !== typeof('') ){
 			this.path = px.fs.realpathSync( getPathModTpl(modId) );
 		}
 		this.fields = {};
@@ -152,8 +152,10 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 			this.subModName = opt.subModName;
 		}
 		if( opt.topThis ){
+			this.topThis = opt.topThis;
 			this.nameSpace = opt.topThis.nameSpace;
 		}else{
+			this.topThis = this;
 			this.nameSpace = {"vars": {}};
 		}
 
@@ -193,7 +195,7 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 		}
 
 		/**
-		 * 値を挿入して返す
+		 * テンプレートに値を挿入して返す
 		 */
 		this.bind = function( fieldData, mode ){
 			var src = this.template;
@@ -201,7 +203,8 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 			var rtn = '';
 
 			// Twigテンプレート
-			if( this.templateType == 'twig' ){
+			if( this.topThis.templateType == 'twig' ){
+				// console.log(this.id + '/' + this.subModName);
 				var tplDataObj = {};
 				for( var fieldName in this.fields ){
 					field = this.fields[fieldName];
@@ -234,21 +237,27 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 					}
 				}
 
-				// 環境変数登録
-				tplDataObj._ENV = {
-					"mode": mode
-				};
-				rtn = px.twig.compile(src, {
-					"filename": this.templateFilename,
-					"settings": {
-						"twig options": {
-							"strict_variables": false,
-							"autoescape": false,
-							"allowInlineIncludes":false,
-							"rethrow":false
+				// if( typeof(this.subModName) !== typeof('') ){
+					// 環境変数登録
+					tplDataObj._ENV = {
+						"mode": mode
+					};
+
+					rtn = px.twig.compile(src, {
+						"filename": this.templateFilename,
+						"settings": {
+							"twig options": {
+								"strict_variables": false,
+								"autoescape": false,
+								"allowInlineIncludes":false,
+								"rethrow":false
+							}
 						}
-					}
-				})(tplDataObj);
+					})(tplDataObj);
+				// }else{
+				// 	rtn = tplDataObj;
+				// }
+
 
 			}else{
 				while( 1 ){
@@ -372,15 +381,17 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 			}
 
 			return rtn;
-		}
+		} // bind()
 
 		/**
 		 * テンプレートを解析する
 		 */
 		function parseTpl(src, _this, _topThis, cb){
 			cb = cb||function(){};
-			src = JSON.parse( JSON.stringify( src ) );
-			_this.template = src;
+			if(src !== null){
+				src = JSON.parse( JSON.stringify( src ) );
+				_this.template = src;
+			}
 			_this.info = {
 				name: null
 			};
@@ -449,8 +460,11 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 				}
 				for( var tmpFieldName in _this.fields ){
 					if( _this.fields[tmpFieldName].fieldType == 'loop' ){
+						if( typeof(_this.subModule) !== typeof({}) ){
+							_this.subModule = {};
+						}
 						_topThis.subModule[tmpFieldName] = new classModTpl( _this.id, function(){}, {
-							"src": '',
+							"src": null,
 							"subModName": tmpFieldName,
 							"topThis":_topThis
 						} );
@@ -523,7 +537,7 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 			}
 			// console.log(_this.fields);
 			cb();
-		}
+		} // parseTpl()
 
 		if( modId == '_sys/root' ){
 			parseTpl( '{&{"module":{"name":"main"}}&}', _this, _this, cb );
@@ -533,6 +547,8 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 			parseTpl( '{&{"input":{"type":"html","name":"main"}}&}', _this, _this, cb );
 		}else if( typeof(opt.src) === typeof('') ){
 			parseTpl( opt.src, this, opt.topThis, cb );
+		}else if( this.topThis.templateType == 'twig' && typeof(this.subModName) == typeof('') ){
+			parseTpl( null, this, opt.topThis, cb );
 		}else if( this.path ){
 			var tmpTplSrc = null;
 			if( px.utils.isFile( this.path+'/template.html' ) ){

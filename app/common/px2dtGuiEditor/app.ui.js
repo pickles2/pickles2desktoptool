@@ -348,9 +348,21 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 				}else if( this.moduleTemplates.fields[fieldName].fieldType == 'loop' ){
 					fieldData[fieldName] = [];
 					for( var idx2 in this.fields[fieldName] ){
-						fieldData[fieldName][idx2] = this.fields[fieldName][idx2].bind( mode );
-					}
+						if( this.moduleTemplates.templateType == 'twig' ){
+							fieldData[fieldName][idx2] = {};
+							for( var fieldName2 in this.fields[fieldName][idx2].fields){
+								fieldData[fieldName][idx2][fieldName2] = [];
+								for( var idx3 in this.fields[fieldName][idx2].fields[fieldName2]){
+									fieldData[fieldName][idx2][fieldName2][idx3] = this.fields[fieldName][idx2].fields[fieldName2][idx3];
+								}
+								// fieldData[fieldName][idx2][fieldName2] = this.fields[fieldName][idx2].fields[fieldName2];
+							}
+							// fieldData[fieldName][idx2] = this.fields[fieldName][idx2].fields;
+						}else{
+							fieldData[fieldName][idx2] = this.fields[fieldName][idx2].bind( mode );
+						}
 
+					}
 					if( mode == 'canvas' ){
 						var instancePathNext = this.instancePath+'/fields.'+fieldName+'@'+( this.fields[fieldName].length );
 						fieldData[fieldName].push( $('<div>')

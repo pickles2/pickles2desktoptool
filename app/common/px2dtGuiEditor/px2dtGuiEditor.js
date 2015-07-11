@@ -59,6 +59,8 @@ window.px2dtGuiEditor = new (function(px){
 
 	/**
 	 * 変更を保存する。
+	 * @param  {Function} cb コールバック
+	 * @return {bool}      常に `true` を返します。
 	 */
 	function save(cb){
 		cb = cb || function(){};

@@ -32,6 +32,7 @@ window.px2dtGuiEditor = new (function(px){
 		rtn += '<scri'+'pt src="'+_path_base+'/app.contentsSourceData.resourceMgr.js"></scri'+'pt>';
 		rtn += '<scri'+'pt src="'+_path_base+'/app.contentsSourceData.history.js"></scri'+'pt>';
 		rtn += '<scri'+'pt src="'+_path_base+'/app.ui.js"></scri'+'pt>';
+		rtn += '<scri'+'pt src="'+_path_base+'/app.ui.instanceTreeView.js"></scri'+'pt>';
 		rtn += '<scri'+'pt src="'+_path_base+'/app.fieldBase.js"></scri'+'pt>';
 		rtn += '<scri'+'pt src="'+_path_base+'/fields/app.fields.html.js"></scri'+'pt>';
 		rtn += '<scri'+'pt src="'+_path_base+'/fields/app.fields.html_attr_text.js"></scri'+'pt>';
@@ -137,7 +138,10 @@ window.px2dtGuiEditor = new (function(px){
 				template_editor += '		<div class="cont_field">';
 				template_editor += '			<iframe class="cont_field-preview"></iframe>';
 				template_editor += '			<div class="cont_field-ctrlpanel"></div>';
-				template_editor += '			<div class="cont_field-instans_path"></div>';
+				template_editor += '			<div class="cont_field-instance_path"></div>';
+				template_editor += '			<div class="cont_field-menubar"></div>';
+				template_editor += '		</div>';
+				template_editor += '		<div class="cont_instance_tree_view">';
 				template_editor += '		</div>';
 				template_editor += '	</div><!-- / .cont_editorframe-preview -->';
 				template_editor += '	<div class="cont_editorframe-ctrlpanel">';
@@ -198,8 +202,18 @@ window.px2dtGuiEditor = new (function(px){
 				$html
 					.find('.cont_field')
 						.css({
-							'border':'none',
-							'width':'100%'
+							'border': 'none',
+							'width': '100%'
+						})
+				;
+				$html
+					.find('.cont_instance_tree_view')
+						.css({
+							'border': 'none',
+							'width': '100%',
+							'position': 'absolute',
+							'top': 0, 'left': 0,
+							'display': 'none'
 						})
 				;
 

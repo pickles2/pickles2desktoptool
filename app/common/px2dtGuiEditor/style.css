@@ -12,9 +12,11 @@ body{
 	width:100%;
 	display:table-cell;
 	overflow:auto;
+	position: relative;
+	top:0; left:0;
 }
 .cont_editorframe-ctrlpanel{
-	    width:260px;
+	width:260px;
 	max-width:260px;
 	min-width:260px;
 	display:table-cell;
@@ -39,7 +41,7 @@ body{
 	height:100%;
 }
 
-.cont_field .cont_field-instans_path{
+.cont_field .cont_field-instance_path{
 	position:fixed; left:0; bottom:0;
 	min-width:1em;
 	min-height:1em;
@@ -47,35 +49,43 @@ body{
 	border: 1px solid #000;
 	background: #fff;
 }
-.cont_field .cont_field-instans_path ul{
+.cont_field .cont_field-instance_path ul{
 	margin: 0; padding: 3px 10px;
 	font-size: 11px;
 }
-.cont_field .cont_field-instans_path >ul>li{
+.cont_field .cont_field-instance_path >ul>li{
 	margin: 0; padding: 0; list-style-type: none;
 	display: inline;
 	position: relative;
 }
-.cont_field .cont_field-instans_path >ul>li:before{
+.cont_field .cont_field-instance_path >ul>li:before{
 	content: ' > ';
 }
-.cont_field .cont_field-instans_path:hover{
+.cont_field .cont_field-instance_path:hover{
 	opacity: 1;
 }
-.cont_field .cont_field-instans_path_children{
+.cont_field .cont_field-instance_path_children{
 	display: none;
 	background: #fff;
 	border: 1px solid #000;
 }
-.cont_field .cont_field-instans_path_children li{
+.cont_field .cont_field-instance_path_children li{
 	display: block;
 	list-style-type: none;
 }
-.cont_field .cont_field-instans_path ul li:last-child:hover .cont_field-instans_path_children{
+.cont_field .cont_field-instance_path ul li:last-child:hover .cont_field-instance_path_children{
 	display: inline-block;
 	position: absolute;
 	left: 100%;
 	bottom: 0;
+}
+.cont_field .cont_field-menubar{
+	position:absolute;
+	right: 10px; bottom: 10px;
+	padding: 0.3em 1em;
+	border: 1px solid #000;
+	background: #fff;
+	font-size: 10px;
 }
 
 .cont_instanceCtrlPanel{
@@ -111,6 +121,12 @@ body{
 	padding: 2px 10px;
 	font-size: 8px;
 	font-weight: normal;
+}
+
+.cont_instance_tree_view{
+	background: #f9f9f9;
+	overflow: auto;
+	z-index: 10000;
 }
 
 .cont_modulelist{

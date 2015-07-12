@@ -3,8 +3,9 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 	var $preview,
 		$previewDoc,
 		$ctrlPanel,
-		$instansPath,
+		$instancePath,
 		$palette,
+		$menubar,
 		$editWindow;
 
 	var selectedInstance = null;
@@ -22,8 +23,9 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 		$preview = $('iframe.cont_field-preview');
 		$previewDoc = $($preview[0].contentWindow.document);
 		$ctrlPanel = $('.cont_field-ctrlpanel');
-		$instansPath = $('.cont_field-instans_path');
+		$instancePath = $('.cont_field-instance_path');
 		$palette = $('.cont_modulelist');
+		$menubar = $('.cont_field-menubar');
 
 		// モジュールパレットの初期化
 		$palette
@@ -118,6 +120,18 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 
 						},
 						function(){
+
+							$menubar
+								.html('')
+								.append( $('<a href="javascript:;">')
+									.text('Instance Tree View')
+									.click(function(){
+console.log(px2dtGuiEditor.ui.instanceTreeView);
+										px2dtGuiEditor.ui.instanceTreeView.init();
+									})
+								)
+							;
+
 							it.next();
 						}
 					);
@@ -875,12 +889,12 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 	this.updateInstancePathView = function(){
 		var selectedInstance = this.getSelectedInstance();
 		if( selectedInstance === null ){
-			$instansPath.text('').hide();
+			$instancePath.text('').hide();
 			return true;
 		}
 		var instPath = selectedInstance.split('/');
 		// if( instPath.length <=2 ){
-		// 	$instansPath.text('').hide();
+		// 	$instancePath.text('').hide();
 		// 	return true;
 		// }
 		// console.log(instPath);
@@ -922,11 +936,11 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 				)
 			);
 		}
-		$instansPath.html('').append($ul).show();
+		$instancePath.html('').append($ul).show();
 
 		var children = px2dtGuiEditor.contentsSourceData.getChildren( selectedInstance );
 		if(children.length){
-			var $ulChildren = $('<ul class="cont_field-instans_path_children">');
+			var $ulChildren = $('<ul class="cont_field-instance_path_children">');
 			for(var child in children){
 				var contData = window.px2dtGuiEditor.contentsSourceData.get(children[child]);
 				var mod = window.px2dtGuiEditor.moduleTemplates.get(contData.modId, contData.subModName);
@@ -1161,6 +1175,11 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 		cb = cb || function(){};
 
 		$('.cont_field')
+			.css({
+				'height':$(window).height() - 5
+			})
+		;
+		$('.cont_instance_tree_view')
 			.css({
 				'height':$(window).height() - 5
 			})

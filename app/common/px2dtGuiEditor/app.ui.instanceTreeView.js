@@ -49,16 +49,88 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 		});
 
 	}
+
 	this.buildModule = function(containerInstancePath, $dom){
 		var data = px2dtGuiEditor.contentsSourceData.get( containerInstancePath );
 		var modTpl = px2dtGuiEditor.moduleTemplates.get(data.modId, data.subModName);
 
 		var $modroot = $('<div class="cont_instance_tree_view-modroot">')
 			.attr({
-				'data-guieditor-cont-data-path': containerInstancePath
+				'data-guieditor-cont-data-path': containerInstancePath,
+				'data-guieditor-sub-mod-name': data.subModName,
+				'draggable': true //←HTML5のAPI http://www.htmq.com/dnd/
+			})
+			.on('dragstart', function(e){
+				event.dataTransfer.setData("method", 'moveTo' );
+				event.dataTransfer.setData("data-guieditor-cont-data-path", $(this).attr('data-guieditor-cont-data-path') );
+				var subModName = $(this).attr('data-guieditor-sub-mod-name');
+				if( typeof(subModName) === typeof('') && subModName.length ){
+					event.dataTransfer.setData("data-guieditor-sub-mod-name", subModName );
+				}
+				e.stopPropagation();
+			})
+			.bind('drop', function(e){
+				var method = event.dataTransfer.getData("method");
+				var modId = event.dataTransfer.getData("modId");
+				var moveFrom = event.dataTransfer.getData("data-guieditor-cont-data-path");
+				var moveTo = $(this).attr('data-guieditor-cont-data-path');
+				var subModNameTo = $(this).attr('data-guieditor-sub-mod-name');
+				var subModNameFrom = event.dataTransfer.getData('data-guieditor-sub-mod-name');
+
+				// px.message( 'modId "'+modId+'" が "'+method+'" のためにドロップされました。' );
+				if( method == 'add' ){
+					if( typeof(subModNameTo) === typeof('') ){
+						// loopフィールドの配列を追加するエリアの場合
+						px.message('ここにモジュールを追加することはできません。');
+						return;
+					}
+					px2dtGuiEditor.contentsSourceData.addInstance( modId, moveTo, function(){
+						// px.message('インスタンスを追加しました。');
+						_this.init();
+						px2dtGuiEditor.ui.onEditEnd();
+					} );
+				}else if( method == 'moveTo' ){
+					function isSubMod( subModName ){
+						if( typeof(subModName) === typeof('') && subModName.length ){
+							return true;
+						}
+						return false;
+					}
+					function removeNum(str){
+						return str.replace(new RegExp('[0-9]+$'),'');
+					}
+					if( (isSubMod(subModNameFrom) || isSubMod(subModNameTo)) && removeNum(moveFrom) !== removeNum(moveTo) ){
+						px.message('並べ替え以外の移動操作はできません。');
+						return;
+					}
+					px2dtGuiEditor.contentsSourceData.moveInstanceTo( moveFrom, moveTo, function(){
+						// px.message('インスタンスを移動しました。');
+						_this.init();
+						px2dtGuiEditor.ui.onEditEnd();
+					} );
+				}
+				e.stopPropagation();
+			})
+			.bind('dragenter', function(e){
+				$(this).addClass('cont_instanceCtrlPanel-ctrlpanel_dragentered');
+				e.stopPropagation();
+			})
+			.bind('dragleave', function(e){
+				$(this).removeClass('cont_instanceCtrlPanel-ctrlpanel_dragentered');
+				e.stopPropagation();
+			})
+			.bind('dragover', function(e){
+				e.preventDefault();
+				e.stopPropagation();
+			})
+			.bind('click', function(e){
+				_this.selectInstance( $(this).attr('data-guieditor-cont-data-path') );
+				e.stopPropagation();
 			})
 			.dblclick(function(e){
-				px2dtGuiEditor.ui.openEditWindow( $(this).attr('data-guieditor-cont-data-path') );
+				px2dtGuiEditor.ui.openEditWindow( $(this).attr('data-guieditor-cont-data-path'), function(){
+					_this.init();
+				} );
 				e.stopPropagation();
 				return false;
 			})
@@ -100,6 +172,7 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 
 	this.close = function(){
 		$treeViewCanvas.html('').hide();
+		px2dtGuiEditor.ui.resizeEvent();
 	}
 
 })(window.px, window.px2dtGuiEditor);

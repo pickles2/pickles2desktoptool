@@ -978,12 +978,10 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 	/**
 	 * モジュールの編集ウィンドウを開く
 	 */
-	this.openEditWindow = function( instancePath ){
-		// px.message( '開発中: このモジュールを選択して、編集できるようになる予定です。' );
-		// px.message( instancePath );
+	this.openEditWindow = function( instancePath, callback ){
+		callback = callback || function(){};
 		var data = px2dtGuiEditor.contentsSourceData.get( instancePath );
 		var modTpl = px2dtGuiEditor.moduleTemplates.get( data.modId, data.subModName );
-		// console.log(modTpl);
 
 		// モジュール別編集画面
 		var template_module_editor = '';
@@ -1032,6 +1030,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 				$editWindow.remove();
 				px.closeDialog();
 				px2dtGuiEditor.ui.onEditEnd();
+				callback();
 				return false;
 			})
 		;
@@ -1039,6 +1038,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 			.click(function(){
 				$editWindow.remove();
 				px.closeDialog();
+				callback();
 				return false;
 			})
 		;
@@ -1050,6 +1050,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 				$editWindow.remove();
 				px.closeDialog();
 				px2dtGuiEditor.ui.onEditEnd();
+				callback();
 				return false;
 			})
 		;

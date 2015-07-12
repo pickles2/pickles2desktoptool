@@ -126,7 +126,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 								.append( $('<a href="javascript:;">')
 									.text('Instance Tree View')
 									.click(function(){
-console.log(px2dtGuiEditor.ui.instanceTreeView);
+										// インスタンスツリービュー
 										px2dtGuiEditor.ui.instanceTreeView.init();
 									})
 								)

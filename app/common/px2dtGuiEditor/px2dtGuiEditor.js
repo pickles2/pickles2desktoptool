@@ -27,6 +27,7 @@ window.px2dtGuiEditor = new (function(px){
 
 		// ========== GUI Editor ==========
 		rtn += '<link rel="stylesheet" href="'+_path_base+'/style.css" type="text/css" />';
+		rtn += '<scri'+'pt src="'+_path_base+'/twig.js"></scri'+'pt>';//npm twig より
 		rtn += '<scri'+'pt src="'+_path_base+'/app.moduleTemplates.js"></scri'+'pt>';
 		rtn += '<scri'+'pt src="'+_path_base+'/app.contentsSourceData.js"></scri'+'pt>';
 		rtn += '<scri'+'pt src="'+_path_base+'/app.contentsSourceData.resourceMgr.js"></scri'+'pt>';

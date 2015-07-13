@@ -237,26 +237,26 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 					}
 				}
 
-				// if( typeof(this.subModName) !== typeof('') ){
-					// 環境変数登録
-					tplDataObj._ENV = {
-						"mode": mode
-					};
+				// 環境変数登録
+				tplDataObj._ENV = {
+					"mode": mode
+				};
 
-					rtn = px.twig.compile(src, {
-						"filename": this.templateFilename,
-						"settings": {
-							"twig options": {
-								"strict_variables": false,
-								"autoescape": false,
-								"allowInlineIncludes":false,
-								"rethrow":false
-							}
-						}
-					})(tplDataObj);
-				// }else{
-				// 	rtn = tplDataObj;
-				// }
+				rtn = twig({
+					data: src
+				}).render(tplDataObj);
+
+				// rtn = px.twig.compile(src, {
+				// 	"filename": this.templateFilename,
+				// 	"settings": {
+				// 		"twig options": {
+				// 			"strict_variables": false,
+				// 			"autoescape": false,
+				// 			"allowInlineIncludes":false,
+				// 			"rethrow":false
+				// 		}
+				// 	}
+				// })(tplDataObj);
 
 
 			}else{

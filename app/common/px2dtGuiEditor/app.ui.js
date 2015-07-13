@@ -358,19 +358,22 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 									)
 									.css({
 										'overflow':'hidden',
-										"padding": 15,
+										"padding": '15px',
 										"background-color":"#eef",
+										"border":"3px solid transparent",
 										"border-radius":5,
 										"font-size":9,
 										"color":"#000",
 										'text-align':'center',
-										'box-sizing': 'content-box',
-										'clear': 'both',
-										'white-space': 'nowrap'
+										'box-sizing':'border-box',
+										'clear':'both',
+										'white-space':'nowrap'
 									})
 								)
 								.css({
-									"padding":'5px 0'
+									"padding": '5px 0',
+									'box-sizing':'border-box',
+									"clear":'both'
 								})
 								.get(0).outerHTML
 							);
@@ -426,16 +429,19 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 									'overflow':'hidden',
 									"padding": '5px 15px',
 									"background-color":"#dfe",
+									"border":"3px solid transparent",
 									"border-radius":5,
 									"font-size":9,
 									'text-align':'center',
-									'box-sizing': 'content-box',
-									'clear': 'both',
-									'white-space': 'nowrap'
+									'box-sizing':'border-box',
+									'clear':'both',
+									'white-space':'nowrap'
 								})
 							)
 							.css({
-								"padding":'5px 0'
+								"padding": '5px 0',
+								'box-sizing':'border-box',
+								"clear":'both'
 							})
 							.get(0).outerHTML
 						);
@@ -513,6 +519,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 		 */
 		this.drawCtrlPanels = function( $content ){
 			var $elm = $content.find('[data-guieditor-cont-data-path='+JSON.stringify(this.instancePath)+']');
+			var isSubMod = ( this.moduleTemplates.subModName ? true : false );
 
 			var posInfo = (function($elm){
 				var rtn = {};
@@ -541,11 +548,14 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 			})($elm);
 			var $ctrlElm = $('<div>')
 				.addClass('cont_instanceCtrlPanel')
+				.addClass( (isSubMod ? 'cont_instanceCtrlPanel-is_submodule' : '' ) )
 				.css({
 					'min-width': 10,
 					'min-height': 10,
 					'width': (posInfo.w-posInfo.l),
-					'height': (posInfo.h-posInfo.t)
+					'height': (posInfo.h-posInfo.t),
+					'display': 'block',
+					'position': 'absolute'
 				})
 				.append( $('<div>')
 					.addClass('cont_instanceCtrlPanel-module_name')
@@ -562,14 +572,14 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					'data-guieditor-sub-mod-name': this.moduleTemplates.subModName
 				})
 				.bind('mouseover', function(e){
-					// $(this).css({
-					// 	"border":"3px dotted #000"
-					// });
+					e.stopPropagation();
+					$(this).addClass('cont_instanceCtrlPanel-hovered');
+					$(this).css({'opacity':'1'});
 				})
 				.bind('mouseout', function(e){
-					// $(this).css({
-					// 	"border":"0px dotted #99d"
-					// });
+					e.stopPropagation();
+					$(this).removeClass('cont_instanceCtrlPanel-hovered');
+					$(this).css({'opacity':'0'});
 				})
 				.attr({'draggable': true})//←HTML5のAPI http://www.htmq.com/dnd/
 				.on('dragstart', function(){
@@ -620,13 +630,19 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					}
 				})
 				.bind('dragenter', function(e){
-					$(this).addClass('cont_instanceCtrlPanel-ctrlpanel_dragentered');
+					e.preventDefault();
+					// $(this).addClass('cont_instanceCtrlPanel-dragentered');
+					// $(this).css({'opacity':'1'});
 				})
 				.bind('dragleave', function(e){
-					$(this).removeClass('cont_instanceCtrlPanel-ctrlpanel_dragentered');
+					e.preventDefault();
+					$(this).removeClass('cont_instanceCtrlPanel-dragentered');
+					$(this).css({'opacity':'0'});
 				})
 				.bind('dragover', function(e){
 					e.preventDefault();
+					$(this).addClass('cont_instanceCtrlPanel-dragentered');
+					$(this).css({'opacity':'1'});
 				})
 				.bind('click', function(e){
 					_this.selectInstance( $(this).attr('data-guieditor-cont-data-path') );
@@ -653,31 +669,32 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					var instancePath = this.instancePath+'/fields.'+fieldName+'@'+(this.fields[fieldName].length);
 					var $elm = $content.find('[data-guieditor-cont-data-path='+JSON.stringify(instancePath)+']');
 					var $ctrlElm = $('<div>')
+						.addClass('cont_instanceCtrlPanel')
+						.addClass('cont_instanceCtrlPanel-adding_area_module')
+						.text(
+							'ここに新しいモジュールをドラッグしてください。'
+						)
 						.css({
-							'border':0,
-							'font-size':'11px',
-							'overflow':'hidden',
-							'text-align':'center',
-							'background-color': 'transparent',
 							'display':'block',
 							'position':'absolute',
 							'top': $elm.offset().top + 5,
 							'left': $elm.offset().left,
 							"z-index":0,
 							'width': $elm.width(),
-							'height': $elm.height()
+							'height': $elm.height(),
+							'box-sizing': 'border-box',
+							'opacity': 0
 						})
 						.attr({'data-guieditor-cont-data-path': instancePath})
 						.bind('mouseover', function(e){
-							$(this).css({
-								"border-radius":5,
-								"border":"1px solid #000"
-							});
+							e.stopPropagation();
+							$(this).addClass('cont_instanceCtrlPanel-hovered');
+							$(this).css({'opacity':'1'});
 						})
 						.bind('mouseout', function(e){
-							$(this).css({
-								"border":0
-							});
+							e.stopPropagation();
+							$(this).removeClass('cont_instanceCtrlPanel-hovered');
+							$(this).css({'opacity':'0'});
 						})
 						.bind('drop', function(e){
 							var method = event.dataTransfer.getData("method");
@@ -700,18 +717,19 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 							} );
 						})
 						.bind('dragenter', function(e){
-							$(this).css({
-								"border-radius":0,
-								"border":"3px dotted #99f"
-							});
+							e.stopPropagation();
+							// $(this).addClass('cont_instanceCtrlPanel-dragentered');
+							// $(this).css({'opacity':'1'});
 						})
 						.bind('dragleave', function(e){
-							$(this).css({
-								"border":0
-							});
+							e.stopPropagation();
+							$(this).removeClass('cont_instanceCtrlPanel-dragentered');
+							$(this).css({'opacity':'0'});
 						})
 						.bind('dragover', function(e){
 							e.preventDefault();
+							$(this).addClass('cont_instanceCtrlPanel-dragentered');
+							$(this).css({'opacity':'1'});
 						})
 						.bind('click', function(e){
 							// 特に処理なし
@@ -743,19 +761,22 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					// 	console.log(JSON.stringify(instancePath));
 					// }
 					var $ctrlElm = $('<div>')
+						.addClass('cont_instanceCtrlPanel')
+						.addClass('cont_instanceCtrlPanel-adding_area_loop')
+						// .addClass('cont_instanceCtrlPanel-is_submodule')
+						.text(
+							'ここをダブルクリックして配列要素を追加してください。'
+						)
 						.css({
-							'border':0,
-							'font-size':'11px',
-							'overflow':'hidden',
-							'text-align':'center',
-							'background-color': 'transparent',
 							'display':'block',
 							'position':'absolute',
 							'top':  (function($elm){if($elm.size()){return $elm.offset().top  + 5;}return 0;})($elm),
 							'left': (function($elm){if($elm.size()){return $elm.offset().left + 0;}return 0;})($elm),
 							'z-index':0,
 							'width': $elm.width(),
-							'height': $elm.height()
+							'height': $elm.height(),
+							'box-sizing': 'border-box',
+							'opacity': 0
 						})
 						.attr({
 							'data-guieditor-mod-id': this.moduleTemplates.id,
@@ -763,15 +784,14 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 							'data-guieditor-cont-data-path': instancePath
 						})
 						.bind('mouseover', function(e){
-							$(this).css({
-								"border-radius":5,
-								"border":"2px solid #666"
-							});
+							e.stopPropagation();
+							$(this).addClass('cont_instanceCtrlPanel-hovered');
+							$(this).css({'opacity':'1'});
 						})
 						.bind('mouseout', function(e){
-							$(this).css({
-								"border":0
-							});
+							e.stopPropagation();
+							$(this).removeClass('cont_instanceCtrlPanel-hovered');
+							$(this).css({'opacity':'0'});
 						})
 						.bind('drop', function(e){
 							var method = event.dataTransfer.getData("method");
@@ -798,18 +818,19 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 							return;
 						})
 						.bind('dragenter', function(e){
-							$(this).css({
-								"border-radius":0,
-								"border":"3px dotted #99f"
-							});
+							e.stopPropagation();
+							// $(this).addClass('cont_instanceCtrlPanel-dragentered');
+							// $(this).css({'opacity':'1'});
 						})
 						.bind('dragleave', function(e){
-							$(this).css({
-								"border":0
-							});
+							e.stopPropagation();
+							$(this).removeClass('cont_instanceCtrlPanel-dragentered');
+							$(this).css({'opacity':'0'});
 						})
 						.bind('dragover', function(e){
 							e.preventDefault();
+							$(this).addClass('cont_instanceCtrlPanel-dragentered');
+							$(this).css({'opacity':'1'});
 						})
 						.bind('click', function(e){
 							// 特に処理なし
@@ -844,7 +865,8 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 	/**
 	 * モジュールインスタンスを選択状態にする
 	 */
-	this.selectInstance = function( instancePath ){
+	this.selectInstance = function( instancePath, callback ){
+		callback = callback || function(){};
 		this.unselectInstance();//一旦選択解除
 		selectedInstance = instancePath;
 		$ctrlPanel.find('[data-guieditor-cont-data-path]')
@@ -854,18 +876,21 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 			.addClass('cont_instanceCtrlPanel-ctrlpanel_selected')
 		;
 		this.updateInstancePathView();
+		callback();
 		return this;
 	}
 
 	/**
 	 * モジュールインスタンスの選択状態を解除する
 	 */
-	this.unselectInstance = function(){
+	this.unselectInstance = function(callback){
+		callback = callback || function(){};
 		selectedInstance = null;
 		$ctrlPanel.find('[data-guieditor-cont-data-path]')
 			.removeClass('cont_instanceCtrlPanel-ctrlpanel_selected')
 		;
 		this.updateInstancePathView();
+		callback();
 		return this;
 	}
 
@@ -893,12 +918,6 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 			return true;
 		}
 		var instPath = selectedInstance.split('/');
-		// if( instPath.length <=2 ){
-		// 	$instancePath.text('').hide();
-		// 	return true;
-		// }
-		// console.log(instPath);
-		// console.log(instPath.join('/'));
 		var $ul = $('<ul>');
 		var instPathMemo = [];
 		for( var idx in instPath ){

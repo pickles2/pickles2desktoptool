@@ -54,11 +54,22 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 		var data = px2dtGuiEditor.contentsSourceData.get( containerInstancePath );
 		var modTpl = px2dtGuiEditor.moduleTemplates.get(data.modId, data.subModName);
 
-		var $modroot = $('<div class="cont_instance_tree_view-modroot">')
+		var $modroot = $('<div>')
+			.addClass('cont_instance_tree_view-modroot')
+			.addClass('cont_instanceCtrlPanel')
+			.addClass( (data.subModName ? 'cont_instanceCtrlPanel-is_submodule' : '') )
 			.attr({
 				'data-guieditor-cont-data-path': containerInstancePath,
 				'data-guieditor-sub-mod-name': data.subModName,
 				'draggable': true //←HTML5のAPI http://www.htmq.com/dnd/
+			})
+			.bind('mouseover', function(e){
+				e.stopPropagation();
+				$(this).addClass('cont_instanceCtrlPanel-hovered');
+			})
+			.bind('mouseout', function(e){
+				e.stopPropagation();
+				$(this).removeClass('cont_instanceCtrlPanel-hovered');
 			})
 			.on('dragstart', function(e){
 				e.stopPropagation();
@@ -113,19 +124,31 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 			})
 			.bind('dragenter', function(e){
 				e.stopPropagation();
-				$(this).addClass('cont_instanceCtrlPanel-ctrlpanel_dragentered');//UTODO
+				// $(this).addClass('cont_instanceCtrlPanel-dragentered');
 			})
 			.bind('dragleave', function(e){
 				e.stopPropagation();
-				$(this).removeClass('cont_instanceCtrlPanel-ctrlpanel_dragentered');//UTODO
+				$(this).removeClass('cont_instanceCtrlPanel-dragentered');
 			})
 			.bind('dragover', function(e){
 				e.stopPropagation();
 				e.preventDefault();
+				$(this).addClass('cont_instanceCtrlPanel-dragentered');
 			})
 			.bind('click', function(e){
 				e.stopPropagation();
-				px2dtGuiEditor.contentsSourceData.selectInstance( $(this).attr('data-guieditor-cont-data-path') );
+				instancePath = $(this).attr('data-guieditor-cont-data-path');
+				px2dtGuiEditor.ui.selectInstance( instancePath, function(){
+					$treeViewCanvas.find('[data-guieditor-cont-data-path]')
+						.removeClass('cont_instanceCtrlPanel-ctrlpanel_selected')
+					;
+					$treeViewCanvas.find('[data-guieditor-cont-data-path]')
+						.filter(function (index) {
+							return $(this).attr("data-guieditor-cont-data-path") == instancePath;
+						})
+						.addClass('cont_instanceCtrlPanel-ctrlpanel_selected')
+					;
+				} );
 			})
 			.dblclick(function(e){
 				e.stopPropagation();
@@ -148,7 +171,8 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 				case 'module':
 				case 'loop':
 					var $ulChildren = $('<ol>');
-					for( var idx in data.fields[fieldName] ){
+					var idx = 0;
+					for( idx in data.fields[fieldName] ){
 						var label = idx;
 						if(modTpl.fields[fieldName].fieldType == 'module'){
 							var tmpModTpl = px2dtGuiEditor.moduleTemplates.get(data.fields[fieldName][idx].modId);
@@ -163,39 +187,26 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 			}
 			switch( modTpl.fields[fieldName].fieldType ){
 				case 'module':
-					var instancePathNext = containerInstancePath+'/fields.'+fieldName+'@'+( data.fields[fieldName].length );
+					var instancePathNext = containerInstancePath+'/fields.'+fieldName+'@'+( idx+1 );
 					$ulChildren.append( $('<li>')
-						.append($('<div class="cont_instance_tree_view-modroot">')
+						.append($('<div>')
+							.addClass('cont_instance_tree_view-modroot')
+							.addClass('cont_instanceCtrlPanel')
+							.addClass('cont_instanceCtrlPanel-adding_area_module')
 							.attr( "data-guieditor-cont-data-path", instancePathNext )
 							.text(
 								// instancePathNext +
 								'ここに新しいモジュールをドラッグしてください。'
 							)
 							.css({
-								'overflow':'hidden',
-								"padding": 15,
-								"background-color":"#eef",
-								"border-radius":5,
-								"font-size":9,
-								"color":"#000",
-								'text-align':'center',
-								'box-sizing': 'content-box',
-								'clear': 'both',
-								'white-space': 'nowrap',
-								"border":"1px solid #000"
 							})
 							.bind('mouseover', function(e){
-								$(this).css({
-									"border-radius":5,
-									"border":"1px solid #000"
-								});
 								e.stopPropagation();
+								$(this).addClass('cont_instanceCtrlPanel-hovered');
 							})
 							.bind('mouseout', function(e){
-								$(this).css({
-									"border": '1px solid #eef'
-								});
 								e.stopPropagation();
+								$(this).removeClass('cont_instanceCtrlPanel-hovered');
 							})
 							.bind('drop', function(e){
 								e.stopPropagation();
@@ -222,20 +233,16 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 							})
 							.bind('dragenter', function(e){
 								e.stopPropagation();
-								$(this).css({
-									"border-radius":0,
-									"border":"1px dotted #99f"
-								});
+								// $(this).addClass('cont_instanceCtrlPanel-dragentered');
 							})
 							.bind('dragleave', function(e){
 								e.stopPropagation();
-								$(this).css({
-									"border": '1px solid #eef'
-								});
+								$(this).removeClass('cont_instanceCtrlPanel-dragentered');
 							})
 							.bind('dragover', function(e){
 								e.stopPropagation();
 								e.preventDefault();
+								$(this).addClass('cont_instanceCtrlPanel-dragentered');
 							})
 						)
 					);
@@ -243,9 +250,12 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 					break;
 
 				case 'loop':
-					var instancePathNext = containerInstancePath+'/fields.'+fieldName+'@'+( data.fields[fieldName].length );
+					var instancePathNext = containerInstancePath+'/fields.'+fieldName+'@'+( idx+1 );
 					$ulChildren.append( $('<li>')
-						.append($('<div class="cont_instance_tree_view-modroot">')
+						.append($('<div>')
+							.addClass('cont_instance_tree_view-modroot')
+							.addClass('cont_instanceCtrlPanel')
+							.addClass('cont_instanceCtrlPanel-adding_area_loop')
 							.attr({
 								'data-guieditor-mod-id': modTpl.id,
 								'data-guieditor-sub-mod-name': fieldName,
@@ -256,29 +266,14 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 								'ここをダブルクリックして配列要素を追加してください。'
 							)
 							.css({
-								'overflow':'hidden',
-								"padding": '5px 15px',
-								"background-color":"#dfe",
-								"border-radius":5,
-								"font-size":9,
-								'text-align':'center',
-								'box-sizing': 'content-box',
-								'clear': 'both',
-								'white-space': 'nowrap',
-								"border":'1px solid #dfe'
 							})
 							.bind('mouseover', function(e){
 								e.stopPropagation();
-								$(this).css({
-									"border-radius":5,
-									"border":"1px solid #666"
-								});
+								$(this).addClass('cont_instanceCtrlPanel-hovered');
 							})
 							.bind('mouseout', function(e){
 								e.stopPropagation();
-								$(this).css({
-									"border":'1px solid #dfe'
-								});
+								$(this).removeClass('cont_instanceCtrlPanel-hovered');
 							})
 							.bind('drop', function(e){
 								e.stopPropagation();
@@ -308,20 +303,16 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 							})
 							.bind('dragenter', function(e){
 								e.stopPropagation();
-								$(this).css({
-									"border-radius":0,
-									"border":"1px dotted #99f"
-								});
+								// $(this).addClass('cont_instanceCtrlPanel-dragentered');
 							})
 							.bind('dragleave', function(e){
 								e.stopPropagation();
-								$(this).css({
-									"border":'1px solid #dfe'
-								});
+								$(this).removeClass('cont_instanceCtrlPanel-dragentered');
 							})
 							.bind('dragover', function(e){
 								e.stopPropagation();
 								e.preventDefault();
+								$(this).addClass('cont_instanceCtrlPanel-dragentered');
 							})
 							.bind('click', function(e){
 								// 特に処理なし
@@ -351,7 +342,7 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 	}
 
 	this.close = function(){
-		$treeViewCanvas.html('').hide();
+		$treeViewCanvas.hide().html('');
 		px2dtGuiEditor.ui.resizeEvent();
 	}
 

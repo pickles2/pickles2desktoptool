@@ -4,6 +4,9 @@ body{
 	overflow: hidden;
 }
 
+/*
+エディタフレーム
+*/
 .cont_editorframe{
 	width:100%;
 	display:table-row;
@@ -24,6 +27,9 @@ body{
 	vertical-align: top;
 }
 
+/*
+GUI編集フィールド
+*/
 .cont_field{
 	position: relative;
 	top:0; left:0;
@@ -88,30 +94,81 @@ body{
 	font-size: 10px;
 }
 
+/*
+コントロールパネル個々のスタイル
+InstanceTreeViewと共用。
+モジュール、module/loop の区別が付くようにしたい。
+選択・マウスオーバー・ドラッグオーバー等のスタイルを統一したい。
+*/
 .cont_instanceCtrlPanel{
-	border:0;
+	border-width:3px !important;
+	border-style:solid;
+	border-color:transparent;
 	text-align: center;
 	background-color: transparent;
-	display: block;
-	position: absolute;
 	z-index: 0;
 }
-.cont_instanceCtrlPanel:hover{
-	border: 3px dotted #000;
+.cont_instanceCtrlPanel-hovered{
+	border-style: dotted !important;
+	border-color: #6cf;
+	background-color: rgba(231,244,255, 0.5);
+}
+.cont_instanceCtrlPanel-hovered.cont_instanceCtrlPanel-is_submodule{
+	border-color: #3c3;
+	background-color: rgba(232,255,231, 0.5);
 }
 .cont_instanceCtrlPanel-ctrlpanel_selected{
-	border: 3px solid rgba(255,0,0,0.6);
-	background-color: rgba(255,0,0,0.1);
+	border-color: #f33 !important;
+	border-style: solid;
+	background-color: rgba(255,238,238, 0.5);
+	opacity: 1 !important;
 }
-.cont_instanceCtrlPanel-ctrlpanel_dragentered{
-	border-radius: 0;
-	border: 3px dotted #99f;
+.cont_instanceCtrlPanel-dragentered{
+	border-style: dashed !important;
+	border-color: #6cf;
+	background-color: rgba(231,244,255, 0.5);
 }
+.cont_instanceCtrlPanel-dragentered.cont_instanceCtrlPanel-is_submodule{
+	border-color: #3c3;
+	background-color: rgba(232,255,231, 0.5);
+}
+
+.cont_instanceCtrlPanel.cont_instanceCtrlPanel-adding_area_module,
+.cont_instanceCtrlPanel.cont_instanceCtrlPanel-adding_area_loop{
+	overflow: hidden;
+	color: #000;
+	clear: both;
+	font-size: 9px;
+	white-space: nowrap;
+	text-align: center;
+	border-radius: 5px;
+	padding: 15px;
+	border-color: #e7f4ff;
+	background-color: #e7f4ff;
+}
+.cont_instanceCtrlPanel.cont_instanceCtrlPanel-adding_area_module.cont_instanceCtrlPanel-hovered,
+.cont_instanceCtrlPanel.cont_instanceCtrlPanel-adding_area_module.cont_instanceCtrlPanel-dragentered{
+	border-color: #6cf;
+	background-color: #e7f4ff;
+}
+
+.cont_instanceCtrlPanel.cont_instanceCtrlPanel-adding_area_loop{
+	padding: 5px 15px;
+	border-color: #e8ffe7;
+	background-color: #e8ffe7;
+}
+.cont_instanceCtrlPanel.cont_instanceCtrlPanel-adding_area_loop.cont_instanceCtrlPanel-hovered,
+.cont_instanceCtrlPanel.cont_instanceCtrlPanel-adding_area_loop.cont_instanceCtrlPanel-dragentered{
+	border-color: #3c3;
+	background-color: #e8ffe7;
+}
+
 .cont_instanceCtrlPanel .cont_instanceCtrlPanel-module_name{
 	display:none;
 }
-.cont_instanceCtrlPanel:hover .cont_instanceCtrlPanel-module_name,
-.cont_instanceCtrlPanel-ctrlpanel_selected .cont_instanceCtrlPanel-module_name{
+.cont_instanceCtrlPanel-hovered .cont_instanceCtrlPanel-module_name,
+.cont_instanceCtrlPanel-ctrlpanel_selected .cont_instanceCtrlPanel-module_name,
+.cont_instanceCtrlPanel-dragentered .cont_instanceCtrlPanel-module_name{
 	display:block;
 	position: absolute;
 	left: -5px; top: -5px;
@@ -123,35 +180,106 @@ body{
 	font-weight: normal;
 }
 
+/*
+Instance Tree View
+*/
 .cont_instance_tree_view{
-	background: #f9f9f9;
+	background-color: #f9f9f9;
 	overflow: auto;
 	z-index: 10000;
+}
+.cont_instance_tree_view ul,
+.cont_instance_tree_view ol{
+	margin-left: 0;
+	padding-left: 10px;
 }
 .cont_instance_tree_view li{
 	list-style-position: inside;
 	margin-left: 0;
+	text-align: left;
 }
 .cont_instance_tree_view ol>li{
 	list-style-type: decimal;
 }
 .cont_instance_tree_view-modroot{
-	border: 1px solid #000;
+	border: 3px solid #aaa;
+	background-color: #fbfbfb;
 	border-radius: 5px;
 	padding: 10px 2px 2px 10px;
-	background-color: #f3f3f3;
 }
+
+.cont_instance_tree_view-modroot.cont_instanceCtrlPanel{
+}
+.cont_instance_tree_view-modroot.cont_instanceCtrlPanel-hovered{
+	border-style: dotted !important;
+	border-color: #6cf;
+	background-color: rgba(231,244,255, 0.8);
+}
+.cont_instance_tree_view-modroot.cont_instanceCtrlPanel-hovered.cont_instanceCtrlPanel-is_submodule{
+	border-color: #3c3;
+	background-color: rgba(232,255,231, 0.8);
+}
+.cont_instance_tree_view-modroot.cont_instanceCtrlPanel-ctrlpanel_selected{
+	border-color: #f33 !important;
+	border-style: solid;
+	background-color: rgba(255,238,238, 0.8);
+	opacity: 1 !important;
+}
+.cont_instance_tree_view-modroot.cont_instanceCtrlPanel-dragentered{
+	border-style: dashed !important;
+	border-color: #6cf;
+	background-color: rgba(231,244,255, 0.8);
+}
+.cont_instance_tree_view-modroot.cont_instanceCtrlPanel-dragentered.cont_instanceCtrlPanel-is_submodule{
+	border-color: #3c3;
+	background-color: rgba(232,255,231, 0.8);
+}
+
+.cont_instance_tree_view-modroot.cont_instanceCtrlPanel.cont_instanceCtrlPanel-adding_area_module,
+.cont_instance_tree_view-modroot.cont_instanceCtrlPanel.cont_instanceCtrlPanel-adding_area_loop{
+	overflow: hidden;
+	color: #000;
+	clear: both;
+	font-size: 9px;
+	white-space: nowrap;
+	text-align: center;
+	border-radius: 5px;
+	padding: 15px;
+	border-color: #aaa;
+	background-color: #e7f4ff;
+}
+.cont_instance_tree_view-modroot.cont_instanceCtrlPanel.cont_instanceCtrlPanel-adding_area_module.cont_instanceCtrlPanel-hovered,
+.cont_instance_tree_view-modroot.cont_instanceCtrlPanel.cont_instanceCtrlPanel-adding_area_module.cont_instanceCtrlPanel-dragentered{
+	border-color: #6cf;
+	background-color: #e7f4ff;
+}
+
+.cont_instance_tree_view-modroot.cont_instanceCtrlPanel.cont_instanceCtrlPanel-adding_area_loop{
+	padding: 5px 15px;
+	border-color: #aaa;
+	background-color: #e8ffe7;
+}
+.cont_instance_tree_view-modroot.cont_instanceCtrlPanel.cont_instanceCtrlPanel-adding_area_loop.cont_instanceCtrlPanel-hovered,
+.cont_instance_tree_view-modroot.cont_instanceCtrlPanel.cont_instanceCtrlPanel-adding_area_loop.cont_instanceCtrlPanel-dragentered{
+	border-color: #3c3;
+	background-color: #e8ffe7;
+}
+
 .cont_instance_tree_view-modroot > h2{
 	font-size: medium;
+	text-align: left;
 	margin: 0 0 5px 0;
 }
 .cont_instance_tree_view-fields{
-	background: #ddd;
+	background-color: rgba(240,240,240,0.6);
 	border: 1px solid #aaa;
 	border-radius: 3px;
 	margin: 0; padding: 10px 2px 2px 10px;
 }
 
+/*
+モジュール一覧
+*/
 .cont_modulelist{
 	overflow: auto;
 }
@@ -185,6 +313,9 @@ body{
 	background: #666;
 }
 
+/*
+ボタンリスト
+*/
 .cont_btns{}
 .cont_btns ul,
 .cont_btns ul li{

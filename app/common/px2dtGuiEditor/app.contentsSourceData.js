@@ -338,21 +338,18 @@ window.px2dtGuiEditor.contentsSourceData = new(function(px, px2dtGuiEditor){
 
 		if( fromParsed.container == toParsed.container ){
 			// 同じ箱の中での並び替え
-			if( fromParsed.num < toParsed.num ){
-				// 上から下へ
-				if( !this.get(toContainerInstancePath) ){
-					toContainerInstancePath = toParsed.container + '@' + ( toParsed.num-1 );
-				}
-				this.removeInstance(fromContainerInstancePath);
-				this.addInstance( dataFrom.modId, toContainerInstancePath );
-				this.updateInstance( dataFrom, toContainerInstancePath );
-
-			}else if( fromParsed.num > toParsed.num ){
-				// 下から上へ
-				this.addInstance( dataFrom.modId, toContainerInstancePath );
-				this.updateInstance( dataFrom, toContainerInstancePath );
-				this.removeInstance(fromParsed.container+'@'+(fromParsed.num+1));
+			if( fromParsed.num == toParsed.num ){
+				// to と from が一緒だったら何もしない。
+				cb();
+				return this;
 			}
+			if( fromParsed.num < toParsed.num-1 ){
+				// 上から2つ以上下へ
+				toContainerInstancePath = toParsed.container + '@' + ( toParsed.num-1 );
+			}
+			this.removeInstance(fromContainerInstancePath);
+			this.addInstance( dataFrom.modId, toContainerInstancePath );
+			this.updateInstance( dataFrom, toContainerInstancePath );
 			cb();
 		}else if( toParsed.path.indexOf(fromParsed.path) === 0 ){
 			px.message('自分の子階層へ移動することはできません。');

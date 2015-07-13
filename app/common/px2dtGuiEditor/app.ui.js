@@ -1230,6 +1230,11 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 			}
 		// }, 200);
 
+		if( $('.cont_instance_tree_view').css('display') != 'none' ){
+			// インスタンスツリービューを更新
+			px2dtGuiEditor.ui.instanceTreeView.init();
+		}
+
 		setTimeout(function(){
 			cb();
 		}, 10);

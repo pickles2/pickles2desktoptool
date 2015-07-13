@@ -9,6 +9,8 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 		$preview = $('iframe.cont_field-preview');
 		$previewDoc = $($preview[0].contentWindow.document);
 
+		var scrollTop = $treeViewCanvas.scrollTop();
+
 		$treeViewCanvas
 			.html('')
 			.append( $('<a href="javascript:;">')
@@ -48,6 +50,7 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 
 		});
 
+		$treeViewCanvas.scrollTop(scrollTop);
 	}
 
 	this.buildModule = function(containerInstancePath, $dom){

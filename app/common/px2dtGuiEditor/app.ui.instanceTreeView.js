@@ -190,7 +190,7 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 			}
 			switch( modTpl.fields[fieldName].fieldType ){
 				case 'module':
-					var instancePathNext = containerInstancePath+'/fields.'+fieldName+'@'+( idx+1 );
+					var instancePathNext = containerInstancePath+'/fields.'+fieldName+'@'+( data.fields[fieldName].length );
 					$ulChildren.append( $('<li>')
 						.append($('<div>')
 							.addClass('cont_instance_tree_view-modroot')
@@ -253,7 +253,7 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 					break;
 
 				case 'loop':
-					var instancePathNext = containerInstancePath+'/fields.'+fieldName+'@'+( idx+1 );
+					var instancePathNext = containerInstancePath+'/fields.'+fieldName+'@'+( data.fields[fieldName].length );
 					$ulChildren.append( $('<li>')
 						.append($('<div>')
 							.addClass('cont_instance_tree_view-modroot')

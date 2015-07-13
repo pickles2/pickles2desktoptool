@@ -199,6 +199,7 @@ window.px2dtGuiEditor.contentsSourceData = new(function(px, px2dtGuiEditor){
 			var modTpl = px2dtGuiEditor.moduleTemplates.get( data.modId, data.subModName );
 
 			if( container == 'bowl' ){
+				// ルート要素だったらスキップして次へ
 				return set_r( aryPath, data.bowl[fieldName], newData );
 			}
 
@@ -270,6 +271,7 @@ window.px2dtGuiEditor.contentsSourceData = new(function(px, px2dtGuiEditor){
 			var modTpl = px2dtGuiEditor.moduleTemplates.get( data.modId, data.subModName );
 
 			if( container == 'bowl' ){
+				// ルート要素だったらスキップして次へ
 				return set_r( aryPath, data.bowl[fieldName], newData );
 			}
 
@@ -396,6 +398,7 @@ window.px2dtGuiEditor.contentsSourceData = new(function(px, px2dtGuiEditor){
 			var modTpl = px2dtGuiEditor.moduleTemplates.get( data.modId, data.subModName );
 
 			if( container == 'bowl' ){
+				// ルート要素だったらスキップして次へ
 				return remove_r( aryPath, data.bowl[fieldName] );
 			}
 

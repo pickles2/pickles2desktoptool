@@ -5,7 +5,13 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 		$previewDoc;
 
 	this.init = function(){
-		$treeViewCanvas = $('.cont_instance_tree_view');
+		$treeViewCanvas = $('.cont_instance_tree_view')
+			.unbind('click')
+			.bind(
+				'click',
+				function(){ _this.unselectInstance(); }
+			)
+		;
 		$preview = $('iframe.cont_field-preview');
 		$previewDoc = $($preview[0].contentWindow.document);
 
@@ -13,11 +19,15 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 
 		$treeViewCanvas
 			.html('')
-			.append( $('<a href="javascript:;">')
-				.text('close')
+			.append( $('<ul class="horizontal"><li class="horizontal-li"><a href="javascript:;" class="icon">GUI編集に戻る</a></li></ul>')
 				.click(function(){
 					_this.close();
 					return false;
+				})
+				.css({
+					'position':'fixed',
+					'left': 5,
+					'top': 5
 				})
 			)
 			.show()
@@ -33,7 +43,9 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 					'border':'1px solid #000',
 					'background':'#f9f9f9',
 					'color':'#000',
-					'padding': '1em'
+					'padding': '1em',
+					'margin': '2em auto',
+					'width': '94%'
 				})
 				.append( $('<h2>')
 					.text('bowl: '+id)
@@ -141,17 +153,7 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 			.bind('click', function(e){
 				e.stopPropagation();
 				instancePath = $(this).attr('data-guieditor-cont-data-path');
-				px2dtGuiEditor.ui.selectInstance( instancePath, function(){
-					$treeViewCanvas.find('[data-guieditor-cont-data-path]')
-						.removeClass('cont_instanceCtrlPanel-ctrlpanel_selected')
-					;
-					$treeViewCanvas.find('[data-guieditor-cont-data-path]')
-						.filter(function (index) {
-							return $(this).attr("data-guieditor-cont-data-path") == instancePath;
-						})
-						.addClass('cont_instanceCtrlPanel-ctrlpanel_selected')
-					;
-				} );
+				_this.selectInstance( instancePath, function(){} );
 			})
 			.dblclick(function(e){
 				e.stopPropagation();
@@ -164,6 +166,10 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 				.text((modTpl.subModName ? '@'+modTpl.subModName : modTpl.info.name||modTpl.id))
 			)
 		;
+		if( containerInstancePath.match(new RegExp('^\\/bowl\\.[^/]*$')) ){
+			$modroot.unbind();
+		}
+
 		var $ul = $('<ul class="cont_instance_tree_view-fields">');
 		for( var fieldName in modTpl.fields ){
 			var $li = $('<li>');
@@ -342,6 +348,36 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 			.append($ul)
 		);
 		return true;
+	}
+
+	this.selectInstance = function( instancePath, callback ){
+		callback = callback || function(){};
+		this.unselectInstance(function(){
+			px2dtGuiEditor.ui.selectInstance( instancePath, function(){
+				if( instancePath.match(new RegExp('^\\/bowl\\.[^/]*$')) ){
+					callback();
+					return;
+				}
+				$treeViewCanvas.find('[data-guieditor-cont-data-path]')
+					.filter(function (index) {
+						return $(this).attr("data-guieditor-cont-data-path") == instancePath;
+					})
+					.addClass('cont_instanceCtrlPanel-ctrlpanel_selected')
+				;
+				callback();
+			} );
+		});
+		return this;
+	}
+
+	this.unselectInstance = function(callback){
+		px2dtGuiEditor.ui.unselectInstance( function(){
+			$treeViewCanvas.find('[data-guieditor-cont-data-path]')
+				.removeClass('cont_instanceCtrlPanel-ctrlpanel_selected')
+			;
+			callback();
+		} );
+		return this;
 	}
 
 	this.close = function(){

@@ -242,9 +242,13 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 					"mode": mode
 				};
 
-				rtn = twig({
-					data: src
-				}).render(tplDataObj);
+				try {
+					rtn = twig({
+						data: src
+					}).render(tplDataObj);
+				} catch (e) {
+					rtn = '<div class="error">Twig Rendering ERROR.</div>'
+				}
 
 				// rtn = px.twig.compile(src, {
 				// 	"filename": this.templateFilename,

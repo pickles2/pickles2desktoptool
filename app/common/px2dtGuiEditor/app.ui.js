@@ -330,6 +330,44 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 				}
 				return rtn;
 			}
+			function getBindedCodeOfModuleField(fieldData, mode, opt){
+				var rtn = [];
+				for( var idx2 in fieldData ){
+					rtn[idx2] = fieldData[idx2].bind( mode );
+				}
+				if( mode == 'canvas' ){
+					var instancePathNext = opt.instancePath+'/fields.'+opt.fieldName+'@'+( fieldData.length );
+					rtn.push( $('<div>')
+						.attr( "data-guieditor-cont-data-path", instancePathNext )
+						.append( $('<div>')
+							.text(
+								// instancePathNext +
+								'ここに新しいモジュールをドラッグしてください。'
+							)
+							.css({
+								'overflow':'hidden',
+								"padding": '15px',
+								"background-color":"#eef",
+								"border":"3px solid transparent",
+								"border-radius":5,
+								"font-size":9,
+								"color":"#000",
+								'text-align':'center',
+								'box-sizing':'border-box',
+								'clear':'both',
+								'white-space':'nowrap'
+							})
+						)
+						.css({
+							"padding": '5px 0',
+							'box-sizing':'border-box',
+							"clear":'both'
+						})
+						.get(0).outerHTML
+					);
+				}
+				return rtn;
+			}
 
 			var fieldData = {};
 			for( var idx in this.fieldList ){
@@ -342,47 +380,14 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					);
 
 				}else if( this.moduleTemplates.fields[fieldName].fieldType == 'module' ){
-					fieldData[fieldName] = (function( fieldData, mode, opt ){
-						var rtn = [];
-						for( var idx2 in fieldData ){
-							rtn[idx2] = fieldData[idx2].bind( mode );
+					fieldData[fieldName] = getBindedCodeOfModuleField(
+						this.fields[fieldName],
+						mode,
+						{
+							"instancePath": this.instancePath ,
+							"fieldName": fieldName
 						}
-						if( mode == 'canvas' ){
-							var instancePathNext = opt.instancePath+'/fields.'+opt.fieldName+'@'+( fieldData.length );
-							rtn.push( $('<div>')
-								.attr( "data-guieditor-cont-data-path", instancePathNext )
-								.append( $('<div>')
-									.text(
-										// instancePathNext +
-										'ここに新しいモジュールをドラッグしてください。'
-									)
-									.css({
-										'overflow':'hidden',
-										"padding": '15px',
-										"background-color":"#eef",
-										"border":"3px solid transparent",
-										"border-radius":5,
-										"font-size":9,
-										"color":"#000",
-										'text-align':'center',
-										'box-sizing':'border-box',
-										'clear':'both',
-										'white-space':'nowrap'
-									})
-								)
-								.css({
-									"padding": '5px 0',
-									'box-sizing':'border-box',
-									"clear":'both'
-								})
-								.get(0).outerHTML
-							);
-						}
-						return rtn;
-					})( this.fields[fieldName], mode, {
-						"instancePath": this.instancePath ,
-						"fieldName": fieldName
-					} );
+					);
 
 				}else if( this.moduleTemplates.fields[fieldName].fieldType == 'loop' ){
 					fieldData[fieldName] = [];
@@ -399,13 +404,23 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 										mode ,
 										this.fields[fieldName][idx2].moduleTemplates.fields[fieldName2]
 									);
-									// this.fields[fieldName][idx2].fields[fieldName2];
 
 								}else if( this.fields[fieldName][idx2].moduleTemplates.fields[fieldName2].fieldType == 'module' ){
-									// 開発中
+
+									fieldData[fieldName][idx2][fieldName2] = getBindedCodeOfModuleField(
+										this.fields[fieldName][idx2].fields[fieldName2],
+										mode,
+										{
+											"instancePath": this.instancePath+'/fields.'+fieldName+'@'+idx2 ,
+											"fieldName": fieldName2
+										}
+									);
+									fieldData[fieldName][idx2][fieldName2] = fieldData[fieldName][idx2][fieldName2].join('');
+										// ↑本来、 `join()` するのは moduleTemplate オブジェクトの仕事だが、
+										// 階層が深い module は moduleTemplate の bind() に直接送られないので、ここで join() する。
 
 								}else if( this.fields[fieldName][idx2].moduleTemplates.fields[fieldName2].fieldType == 'loop' ){
-									// 開発中
+									// UTODO: 開発中
 
 								}
 							}
@@ -416,7 +431,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 
 					}
 
-					if( mode == 'canvas' ){
+					if( mode == 'canvas' && this.moduleTemplates.templateType != 'twig' ){
 						var instancePathNext = this.instancePath+'/fields.'+fieldName+'@'+( this.fields[fieldName].length );
 						fieldData[fieldName].push( $('<div>')
 							.attr( "data-guieditor-cont-data-path", instancePathNext )
@@ -469,8 +484,11 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					// 要素が複数の場合、または存在しないテキストノードのみの場合、
 					// 要素がテキストノードで囲われている場合、なども考えられる。
 					// これらの場合は、divで囲ってあげないとハンドルできないので、しかたなし。
+					try {
+						rtn = $(tmpSrc);
+					} catch (e) {
+					}
 
-					rtn = $(tmpSrc);
 				}else{
 					var tagName = ''+(rtn.find('>*').eq(0).prop("tagName"));
 					switch( tagName.toLowerCase() ){

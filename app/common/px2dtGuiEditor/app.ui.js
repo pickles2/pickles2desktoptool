@@ -537,9 +537,9 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 		 */
 		this.drawCtrlPanels = function( $content ){
 			var $elm = $content.find('[data-guieditor-cont-data-path='+JSON.stringify(this.instancePath)+']');
-			var isSubMod = ( this.moduleTemplates.subModName ? true : false );
+			var isSubMod =  ( this.moduleTemplates.subModName ? true : false );
 
-			var posInfo = (function($elm){
+			var posInfo = (function($elm, areaSizeDetection){
 				var rtn = {};
 				if( $elm.size() ){
 					rtn = {
@@ -549,6 +549,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 						'w':$elm.offset().left+$elm.outerWidth()
 					};
 				}
+				if( areaSizeDetection == 'shallow' ){ console.log(rtn); return rtn; }
 				var tmp = {};
 				$elm.find('*').each(function(){
 					tmp = {
@@ -563,7 +564,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					rtn.w = (rtn.w<tmp.w ? tmp.w : rtn.w);
 				});
 				return rtn;
-			})($elm);
+			})($elm, this.moduleTemplates.info.areaSizeDetection);
 			var $ctrlElm = $('<div>')
 				.addClass('cont_instanceCtrlPanel')
 				.addClass( (isSubMod ? 'cont_instanceCtrlPanel-is_submodule' : '' ) )

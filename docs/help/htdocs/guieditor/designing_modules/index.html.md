@@ -175,9 +175,15 @@ thumb.png は、GUI編集画面上での、モジュールのサムネイルと�
 
 ```
 {
-  "name": ".cols (3カラム)"
+  "name": ".cols (3カラム)",
+  "areaSizeDetection ": "deep"
 }
 ```
+
+<dl>
+<dt>name</dt><dd>モジュールの名称を設定します。</dd>
+<dt>areaSizeDetection</dt><dd>編集画面でモジュールのサイズを測る方法を指定します。<code>deep</code> (デフォルト)は、モジュールに含まれるすべての要素のサイズを測り、最大値を探します。<code>shallow</code>を指定すると、ルートノードのみのサイズを測ります。</dd>
+</dl>
 
 #### README.html (または README.md)
 

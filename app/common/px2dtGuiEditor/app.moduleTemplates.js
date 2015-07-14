@@ -397,7 +397,9 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 				_this.template = src;
 			}
 			_this.info = {
-				name: null
+				name: null,
+				areaSizeDetection: 'deep',
+				interface: {}
 			};
 
 			if( _this.path && px.utils.isDirectory( _this.path ) ){
@@ -410,6 +412,9 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 					}
 					if( tmpJson.name ){
 						_this.info.name = tmpJson.name;
+					}
+					if( tmpJson.areaSizeDetection ){
+						_this.info.areaSizeDetection = tmpJson.areaSizeDetection;
 					}
 					if( tmpJson.interface ){
 						if( tmpJson.interface.fields ){

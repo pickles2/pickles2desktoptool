@@ -147,6 +147,7 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 			this.path = px.fs.realpathSync( getPathModTpl(modId) );
 		}
 		this.fields = {};
+		this.templateType = 'px2dtGuiEditor';
 
 		if(opt.subModName){
 			this.subModName = opt.subModName;
@@ -202,8 +203,8 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 			var field = {};
 			var rtn = '';
 
-			// Twigテンプレート
-			if( this.topThis.templateType == 'twig' ){
+			// テンプレートエンジン
+			if( this.topThis.templateType != 'px2dtGuiEditor' ){
 				// console.log(this.id + '/' + this.subModName);
 				var tplDataObj = {};
 				for( var fieldName in this.fields ){
@@ -247,21 +248,8 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 						data: src
 					}).render(tplDataObj);
 				} catch (e) {
-					rtn = '<div class="error">Twig Rendering ERROR.</div>'
+					rtn = '<div class="error">TemplateEngine Rendering ERROR.</div>'
 				}
-
-				// rtn = px.twig.compile(src, {
-				// 	"filename": this.templateFilename,
-				// 	"settings": {
-				// 		"twig options": {
-				// 			"strict_variables": false,
-				// 			"autoescape": false,
-				// 			"allowInlineIncludes":false,
-				// 			"rethrow":false
-				// 		}
-				// 	}
-				// })(tplDataObj);
-
 
 			}else{
 				while( 1 ){
@@ -462,8 +450,8 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 
 			var field = null;
 
-			if( _topThis.templateType == 'twig' ){
-				// Twigテンプレート
+			if( _topThis.templateType != 'px2dtGuiEditor' ){
+				// テンプレートエンジン
 				if( _this.subModName ){
 					_this.fields = _topThis.subModule[_this.subModName].fields;
 				}
@@ -556,7 +544,7 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 			parseTpl( '{&{"input":{"type":"html","name":"main"}}&}', _this, _this, cb );
 		}else if( typeof(opt.src) === typeof('') ){
 			parseTpl( opt.src, this, opt.topThis, cb );
-		}else if( this.topThis.templateType == 'twig' && typeof(this.subModName) == typeof('') ){
+		}else if( this.topThis.templateType != 'px2dtGuiEditor' && typeof(this.subModName) == typeof('') ){
 			parseTpl( null, this, opt.topThis, cb );
 		}else if( this.path ){
 			var tmpTplSrc = null;

@@ -392,7 +392,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 				}else if( this.moduleTemplates.fields[fieldName].fieldType == 'loop' ){
 					fieldData[fieldName] = [];
 					for( var idx2 in this.fields[fieldName] ){
-						if( this.moduleTemplates.templateType == 'twig' ){
+						if( this.moduleTemplates.templateType != 'px2dtGuiEditor' ){
 							// テンプレートエンジンに渡す場合、
 							// サブモジュールはHTMLにビルドされているとテンプレートで処理できない。
 							// フィールド単位でビルドして渡す必要がある。
@@ -431,7 +431,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 
 					}
 
-					if( mode == 'canvas' && this.moduleTemplates.templateType != 'twig' ){
+					if( mode == 'canvas' && this.moduleTemplates.templateType == 'px2dtGuiEditor' ){
 						var instancePathNext = this.instancePath+'/fields.'+fieldName+'@'+( this.fields[fieldName].length );
 						fieldData[fieldName].push( $('<div>')
 							.attr( "data-guieditor-cont-data-path", instancePathNext )

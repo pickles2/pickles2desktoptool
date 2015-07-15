@@ -45,6 +45,10 @@ window.px2dtGuiEditor.contentsSourceData.resourceMgr = new(function(px, px2dtGui
 	 * save content
 	 */
 	this.save = function( cb ){
+		if( px.utils.isDirectory( _resourcesPublishDirPath ) ){
+			// 公開リソースディレクトリを一旦削除
+			px.utils.rmdir_r( _resourcesPublishDirPath );
+		}
 		if( !px.utils.isDirectory( _resourcesPublishDirPath ) ){
 			// 公開リソースディレクトリ作成
 			px.utils.mkdir( _resourcesPublishDirPath );
@@ -66,8 +70,12 @@ window.px2dtGuiEditor.contentsSourceData.resourceMgr = new(function(px, px2dtGui
 
 				// 公開ファイル
 				if( !_resourceDb[resKey].isPrivateMaterial ){
+					var filename = resKey;
+					if( typeof(_resourceDb[resKey].publicFilename) == typeof('') && _resourceDb[resKey].publicFilename.length ){
+						filename = _resourceDb[resKey].publicFilename;
+					}
 					px.fs.writeFileSync(
-						_resourcesPublishDirPath+'/'+resKey+'.'+_resourceDb[resKey].ext,
+						_resourcesPublishDirPath+'/'+filename+'.'+_resourceDb[resKey].ext,
 						bin
 					);
 				}
@@ -108,6 +116,17 @@ window.px2dtGuiEditor.contentsSourceData.resourceMgr = new(function(px, px2dtGui
 
 	/**
 	 * update resource
+	 * @param  {string} resKey  Resource Key
+	 * @param  {object} resInfo Resource Information.
+	 * <dl>
+	 * <dt>realpath</dt><dd>ファイルが置かれていた絶対パス</dd>
+	 * <dt>ext</dt><dd>ファイル拡張子名。</dd>
+	 * <dt>type</dt><dd>mimeタイプ。</dd>
+	 * <dt>base64</dt><dd>ファイルのBase64エンコードされた値</dd>
+	 * <dt>publicFilename</dt><dd>公開時のファイル名</dd>
+	 * <dt>isPrivateMaterial</dt><dd>非公開ファイル。</dd>
+	 * </dl>
+	 * @return {boolean}        always true.
 	 */
 	this.updateResource = function( resKey, resInfo ){
 		if( typeof(_resourceDb[resKey]) !== typeof({}) ){
@@ -158,7 +177,11 @@ window.px2dtGuiEditor.contentsSourceData.resourceMgr = new(function(px, px2dtGui
 	this.getResourcePublicPath = function( resKey ){
 		var res = this.getResource( resKey );
 		var basename = px.utils.basename( px.fs.realpathSync(_contFilesDirPath) );
-		var rtn = './'+basename+'/resources/'+resKey+'.'+res.ext;
+		var filename = resKey;
+		if( typeof(res.publicFilename) == typeof('') && res.publicFilename.length ){
+			filename = res.publicFilename;
+		}
+		var rtn = './'+basename+'/resources/'+filename+'.'+res.ext;
 		return rtn;
 	}
 

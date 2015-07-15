@@ -6,8 +6,8 @@ window.px2dtGuiEditor.fieldDefinitions.image = _.defaults( new (function( px, px
 	/**
 	 * リソースファイルを解析する
 	 */
-	function parseResource( realpathSelected ){
-		var tmpResInfo = {};
+	function parseResource( realpathSelected, res ){
+		var tmpResInfo = res || {};
 		tmpResInfo.realpath = JSON.parse( JSON.stringify( realpathSelected ) );
 		tmpResInfo.ext = px.utils.getExtension( tmpResInfo.realpath ).toLowerCase();
 		switch( tmpResInfo.ext ){
@@ -115,6 +115,20 @@ window.px2dtGuiEditor.fieldDefinitions.image = _.defaults( new (function( px, px
 				}
 			})
 		);
+		rtn.append(
+			$('<div>')
+				.append( $('<span>')
+					.text('出力ファイル名(拡張子を含まない):')
+				)
+				.append( $('<input>')
+					.attr({
+						"name":mod.name+'-publicFilename' ,
+						"type":"text",
+						"placeholder": "output file name"
+					})
+					.val( (typeof(res.publicFilename)==typeof('') ? res.publicFilename : '') )
+				)
+		);
 		return rtn;
 	}
 
@@ -131,13 +145,17 @@ window.px2dtGuiEditor.fieldDefinitions.image = _.defaults( new (function( px, px
 		if( _resMgr.getResource(data.resKey) === false ){
 			data.resKey = _resMgr.addResource();
 		}
-		
-		var realpathSelected = $dom.find('input').val();
+		var resInfo = _resMgr.getResource(data.resKey);
+
+		var realpathSelected = $dom.find('input[type=file]').val();
 		if( realpathSelected ){
-			var tmpResInfo = parseResource( realpathSelected );
-			_resMgr.updateResource( data.resKey, tmpResInfo );
+			resInfo = parseResource( realpathSelected, resInfo );
 		}
-		var res = _resMgr.getResource( data.resKey );
+		resInfo.publicFilename = $dom.find('input[name='+mod.name+'-publicFilename]').val();
+
+		_resMgr.updateResource( data.resKey, resInfo );
+
+		// var res = _resMgr.getResource( data.resKey );
 		data.path = _resMgr.getResourcePublicPath( data.resKey );
 
 		return data;

@@ -21,7 +21,6 @@ window.px2dtGuiEditor.fieldDefinitions.table = _.defaults( new (function( px, px
 			default:
 				tmpResInfo.type = 'text/csv'; break;
 		}
-		tmpResInfo.isPrivateMaterial = true;
 
 		return tmpResInfo;
 	}
@@ -201,7 +200,7 @@ window.px2dtGuiEditor.fieldDefinitions.table = _.defaults( new (function( px, px
 		if( _resMgr.getResource(data.resKey) === false ){
 			data.resKey = _resMgr.addResource();
 		}
-		
+
 		var realpathSelected = $dom.find('input[name='+mod.name+']').val();
 		if( realpathSelected ){
 			var tmpResInfo = parseResource( realpathSelected );
@@ -216,7 +215,9 @@ window.px2dtGuiEditor.fieldDefinitions.table = _.defaults( new (function( px, px
 		data.renderer = $dom.find('input[name="'+mod.name+':renderer"]:checked').val();
 
 		var res = _resMgr.getResource( data.resKey );
-		// console.log(res);
+		res.isPrivateMaterial = true;
+			// リソースファイルの設置は resourceMgr が行っている。
+			// isPrivateMaterial が true の場合、公開領域への設置は行われない。
 
 		var realpath = _resMgr.getResourceOriginalRealpath( data.resKey );
 		if(!px.utils.isFile(realpath)){

@@ -2,6 +2,7 @@ window.px2dtGuiEditor.contentsSourceData.resourceMgr = new(function(px, px2dtGui
 	var _this = this;
 	var _contFilesDirPath;
 	var _resourcesDirPath;
+	var _dataJsonPath;
 
 	var _resourceDb = {};
 
@@ -12,6 +13,7 @@ window.px2dtGuiEditor.contentsSourceData.resourceMgr = new(function(px, px2dtGui
 		_contFilesDirPath = contFilesDirPath;
 		_resourcesDirPath = _contFilesDirPath + '/guieditor.ignore/resources/';
 		_resourcesPublishDirPath = _contFilesDirPath + '/resources/';
+		_dataJsonPath = _contFilesDirPath + '/guieditor.ignore/data.json';
 		loadResourceList( function(){
 			cb();
 		} );
@@ -42,9 +44,13 @@ window.px2dtGuiEditor.contentsSourceData.resourceMgr = new(function(px, px2dtGui
 	}
 
 	/**
-	 * save content
+	 * save resources
+	 * @param  {Function} cb Callback function.
+	 * @return {boolean}     Always true.
 	 */
 	this.save = function( cb ){
+		cb = cb || function(){};
+
 		if( px.utils.isDirectory( _resourcesPublishDirPath ) ){
 			// 公開リソースディレクトリを一旦削除
 			px.utils.rmdir_r( _resourcesPublishDirPath );
@@ -54,6 +60,16 @@ window.px2dtGuiEditor.contentsSourceData.resourceMgr = new(function(px, px2dtGui
 			px.utils.mkdir( _resourcesPublishDirPath );
 		}
 
+		// 使われていないリソースを削除
+		var jsonSrc = px.fs.readFileSync( _dataJsonPath );
+		jsonSrc = JSON.parse( JSON.stringify(jsonSrc.toString()) );
+		for( var resKey in _resourceDb ){
+			if( !jsonSrc.match(resKey) ){// TODO: JSONファイルを文字列として検索しているが、この方法は完全ではない。
+				this.removeResource(resKey);
+			}
+		}
+
+		// リソースデータの保存と公開領域への設置
 		for( var resKey in _resourceDb ){
 			px.utils.mkdir( _resourcesDirPath+'/'+resKey );
 			px.fs.writeFileSync(
@@ -82,7 +98,7 @@ window.px2dtGuiEditor.contentsSourceData.resourceMgr = new(function(px, px2dtGui
 			}
 		}
 		cb();
-		return;
+		return true;
 	}
 
 	/**
@@ -202,6 +218,9 @@ window.px2dtGuiEditor.contentsSourceData.resourceMgr = new(function(px, px2dtGui
 	this.removeResource = function( resKey ){
 		_resourceDb[resKey] = undefined;
 		delete( _resourceDb[resKey] );
+		if( px.utils.isDirectory(_resourcesDirPath+'/'+resKey+'/') ){
+			px.utils.rmdir_r( _resourcesDirPath+'/'+resKey+'/' );
+		}
 		return true;
 	}
 

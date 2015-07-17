@@ -1,13 +1,7 @@
 (function(px, $){
-	var $msgBox = $('<div>');
-	$msgBox
-		.css('position', 'fixed')
-		.css('bottom', 0)
-		.css('left', 0)
-		.css('height', 'auto')
-		.css('width', '100%')
-		.css('z-index', 20000)
-	;
+	var $msgBox = $('<div class="theme_ui_px_message">');
+	// $msgBox
+	// ;
 
 	px.message = function( message, opt ){
 		opt = opt || {};

@@ -595,11 +595,12 @@ window.contApp = new (function( px ){
 					.css({
 						// ↓暫定だけど、階層の段をつけた。
 						'padding-left': (function(pageInfo){
-							if( !_sitemap[idx].id.length ){ return '1.5em'; }
-							if( !_sitemap[idx].logical_path.length ){ return '3em' }
-							var rtn = ( (_sitemap[idx].logical_path.split('>').length + 1) * 2)+'em';
+							if( !_sitemap[idx].id.length ){ return '1em'; }
+							if( !_sitemap[idx].logical_path.length ){ return '2em' }
+							var rtn = ( (_sitemap[idx].logical_path.split('>').length + 1) * 1.3)+'em';
 							return rtn;
-						})(_sitemap[idx])
+						})(_sitemap[idx]),
+						'font-size': '12px'
 					})
 					.click( function(){
 						_this.loadPreview( $(this).attr('data-path'), function(){}, {"force":true} );

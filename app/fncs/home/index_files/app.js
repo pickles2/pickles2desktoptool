@@ -22,6 +22,7 @@ window.contApp = new (function(){
 				$('.tpl_home_dir').text( pj.get('home_dir') );
 				$('.tpl_entry_script').text( pj.get('entry_script') );
 				$('.tpl_vcs').text( pj.get('vcs') );
+				$('address.center').text( px.packageJson.pickles2.credit );
 				it.next(arg);
 			} ,
 			function(it, arg){

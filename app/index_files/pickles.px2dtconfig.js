@@ -17,8 +17,8 @@
 
 		$tpl.find('[name=php]').val( px.getDb().commands.php );
 		$tpl.find('[name=git]').val( px.getDb().commands.git );
-		$tpl.find('[name=network_preview_port]').val( px.getDb().network.preview.port );
-		$tpl.find('[name=network_appserver_port]').val( px.getDb().network.appserver.port );
+		$tpl.find('[name=network_preview_port]').val( px.getDb().network.preview.port ).attr({'placeholder':px.packageJson.pickles2.network.preview.port});
+		$tpl.find('[name=network_appserver_port]').val( px.getDb().network.appserver.port ).attr({'placeholder':px.packageJson.pickles2.network.appserver.port});
 		$tpl.find('[name=apps_texteditor]').val( px.getDb().apps.texteditor );
 		$tpl.find('[name=apps_texteditor_for_dir]').val( px.getDb().apps.texteditorForDir );
 

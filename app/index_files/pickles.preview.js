@@ -25,7 +25,7 @@
 		 * ポート番号を取得
 		 */
 		this.getPort = function(){
-			var port = 8080;
+			var port = px.packageJson.pickles2.network.preview.port;
 			var db = px.getDb();
 			if( db.network && db.network.preview && db.network.preview.port ){
 				port = db.network.preview.port;

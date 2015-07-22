@@ -180,3 +180,10 @@ ul.listview li a.current{
 .contents .btn-group button{
 	margin: inherit;
 }
+
+/**
+ * Bootstrap3 Tooltip
+ */
+.tooltip[role=tooltip]{
+	word-wrap: break-word;
+}

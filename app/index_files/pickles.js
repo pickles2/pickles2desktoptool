@@ -5,7 +5,7 @@ new (function($, window){
 
 	/**
 	 * Pickles 2 Desktop Tool のバージョン情報を取得する。
-	 * 
+	 *
 	 * <pre> [バージョン番号のルール]
 	 *    基本
 	 *      メジャーバージョン番号.マイナーバージョン番号.リリース番号
@@ -30,7 +30,7 @@ new (function($, window){
 	 *      普段の開発においてコミットする場合、
 	 *      必ずこの get_version() がこの仕様になっていることを確認すること。
 	 * </pre>
-	 * 
+	 *
 	 * @return string バージョン番号を示す文字列
 	 */
 	this.getVersion = function(){
@@ -38,6 +38,8 @@ new (function($, window){
 	}
 
 	var _packageJson = require('../package.json');
+	this.packageJson = _packageJson;
+
 	var _utils = require('./index_files/_utils.node.js');
 	this.utils = _utils;
 	var _fs = require('fs');
@@ -61,8 +63,8 @@ new (function($, window){
 	this.Keypress = _Keypress;
 
 	var _db = {};
-	var _path_data_dir = (process.env.HOME||process.env.LOCALAPPDATA) + '/.pickles2desktoptool/';
-	var _path_db = (process.env.HOME||process.env.LOCALAPPDATA) + '/.pickles2desktoptool/db.json';
+	var _path_data_dir = (process.env.HOME||process.env.LOCALAPPDATA) + '/'+_packageJson.pickles2.dataDirName+'/';
+	var _path_db = (process.env.HOME||process.env.LOCALAPPDATA) + '/'+_packageJson.pickles2.dataDirName+'/db.json';
 
 	// var _OS = require("os");
 	// console.log(_OS.freemem());//<-free memory
@@ -89,7 +91,9 @@ new (function($, window){
 
 	var _nw_gui = require('nw.gui');
 	// this.server = require('./index_files/px_server_emurator.node.js').init(this,$);
-	var _appName = 'Pickles 2 Desktop Tool';
+	var _appName = _packageJson.window.title;
+	window.document.title = _appName;
+
 	this.progress = new require('./index_files/pickles.progress.js').init(this, $);
 
 	this.textEditor = window.textEditor;
@@ -114,15 +118,19 @@ new (function($, window){
 					"projects":[] ,
 					"network":{
 						"preview":{
-							"port": 8080
+							"port": _packageJson.pickles2.network.preview.port
 						},
 						"appserver":{
-							"port": 8081
+							"port": _packageJson.pickles2.network.appserver.port
 						}
 					}
 				}
-			),
-			{"encoding":"utf8","mode":436,"flag":"w"}
+			) ,
+			{
+				"encoding":"utf8",
+				"mode":436,
+				"flag":"w"
+			}
 		);
 	}
 	_path_db = _fs.realpathSync( _path_db );
@@ -148,7 +156,7 @@ new (function($, window){
 			title: 'システム情報',
 			body: $('<iframe>').attr('src', 'mods/systeminfo/index.html').css({'width':'100%','height':300})
 		});}} ,
-		{"label":"Pickles2 DesktopTool 設定", "cond":"always",        "area":"shoulder", "app":null, "cb": function(){px.editPx2DTConfig();}} ,
+		{"label":_appName+" 設定", "cond":"always",        "area":"shoulder", "app":null, "cb": function(){px.editPx2DTConfig();}} ,
 		{"label":"ヘルプ",               "cond":"always",             "area":"shoulder", "app":null, "cb": function(){px.openHelp();} },
 		{"label":"終了",                 "cond":"always",             "area":"shoulder", "app":null, "cb": function(){px.exit();}}
 	];
@@ -166,7 +174,7 @@ new (function($, window){
 				nativeMenuBar.createMacBuiltin( _appName );
 				win.menu = nativeMenuBar;
 				// win.menu.append(new _nw_gui.MenuItem({
-				// 	type: "normal", 
+				// 	type: "normal",
 				// 	label: 'Item 1',
 				// 	click: function() {
 				// 		console.log('Click on Item 1');
@@ -192,8 +200,8 @@ new (function($, window){
 		if(!_db.network.preview){_db.network.preview = {};}
 		if(!_db.network.appserver){_db.network.appserver = {};}
 		if(!_db.apps){_db.apps = {};}
-		if(!_db.apps.texteditor){_db.apps.texteditor = {};}
-		if(!_db.apps.texteditorForDir){_db.apps.texteditorForDir = {};}
+		if(!_db.apps.texteditor){_db.apps.texteditor = null;}
+		if(!_db.apps.texteditorForDir){_db.apps.texteditorForDir = null;}
 
 		if( !_utils.isDirectory( _path_data_dir+'commands/' ) ){
 			_fs.mkdirSync( _path_data_dir+'commands/' );
@@ -205,7 +213,7 @@ new (function($, window){
 			(function(){
 				var opt = {
 					'title': '初期設定中...',
-					'body': $('<p>Pickles 2 Desktop Tool を初期設定しています。インターネットに接続したまま、しばらくお待ちください。</p>') ,
+					'body': $('<p>'+_appName+' を初期設定しています。インターネットに接続したまま、しばらくお待ちください。</p>') ,
 					'buttons': []
 				};
 				px.utils.exec(
@@ -269,7 +277,7 @@ new (function($, window){
 
 	/**
 	 * プラットフォーム名を得る。
-	 * Pickles2 DesktopTool が動作しているPCのOS名。
+	 * Pickles2 Desktop Tool が動作しているPCのOS名。
 	 */
 	this.getPlatform = function(){
 		return _platform;
@@ -512,6 +520,7 @@ new (function($, window){
 		}else{
 			// プロジェクト選択画面を描画
 			$cont.html( $('script#template-selectProject-page').html() );
+			$cont.find('.cont_top_footer p').text( _packageJson.pickles2.credit );
 
 			var list = this.getProjectList();
 			if( list.length ){
@@ -755,6 +764,10 @@ new (function($, window){
 				$footer   = $('.theme_footer');
 				// $dialog   = $('<div>');
 				$shoulderMenu = $('.theme_shoulder_menu');
+
+				$header.css({
+					'background': _packageJson.pickles2.colors.defaultKeyColor
+				});
 
 				it.next(arg);
 			} ,

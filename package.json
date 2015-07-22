@@ -26,6 +26,21 @@
     "nw": "^0.12.2",
     "node-webkit-builder": "1.0.*"
   },
+  "pickles2":{
+    "network":{
+      "preview":{
+        "port": 58080
+      },
+      "appserver":{
+        "port": 58081
+      }
+    },
+    "dataDirName": ".pickles2desktoptool",
+    "colors": {
+      "defaultKeyColor": "#000"
+    },
+    "credit": "Pickles 2 (C)Tomoya Koyanagi."
+  },
   "window": {
     "title": "Pickles 2 Desktop Tool",
     "toolbar": true,

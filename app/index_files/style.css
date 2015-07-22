@@ -72,19 +72,20 @@ header.theme_header .theme_header-inner{
 	display:block;
 	margin:0;
 	padding:0.6em 1em 0.3em;
-	background-color: #ddd;
-	color: #000;
+	background-color: rgba(255, 255, 255, 0.3);
+	color: #eee;
+	border: 1px solid #bbb;
 	font-weight: normal;
 	text-decoration: none;
 }
 .theme_gmenu ul li a:hover{
-	background-color: #666;
+	background-color: rgba(0, 0, 0, 0.4);
 	color:#f7f7f7;
 }
 .theme_gmenu ul li a.current{
 	font-weight: bold;
 	text-decoration: underline;
-	background-color: #666;
+	background-color: rgba(0, 0, 0, 0.6);
 	color:#f7f7f7;
 }
 
@@ -94,9 +95,9 @@ header.theme_header .theme_header-inner{
 	overflow: hidden;
 }
 .theme_shoulder_menu button{
-	background: #333;
+	background: rgba(0, 0, 0, 0.1);
 	border: none;
-	border-left: 1px solid #999;
+	border-left: 1px solid #fff;
 	position: absolute; top:0; right:0;
 	height: 50px;
 	width: 50px;

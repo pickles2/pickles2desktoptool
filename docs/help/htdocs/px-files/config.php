@@ -4,8 +4,13 @@ return call_user_func( function(){
 	// initialize
 	$conf = new stdClass;
 
+	// config for project.
+	$conf->custom = new stdClass;
+	$conf->custom->packageJson = json_decode( file_get_contents(__DIR__.'/../../../../package.json') );
+	$conf->custom->composerJson = json_decode( file_get_contents(__DIR__.'/../composer.json') );
+
 	// project
-	$conf->name = 'Pickles 2 Desktop Tool - HELP'; // サイト名
+	$conf->name = $conf->custom->packageJson->window->title.' - HELP'; // サイト名
 	$conf->domain = null; // ドメイン
 	$conf->path_controot = '/'; // コンテンツルートディレクトリ
 
@@ -108,7 +113,7 @@ return call_user_func( function(){
 		'picklesFramework2\processors\autoindex\autoindex::exec' ,
 
 		// テーマ
-		'theme'=>'pickles2\themes\pickles\theme::exec' , 
+		'theme'=>'pickles2\themes\pickles\theme::exec' ,
 
 		// Apache互換のSSIの記述を解決する
 		'picklesFramework2\processors\ssi\ssi::exec' ,
@@ -146,19 +151,22 @@ return call_user_func( function(){
 
 	// funcs: Before output
 	$conf->funcs->before_output = [
+
 		// px2-path-resolver - 相対パス・絶対パスを変換して出力する
+		//   options
+		//     string 'to':
+		//       - relate: 相対パスへ変換
+		//       - absolute: 絶対パスへ変換
+		//       - pass: 変換を行わない(default)
+		//     bool 'supply_index_filename':
+		//       - true: 省略されたindexファイル名を補う
+		//       - false: 省略できるindexファイル名を削除
+		//       - null: そのまま (default)
 		'tomk79\pickles2\pathResolver\main::exec('.json_encode(array(
-		  'to' => 'relate',
-		  'supply_index_filename' => true
+			'to' => 'relate',
+			'supply_index_filename' => true
 		)).')' ,
-		  // options
-		  //   string 'to':
-		  //     - relate: 相対パスへ変換
-		  //     - absolute: 絶対パスへ変換
-		  //     - pass: 変換を行わない(default)
-		  //   bool 'supply_index_filename':
-		  //     - true: 省略されたindexファイル名を補う
-		  //     - false: 補わない (default)
+
 	];
 
 

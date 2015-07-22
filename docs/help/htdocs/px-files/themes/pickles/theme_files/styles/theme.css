@@ -18,7 +18,7 @@ pre code{
  * ヘッダー
  */
 .theme_header{
-	background-color: #000;
+	background-color: <?= $px->conf()->custom->packageJson->pickles2->colors->defaultKeyColor ?>;
 	padding:1em 0 1px 0;
 }
 

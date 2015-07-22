@@ -102,6 +102,48 @@ window.contApp = new (function(){
 					;
 				}
 				it.next(arg);
+			} ,
+			function(it, arg){
+				// README.md を表示する
+				var readmePath = null;
+				if( status.gitDirExists ){
+					readmePath = pj.get_realpath_git_root();
+				}
+				var htmlSrc = '<p class="cont_readme_content-no_readme">--- NO README.md ---</p>';
+				if( px.utils.isDirectory(readmePath) ){
+					var filenames = ['README.md','readme.md','README.html','readme.html'];
+					for( var idx in filenames ){
+						if( px.utils.isFile(readmePath+'/'+filenames[idx]) ){
+							var ext = px.utils.getExtension(filenames[idx]);
+							switch(ext){
+								case 'md':
+									htmlSrc = px.fs.readFileSync( readmePath+'/'+filenames[idx] );
+									htmlSrc = htmlSrc.toString();
+									htmlSrc = px.utils.markdown(htmlSrc);
+									break;
+								case 'html':
+								default:
+									htmlSrc = px.fs.readFileSync( readmePath+'/'+filenames[idx] );
+									htmlSrc = htmlSrc.toString();
+									break;
+							}
+							break;
+						}
+					}
+				}
+
+				$('.cont_readme_content')
+					.html('')
+					.append( htmlSrc )
+					.find('a').each(function(){
+						$(this).on('click', function(){
+							px.utils.openURL( $(this).attr('href') );
+							return false;
+						});
+					})
+				;
+
+				it.next(arg);
 			}
 		]).start({});
 

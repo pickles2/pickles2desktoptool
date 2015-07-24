@@ -529,6 +529,17 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 				})(rtn, data.dec);
 			}
 
+			// ビルトイン・アンカーフィールド
+			if( data.anchor ){
+				rtn = (function(html, anchor){
+					var $tmp = $('<div>').html(html);
+					$tmp.find('>*').eq(0).attr({
+						'id': (anchor?anchor:'')
+					});
+					return $tmp.html();
+				})(rtn, data.anchor);
+			}
+
 			return rtn;
 		} // this.bind();
 
@@ -1070,6 +1081,9 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 				var decValue = $editWindow.find('*[data-dec-field-unit] textarea').val();
 				data.dec = decValue;
 
+				var anchorValue = $editWindow.find('*[data-anchor-field-unit] input').val();
+				data.anchor = anchorValue;
+
 				$editWindow.remove();
 				px.closeDialog();
 				px2dtGuiEditor.ui.onEditEnd();
@@ -1189,6 +1203,30 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 						)
 					;
 				})( field, (data.dec?data.dec:'') ) ) )
+			)
+		;
+
+		// ビルトイン・アンカーフィールド
+		$module_editor_canvas
+			.append($('<div>')
+				.attr( {'data-anchor-field-unit': 'data-anchor-field-unit'} )
+				.css( {
+					'border': '1px solid #6d6',
+					'background-color': '#efe',
+					'padding': '1em',
+					'margin': '1em'
+				} )
+				.append($('<h2>')
+					.text( 'アンカー' )
+				)
+				.append( ((function( field, data ){
+					return $('<div>#</div>')
+						.append( $('<input type="text">')
+							.val(data)
+							.css({'width':'80%','min-width':30,'max-width':400})
+						)
+					;
+				})( field, (data.anchor?data.anchor:'') ) ) )
 			)
 		;
 

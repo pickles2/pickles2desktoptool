@@ -79,7 +79,11 @@ window.contApp = new (function(px, $){
 	 */
 	this.publish = function(){
 		var region = prompt('パブリッシュ対象のパスを指定してください。スラッシュから始まるパスで指定します。省略時、すべてのファイルが対象になります。','/');
+		if( region === null ){
+			return true;
+		}
 		// alert(px.php.urlencode(region));
+
 		_this.progressReport.init(
 			_this,
 			$cont,
@@ -96,6 +100,7 @@ window.contApp = new (function(px, $){
 				}
 			}
 		);
+		return true;
 
 		// var $msg = $('<div>');
 		// px.progress.start();

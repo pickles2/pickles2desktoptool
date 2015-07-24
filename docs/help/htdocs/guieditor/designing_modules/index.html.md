@@ -129,6 +129,8 @@ Pickles2 Desktop Tool のGUI編集機能は、個別に設計された小さな�
 
 利用可能なフィールドについては、<a href="../fields/">フィールド一覧</a>のページを参照してください。
 
+`template.html` の代わりに、`template.html.twig` を設置すると、Twigテンプレートエンジンを利用できます。詳しくは、<?= $px->mk_link('../designing_modules_with_tplengines/') ?> を参照ください。
+
 
 #### module.css (または module.css.scss)
 
@@ -176,13 +178,14 @@ thumb.png は、GUI編集画面上での、モジュールのサムネイルと�
 ```
 {
   "name": ".cols (3カラム)",
-  "areaSizeDetection ": "deep"
+  "areaSizeDetection ": "shallow"
 }
 ```
 
 <dl>
 <dt>name</dt><dd>モジュールの名称を設定します。</dd>
-<dt>areaSizeDetection</dt><dd>編集画面でモジュールのサイズを測る方法を指定します。<code>deep</code> (デフォルト)は、モジュールに含まれるすべての要素のサイズを測り、最大値を探します。<code>shallow</code>を指定すると、ルートノードのみのサイズを測ります。</dd>
+<dt>areaSizeDetection</dt><dd>編集画面でモジュールのサイズを測る方法を指定します。<code>deep</code> は、モジュールに含まれるすべての要素のサイズを測り、最大値を探します。<code>shallow</code>を指定すると、ルートノードのみのサイズを測ります。デフォルトは<code>shallow</code>です。</dd>
+<dt>interface</dt><dd>Twigテンプレートエンジンを利用する場合に、入力欄の構造を定義します。詳しくは、<?= $px->mk_link('../designing_modules_with_tplengines/') ?> を参照してください。</dd>
 </dl>
 
 #### README.html (または README.md)

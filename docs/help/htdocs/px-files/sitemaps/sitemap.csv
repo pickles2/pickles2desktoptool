@@ -6,6 +6,7 @@
 "/contents/index.html",,,"コンテンツ編集",,,,,,"1",,,,,"1",
 "/guieditor/index.html",,,"GUI編集",,,,,"/contents/index.html","1",,,,,,
 "/guieditor/designing_modules/index.html",,,"GUIモジュール定義",,,,,"/contents/index.html>/guieditor/index.html","1",,,,,,
+"/guieditor/designing_modules_with_tplengines/index.html",,,"Twigエンジンを用いたGUIモジュール定義",,,,,"/contents/index.html>/guieditor/index.html","1",,,,,,
 "/guieditor/fields/index.html",,,"フィールド一覧",,,,,"/contents/index.html>/guieditor/index.html","1",,,,,,
 "/publish/index.html",,,"パブリッシュ",,,,,,"1",,,,,"1",
 "/other/index.html",,,"その他の機能",,,,,,"1",,,,,"1",

@@ -176,6 +176,8 @@
 
 <p>利用可能なフィールドについては、<a href="../fields/index.html">フィールド一覧</a>のページを参照してください。</p>
 
+<p><code>template.html</code> の代わりに、<code>template.html.twig</code> を設置すると、Twigテンプレートエンジンを利用できます。詳しくは、<a href="../designing_modules_with_tplengines/index.html">Twigエンジンを用いたGUIモジュール定義</a> を参照ください。</p>
+
 <span id="hash_module.css_(または_module.css.scss)"></span><h4>module.css (または module.css.scss)</h4>
 
 <p>モジュールに関連するスタイルシートを記述します。
@@ -217,13 +219,14 @@
 
 <pre><code>{
   "name": ".cols (3カラム)",
-  "areaSizeDetection ": "deep"
+  "areaSizeDetection ": "shallow"
 }
 </code></pre>
 
 <dl>
 <dt>name</dt><dd>モジュールの名称を設定します。</dd>
-<dt>areaSizeDetection</dt><dd>編集画面でモジュールのサイズを測る方法を指定します。<code>deep</code> (デフォルト)は、モジュールに含まれるすべての要素のサイズを測り、最大値を探します。<code>shallow</code>を指定すると、ルートノードのみのサイズを測ります。</dd>
+<dt>areaSizeDetection</dt><dd>編集画面でモジュールのサイズを測る方法を指定します。<code>deep</code> は、モジュールに含まれるすべての要素のサイズを測り、最大値を探します。<code>shallow</code>を指定すると、ルートノードのみのサイズを測ります。デフォルトは<code>shallow</code>です。</dd>
+<dt>interface</dt><dd>Twigテンプレートエンジンを利用する場合に、入力欄の構造を定義します。詳しくは、<a href="../designing_modules_with_tplengines/index.html">Twigエンジンを用いたGUIモジュール定義</a> を参照してください。</dd>
 </dl>
 
 <span id="hash_README.html_(または_README.md)"></span><h4>README.html (または README.md)</h4>
@@ -263,6 +266,7 @@
 <ul>
 <li><a href="../index.html" class="current">GUI編集</a><ul>
 <li><a href="./index.html" class="current">GUIモジュール定義</a></li>
+<li><a href="../designing_modules_with_tplengines/index.html">Twigエンジンを用いたGUIモジュール定義</a></li>
 <li><a href="../fields/index.html">フィールド一覧</a></li>
 </ul>
 </li>

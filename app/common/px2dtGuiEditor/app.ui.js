@@ -49,7 +49,8 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 							.text( row.name )
 							.attr({'href':'javascript:;'})
 							.click(function(){
-								$ulGroups.toggle()
+								$(this).toggleClass('closed');
+								$ulGroups.toggle(100)
 							})
 						)
 						.append($ulGroups)
@@ -66,7 +67,8 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 									.text( group.name )
 									.attr({'href':'javascript:;'})
 									.click(function(){
-										$ulMods.toggle()
+										$(this).toggleClass('closed');
+										$ulMods.toggle(100)
 									})
 								)
 								.append( $ulMods )

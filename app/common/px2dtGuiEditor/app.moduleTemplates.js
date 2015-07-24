@@ -386,7 +386,7 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 			}
 			_this.info = {
 				name: null,
-				areaSizeDetection: 'deep',
+				areaSizeDetection: 'shallow',
 				interface: {}
 			};
 

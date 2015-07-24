@@ -549,7 +549,10 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 						'w':$elm.offset().left+$elm.outerWidth()
 					};
 				}
-				if( areaSizeDetection == 'shallow' ){ console.log(rtn); return rtn; }
+				if( areaSizeDetection == 'shallow' ){
+					// console.log(rtn);
+					return rtn;
+				}
 				var tmp = {};
 				$elm.find('*').each(function(){
 					tmp = {
@@ -578,7 +581,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 				})
 				.append( $('<div>')
 					.addClass('cont_instanceCtrlPanel-module_name')
-					.text(this.moduleTemplates.info.name||this.moduleTemplates.id)
+					.text(this.moduleTemplates&&this.moduleTemplates.info.name||this.moduleTemplates.id)
 				)
 				.width(posInfo.w-posInfo.l)
 				.height(posInfo.h-posInfo.t)
@@ -779,91 +782,93 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					// 	console.log('unmatched content element.');
 					// 	console.log(JSON.stringify(instancePath));
 					// }
-					var $ctrlElm = $('<div>')
-						.addClass('cont_instanceCtrlPanel')
-						.addClass('cont_instanceCtrlPanel-adding_area_loop')
-						// .addClass('cont_instanceCtrlPanel-is_submodule')
-						.text(
-							'ここをダブルクリックして配列要素を追加してください。'
-						)
-						.css({
-							'display':'block',
-							'position':'absolute',
-							'top':  (function($elm){if($elm.size()){return $elm.offset().top  + 5;}return 0;})($elm),
-							'left': (function($elm){if($elm.size()){return $elm.offset().left + 0;}return 0;})($elm),
-							'z-index':0,
-							'width': $elm.width(),
-							'height': $elm.height(),
-							'box-sizing': 'border-box',
-							'opacity': 0
-						})
-						.attr({
-							'data-guieditor-mod-id': this.moduleTemplates.id,
-							'data-guieditor-sub-mod-name': fieldName,
-							'data-guieditor-cont-data-path': instancePath
-						})
-						.bind('mouseover', function(e){
-							e.stopPropagation();
-							$(this).addClass('cont_instanceCtrlPanel-hovered');
-							$(this).css({'opacity':'1'});
-						})
-						.bind('mouseout', function(e){
-							e.stopPropagation();
-							$(this).removeClass('cont_instanceCtrlPanel-hovered');
-							$(this).css({'opacity':'0'});
-						})
-						.bind('drop', function(e){
-							var method = event.dataTransfer.getData("method");
-							if( method === 'moveTo' ){
-								// これはloop要素を並べ替えるための moveTo です。
-								// その他のインスタンスをここに移動したり、作成することはできません。
-								var moveFrom = event.dataTransfer.getData("data-guieditor-cont-data-path");
-								var moveTo = $(this).attr('data-guieditor-cont-data-path');
-								function removeNum(str){
-									return str.replace(new RegExp('[0-9]+$'),'');
-								}
-								if( removeNum(moveFrom) !== removeNum(moveTo) ){
-									px.message('並べ替え以外の移動操作はできません。');
+					if( this.moduleTemplates.templateType == 'px2dtGuiEditor' ){
+						var $ctrlElm = $('<div>')
+							.addClass('cont_instanceCtrlPanel')
+							.addClass('cont_instanceCtrlPanel-adding_area_loop')
+							// .addClass('cont_instanceCtrlPanel-is_submodule')
+							.text(
+								'ここをダブルクリックして配列要素を追加してください。'
+							)
+							.css({
+								'display':'block',
+								'position':'absolute',
+								'top':  (function($elm){if($elm.size()){return $elm.offset().top  + 5;}return 0;})($elm),
+								'left': (function($elm){if($elm.size()){return $elm.offset().left + 0;}return 0;})($elm),
+								'z-index':0,
+								'width': $elm.width(),
+								'height': $elm.height(),
+								'box-sizing': 'border-box',
+								'opacity': 0
+							})
+							.attr({
+								'data-guieditor-mod-id': this.moduleTemplates.id,
+								'data-guieditor-sub-mod-name': fieldName,
+								'data-guieditor-cont-data-path': instancePath
+							})
+							.bind('mouseover', function(e){
+								e.stopPropagation();
+								$(this).addClass('cont_instanceCtrlPanel-hovered');
+								$(this).css({'opacity':'1'});
+							})
+							.bind('mouseout', function(e){
+								e.stopPropagation();
+								$(this).removeClass('cont_instanceCtrlPanel-hovered');
+								$(this).css({'opacity':'0'});
+							})
+							.bind('drop', function(e){
+								var method = event.dataTransfer.getData("method");
+								if( method === 'moveTo' ){
+									// これはloop要素を並べ替えるための moveTo です。
+									// その他のインスタンスをここに移動したり、作成することはできません。
+									var moveFrom = event.dataTransfer.getData("data-guieditor-cont-data-path");
+									var moveTo = $(this).attr('data-guieditor-cont-data-path');
+									function removeNum(str){
+										return str.replace(new RegExp('[0-9]+$'),'');
+									}
+									if( removeNum(moveFrom) !== removeNum(moveTo) ){
+										px.message('並べ替え以外の移動操作はできません。');
+										return;
+									}
+
+									px2dtGuiEditor.contentsSourceData.moveInstanceTo( moveFrom, moveTo, function(){
+										// px.message('インスタンスを移動しました。');
+										px2dtGuiEditor.ui.onEditEnd();
+									} );
 									return;
 								}
-
-								px2dtGuiEditor.contentsSourceData.moveInstanceTo( moveFrom, moveTo, function(){
-									// px.message('インスタンスを移動しました。');
-									px2dtGuiEditor.ui.onEditEnd();
-								} );
+								px.message('ダブルクリックしてください。ドロップできません。');
 								return;
-							}
-							px.message('ダブルクリックしてください。ドロップできません。');
-							return;
-						})
-						.bind('dragenter', function(e){
-							e.stopPropagation();
-							// $(this).addClass('cont_instanceCtrlPanel-dragentered');
-							// $(this).css({'opacity':'1'});
-						})
-						.bind('dragleave', function(e){
-							e.stopPropagation();
-							$(this).removeClass('cont_instanceCtrlPanel-dragentered');
-							$(this).css({'opacity':'0'});
-						})
-						.bind('dragover', function(e){
-							e.preventDefault();
-							$(this).addClass('cont_instanceCtrlPanel-dragentered');
-							$(this).css({'opacity':'1'});
-						})
-						.bind('click', function(e){
-							// 特に処理なし
-						})
-						.bind('dblclick', function(e){
-							var modId = $(this).attr("data-guieditor-mod-id");
-							var subModName = $(this).attr("data-guieditor-sub-mod-name");
-							px2dtGuiEditor.contentsSourceData.addInstance( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
-								px2dtGuiEditor.ui.onEditEnd();
-							}, subModName );
-							e.preventDefault();
-						})
-					;
-					$ctrlPanel.append( $ctrlElm );
+							})
+							.bind('dragenter', function(e){
+								e.stopPropagation();
+								// $(this).addClass('cont_instanceCtrlPanel-dragentered');
+								// $(this).css({'opacity':'1'});
+							})
+							.bind('dragleave', function(e){
+								e.stopPropagation();
+								$(this).removeClass('cont_instanceCtrlPanel-dragentered');
+								$(this).css({'opacity':'0'});
+							})
+							.bind('dragover', function(e){
+								e.preventDefault();
+								$(this).addClass('cont_instanceCtrlPanel-dragentered');
+								$(this).css({'opacity':'1'});
+							})
+							.bind('click', function(e){
+								// 特に処理なし
+							})
+							.bind('dblclick', function(e){
+								var modId = $(this).attr("data-guieditor-mod-id");
+								var subModName = $(this).attr("data-guieditor-sub-mod-name");
+								px2dtGuiEditor.contentsSourceData.addInstance( modId, $(this).attr('data-guieditor-cont-data-path'), function(){
+									px2dtGuiEditor.ui.onEditEnd();
+								}, subModName );
+								e.preventDefault();
+							})
+						;
+						$ctrlPanel.append( $ctrlElm );
+					}
 				}
 			} // for
 		} // this.drawCtrlPanels()
@@ -944,7 +949,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 			if( instPathMemo.length <= 1 ){ continue; }
 			var contData = window.px2dtGuiEditor.contentsSourceData.get(instPathMemo.join('/'));
 			var mod = window.px2dtGuiEditor.moduleTemplates.get(contData.modId, contData.subModName);
-			var label = mod.info.name||mod.id;
+			var label = mod&&mod.info.name||mod.id;
 			if(instPathMemo.length==2){
 				// bowl自体だったら
 				label = instPathMemo[instPathMemo.length-1];
@@ -982,13 +987,13 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 			for(var child in children){
 				var contData = window.px2dtGuiEditor.contentsSourceData.get(children[child]);
 				var mod = window.px2dtGuiEditor.moduleTemplates.get(contData.modId, contData.subModName);
-				var label = mod.info.name||mod.id;
+				var label = mod&&mod.info.name||mod.id;
 				if( mod.subModName ){
 					// サブモジュールだったら
 					label = '@'+mod.subModName;
 				}
 				$ulChildren.append( $('<li>')
-					.append( $('<a href="javascript:;">')
+					.append( $('<a href="javascript:;" style="white-space:nowrap;">')
 						.attr({
 							'data-guieditor-cont-data-path': children[child]
 						})
@@ -1188,7 +1193,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 		;
 
 		px.dialog({
-			"title": modTpl.info.name||data.modId ,
+			"title": modTpl&&modTpl.info.name||data.modId ,
 			"body": $editWindow ,
 			"buttons":[]
 		});

@@ -3,6 +3,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 	var $preview,
 		$previewDoc,
 		$ctrlPanel,
+		$pageinfo,
 		$instancePath,
 		$palette,
 		$menubar,
@@ -23,6 +24,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 		$preview = $('iframe.cont_field-preview');
 		$previewDoc = $($preview[0].contentWindow.document);
 		$ctrlPanel = $('.cont_field-ctrlpanel');
+		$pageinfo = $('.cont_field-pageinfo');
 		$instancePath = $('.cont_field-instance_path');
 		$palette = $('.cont_modulelist');
 		$menubar = $('.cont_field-menubar');
@@ -262,6 +264,20 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 
 		$previewDoc = $($preview[0].contentWindow.document);
 
+		(function(){
+			// ページ情報表示を更新
+			var pj = px.getCurrentProject();
+			var url = $preview[0].contentWindow.document.location.href;
+			var path = url.replace(new RegExp('^https?\\:\\/\\/[^\\/]+\\/','g'), '/');
+			var parsedPath = px.utils.parsePath( path );
+			var pageInfo = pj.site.getPageInfo(path);
+
+			$pageinfo
+				.append( $('<div>').text('title: '+pageInfo.title) )
+				.append( $('<div>').text('path: '+pageInfo.path) )
+			;
+		})();
+
 		this.resizeEvent( cb );
 		return;
 	}
@@ -344,7 +360,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 						.append( $('<div>')
 							.text(
 								// instancePathNext +
-								'ここに新しいモジュールをドラッグしてください。'
+								'(+) ここにモジュールをドラッグしてください。'
 							)
 							.css({
 								'overflow':'hidden',
@@ -707,7 +723,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 						.addClass('cont_instanceCtrlPanel')
 						.addClass('cont_instanceCtrlPanel-adding_area_module')
 						.text(
-							'ここに新しいモジュールをドラッグしてください。'
+							'(+) ここにモジュールをドラッグしてください。'
 						)
 						.css({
 							'display':'block',

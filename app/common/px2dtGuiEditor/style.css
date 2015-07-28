@@ -47,6 +47,19 @@ GUI編集フィールド
 	height:100%;
 }
 
+.cont_field .cont_field-pageinfo{
+	position: fixed; left: 10px; top: 10px;
+	border: 1px solid #999;
+	border-radius: 4px;
+	background: #f8f8f8;
+	padding: 2px 10px;
+	font-size: 11px;
+	opacity: 0.5;
+}
+.cont_field .cont_field-pageinfo:hover{
+	opacity: 1;
+}
+
 .cont_field .cont_field-instance_path{
 	position:fixed; left:0; bottom:0;
 	min-width:1em;

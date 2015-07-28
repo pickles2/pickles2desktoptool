@@ -139,6 +139,7 @@ window.px2dtGuiEditor = new (function(px){
 				template_editor += '		<div class="cont_field">';
 				template_editor += '			<iframe class="cont_field-preview"></iframe>';
 				template_editor += '			<div class="cont_field-ctrlpanel"></div>';
+				template_editor += '			<div class="cont_field-pageinfo"></div>';
 				template_editor += '			<div class="cont_field-instance_path"></div>';
 				template_editor += '			<div class="cont_field-menubar"></div>';
 				template_editor += '		</div>';
@@ -146,8 +147,7 @@ window.px2dtGuiEditor = new (function(px){
 				template_editor += '		</div>';
 				template_editor += '	</div><!-- / .cont_editorframe-preview -->';
 				template_editor += '	<div class="cont_editorframe-ctrlpanel">';
-				template_editor += '		<div class="cont_modulelist">';
-				template_editor += '		</div>';
+				template_editor += '		<div class="cont_modulelist"></div>';
 				template_editor += '		<div class="cont_btns">';
 				template_editor += '			<ul>';
 				// template_editor += '				<li><button class="cont_btn_save">保存する</button></li>';

@@ -159,13 +159,6 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				}
 			}
 		);
-		// window.px.utils.spawn(px.cmd('php'),
-		// 	[
-		// 		this.get('path') + '/' + this.get('entry_script'),
-		// 		cmd
-		// 	] ,
-		// 	opts
-		// );
 		return this;
 	}
 
@@ -401,7 +394,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 
 	/**
 	 * gitディレクトリの絶対パスを得る
-	 * 
+	 *
 	 * @return string gitディレクトリのパス(.git の親ディレクトリ)
 	 */
 	this.get_realpath_git_root = function(){
@@ -422,7 +415,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 
 	/**
 	 * composerのルートの絶対パスを得る
-	 * 
+	 *
 	 * @return string composer のルートディレクトリのパス(composer.json の親ディレクトリ)
 	 */
 	this.get_realpath_composer_root = function(){
@@ -444,7 +437,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 
 	/**
 	 * npmのルートの絶対パスを得る
-	 * 
+	 *
 	 * @return string npm のルートディレクトリのパス(package.json の親ディレクトリ)
 	 */
 	this.get_realpath_npm_root = function(){
@@ -466,7 +459,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 
 	/**
 	 * コンテンツルートの絶対パスを得る
-	 * 
+	 *
 	 * @return string コンテンツルートディレクトリの絶対パス(.px_execute.php の親ディレクトリ)
 	 */
 	this.get_realpath_controot = function(){
@@ -481,7 +474,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 
 	/**
 	 * directory_index(省略できるファイル名) の一覧を得る。
-	 * 
+	 *
 	 * @return array ディレクトリインデックスの一覧
 	 */
 	this.get_directory_index = function(){
@@ -501,7 +494,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 
 	/**
 	 * directory_index のいずれかにマッチするためのpregパターン式を得る。
-	 * 
+	 *
 	 * @return string pregパターン
 	 */
 	this.get_directory_index_preg_pattern = function(){
@@ -517,7 +510,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 
 	/**
 	 * 最も優先されるインデックスファイル名を得る。
-	 * 
+	 *
 	 * @return string 最も優先されるインデックスファイル名
 	 */
 	this.get_directory_index_primary = function(){

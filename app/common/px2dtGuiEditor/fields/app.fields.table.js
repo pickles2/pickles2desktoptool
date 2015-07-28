@@ -8,8 +8,8 @@ window.px2dtGuiEditor.fieldDefinitions.table = _.defaults( new (function( px, px
 	 */
 	function parseResource( realpathSelected ){
 		var tmpResInfo = {};
-		tmpResInfo.realpath = JSON.parse( JSON.stringify( realpathSelected ) );
-		tmpResInfo.ext = px.utils.getExtension( tmpResInfo.realpath ).toLowerCase();
+		var realpath = JSON.parse( JSON.stringify( realpathSelected ) );
+		tmpResInfo.ext = px.utils.getExtension( realpath ).toLowerCase();
 		switch( tmpResInfo.ext ){
 			case 'csv':                          tmpResInfo.type = 'text/csv';  break;
 			case 'doc':                          tmpResInfo.type = 'application/msword';  break;
@@ -204,7 +204,7 @@ window.px2dtGuiEditor.fieldDefinitions.table = _.defaults( new (function( px, px
 		var realpathSelected = $dom.find('input[name='+mod.name+']').val();
 		if( realpathSelected ){
 			var tmpResInfo = parseResource( realpathSelected );
-			_resMgr.updateResource( data.resKey, tmpResInfo );
+			_resMgr.updateResource( data.resKey, tmpResInfo, realpathSelected );
 		}else if( data.resKey ){
 			_resMgr.resetBase64FromBin( data.resKey );
 		}

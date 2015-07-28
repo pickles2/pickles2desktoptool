@@ -8,8 +8,8 @@ window.px2dtGuiEditor.fieldDefinitions.image = _.defaults( new (function( px, px
 	 */
 	function parseResource( realpathSelected, res ){
 		var tmpResInfo = res || {};
-		tmpResInfo.realpath = JSON.parse( JSON.stringify( realpathSelected ) );
-		tmpResInfo.ext = px.utils.getExtension( tmpResInfo.realpath ).toLowerCase();
+		var realpath = JSON.parse( JSON.stringify( realpathSelected ) );
+		tmpResInfo.ext = px.utils.getExtension( realpath ).toLowerCase();
 		switch( tmpResInfo.ext ){
 			case 'gif':                          tmpResInfo.type = 'image/gif';  break;
 			case 'png':                          tmpResInfo.type = 'image/png';  break;
@@ -153,7 +153,7 @@ window.px2dtGuiEditor.fieldDefinitions.image = _.defaults( new (function( px, px
 		}
 		resInfo.publicFilename = $dom.find('input[name='+mod.name+'-publicFilename]').val();
 
-		_resMgr.updateResource( data.resKey, resInfo );
+		_resMgr.updateResource( data.resKey, resInfo, realpathSelected );
 
 		// var res = _resMgr.getResource( data.resKey );
 		data.path = _resMgr.getResourcePublicPath( data.resKey );

@@ -135,24 +135,26 @@ window.px2dtGuiEditor.contentsSourceData.resourceMgr = new(function(px, px2dtGui
 	 * @param  {string} resKey  Resource Key
 	 * @param  {object} resInfo Resource Information.
 	 * <dl>
-	 * <dt>realpath</dt><dd>ファイルが置かれていた絶対パス</dd>
 	 * <dt>ext</dt><dd>ファイル拡張子名。</dd>
 	 * <dt>type</dt><dd>mimeタイプ。</dd>
 	 * <dt>base64</dt><dd>ファイルのBase64エンコードされた値</dd>
 	 * <dt>publicFilename</dt><dd>公開時のファイル名</dd>
 	 * <dt>isPrivateMaterial</dt><dd>非公開ファイル。</dd>
 	 * </dl>
+	 * @param  {string} realpath Resource Realpath. - ファイルが置かれていた絶対パス
 	 * @return {boolean}        always true.
 	 */
-	this.updateResource = function( resKey, resInfo ){
+	this.updateResource = function( resKey, resInfo, realpath ){
 		if( typeof(_resourceDb[resKey]) !== typeof({}) ){
 			// 未登録の resKey
 			return false;
 		}
 		_resourceDb[resKey] = resInfo;
 
-		var bin = px.fs.readFileSync( _resourceDb[resKey].realpath, {} );
-		_resourceDb[resKey].base64 = px.utils.base64encode( bin );
+		if(realpath){
+			var bin = px.fs.readFileSync( realpath, {} );
+			_resourceDb[resKey].base64 = px.utils.base64encode( bin );
+		}
 
 		return true;
 	}

@@ -151,6 +151,7 @@ InstanceTreeViewと共用。
 	overflow: hidden;
 	color: #000;
 	clear: both;
+	font-family: Meiryo, "Hiragino Kaku Gothic ProN", Verdana, sans-serif;
 	font-size: 9px;
 	white-space: nowrap;
 	text-align: center;

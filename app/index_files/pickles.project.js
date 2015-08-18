@@ -224,13 +224,27 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	 * コンテンツパスから専有リソースディレクトリパスを探す
 	 */
 	this.getContentFilesByPageContent = function( contentPath ){
-		var rtn = contentPath;
-		rtn = px.utils.trim_extension( rtn );
-		if( this.isContentDoubleExtension(contentPath) ){
-			rtn = px.utils.trim_extension( rtn );
-		}
-		rtn += '_files/';
+		var conf = this.getConfig();
+		var rtn = conf.path_files;
+		var $data = {
+			'dirname': px.utils.dirname(contentPath),
+			'filename': px.utils.basename(px.utils.trim_extension(contentPath)),
+			'ext': px.utils.getExtension(contentPath).toLowerCase(),
+		};
+		rtn = rtn.replace( '{$dirname}', $data['dirname'], rtn );
+		rtn = rtn.replace( '{$filename}', $data['filename'], rtn );
+		rtn = rtn.replace( '{$ext}', $data['ext'], rtn );
+		rtn = rtn.replace( /^\/*/, '/', rtn );
+		rtn = rtn.replace( /\/*$/, '', rtn )+'/';
 		return rtn;
+
+		// var rtn = contentPath;
+		// rtn = px.utils.trim_extension( rtn );
+		// if( this.isContentDoubleExtension(contentPath) ){
+		// 	rtn = px.utils.trim_extension( rtn );
+		// }
+		// rtn += '_files/';
+		// return rtn;
 	}
 
 	/**
@@ -624,7 +638,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		var pathInfo = px.utils.parsePath( this.get_realpath_controot() + contPath );
 		var prop = {}
 		prop.realpath_cont = pathInfo.path;
-		prop.realpath_resource_dir = pathInfo.dirname + '/' + pathInfo.basenameExtless + '_files/';
+		prop.realpath_resource_dir = this.get_realpath_controot() + this.getContentFilesByPageContent(contPath);
 		prop.proc_type = opt.proc_type;
 		if( prop.proc_type == 'md' ){
 			prop.realpath_cont += '.'+prop.proc_type;
@@ -659,7 +673,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			function(it, prop){
 				// リソースディレクトリを作る
 				if( !px.utils.isDirectory( prop.realpath_resource_dir ) ){
-					px.fs.mkdirSync( prop.realpath_resource_dir );
+					px.utils.mkdirAll( prop.realpath_resource_dir );
 				}
 				if( prop.proc_type == 'html.gui' ){
 					px.fs.mkdirSync( prop.realpath_resource_dir + '/guieditor.ignore/' );

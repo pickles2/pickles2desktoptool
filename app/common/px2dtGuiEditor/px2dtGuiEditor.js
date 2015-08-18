@@ -126,11 +126,14 @@ window.px2dtGuiEditor = new (function(px){
 				_this.contPath = _pj.findPageContent( _param_page_path );
 				var realpath = px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+'/'+_this.contPath;
 				var pathInfo = px.utils.parsePath( _this.contPath );
-				_this.contFilesDirPath = px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+'/'+pathInfo.dirname+'/'+pathInfo.basenameExtless+'_files/';
+				_pj.px2proj.path_files(_this.contPath, '', function(value){
+					_this.contFilesDirPath = px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+value;
+					// console.log(_this.contFilesDirPath);
 
-				_this.contentsSourceData.init( realpath, _this.contFilesDirPath, function(){
-					it.next();
-				} );
+					_this.contentsSourceData.init( realpath, _this.contFilesDirPath, function(){
+						it.next();
+					} );
+				});
 			} ,
 			function(it){
 				var template_editor = '';
@@ -300,11 +303,14 @@ window.px2dtGuiEditor = new (function(px){
 				_this.contPath = _pj.findPageContent( _param_page_path );
 				var realpath = px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+'/'+_this.contPath;
 				var pathInfo = px.utils.parsePath( _this.contPath );
-				_this.contFilesDirPath = px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+'/'+pathInfo.dirname+'/'+pathInfo.basenameExtless+'_files/';
+				_pj.px2proj.path_files(_this.contPath, '', function(value){
+					_this.contFilesDirPath = px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+value;
+					// console.log(_this.contFilesDirPath);
 
-				_this.contentsSourceData.init( realpath, _this.contFilesDirPath, function(){
-					it.next();
-				} );
+					_this.contentsSourceData.init( realpath, _this.contFilesDirPath, function(){
+						it.next();
+					} );
+				});
 			} ,
 			// function(it){
 			// 	_this.ui.initField( function(){

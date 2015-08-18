@@ -56,9 +56,7 @@
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_ページの情報を出力する">ページの情報を出力する</a></li>
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_ページ名を出力する">ページ名を出力する</a><ul style="margin:0; padding:0 0 0 2em;"><li style="list-style-type:disc; display:list-item;"><a href="#hash_メタタグ_descriptionを出力する">メタタグ descriptionを出力する</a></li>
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_メタタグkeywordsを出力する">メタタグkeywordsを出力する</a></li>
-<li style="list-style-type:disc; display:list-item;"><a href="#hash_ページ名(h1用)を出力する">ページ名(h1用)を出力する</a></li></ul>
-</li></ul>
-</li></ul>
+<li style="list-style-type:disc; display:list-item;"><a href="#hash_ページ名(h1用)を出力する">ページ名(h1用)を出力する</a></li></ul></li></ul></li><li style="list-style-type:disc; display:list-item;"><a href="#hash_GUI編集のためのコンテンツエリア指定">GUI編集のためのコンテンツエリア指定</a></li></ul>
 </div>
 <!-- / == autoindex == -->
 
@@ -276,6 +274,18 @@ Pickles Framework では、1サイトに複数のテーマを定義すること�
 </div>
 
 <p>この他にも、サイトマップに定義されたすべての項目にアクセスすることができます。</p>
+
+<span id="hash_GUI編集のためのコンテンツエリア指定"></span><h2>GUI編集のためのコンテンツエリア指定</h2>
+
+<p>Pickles2 Desktop Tool のGUI編集機能は、HTML上の属性値からコンテンツエリアを識別します。</p>
+
+<p>デフォルトでは、セレクタ <code>.contents</code> でマッチする要素をbowl(コンテンツエリア)として扱い、各bowlの名前は要素の <code>id</code> 属性値から採用します(<code>id</code>属性がない場合は、<code>main</code>が省略されているものとします)。</p>
+
+<p>この挙動は、Pickles2のコンフィグで変更することができます。次の例は、属性 <code>data-px2-contents</code> がある要素をbowlとし、その値を bowl名 と解釈するようにしたものです。</p>
+
+<pre><code>$conf-&gt;plugins-&gt;px2dt-&gt;contents_area_selector = '[data-px2-contents]';//←コンテンツエリアを識別するセレクタ(複数の要素がマッチしてもよい)
+$conf-&gt;plugins-&gt;px2dt-&gt;contents_bowl_name_by = 'data-px2-contents';//←コンテンツエリアのbowl名を指定する属性名
+</code></pre>
 						</div>
 						<div class="theme_breadcrumb"><ul><li><a href="../index.html">ヘルプトップ</a></li><li><span>テーマ編集</span></li></ul></div>
 					</div>

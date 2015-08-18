@@ -222,3 +222,15 @@ HTML特殊文字に加え、改行コードを改行タグに置き換える必�
 <p>この他にも、サイトマップに定義されたすべての項目にアクセスすることができます。</p>
 
 
+## GUI編集のためのコンテンツエリア指定
+
+Pickles2 Desktop Tool のGUI編集機能は、HTML上の属性値からコンテンツエリアを識別します。
+
+デフォルトでは、セレクタ `.contents` でマッチする要素をbowl(コンテンツエリア)として扱い、各bowlの名前は要素の `id` 属性値から採用します(`id`属性がない場合は、`main`が省略されているものとします)。
+
+この挙動は、Pickles2のコンフィグで変更することができます。次の例は、属性 `data-px2-contents` がある要素をbowlとし、その値を bowl名 と解釈するようにしたものです。
+
+```
+$conf->plugins->px2dt->contents_area_selector = '[data-px2-contents]';//←コンテンツエリアを識別するセレクタ(複数の要素がマッチしてもよい)
+$conf->plugins->px2dt->contents_bowl_name_by = 'data-px2-contents';//←コンテンツエリアのbowl名を指定する属性名
+```

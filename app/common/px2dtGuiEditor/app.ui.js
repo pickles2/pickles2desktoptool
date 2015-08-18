@@ -16,6 +16,17 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 	var _Keypress = {};
 	this.Keypress = _Keypress;
 
+	var _px2DtConfig = px.getCurrentProject().getPx2DTConfig();
+	var _contentsAreaSelector = '.contents';
+	var _contentsBowlNameBy = 'id';
+	if( _px2DtConfig.contents_area_selector ){
+		_contentsAreaSelector = _px2DtConfig.contents_area_selector;
+	}
+	if( _px2DtConfig.contents_bowl_name_by ){
+		_contentsBowlNameBy = _px2DtConfig.contents_bowl_name_by;
+	}
+
+
 	/**
 	 * フィールド初期化
 	 */
@@ -1304,9 +1315,9 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 
 		$ctrlPanel.html('');
 		_this.unselectInstance();
-		$previewDoc.find('.contents').each(function(){
+		$previewDoc.find( _contentsAreaSelector ).each(function(){
 			$(this).html('');
-			var id = $(this).attr('id')||'main';
+			var id = $(this).attr(_contentsBowlNameBy)||'main';
 			px2dtGuiEditor.contentsSourceData.initBowlData(id);
 			var data = px2dtGuiEditor.contentsSourceData.getBowlData( id );
 

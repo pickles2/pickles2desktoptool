@@ -40,6 +40,12 @@ new (function($, window){
 	var _mkdirp = require('mkdirp');
 	this.mkdirp = _mkdirp;
 
+	var _glob = require('glob');
+	this.glob = _glob;
+
+	var _searchInDir = require('node-search-in-directory');
+	this.searchInDir = _searchInDir;
+
 	var _appServer = require('./index_files/app_server.js');
 
 	var _px2agent = require('px2agent');
@@ -135,6 +141,7 @@ new (function($, window){
 		{"label":"git",                  "cond":"homeDirExists",      "area":"shoulder", "app":"fncs/git/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"プレビュー",           "cond":"pxStandby",          "area":"shoulder", "app":"fncs/preview/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"コンテンツを移動する", "cond":"pxStandby",          "area":"shoulder", "app":"fncs/movecontents/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"検索",               "cond":"pxStandby",          "area":"shoulder", "app":"fncs/search/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"GUIコンテンツ一括更新","cond":"pxStandby",          "area":"shoulder", "app":"fncs/rebuild_guiedit_contents/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"キャッシュを消去",     "cond":"pxStandby",          "area":"shoulder", "app":"fncs/clearcache/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		// {"label":"Reload(dev)",          "cond":"always", "cb": function(){window.location.href='index.html?';}} ,

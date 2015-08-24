@@ -50,8 +50,21 @@ window.contApp = new (function(px, $){
 								var html = window.twig({
 									data: src
 								}).render(tplDataObj);
+								var $html = $(html);
+								$html.find('a[data-role=openInFinder]')
+									.click(function(){
+										px.utils.openURL( px.php.dirname($(this).attr('data-file-path')) );
+										return false;
+									})
+								;
+								$html.find('a[data-role=open]')
+									.click(function(){
+										px.utils.openURL( $(this).attr('data-file-path') );
+										return false;
+									})
+								;
 
-								$results.append(html);
+								$results.append($html);
 							} ,
 							'error': function( file, error ){
 							} ,

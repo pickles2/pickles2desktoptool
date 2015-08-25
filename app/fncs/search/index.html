@@ -27,9 +27,15 @@
 		<script id="template-search-form" type="text/template">
 			<form name="cont_searchform" action="javascript:;" method="get">
 				<div class="input-group">
-					<input type="text" name="keyword" value="TODO" class="form-control" placeholder="Search for..." />
+					<!--
+						Rubyのアノテーションコメントに倣い、デフォルトを TODO: とした。
+					-->
+					<input type="text" name="keyword" value="TODO:" class="form-control" placeholder="Search for..." />
+					<span class="input-group-addon"><label><input type="checkbox" name="options-regexp" /> RegExp</label></span>
+					<span class="input-group-addon"><label><input type="checkbox" name="options-ignorecase" /> ignoreCase</label></span>
+					<span class="input-group-addon"><label><input type="checkbox" name="options-matchfilename" /> matchFileName</label></span>
 					<span class="input-group-btn">
-						<button class="btn btn-primary" type="submit">検索</button>
+						<button class="btn btn-primary" type="submit">検索する</button>
 					</span>
 				</div><!-- /input-group -->
 				<div class="input-group">

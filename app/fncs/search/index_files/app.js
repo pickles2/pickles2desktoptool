@@ -48,8 +48,11 @@ window.contApp = new (function(px, $){
 						finTargets['target'],
 						{
 							'keyword': keyword ,
-							'target': finTargets['filter'],
+							'filter': finTargets['filter'],
 							'ignore': finTargets['ignore'],
+							'allowRegExp': finTargets.allowRegExp,
+							'ignoreCase': finTargets.ignoreCase,
+							'matchFileName': finTargets.matchFileName,
 							'progress': function( done, max ){
 								targetCount = max;
 								var per = px.php.intval(done/max*100);
@@ -116,7 +119,14 @@ window.contApp = new (function(px, $){
 	}
 
 	function decideTargets( $form ){
-		var rtn = {'target': [],'filter':[], 'ignore': []};
+		var rtn = {
+			'target': [],
+			'filter':[],
+			'ignore': [],
+			'allowRegExp': false,
+			'ignoreCase': false,
+			'matchFileName': false
+		};
 
 		var targetDir = $form.find('select[name=target-dir]').val();
 		switch(targetDir){
@@ -178,6 +188,15 @@ window.contApp = new (function(px, $){
 			setIgnore( 'packages', pj.get_realpath_npm_root()+'package.json' );
 		}
 
+		if( $form.find('input[name=options-regexp]:checked').size() ){
+			rtn.allowRegExp = true;
+		}
+		if( $form.find('input[name=options-ignorecase]:checked').size() ){
+			rtn.ignoreCase = true;
+		}
+		if( $form.find('input[name=options-matchfilename]:checked').size() ){
+			rtn.matchFileName = true;
+		}
 
 		return rtn;
 	}

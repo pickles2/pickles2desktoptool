@@ -43,8 +43,8 @@ new (function($, window){
 	var _glob = require('glob');
 	this.glob = _glob;
 
-	var _searchInDir = require('node-search-in-directory');
-	this.searchInDir = _searchInDir;
+	var _SearchInDir = require('node-search-in-directory');
+	this.SearchInDir = _SearchInDir;
 
 	var _appServer = require('./index_files/app_server.js');
 

@@ -37,17 +37,19 @@ window.contApp = new (function(px, $){
 					;
 					updateResultsProgress();
 					$progress.html( $('#template-progress').html() ).show();
+
+
 					var keyword = $(this).find('[name=keyword]').val();
-					// alert(keyword);
+					var finTargets = decideTargets( $(this) );
+					console.log(finTargets);
+
+					// 検索を実施
 					SinD = new px.SearchInDir(
-						[
-							pj.get('path')+'/**/*'
-						],
+						finTargets['target'],
 						{
 							'keyword': keyword ,
-							'ignore': [
-								new RegExp('^'+px.php.preg_quote(pj.get('path')+'/vendor/'))
-							],
+							'target': finTargets['filter'],
+							'ignore': finTargets['ignore'],
 							'progress': function( done, max ){
 								targetCount = max;
 								var per = px.php.intval(done/max*100);
@@ -111,6 +113,73 @@ window.contApp = new (function(px, $){
 
 	function updateResultsProgress(){
 		$resultsProgress.html(targetCount + 'ファイル中、' + hitCount + 'ファイルがヒット')
+	}
+
+	function decideTargets( $form ){
+		var rtn = {'target': [],'filter':[], 'ignore': []};
+
+		var targetDir = $form.find('select[name=target-dir]').val();
+		switch(targetDir){
+			case 'home_dir':
+				rtn['target'].push(px.fs.realpathSync(pj.get('path')+'/'+pj.get('home_dir'))+'/**/*');
+				break;
+			case 'contents_comment':
+				rtn['target'].push(px.fs.realpathSync(pj.get('path'))+'/**/*');
+				rtn['filter'].push( new RegExp( px.php.preg_quote('/comments.ignore/comment.') ) );
+				break;
+			case 'sitemaps':
+				rtn['target'].push(px.fs.realpathSync(pj.get('path')+'/'+pj.get('home_dir')+'/sitemaps')+'/**/*');
+				break;
+			case 'sys-caches':
+				rtn['target'].push(px.fs.realpathSync(pj.get('path')+'/caches')+'/**/*');
+				rtn['target'].push(px.fs.realpathSync(pj.get('path')+'/'+pj.get('home_dir')+'/_sys')+'/**/*');
+				break;
+			case 'packages':
+				if(pj.get_realpath_composer_root()){
+					rtn['target'].push(px.fs.realpathSync(pj.get_realpath_composer_root()+'vendor')+'/**/*');
+					rtn['target'].push(px.fs.realpathSync(pj.get_realpath_composer_root()+'composer.json'));
+					rtn['target'].push(px.fs.realpathSync(pj.get_realpath_composer_root()+'composer.lock'));
+				}
+				if(pj.get_realpath_npm_root()){
+					rtn['target'].push(px.fs.realpathSync(pj.get_realpath_npm_root()+'node_modules')+'/**/*');
+					rtn['target'].push(px.fs.realpathSync(pj.get_realpath_npm_root()+'package.json'));
+				}
+				break;
+			case 'all':
+			default:
+				rtn['target'].push(px.fs.realpathSync(pj.get('path'))+'/**/*');
+				break;
+		}
+
+		function setIgnore( checkbox, path ){
+			path = px.fs.realpathSync(path);
+			path = new RegExp( px.php.preg_quote( path ) );
+			if( $form.find('input[name=ignore-'+checkbox+']:checked').size() ){
+				rtn['ignore'].push( path );
+			}
+			return;
+		}
+
+		if( $form.find('input[name=target-contents-comment]:checked').size() ){
+			rtn['ignore'].push( new RegExp( px.php.preg_quote('/comments.ignore/comment.') ) );
+		}
+		setIgnore( 'sitemap', pj.get('path')+'/'+pj.get('home_dir')+'sitemaps/' );
+		setIgnore( 'px-files', pj.get('path')+'/'+pj.get('home_dir') );
+		setIgnore( 'sys-caches', pj.get('path')+'/'+'caches/' );
+		setIgnore( 'sys-caches', pj.get('path')+'/'+pj.get('home_dir')+'_sys/' );
+
+		if(pj.get_realpath_composer_root()){
+			setIgnore( 'packages', pj.get_realpath_composer_root()+'vendor/' );
+			setIgnore( 'packages', pj.get_realpath_composer_root()+'composer.json' );
+			setIgnore( 'packages', pj.get_realpath_composer_root()+'composer.lock' );
+		}
+		if(pj.get_realpath_npm_root()){
+			setIgnore( 'packages', pj.get_realpath_npm_root()+'node_modules/' );
+			setIgnore( 'packages', pj.get_realpath_npm_root()+'package.json' );
+		}
+
+
+		return rtn;
 	}
 
 	/**

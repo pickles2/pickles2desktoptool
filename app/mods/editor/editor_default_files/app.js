@@ -33,7 +33,7 @@ window.contApp = new (function( px ){
 	var _contentsPath = px.fs.realpathSync( px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+'/'+_cont_path);
 	var _pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( _pathContent ) );
 	var strLoaderCSS = '<?php ob_start(); ?><link rel="stylesheet" href="./' + px.php.basename( _pathFiles ) + '/style.css" /><?php $px->bowl()->send( ob_get_clean(), \'head\' );?>'+"\n";
-	var strLoaderJS = '<?php ob_start(); ?><script src="./' + px.php.basename( _pathFiles ) + '/script.js"></script><?php $px->bowl()->send( ob_get_clean(), \'head\' );?>'+"\n";
+	var strLoaderJS = '<?php ob_start(); ?><script src="./' + px.php.basename( _pathFiles ) + '/script.js"></script><?php $px->bowl()->send( ob_get_clean(), \'foot\' );?>'+"\n";
 
 	var $preview, $iframe;
 	var $textareas = {'html':null, 'css': null, 'js': null};

@@ -731,12 +731,6 @@ new (function($, window){
 	// 	e.preventDefault();
 	// 	return false;
 	// } );
-	// $(window).on( 'keydown', function(e){
-	// 	// キーボード操作を無効化
-	// 	e.preventDefault();
-	// 	e.stopPropagation();
-	// 	return false;
-	// } );
 
 
 	$(function(){
@@ -799,14 +793,20 @@ new (function($, window){
 				_Keypress = new window.keypress.Listener();
 				this.Keypress = _Keypress;
 
-				// _Keypress.simple_combo("backspace", function(e) {
-				// 	// px.message("You pressed backspace");
-				// 	e.preventDefault();
-				// });
-				// _Keypress.simple_combo("delete", function(e) {
-				// 	// px.message("You pressed delete");
-				// 	e.preventDefault();
-				// });
+				_Keypress.simple_combo("backspace", function(e) {
+					// バックスペースキーで編集画面などが閉じてしまう問題の対策。
+					// px.message("You pressed backspace");
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+				});
+				_Keypress.simple_combo("delete", function(e) {
+					// バックスペースキーで編集画面などが閉じてしまう問題の対策。
+					// px.message("You pressed delete");
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+				});
 				// _Keypress.simple_combo("escape", function(e) {
 				// 	// px.message("You pressed escape");
 				// 	e.preventDefault();

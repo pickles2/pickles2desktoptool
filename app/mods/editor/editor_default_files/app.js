@@ -208,6 +208,8 @@ window.contApp = new (function( px ){
 		;
 		$iframe
 			.bind('load', function(){
+				px.cancelDrop( $iframe.get(0).contentWindow );
+
 				// ↓ これで、現在のURLがとれる。
 				var loc = $iframe.get(0).contentWindow.location;
 				switch( loc.href ){
@@ -234,6 +236,7 @@ window.contApp = new (function( px ){
 		;
 		_this.selectTab('html');
 
+		px.cancelDrop( window );
 		preview();
 		windowResize();
 		$(window).resize(function(){

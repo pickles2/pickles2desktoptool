@@ -36,6 +36,7 @@ window.contApp = new (function( px ){
 
 				px.utils.iterateFnc([
 					function(it, prop){
+						px.cancelDrop( $previewIframe.get(0).contentWindow );
 
 						var loc = $previewIframe.get(0).contentWindow.location;
 						switch( loc.href ){

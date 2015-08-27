@@ -1,5 +1,5 @@
 new (function($, window){
-	window.px = this;
+	window.px = _this = this;
 	this.$ = $;
 	this._ = _;
 
@@ -552,6 +552,39 @@ new (function($, window){
 		$contents.scrollTop(0);
 	}
 
+
+	/**
+	 * ドロップ操作を無効化する
+	 * @param  {element} $elm element object.
+	 * @return {[type]}     [description]
+	 */
+	this.cancelDrop = function($elm){
+		$($elm)
+			.bind( 'drop', function(e){
+				// ドロップ操作を無効化
+				// console.log(456);
+				e.preventDefault();
+				e.stopPropagation();
+				return false;
+			} )
+			.bind( 'dragenter', function(e){
+				// ドロップ操作を無効化
+				// console.log(45645);
+				e.preventDefault();
+				e.stopPropagation();
+				return false;
+			} )
+			.bind( 'dragover', function(e){
+				// ドロップ操作を無効化
+				// console.log(23456);
+				e.preventDefault();
+				e.stopPropagation();
+				return false;
+			} )
+		;
+		return $elm;
+	}
+
 	/**
 	 * レイアウトをリセット
 	 */
@@ -811,6 +844,8 @@ new (function($, window){
 				// 	// px.message("You pressed escape");
 				// 	e.preventDefault();
 				// });
+
+				_this.cancelDrop('html, body');
 
 				it.next(arg);
 			} ,

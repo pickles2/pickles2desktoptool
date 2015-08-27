@@ -105,6 +105,7 @@ window.contApp = new (function( px ){
 			)
 		;
 
+		px.cancelDrop( window );
 		resizeEvent();
 
 		px.progress.close();

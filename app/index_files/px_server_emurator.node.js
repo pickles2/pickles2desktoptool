@@ -56,6 +56,7 @@
 			case 'jpg': case 'jpeg': case 'jpe': mime = 'image/jpeg';break;
 			case 'png':                          mime = 'image/png';break;
 			case 'svg':                          mime = 'image/svg+xml';break;
+			case 'pdf':                          mime = 'application/pdf';break;
 		}
 
 		if( applyPx && !path.match( new RegExp( '^'+px.utils.escapeRegExp( pj.getConfig().path_controot ) ) ) ){

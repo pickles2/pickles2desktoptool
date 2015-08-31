@@ -211,7 +211,7 @@ window.px2dtGuiEditor.fieldDefinitions.table = _.defaults( new (function( px, px
 		}
 
 		var realpathSelected = $dom.find('input[name='+mod.name+']').val();
-		if( realpathSelected ){
+		if( px.utils.isFile(realpathSelected) ){
 			var tmpResInfo = parseResource( realpathSelected );
 			_resMgr.updateResource( data.resKey, tmpResInfo, realpathSelected );
 		}else if( data.resKey ){
@@ -229,9 +229,13 @@ window.px2dtGuiEditor.fieldDefinitions.table = _.defaults( new (function( px, px
 			// isPrivateMaterial が true の場合、公開領域への設置は行われない。
 
 		var realpath = _resMgr.getResourceOriginalRealpath( data.resKey );
-		if(!px.utils.isFile(realpath)){
+		if( !px.utils.isFile(realpath) ){
 			realpath = res.realpath;
 		}
+		if( !px.utils.isFile(realpath) ){
+			realpath = realpathSelected;
+		}
+
 		var cmd = px.cmd('php');
 		cmd += ' '+px.path.resolve( _pj.get('path') + '/' + _pj.get('entry_script') );
 		cmd += ' "/?PX=px2dthelper.convert_table_excel2html';

@@ -499,12 +499,17 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 			}else{
 				rtn = $('<div>');
 				rtn.append( tmpSrc );
+
 				if( isSingleRootElement ){
 					// 要素が1つだったら、追加した<div>ではなくて、
 					// 最初の要素にマークする。
 					// li要素とか、display:blockではない場合にレイアウトを壊さない目的。
-					// 要素が複数の場合、または存在しないテキストノードのみの場合、
-					// 要素がテキストノードで囲われている場合、なども考えられる。
+					// 
+					//   - 要素が複数の場合
+					//   - または要素が存在しないテキストノードのみの場合
+					//   - 要素がテキストノードで囲われている場合
+					// 
+					// なども考えられる。
 					// これらの場合は、divで囲ってあげないとハンドルできないので、しかたなし。
 					try {
 						rtn = $(tmpSrc);
@@ -526,18 +531,26 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					}
 				}
 
-				rtn
-					.attr("data-guieditor-cont-data-path", this.instancePath)
-					.css({
-						'margin-top':5,
-						'margin-bottom':5
-					})
-				;
+				if( !rtn.attr("data-guieditor-cont-data-path") ){
+					// table要素直下に、trのloopフィールドがある場合に、
+					// DOMの処理で順番が変更されると、この処理(↓)が
+					// 誤ったinstancePathで値を上書きしてしまうことがある。
+					// これが起きると、loopフィールドの編集ができなくなる。(またはUIが壊れる)
+					// よって、もともと data-guieditor-cont-data-path がセットされている要素には、
+					// あらためて付与しなおさないように条件をつけた。2015-08-31
+					rtn
+						.attr("data-guieditor-cont-data-path", this.instancePath)
+						.css({
+							'margin-top':5,
+							'margin-bottom':5
+						})
+					;
+				}
 
 				// rtn = rtn.get(0).outerHTML;
 				rtn = $('<div>').append(rtn).html();
 					// ↑ルートノードが複数ある状態でここへ来れるようになってしまったので、
-					// 　outHTML を取得する方法を変更。
+					// 　outerHTML を取得する方法を変更。
 			}
 
 			// ビルトイン・DECフィールド

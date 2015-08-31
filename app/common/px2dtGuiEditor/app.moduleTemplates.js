@@ -203,8 +203,8 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 			var field = {};
 			var rtn = '';
 
-			// テンプレートエンジン
 			if( this.topThis.templateType != 'px2dtGuiEditor' ){
+				// テンプレートエンジン利用の場合の処理
 				// console.log(this.id + '/' + this.subModName);
 				var tplDataObj = {};
 				for( var fieldName in this.fields ){
@@ -248,10 +248,12 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 						data: src
 					}).render(tplDataObj);
 				} catch (e) {
+					px.log( 'TemplateEngine Rendering ERROR.' );
 					rtn = '<div class="error">TemplateEngine Rendering ERROR.</div>'
 				}
 
 			}else{
+				// テンプレートエンジンを利用しない場合の処理
 				while( 1 ){
 					if( !src.match( new RegExp('^((?:.|\r|\n)*?)\\{\\&((?:.|\r|\n)*?)\\&\\}((?:.|\r|\n)*)$') ) ){
 						rtn += src;

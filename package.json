@@ -12,6 +12,7 @@
   "dependencies": {
     "execsyncs": "^0.1.1",
     "express": "^4.13.0",
+    "fs-extra": "^0.24.0",
     "glob": "^5.0.10",
     "marked": "0.3.*",
     "mkdirp": "0.*",

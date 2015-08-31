@@ -175,8 +175,11 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					});
 					_Keypress.simple_combo("cmd v", function(e) {
 						var data = px.clipboard.get();
-						// alert(data);
 						data = JSON.parse( data );
+						// console.log(data);
+						data = px2dtGuiEditor.contentsSourceData.duplicateInstance(data);
+						// console.log(data);
+
 						px2dtGuiEditor.contentsSourceData.addInstance( data, _this.getSelectedInstance(), function(){
 							px.message('インスタンスをペーストしました。');
 							px2dtGuiEditor.ui.onEditEnd();
@@ -440,8 +443,6 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 										// 階層が深い module は moduleTemplate の bind() に直接送られないので、ここで join() する。
 
 								}else if( this.fields[fieldName][idx2].moduleTemplates.fields[fieldName2].fieldType == 'loop' ){
-									// UTODO: 開発中
-
 								}
 							}
 
@@ -635,7 +636,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					$(this).removeClass('cont_instanceCtrlPanel-hovered');
 					$(this).css({'opacity':'0'});
 				})
-				.attr({'draggable': true})//←HTML5のAPI http://www.htmq.com/dnd/
+				.attr({'draggable': true}) // <- HTML5のAPI http://www.htmq.com/dnd/
 				.on('dragstart', function(){
 					event.dataTransfer.setData("method", 'moveTo' );
 					event.dataTransfer.setData("data-guieditor-cont-data-path", $(this).attr('data-guieditor-cont-data-path') );

@@ -133,6 +133,16 @@ window.px2dtGuiEditor.fieldDefinitions.image = _.defaults( new (function( px, px
 	}
 
 	/**
+	 * データを複製する
+	 */
+	this.duplicateData = function( data ){
+		data = JSON.parse( JSON.stringify( data ) );
+		data.resKey = _resMgr.duplicateResource( data.resKey );
+		data.path = _resMgr.getResourcePublicPath( data.resKey );
+		return data;
+	}
+
+	/**
 	 * エディタUIで編集した内容を保存
 	 */
 	this.saveEditorContent = function( $dom, data, mod ){

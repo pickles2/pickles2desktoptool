@@ -63,6 +63,14 @@ window.px2dtGuiEditor.fieldBase = new (function( px, px2dtGuiEditor ){
 	}
 
 	/**
+	 * データを複製する
+	 */
+	this.duplicateData = function( data ){
+		data = JSON.parse( JSON.stringify( data ) );
+		return data;
+	}
+
+	/**
 	 * エディタUIで編集した内容を保存
 	 */
 	this.saveEditorContent = function( $dom, data, mod ){

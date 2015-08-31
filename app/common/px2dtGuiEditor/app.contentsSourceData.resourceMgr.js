@@ -131,6 +131,21 @@ window.px2dtGuiEditor.contentsSourceData.resourceMgr = new(function(px, px2dtGui
 	}
 
 	/**
+	 * duplicate resource
+	 * @return 複製された新しいリソースのキー
+	 */
+	this.duplicateResource = function( resKey ){
+		if( typeof(_resourceDb[resKey]) !== typeof({}) ){
+			// 未登録の resKey
+			return false;
+		}
+		var newResKey = this.addResource();
+		_resourceDb[newResKey] = JSON.parse( JSON.stringify( _resourceDb[resKey] ) );
+		px.fsEx.copySync( _resourcesDirPath+'/'+resKey, _resourcesDirPath+'/'+newResKey );
+		return newResKey;
+	}
+
+	/**
 	 * update resource
 	 * @param  {string} resKey  Resource Key
 	 * @param  {object} resInfo Resource Information.

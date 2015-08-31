@@ -30,6 +30,8 @@ new (function($, window){
 	this.utils = _utils;
 	var _fs = require('fs');
 	this.fs = _fs;
+	var _fsEx = require('fs-extra');
+	this.fsEx = _fsEx;
 	var _path = require('path');
 	this.path = _path;
 	// var _git = require('nodegit');

@@ -374,6 +374,37 @@ window.px2dtGuiEditor.contentsSourceData = new(function(px, px2dtGuiEditor){
 	}
 
 	/**
+	 * インスタンスを複製する
+	 * このメソッドは、インスタンスパスではなく、インスタンスの実体を受け取ります。
+	 */
+	this.duplicateInstance = function( objInstance ){
+		var newData = JSON.parse( JSON.stringify( objInstance ) );
+		var modTpl = px2dtGuiEditor.moduleTemplates.get( objInstance.modId, objInstance.subModName );
+
+		// 初期データ追加
+		var fieldList = _.keys( modTpl.fields );
+		for( var idx in fieldList ){
+			var fieldName = fieldList[idx];
+			if( modTpl.fields[fieldName].fieldType == 'input' ){
+				newData.fields[fieldName] = px2dtGuiEditor.fieldDefinitions[modTpl.fields[fieldName].type].duplicateData( objInstance.fields[fieldName] );
+			}else if( modTpl.fields[fieldName].fieldType == 'module' ){
+				for( var idx in objInstance.fields[fieldName] ){
+					newData.fields[fieldName][idx] = this.duplicateInstance( objInstance.fields[fieldName][idx] );
+				}
+			}else if( modTpl.fields[fieldName].fieldType == 'loop' ){
+				for( var idx in objInstance.fields[fieldName] ){
+					newData.fields[fieldName][idx] = this.duplicateInstance( objInstance.fields[fieldName][idx] );
+				}
+			}else if( modTpl.fields[fieldName].fieldType == 'if' ){
+			}else if( modTpl.fields[fieldName].fieldType == 'echo' ){
+			}
+		}
+
+		// setTimeout( function(){ cb(newData); }, 0 );
+		return newData;
+	}
+
+	/**
 	 * インスタンスを削除する
 	 */
 	this.removeInstance = function( containerInstancePath, cb ){

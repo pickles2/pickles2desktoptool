@@ -382,7 +382,10 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 							}, instancePathNext))
 						)
 						.css({
-							"padding": '5px 0',
+							// "padding": '5px 0',
+							"padding": '0 0 5px 0',
+								// ↑並んでいるモジュール同士のパネルを密接させるに当たり、
+								// 　padding-topがついていることが不都合になった。
 							'box-sizing':'border-box',
 							"clear":'both'
 						})
@@ -585,8 +588,10 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 			var $elm = $content.find('[data-guieditor-cont-data-path='+JSON.stringify(this.instancePath)+']');
 			var isSubMod =  ( this.moduleTemplates.subModName ? true : false );
 
-			var posInfo = (function($elm, areaSizeDetection){
+			var posInfo = (function($elm, areaSizeDetection, instancePath){
+				var instancePathNext = null, $nextElm = null;
 				var rtn = {};
+				var tmp = {};
 				if( $elm.size() ){
 					rtn = {
 						't':$elm.offset().top,
@@ -595,11 +600,32 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 						'w':$elm.offset().left+$elm.outerWidth()
 					};
 				}
+
+				if( instancePath.match( /\@[0-9]*$/ ) ){
+					instancePathNext = instancePath.replace( /([0-9]*)$/, '' );
+					instancePathNext += px.php.intval(RegExp.$1) + 1;
+					// console.log("from: "+ instancePath);
+					// console.log("to: "+instancePathNext);
+					$nextElm = $content.find('[data-guieditor-cont-data-path='+JSON.stringify(instancePathNext)+']');
+					if( $nextElm.size() ){
+						tmp = {
+							// 't':$nextElm.offset().top,
+							// 'l':$nextElm.offset().left,
+							'h':$nextElm.offset().top,
+							'w':$nextElm.offset().left
+						};
+						// rtn.t = (rtn.t>tmp.t ? tmp.t : rtn.t);
+						// rtn.l = (rtn.l>tmp.l ? tmp.l : rtn.l);
+						rtn.h = (rtn.h<tmp.h ? tmp.h : rtn.h);
+						rtn.w = (rtn.w<tmp.w ? tmp.w : rtn.w);
+					}
+				}
+
 				if( areaSizeDetection == 'shallow' ){
 					// console.log(rtn);
 					return rtn;
 				}
-				var tmp = {};
+
 				$elm.find('*').each(function(){
 					tmp = {
 						't':$(this).offset().top,
@@ -613,7 +639,8 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					rtn.w = (rtn.w<tmp.w ? tmp.w : rtn.w);
 				});
 				return rtn;
-			})($elm, this.moduleTemplates.info.areaSizeDetection);
+			})($elm, this.moduleTemplates.info.areaSizeDetection, this.instancePath);
+
 			var $ctrlElm = $('<div>')
 				.addClass('cont_instanceCtrlPanel')
 				.addClass( (isSubMod ? 'cont_instanceCtrlPanel-is_submodule' : '' ) )
@@ -745,7 +772,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 						.css(calcModuleUiStyle({
 							'display':'block',
 							'position':'absolute',
-							'top': $elm.offset().top + 5,
+							'top': $elm.offset().top + 0,
 							'left': $elm.offset().left,
 							"z-index":0,
 							'width': $elm.width(),
@@ -1228,7 +1255,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					'margin': '1em'
 				} )
 				.append($('<h2>')
-					.text( 'DEC' )
+					.text( 'DEC (コメント)' )
 				)
 				.append( ((function( field, data ){
 					return $('<div>')

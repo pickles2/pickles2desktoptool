@@ -105,13 +105,13 @@ window.contApp = new (function(){
 			} ,
 			function(it, arg){
 				// README.md を表示する
-				var readmePath = null;
+				var readmePath = pj.get('path');
 				if( status.gitDirExists ){
 					readmePath = pj.get_realpath_git_root();
 				}
 				var htmlSrc = '<p class="cont_readme_content-no_readme">--- NO README.md ---</p>';
 				if( px.utils.isDirectory(readmePath) ){
-					var filenames = ['README.md','readme.md','README.html','readme.html'];
+					var filenames = ['README.md','readme.md','README.html','readme.html','README.txt','readme.txt'];
 					for( var idx in filenames ){
 						if( px.utils.isFile(readmePath+'/'+filenames[idx]) ){
 							var ext = px.utils.getExtension(filenames[idx]);
@@ -122,9 +122,15 @@ window.contApp = new (function(){
 									htmlSrc = px.utils.markdown(htmlSrc);
 									break;
 								case 'html':
+									htmlSrc = px.fs.readFileSync( readmePath+'/'+filenames[idx] );
+									htmlSrc = htmlSrc.toString();
+									break;
+								case 'txt':
 								default:
 									htmlSrc = px.fs.readFileSync( readmePath+'/'+filenames[idx] );
 									htmlSrc = htmlSrc.toString();
+									htmlSrc = $('<div>').text(htmlSrc).html();
+									htmlSrc = htmlSrc.replace(/\r\n|\r|\n/g, '<br />');
 									break;
 							}
 							break;

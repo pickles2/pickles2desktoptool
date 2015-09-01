@@ -39,10 +39,54 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 		px.utils.iterate(
 			_pathsModTpl,
 			function( it0, pathModTpl, modIdx ){
+				// モジュールパッケージの情報を整理
+				if( !_modPackages[modIdx] ){
+					_modPackages[modIdx] = {
+						"id": modIdx,
+						"name": modIdx,
+						"contents":{}
+					};
+				}
+				if( px.utils.isFile( pathModTpl+'/info.json' ) ){
+					var tmpJson = {};
+					try{
+						tmpJson = JSON.parse( px.fs.readFileSync( pathModTpl+'/info.json' ) );
+					}catch(e){
+						px.log( 'module info.json parse error: ' + pathModTpl+'/info.json' );
+					}
+					if( tmpJson.name ){
+						_modPackages[modIdx].name = tmpJson.name;
+					}
+				}
+
 				px.fs.readdir( pathModTpl, function(err, data){
+
 					px.utils.iterate(
 						data,
 						function( it1, dirname1, idx ){
+							// モジュールカテゴリの情報を整理
+							if( !px.utils.isDirectory(pathModTpl+'/'+dirname1) ){
+								it1.next();return;
+							}
+							if( !_modPackages[modIdx].contents[dirname1] ){
+								_modPackages[modIdx].contents[dirname1] = {
+									"id": dirname1,
+									"name": dirname1,
+									"contents":[]
+								};
+							}
+							if( px.utils.isFile( pathModTpl+'/'+dirname1+'/info.json' ) ){
+								var tmpJson = {};
+								try{
+									tmpJson = JSON.parse( px.fs.readFileSync( pathModTpl+'/'+dirname1+'/info.json' ) );
+								}catch(e){
+									px.log( 'module info.json parse error: ' + pathModTpl+'/'+dirname1+'/info.json' );
+								}
+								if( tmpJson.name ){
+									_modPackages[modIdx].contents[dirname1].name = tmpJson.name;
+								}
+							}
+
 							px.fs.readdir( pathModTpl+'/'+dirname1+'/', function(err, data){
 								px.utils.iterate(
 									data,
@@ -59,20 +103,6 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 											px.log( 'template.html is not exists: ' + pathTemplateDir+'template.html' );
 											it2.next();//テンプレートが未定義
 											return;
-										}
-										if( !_modPackages[modIdx] ){
-											_modPackages[modIdx] = {
-												"id": modIdx,
-												"name": modIdx,
-												"contents":{}
-											};
-										}
-										if( !_modPackages[modIdx].contents[dirname1] ){
-											_modPackages[modIdx].contents[dirname1] = {
-												"id": dirname1,
-												"name": dirname1,
-												"contents":[]
-											};
 										}
 										_modPackages[modIdx].contents[dirname1].contents.push( modIdx+':'+dirname1+'/'+dirname2 );
 

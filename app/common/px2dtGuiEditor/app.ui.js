@@ -366,7 +366,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 								// instancePathNext +
 								'(+) ここにモジュールをドラッグしてください。'
 							)
-							.css({
+							.css(calcModuleUiStyle({
 								'overflow':'hidden',
 								"padding": '15px',
 								"background-color":"#eef",
@@ -379,7 +379,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 								'box-sizing':'border-box',
 								'clear':'both',
 								'white-space':'nowrap'
-							})
+							}, instancePathNext))
 						)
 						.css({
 							"padding": '5px 0',
@@ -541,8 +541,8 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					rtn
 						.attr("data-guieditor-cont-data-path", this.instancePath)
 						.css({
-							'margin-top':5,
-							'margin-bottom':5
+							'margin-top':10,
+							'margin-bottom':0
 						})
 					;
 				}
@@ -742,7 +742,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 						.text(
 							'(+) ここにモジュールをドラッグしてください。'
 						)
-						.css({
+						.css(calcModuleUiStyle({
 							'display':'block',
 							'position':'absolute',
 							'top': $elm.offset().top + 5,
@@ -752,7 +752,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 							'height': $elm.height(),
 							'box-sizing': 'border-box',
 							'opacity': 0
-						})
+						}, instancePath))
 						.attr({'data-guieditor-cont-data-path': instancePath})
 						.bind('mouseover', function(e){
 							e.stopPropagation();
@@ -1284,6 +1284,38 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 
 		return this;
 	}// openEditWindow()
+
+
+	/**
+	 * モジュールのUI要素のスタイルを計算する
+	 */
+	function calcModuleUiStyle(obj, instancePath){
+		var baseSize = 16;
+		var depth = instancePath.split('/').length - 3;
+		if(depth<0){depth=0;}
+		// console.log(depth);
+
+		// obj['font-size'] = baseSize;
+		obj['font-size'] = baseSize * ( 100 - depth*10 ) / 100;
+
+		obj['height'] = 'auto';
+		obj['padding'] = 15 - depth*2;
+
+		if( obj['background-color'] ){
+			if(depth <= 0){
+				obj['background-color'] = '#eef';
+			}else if(depth <= 1){
+				obj['background-color'] = '#f4f4ff';
+			}else if(depth <= 2){
+				obj['background-color'] = '#f6f6ff';
+			}else if(depth <= 3){
+				obj['background-color'] = '#f9f9ff';
+			}else{
+				obj['background-color'] = '#fbfbff';
+			}
+		}
+		return obj;
+	}
 
 	/**
 	 * ウィンドウ リサイズ イベント ハンドラ

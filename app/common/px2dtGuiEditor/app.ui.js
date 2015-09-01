@@ -967,6 +967,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 	this.selectInstance = function( instancePath, callback ){
 		callback = callback || function(){};
 		this.unselectInstance();//一旦選択解除
+		this.unfocusInstance();//フォーカスも解除
 		selectedInstance = instancePath;
 		$ctrlPanel.find('[data-guieditor-cont-data-path]')
 			.filter(function (index) {
@@ -989,6 +990,41 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 			.removeClass('cont_instanceCtrlPanel-ctrlpanel_selected')
 		;
 		this.updateInstancePathView();
+		callback();
+		return this;
+	}
+
+	/**
+	 * モジュールインスタンスにフォーカスする
+	 * フォーカス状態の囲みで表現され、画面に収まるようにスクロールする
+	 */
+	this.focusInstance = function( instancePath, callback ){
+		callback = callback || function(){};
+		this.unfocusInstance();//一旦選択解除
+		$ctrlPanel.find('[data-guieditor-cont-data-path]')
+			.filter(function (index) {
+				return $(this).attr("data-guieditor-cont-data-path") == instancePath;
+			})
+			.addClass('cont_instanceCtrlPanel-ctrlpanel_focused')
+		;
+		var $targetElm = $('.cont_instanceCtrlPanel-ctrlpanel_focused');
+		var $confField = $('.cont_field');
+		var top = $confField.scrollTop() + $targetElm.offset().top - 30;
+		$confField.stop().animate({"scrollTop":top} , 'fast' );
+		callback();
+		return this;
+
+	}
+
+	/**
+	 * モジュールインスタンスのフォーカス状態を解除する
+	 */
+	this.unfocusInstance = function(callback){
+		callback = callback || function(){};
+		selectedInstance = null;
+		$ctrlPanel.find('.cont_instanceCtrlPanel-ctrlpanel_focused')
+			.removeClass('cont_instanceCtrlPanel-ctrlpanel_focused')
+		;
 		callback();
 		return this;
 	}
@@ -1068,19 +1104,29 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					label = '@'+mod.subModName;
 				}
 				$ulChildren.append( $('<li>')
-					.append( $('<a href="javascript:;" style="white-space:nowrap;">')
+					.append( $('<a href="javascript:;">')
 						.attr({
 							'data-guieditor-cont-data-path': children[child]
 						})
+						.bind('mouseover', function(e){
+							var dataPath = $(this).attr('data-guieditor-cont-data-path');
+							_this.focusInstance( dataPath );
+						} )
+						.bind('mouseout', function(e){
+							_this.unfocusInstance();
+						} )
 						.bind('dblclick', function(e){
+							var dataPath = $(this).attr('data-guieditor-cont-data-path');
 							clearTimeout(timer);
-							_this.openEditWindow( $(this).attr('data-guieditor-cont-data-path') );
+							_this.selectInstance( dataPath );
+							_this.openEditWindow( dataPath );
 						} )
 						.bind('click', function(e){
+							_this.unfocusInstance();
 							var dataPath = $(this).attr('data-guieditor-cont-data-path');
 							timer = setTimeout(function(){
 								_this.selectInstance( dataPath );
-							}, 10);
+							}, 5);
 							return false;
 						} )
 						.text(label)

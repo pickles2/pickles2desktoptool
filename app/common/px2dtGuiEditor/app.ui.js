@@ -479,7 +479,9 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 								})
 							)
 							.css({
-								"padding": '5px 0',
+								"padding": '0 0 5px 0',
+									// ↑並んでいるモジュール同士のパネルを密接させるに当たり、
+									// 　padding-topがついていることが不都合になった。
 								'box-sizing':'border-box',
 								"clear":'both'
 							})
@@ -866,7 +868,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 							.css({
 								'display':'block',
 								'position':'absolute',
-								'top':  (function($elm){if($elm.size()){return $elm.offset().top  + 5;}return 0;})($elm),
+								'top':  (function($elm){if($elm.size()){return $elm.offset().top  + 0;}return 0;})($elm),
 								'left': (function($elm){if($elm.size()){return $elm.offset().left + 0;}return 0;})($elm),
 								'z-index':0,
 								'width': $elm.width(),

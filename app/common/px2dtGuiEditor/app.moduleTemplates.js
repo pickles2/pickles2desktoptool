@@ -36,14 +36,50 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 		modIdList.push( {'id': '_sys/unknown'} );
 		modIdList.push( {'id': '_sys/html'} );
 
+		function sortModuleDirectoryNames(dirNames, sortBy){
+			if( typeof(sortBy) != typeof([]) ){ return dirNames; }
+			dirNames.sort();
+			function deleteArrayElm(ary, val){
+				for( var i in ary ){
+					if( ary[i] === val ){
+						ary.splice( i , 1 );
+						return true;
+					}
+				}
+				return false;
+			}
+			function arrayFind(ary, val){
+				for( var i in ary ){
+					if( ary[i] === val ){return true;}
+				}
+				return false;
+			}
+
+			var rtn = [];
+			for( var i in sortBy ){
+				if( !arrayFind(dirNames, sortBy[i]) ){continue;}
+				rtn.push(sortBy[i]);
+				deleteArrayElm(dirNames, sortBy[i]);
+			}
+			for( var i in dirNames ){
+				rtn.push(dirNames[i]);
+			}
+			return rtn;
+		}
+
 		px.utils.iterate(
 			_pathsModTpl,
 			function( it0, pathModTpl, modIdx ){
+				if( !px.utils.isDirectory(pathModTpl) ){
+					it0.next();return;//ディレクトリではなかった場合
+				}
+
 				// モジュールパッケージの情報を整理
 				if( !_modPackages[modIdx] ){
 					_modPackages[modIdx] = {
 						"id": modIdx,
 						"name": modIdx,
+						"sort": [],
 						"contents":{}
 					};
 				}
@@ -57,21 +93,25 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 					if( tmpJson.name ){
 						_modPackages[modIdx].name = tmpJson.name;
 					}
+					if( tmpJson.sort ){
+						_modPackages[modIdx].sort = tmpJson.sort;
+					}
 				}
 
 				px.fs.readdir( pathModTpl, function(err, data){
 
 					px.utils.iterate(
-						data,
+						sortModuleDirectoryNames(data, _modPackages[modIdx].sort),
 						function( it1, dirname1, idx ){
 							// モジュールカテゴリの情報を整理
 							if( !px.utils.isDirectory(pathModTpl+'/'+dirname1) ){
-								it1.next();return;
+								it1.next();return;//ディレクトリではなかった場合
 							}
 							if( !_modPackages[modIdx].contents[dirname1] ){
 								_modPackages[modIdx].contents[dirname1] = {
 									"id": dirname1,
 									"name": dirname1,
+									"sort": [],
 									"contents":[]
 								};
 							}
@@ -85,16 +125,18 @@ window.px2dtGuiEditor.moduleTemplates = new(function(px, px2dtGuiEditor){
 								if( tmpJson.name ){
 									_modPackages[modIdx].contents[dirname1].name = tmpJson.name;
 								}
+								if( tmpJson.sort ){
+									_modPackages[modIdx].contents[dirname1].sort = tmpJson.sort;
+								}
 							}
 
 							px.fs.readdir( pathModTpl+'/'+dirname1+'/', function(err, data){
 								px.utils.iterate(
-									data,
+									sortModuleDirectoryNames(data, _modPackages[modIdx].contents[dirname1].sort),
 									function( it2, dirname2, idx2 ){
 										var pathTemplateDir = pathModTpl+'/'+dirname1+'/'+dirname2+'/';
 										if( !px.utils.isDirectory( pathTemplateDir ) ){
-											it2.next();//ディレクトリではなかった場合
-											return;
+											it2.next();return;//ディレクトリではなかった場合
 										}
 										if(
 											!px.utils.isFile( pathTemplateDir+'template.html' )

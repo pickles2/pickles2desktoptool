@@ -235,6 +235,7 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 			}
 			switch( modTpl.fields[fieldName].fieldType ){
 				case 'module':
+					data.fields[fieldName] = data.fields[fieldName]||[];
 					var instancePathNext = containerInstancePath+'/fields.'+fieldName+'@'+( data.fields[fieldName].length );
 					$ulChildren.append( $('<li>')
 						.append($('<div>')

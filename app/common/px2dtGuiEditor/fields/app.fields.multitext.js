@@ -5,7 +5,7 @@ window.px2dtGuiEditor.fieldDefinitions.multitext = _.defaults( new (function( px
 	 */
 	this.bind = function( fieldData, mode ){
 		var rtn = ''
-		if(typeof(fieldData.src)===typeof('')){
+		if(typeof(fieldData)===typeof({}) && typeof(fieldData.src)===typeof('')){
 			switch( fieldData.editor ){
 				case 'text':
 					rtn = px.$('<div>').text( fieldData.src ).html(); // ←HTML特殊文字変換

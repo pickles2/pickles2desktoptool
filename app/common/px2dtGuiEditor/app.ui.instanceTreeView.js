@@ -206,6 +206,14 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 							return rtn;
 						})(modTpl.fields[fieldName].type, data.fields[fieldName], modTpl.fields[fieldName])
 					);
+					$preview.find('*').each(function(){
+						$(this) //イベント発火系を全部削除
+							.removeAttr('href')
+							.removeAttr('action')
+							.unbind()
+						;
+					});
+					$preview.find('script').remove(); // scriptタグは削除しちゃう
 					$li.append( $preview );
 					break;
 				case 'module':

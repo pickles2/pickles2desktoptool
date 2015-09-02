@@ -314,6 +314,14 @@ Instance Tree View
 	overflow: auto;
 	max-height: 290px;
 }
+.cont_instance_tree_view-field_preview,
+.cont_instance_tree_view-field_preview *{
+	font-weight: normal;
+	font-size: 11px;
+	line-height: 1.1;
+	margin-top: 0;
+	margin-bottom: 0;
+}
 .cont_instance_tree_view-field_preview table{
 	border: 1px solid #aaa;
 }

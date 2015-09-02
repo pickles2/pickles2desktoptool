@@ -31,7 +31,14 @@ window.px2dtGuiEditor.fieldBase = new (function( px, px2dtGuiEditor ){
 	this.mkPreviewHtml = function( fieldData, mod ){
 		// InstanceTreeViewで利用する
 		var rtn = this.bind(fieldData, 'finalize', mod);
-		return rtn;
+		var $rtn = $('<div>').append(rtn);
+		$rtn.find('*').each(function(){
+			$(this)
+				.removeAttr('style') //スタイル削除しちゃう
+			;
+		});
+		$rtn.find('style').remove(); // styleタグも削除しちゃう
+		return $rtn.html();
 	}
 
 	/**

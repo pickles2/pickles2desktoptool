@@ -232,7 +232,7 @@ Instance Tree View
 	list-style-type: decimal;
 }
 .cont_instance_tree_view-modroot{
-	border: 3px solid #aaa;
+	border: 3px solid #999;
 	background-color: #fbfbfb;
 	border-radius: 5px;
 	padding: 10px 2px 2px 10px;
@@ -275,7 +275,7 @@ Instance Tree View
 	text-align: center;
 	border-radius: 5px;
 	padding: 15px;
-	border-color: #aaa;
+	border-color: #999;
 	background-color: #e7f4ff;
 }
 .cont_instance_tree_view-modroot.cont_instanceCtrlPanel.cont_instanceCtrlPanel-adding_area_module.cont_instanceCtrlPanel-hovered,
@@ -286,7 +286,7 @@ Instance Tree View
 
 .cont_instance_tree_view-modroot.cont_instanceCtrlPanel.cont_instanceCtrlPanel-adding_area_loop{
 	padding: 5px 15px;
-	border-color: #aaa;
+	border-color: #999;
 	background-color: #e8ffe7;
 }
 .cont_instance_tree_view-modroot.cont_instanceCtrlPanel.cont_instanceCtrlPanel-adding_area_loop.cont_instanceCtrlPanel-hovered,
@@ -302,9 +302,31 @@ Instance Tree View
 }
 .cont_instance_tree_view-fields{
 	background-color: rgba(240,240,240,0.6);
-	border: 1px solid #aaa;
+	border: 1px solid #ccc;
 	border-radius: 3px;
 	margin: 0; padding: 10px 2px 2px 10px;
+}
+.cont_instance_tree_view-field_preview{
+	background-color: rgba(255,255,255,0.5);
+	border: none;
+	border-radius: 0px;
+	margin: 2px 20px; padding: 10px 2px 2px 10px;
+	overflow: auto;
+	max-height: 290px;
+}
+.cont_instance_tree_view-field_preview table{
+	border: 1px solid #aaa;
+}
+.cont_instance_tree_view-field_preview table th,
+.cont_instance_tree_view-field_preview table td{
+	border: 1px solid #aaa;
+	background-color: #fff;
+	padding: 3px;
+}
+.cont_instance_tree_view-field_preview table thead th,
+.cont_instance_tree_view-field_preview table thead td,
+.cont_instance_tree_view-field_preview table th{
+	background-color: #f3f3f3;
 }
 
 /*

@@ -33,9 +33,19 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 			.show()
 		;
 
-		$previewDoc.find('.contents').each(function(){
+		var _px2DtConfig = px.getCurrentProject().getPx2DTConfig();
+		var _contentsAreaSelector = '.contents';
+		var _contentsBowlNameBy = 'id';
+		if( _px2DtConfig.contents_area_selector ){
+			_contentsAreaSelector = _px2DtConfig.contents_area_selector;
+		}
+		if( _px2DtConfig.contents_bowl_name_by ){
+			_contentsBowlNameBy = _px2DtConfig.contents_bowl_name_by;
+		}
+
+		$previewDoc.find( _contentsAreaSelector ).each(function(){
 			$(this).html('');
-			var id = $(this).attr('id')||'main';
+			var id = $(this).attr( _contentsBowlNameBy )||'main';
 			px2dtGuiEditor.contentsSourceData.initBowlData(id);
 
 			var $dom = $('<div>')
@@ -130,11 +140,17 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 						px.message('並べ替え以外の移動操作はできません。');
 						return;
 					}
+					if( moveFrom === moveTo ){
+						// 移動元と移動先が同一の場合、キャンセルとみなす
+						$(this).removeClass('cont_instanceCtrlPanel-dragentered');
+						return;
+					}
 					px2dtGuiEditor.contentsSourceData.moveInstanceTo( moveFrom, moveTo, function(){
 						// px.message('インスタンスを移動しました。');
 						// _this.init();
 						px2dtGuiEditor.ui.onEditEnd();
 					} );
+					return;
 				}
 			})
 			.bind('dragenter', function(e){
@@ -177,6 +193,21 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 				.text(fieldName+' - '+modTpl.fields[fieldName].fieldType+(modTpl.fields[fieldName].fieldType=='input' ? ' - '+modTpl.fields[fieldName].type : ''))
 			;
 			switch( modTpl.fields[fieldName].fieldType ){
+				case 'input':
+					var $preview = $('<div>').addClass('cont_instance_tree_view-field_preview');
+					$preview.append(
+						(function(type, fieldData, mod){
+							var rtn = '';
+							if( px2dtGuiEditor.fieldDefinitions[type] ){
+								rtn = px2dtGuiEditor.fieldDefinitions[type].mkPreviewHtml( fieldData, mod );
+							}else{
+								rtn = px2dtGuiEditor.fieldBase.mkPreviewHtml( fieldData, mod );
+							}
+							return rtn;
+						})(modTpl.fields[fieldName].type, data.fields[fieldName], modTpl.fields[fieldName])
+					);
+					$li.append( $preview );
+					break;
 				case 'module':
 				case 'loop':
 					var $ulChildren = $('<ol>');
@@ -222,7 +253,13 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 								var method = event.dataTransfer.getData("method");
 								if( method === 'moveTo' ){
 									var moveFrom = event.dataTransfer.getData("data-guieditor-cont-data-path");
-									px2dtGuiEditor.contentsSourceData.moveInstanceTo( moveFrom, $(this).attr('data-guieditor-cont-data-path'), function(){
+									var moveTo = $(this).attr('data-guieditor-cont-data-path');
+									if( moveFrom === moveTo ){
+										// 移動元と移動先が同一の場合、キャンセルとみなす
+										$(this).removeClass('cont_instanceCtrlPanel-dragentered');
+										return;
+									}
+									px2dtGuiEditor.contentsSourceData.moveInstanceTo( moveFrom, moveTo, function(){
 										// px.message('インスタンスを移動しました。');
 										// _this.init();
 										px2dtGuiEditor.ui.onEditEnd();
@@ -299,6 +336,11 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 										px.message('並べ替え以外の移動操作はできません。');
 										return;
 									}
+									if( moveFrom === moveTo ){
+										// 移動元と移動先が同一の場合、キャンセルとみなす
+										$(this).removeClass('cont_instanceCtrlPanel-dragentered');
+										return;
+									}
 
 									px2dtGuiEditor.contentsSourceData.moveInstanceTo( moveFrom, moveTo, function(){
 										// px.message('インスタンスを移動しました。');
@@ -344,9 +386,11 @@ window.px2dtGuiEditor.ui.instanceTreeView = new(function(px, px2dtGuiEditor){
 
 		}
 
-		$dom.append( $modroot
-			.append($ul)
-		);
+		if( $ul.find('>*').size() ){
+			$modroot.append($ul);
+		}
+
+		$dom.append( $modroot );
 		return true;
 	}
 

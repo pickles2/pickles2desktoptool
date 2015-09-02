@@ -509,11 +509,11 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					// 要素が1つだったら、追加した<div>ではなくて、
 					// 最初の要素にマークする。
 					// li要素とか、display:blockではない場合にレイアウトを壊さない目的。
-					// 
+					//
 					//   - 要素が複数の場合
 					//   - または要素が存在しないテキストノードのみの場合
 					//   - 要素がテキストノードで囲われている場合
-					// 
+					//
 					// なども考えられる。
 					// これらの場合は、divで囲ってあげないとハンドルできないので、しかたなし。
 					try {
@@ -720,6 +720,11 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 							px.message('並べ替え以外の移動操作はできません。');
 							return;
 						}
+						if( moveFrom === moveTo ){
+							// 移動元と移動先が同一の場合、キャンセルとみなす
+							$(this).removeClass('cont_instanceCtrlPanel-dragentered');
+							return;
+						}
 						px2dtGuiEditor.contentsSourceData.moveInstanceTo( moveFrom, moveTo, function(){
 							// px.message('インスタンスを移動しました。');
 							px2dtGuiEditor.ui.onEditEnd();
@@ -797,7 +802,13 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 							var method = event.dataTransfer.getData("method");
 							if( method === 'moveTo' ){
 								var moveFrom = event.dataTransfer.getData("data-guieditor-cont-data-path");
-								px2dtGuiEditor.contentsSourceData.moveInstanceTo( moveFrom, $(this).attr('data-guieditor-cont-data-path'), function(){
+								var moveTo = $(this).attr('data-guieditor-cont-data-path');
+								if( moveFrom === moveTo ){
+									// 移動元と移動先が同一の場合、キャンセルとみなす
+									$(this).removeClass('cont_instanceCtrlPanel-dragentered');
+									return;
+								}
+								px2dtGuiEditor.contentsSourceData.moveInstanceTo( moveFrom, moveTo, function(){
 									// px.message('インスタンスを移動しました。');
 									px2dtGuiEditor.ui.onEditEnd();
 								} );
@@ -903,6 +914,11 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 									}
 									if( removeNum(moveFrom) !== removeNum(moveTo) ){
 										px.message('並べ替え以外の移動操作はできません。');
+										return;
+									}
+									if( moveFrom === moveTo ){
+										// 移動元と移動先が同一の場合、キャンセルとみなす
+										$(this).removeClass('cont_instanceCtrlPanel-dragentered');
 										return;
 									}
 

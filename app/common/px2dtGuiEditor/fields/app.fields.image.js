@@ -46,6 +46,28 @@ window.px2dtGuiEditor.fieldDefinitions.image = _.defaults( new (function( px, px
 	}
 
 	/**
+	 * プレビュー用の簡易なHTMLを生成する
+	 */
+	this.mkPreviewHtml = function( fieldData, mod ){
+		var rtn = {}
+		if( typeof(fieldData) === typeof({}) ){
+			rtn = fieldData;
+		}
+		var res = _resMgr.getResource( rtn.resKey );
+		rtn.path = 'data:'+res.type+';base64,' + res.base64;
+		if( !res.base64 ){
+			// ↓ ダミーの Sample Image
+			rtn.path = _imgDummy;
+		}
+		rtn = $('<img src="'+rtn.path+'" />');
+		rtn.css({
+			'max-width': 200,
+			'max-height': 200
+		});
+		return rtn.get(0).outerHTML;
+	}
+
+	/**
 	 * データを正規化する
 	 */
 	this.normalizeData = function( fieldData, mode ){

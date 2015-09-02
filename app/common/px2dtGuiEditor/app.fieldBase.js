@@ -26,6 +26,15 @@ window.px2dtGuiEditor.fieldBase = new (function( px, px2dtGuiEditor ){
 	}
 
 	/**
+	 * プレビュー用の簡易なHTMLを生成する
+	 */
+	this.mkPreviewHtml = function( fieldData, mod ){
+		// InstanceTreeViewで利用する
+		var rtn = this.bind(fieldData, 'finalize', mod);
+		return rtn;
+	}
+
+	/**
 	 * データを正規化する
 	 */
 	this.normalizeData = function( fieldData, mode ){

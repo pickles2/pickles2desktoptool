@@ -44,6 +44,20 @@ window.px2dtGuiEditor.fieldDefinitions.table = _.defaults( new (function( px, px
 	}
 
 	/**
+	 * プレビュー用の簡易なHTMLを生成する
+	 */
+	this.mkPreviewHtml = function( fieldData, mod ){
+		// InstanceTreeViewで利用する
+		fieldData = fieldData||{};
+		var rtn = '';
+		if( fieldData.output ){
+			rtn += fieldData.output;
+		}
+		rtn = $('<table>'+rtn+'</table>');
+		return rtn.get(0).outerHTML;
+	}
+
+	/**
 	 * データを正規化する
 	 */
 	this.normalizeData = function( fieldData, mode ){

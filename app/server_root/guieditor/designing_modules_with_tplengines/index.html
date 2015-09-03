@@ -49,7 +49,7 @@
 <!-- == autoindex == -->
 <div style="margin:2em 5%; border:1px solid #bbb; padding:1em; background:rgba(124, 124, 124, 0.05); border-radius:5px;">
 <div style="margin:0; padding:0; text-align:center; font-weight:bold;">INDEX</div><ul style="margin:0; padding:0 0 0 2em;"><li style="list-style-type:disc; display:list-item;"><a href="#hash_条件">条件</a></li>
-<li style="list-style-type:disc; display:list-item;"><a href="#hash_interface_の定義">interface の定義</a></li>
+<li style="list-style-type:disc; display:list-item;"><a href="#hash_UI要素の定義_(interface)">UI要素の定義 (interface)</a></li>
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_テンプレートの書式">テンプレートの書式</a></li></ul>
 </div>
 <!-- / == autoindex == -->
@@ -64,9 +64,58 @@
 <li><code>template.html.twig</code> が設置されていること。</li>
 </ul>
 
-<span id="hash_interface_の定義"></span><h2>interface の定義</h2>
+<span id="hash_UI要素の定義_(interface)"></span><h2>UI要素の定義 (interface)</h2>
 
-<p>coming soon.</p>
+<p><code>info.json</code> に、<code>interface</code> をキーに、次のように定義します。</p>
+
+<pre><code>{
+    "name": "Sample Module",
+    "areaSizeDetection": "shallow",
+    "interface": {
+        "fields": {
+            "text1-1":{
+                "fieldType": "input",
+                "type":"multitext",
+                "rows":4
+            },
+            "text1-2":{
+                "fieldType": "input",
+                "type":"multitext",
+                "rows":4
+            },
+            "loop":{
+                "fieldType":"loop"
+            }
+        },
+        "subModule":{
+            "loop":{
+                "fields":{
+                    "text2-1":{
+                        "fieldType": "input",
+                        "type":"multitext",
+                        "rows":4
+                    } ,
+                    "text2-2":{
+                        "fieldType": "input",
+                        "type":"multitext",
+                        "rows":4
+                    }
+                }
+            }
+        }
+    }
+}
+</code></pre>
+
+<p><code>interface</code> には、<code>fields</code> と、<code>subModule</code> の2つのオブジェクトを格納します。</p>
+
+<p><code>interface.fields[$fieldName]</code> に、フィールドを定義します。
+フィールドの種類を <code>interface.fields[$fieldName].fieldType</code> に定義します。</p>
+
+<p>フィールドの種類は、<code>input</code>、<code>module</code>、<code>loop</code> のいずれかです。それ以外の値は通常のフィールドと同じです。</p>
+
+<p><code>fieldType</code> が <code>loop</code> の場合、<code>interface.subModule</code> に、サブモジュールを登録します。
+loopフィールドの <code>name</code> と、 <code>interface.subModule[$subModuleName]</code> とで関連付けられます。<code>interface.subModule[$subModuleName][$loopFieldName]</code> 以下は、<code>interface.fields</code> の書き方と同じです。</p>
 
 <span id="hash_テンプレートの書式"></span><h2>テンプレートの書式</h2>
 

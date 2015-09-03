@@ -8,10 +8,9 @@
 
 テーマは、次のディレクトリに格納されます。
 
-<div class="unit">
-    <div class="code"><pre><code>./px-files/themes/{$テーマ名}/
-</code></pre></div>
-</div>
+```
+./px-files/themes/{$テーマ名}/
+```
 
 <!--
 
@@ -32,10 +31,10 @@ Pickles Framework では、1サイトに複数のテーマを定義すること�
 
 テーマは、複数のテンプレートを定義することができます。これはレイアウトと呼ばれ、サイトマップの layout 列にレイアウト名を指定することによって切り替えることができます。デフォルトのレイアウトは <code>default</code> です。
 
-<div class="unit">
-    <div class="code"><pre><code>./px-files/themes/{$テーマ名}/{$レイアウト名}.html
-</code></pre></div>
-</div>
+```
+./px-files/themes/{$テーマ名}/{$レイアウト名}.html
+```
+
 
 初期状態では、default(標準レイアウト)、top(トップページ用レイアウト)、plain(<code>&lt;body&gt;</code>の直下にコンテンツエリアを配したレイアウト)、popup(ポップアップウィンドウ用レイアウト)、naked(コンテンツエリアのみが出力されるレイアウト)が定義されていますが、任意に増やすことができます。
 
@@ -109,6 +108,11 @@ Pickles Framework では、1サイトに複数のテーマを定義すること�
     print $px-&gt;bowl()-&gt;pull();
 ?&gt;
 &lt;/div&gt;
+<strong>&lt;?php
+    //↓コンテンツから受け取った
+    //  bodyセクションの最後に出力するソースを出力しています。
+    print $px-&gt;bowl()-&gt;pull('foot');
+?&gt;</strong>
 &lt;/body&gt;
 &lt;/html&gt;</code></pre></div>
 </div>
@@ -142,6 +146,11 @@ Pickles Framework では、1サイトに複数のテーマを定義すること�
     print $px-&gt;bowl()-&gt;pull();
 ?&gt;
 &lt;/div&gt;
+&lt;?php
+    //↓コンテンツから受け取った
+    //  bodyセクションの最後に出力するソースを出力しています。
+    print $px-&gt;bowl()-&gt;pull('foot');
+?&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre></div>
 </div>
@@ -179,6 +188,11 @@ Pickles Framework では、1サイトに複数のテーマを定義すること�
     print $px-&gt;bowl()-&gt;pull();
 ?&gt;
 &lt;/div&gt;
+&lt;?php
+    //↓コンテンツから受け取った
+    //  bodyセクションの最後に出力するソースを出力しています。
+    print $px-&gt;bowl()-&gt;pull('foot');
+?&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre></div>
 </div>
@@ -190,7 +204,7 @@ Pickles Framework では、1サイトに複数のテーマを定義すること�
 <p>ページ名には、HTMLの特殊文字が含まれている可能性があります。<code>htmlspecialchars()</code> を通して、エスケープするようにします。</p>
 
 <div class="unit">
-    <div class="code"><pre><code>&lt;title&gt;<strong>&lt;?php print htmlspecialchars($page_info['title']); ?&gt;</strong> | サイト名&lt;/title&gt;
+    <div class="code"><pre><code>&lt;title&gt;<strong>&lt;?php print htmlspecialchars($page_info['title_full']); ?&gt;</strong>&lt;/title&gt;
 </code></pre></div>
 </div>
 
@@ -231,6 +245,9 @@ Pickles2 Desktop Tool のGUI編集機能は、HTML上の属性値からコンテ
 この挙動は、Pickles2のコンフィグで変更することができます。次の例は、属性 `data-px2-contents` がある要素をbowlとし、その値を bowl名 と解釈するようにしたものです。
 
 ```
+<<?= '' ?>?php
+// config.php
+
 $conf->plugins->px2dt->contents_area_selector = '[data-px2-contents]';//←コンテンツエリアを識別するセレクタ(複数の要素がマッチしてもよい)
 $conf->plugins->px2dt->contents_bowl_name_by = 'data-px2-contents';//←コンテンツエリアのbowl名を指定する属性名
 ```

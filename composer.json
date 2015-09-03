@@ -1,6 +1,6 @@
 {
-    "name": "tomk79/pickles2",
-    "description": "Pickles 2 は、静的で大きなウェブサイトを効率よく構築できる オープンソースのHTML生成ツールです。",
+    "name": "tomk79/pickles2desktoptool-help",
+    "description": "",
     "keywords": ["pickles"],
     "license": "MIT",
     "authors": [
@@ -16,7 +16,7 @@
         "tomk79/px-fw-2.x": "dev-develop",
         "tomk79/px2-fess": "dev-develop",
         "tomk79/px2-px2dthelper": "dev-develop",
-        "tomk79/pickles-sitemap-excel-2": "2.*",
+        "tomk79/px2-sitemapexcel": "2.*",
 		"tomk79/px2-path-resolver": "2.*"
     },
     "require-dev": {
@@ -24,7 +24,7 @@
     },
     "autoload": {
         "files": [
-            "px-files/themes/pickles/php/theme.php"
+            "docs/help/htdocs/px-files/themes/pickles/php/theme.php"
         ]
     }
 }

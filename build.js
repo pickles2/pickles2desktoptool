@@ -1,5 +1,5 @@
 var _utils = require('./app/index_files/_utils.node.js');
-var NwBuilder = require('node-webkit-builder');
+var NwBuilder = require('nw-builder');
 var zipFolder = require('zip-folder');
 var packageJson = require('./package.json');
 var phpjs = require('phpjs');
@@ -35,8 +35,9 @@ var nw = new NwBuilder({
       }
       return rtn;
     })(packageJson.dependencies) , // use the glob format
-    version: 'v0.12.2',// <- version number of node-webkit
+    version: 'v0.12.3',// <- version number of node-webkit
     macIcns: './app/common/images/px2-osx.icns',
+    winIco: './app/common/images/px2-win.ico',
     platforms: [
       'osx32',
       'win32'

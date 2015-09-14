@@ -72,6 +72,9 @@ window.contApp = new (function( px ){
 			function(it){
 				var path = px.php.dirname(_contentsPath) + '/' + px.php.basename( pathFiles ) + '/style.css.scss';
 				if( px.php.strlen( src_css ) ){
+					if( !px.utils.isDirectory( px.php.dirname( path ) ) ){
+						px.fs.mkdirSync( px.php.dirname( path ) );
+					}
 					px.fs.writeFile( path, src_css, {encoding:'utf8'}, function(err){
 						it.next();
 					} );
@@ -86,6 +89,9 @@ window.contApp = new (function( px ){
 			function(it){
 				var path = px.php.dirname(_contentsPath) + '/' + px.php.basename( pathFiles ) + '/script.js';
 				if( px.php.strlen( src_js ) ){
+					if( !px.utils.isDirectory( px.php.dirname( path ) ) ){
+						px.fs.mkdirSync( px.php.dirname( path ) );
+					}
 					px.fs.writeFile( path, src_js, {encoding:'utf8'}, function(err){
 						it.next();
 					} );

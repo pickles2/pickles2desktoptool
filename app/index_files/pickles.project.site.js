@@ -11,18 +11,18 @@ module.exports = function( px, pj, callbackOnStandby ) {
 
 	/**
 	 * ページ情報を取得する。
-	 * 
+	 *
 	 * このメソッドは、指定したページの情報を連想配列で返します。対象のページは第1引数にパスまたはページIDで指定します。
-	 * 
+	 *
 	 * カレントページの情報を取得する場合は、代わりに `$px->site()->get_current_page_info()` が使用できます。
-	 * 
+	 *
 	 * パスで指定したページの情報を取得する例 :
 	 * <pre>&lt;?php
 	 * // ページ &quot;/aaa/bbb.html&quot; のページ情報を得る
 	 * $page_info = $px-&gt;site()-&gt;get_page_info('/aaa/bbb.html');
 	 * var_dump( $page_info );
 	 * ?&gt;</pre>
-	 * 
+	 *
 	 * ページIDで指定したページの情報を取得する例 :
 	 * <pre>&lt;?php
 	 * // トップページのページ情報を得る
@@ -30,7 +30,7 @@ module.exports = function( px, pj, callbackOnStandby ) {
 	 * $page_info = $px-&gt;site()-&gt;get_page_info('');
 	 * var_dump( $page_info );
 	 * ?&gt;</pre>
-	 * 
+	 *
 	 * @param string $path 取得するページのパス または ページID。省略時、カレントページから自動的に取得します。
 	 * @param string $key 取り出す単一要素のキー。省略時はすべての要素を含む連想配列が返されます。省略可。
 	 * @return mixed 単一ページ情報を格納する連想配列、`$key` が指定された場合は、その値のみ。
@@ -130,18 +130,30 @@ module.exports = function( px, pj, callbackOnStandby ) {
 						var $tmp_preg_pattern = $tmp_array['path'];
 						var $preg_pattern = '';
 						while(1){
-							if( !$tmp_preg_pattern.match( new RegExp('^(.*?)\\{(\\$|\\*)([a-zA-Z0-9\\-\\_]*)\\}(.*)$') ) ){
+							if( !$tmp_preg_pattern.match( new RegExp('^([\\s\\S]*?)\\{(\\$|\\*)([a-zA-Z0-9\\-\\_]*)\\}([\\s\\S]*)$') ) ){
 								$preg_pattern += px.utils.escapeRegExp( $tmp_preg_pattern );
 								break;
 							}
-							$preg_pattern += px.utils.escapeRegExp( RegExp.$1 );
-							switch( RegExp.$2 ){
+							var tmp_matched_1 = RegExp.$1;
+							var tmp_matched_2 = RegExp.$2;
+							var tmp_matched_3 = RegExp.$3;
+							var tmp_matched_4 = RegExp.$4;
+
+							$preg_pattern = $preg_pattern + px.utils.escapeRegExp( tmp_matched_1 );
+							switch( px.php.trim(tmp_matched_2) ){
 								case '$':
-									$preg_pattern += '([a-zA-Z0-9\\-\\_]+)';break;
+									$preg_pattern += '([a-zA-Z0-9\\-\\_]+)';
+									break;
 								case '*':
-									$preg_pattern += '(.*?)';break;
+									$preg_pattern += '([\\s\\S]*?)';
+									break;
 							}
-							$tmp_preg_pattern = RegExp.$4;
+							$tmp_preg_pattern = tmp_matched_4;
+
+							delete tmp_matched_1;
+							delete tmp_matched_2;
+							delete tmp_matched_3;
+							delete tmp_matched_4;
 							continue;
 						}
 						$tmp_array['path'].match( new RegExp('\\{(\\$|\\*)([a-zA-Z0-9\\-\\_]*)\\}','g') );
@@ -159,6 +171,7 @@ module.exports = function( px, pj, callbackOnStandby ) {
 							$tmp_array['content'] = $tmp_array['path'];
 						}
 						$tmp_array['path'] = $tmp_path_original;
+						$tmp_array['content'] = $tmp_array['content'].replace( new RegExp( '\\/$' ), '/'+pj.get_directory_index_primary() );
 						delete $preg_pattern;
 						delete $pattern_map;
 						delete $tmp_path_original;
@@ -174,7 +187,7 @@ module.exports = function( px, pj, callbackOnStandby ) {
 
 	/**
 	 * パス文字列を受け取り、種類を判定する。
-	 * 
+	 *
 	 * @param string $path 調べるパス
 	 * @return string|bool 判定結果。
 	 * - `javascript:` から始まる場合 => 'javascript'
@@ -224,8 +237,7 @@ module.exports = function( px, pj, callbackOnStandby ) {
 
 	/**
 	 * ダイナミックパス情報を得る。
-	 * UTODO: _sitemap_dynamic_paths がロードされていないため、機能していない。
-	 * 
+	 *
 	 * @param string $path 対象のパス
 	 * @return string|bool 見つかった場合に、ダイナミックパスを、見つからない場合に `false` を返します。
 	 */

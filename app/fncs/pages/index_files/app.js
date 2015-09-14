@@ -139,26 +139,6 @@ window.contApp = new (function( px ){
 								return false;
 							})
 						;
-						// $bs3btn.find('button.btn--comment').eq(0)
-						// 	.attr({'data-path': prop.pageInfo.path})
-						// 	// .text('コメント')
-						// 	.click(function(){
-						// 		_this.openCommentFile( $(this).attr('data-path') );
-						// 		return false;
-						// 	})
-						// ;
-						// setTimeout(function(){
-						// 	var button = $bs3btn.find('button.btn--comment').eq(0);
-						// 	var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( prop.pageInfo.path ) );
-						// 	var realpathFiles = _pj.get_realpath_controot()+pathFiles;
-						// 	var realpath_matDir = realpathFiles + 'comments.ignore/';
-						// 	var realpath_comment_file = realpath_matDir + 'comment.md';
-						// 	if( px.utils.isFile( realpath_comment_file ) ){
-						// 		button.text('コメントあり');
-						// 	}else{
-						// 		button.text('コメントする');
-						// 	}
-						// }, 10);
 
 						$bs3btn.find('button.btn--materials').eq(0)
 							.attr({'data-path': prop.pageInfo.path})
@@ -630,6 +610,11 @@ window.contApp = new (function( px ){
 		var contPath = _pj.findPageContent( pagePath );
 		var contRealpath = _pj.get('path')+'/'+contPath;
 		var pathInfo = px.utils.parsePath(contPath);
+		var pagePath = pageInfo.path;
+		if( _pj.site.getPathType( pageInfo.path ) == 'dynamic' ){
+			var dynamicPathInfo = _pj.site.get_dynamic_path_info(pageInfo.path);
+			pagePath = dynamicPathInfo.path;
+		}
 
 		if( px.fs.existsSync( contRealpath ) ){
 			contRealpath = px.fs.realpathSync( contRealpath );
@@ -648,7 +633,7 @@ window.contApp = new (function( px ){
 				$('<iframe>')
 					//↓エディタ自体は別のHTMLで実装
 					.attr( 'src', '../../mods/editor/index.html'
-						+'?page_path='+encodeURIComponent( pageInfo.path )
+						+'?page_path='+encodeURIComponent( pagePath )
 					)
 					.css({
 						'border':'0px none',

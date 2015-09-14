@@ -1,4 +1,5 @@
 module.exports.classProject = function( window, px, projectInfo, projectId, cbStandby ) {
+	var _this = this;
 	// global.__defineGetter__('__LINE__', function () { return (new Error()).stack.split('\n')[2].split(':').reverse()[1]; }); var var_dump = function(val){ console.log(val); };
 
 	this.projectInfo = projectInfo;

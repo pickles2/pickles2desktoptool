@@ -1308,30 +1308,6 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 			}
 		}
 
-		// ビルトイン・DECフィールド
-		$module_editor_canvas
-			.append($('<div>')
-				.attr( {'data-dec-field-unit': 'data-dec-field-unit'} )
-				.css( {
-					'border': '1px solid #6d6',
-					'background-color': '#efe',
-					'padding': '1em',
-					'margin': '1em'
-				} )
-				.append($('<h2>')
-					.text( 'DEC (コメント)' )
-				)
-				.append( ((function( field, data ){
-					return $('<div>')
-						.append( $('<textarea>')
-							.val(data)
-							.css({'width':'100%','height':'6em'})
-						)
-					;
-				})( field, (data.dec?data.dec:'') ) ) )
-			)
-		;
-
 		// ビルトイン・アンカーフィールド
 		$module_editor_canvas
 			.append($('<div>')
@@ -1353,6 +1329,30 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 						)
 					;
 				})( field, (data.anchor?data.anchor:'') ) ) )
+			)
+		;
+
+		// ビルトイン・DECフィールド
+		$module_editor_canvas
+			.append($('<div>')
+				.attr( {'data-dec-field-unit': 'data-dec-field-unit'} )
+				.css( {
+					'border': '1px solid #6d6',
+					'background-color': '#efe',
+					'padding': '1em',
+					'margin': '1em'
+				} )
+				.append($('<h2>')
+					.text( 'DEC (コメント)' )
+				)
+				.append( ((function( field, data ){
+					return $('<div>')
+						.append( $('<textarea>')
+							.val(data)
+							.css({'width':'100%','height':'6em'})
+						)
+					;
+				})( field, (data.dec?data.dec:'') ) ) )
 			)
 		;
 

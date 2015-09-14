@@ -95,7 +95,9 @@ window.textEditor = new (function(){
 				switch(ext){
 					case 'css': return 'text/x-scss'; break;
 					case 'js': case 'json': return 'text/javascript'; break;
-					case 'html': return 'htmlmixed'; break;
+					case 'php': return 'application/x-httpd-php'; break;
+					case 'html': return 'application/x-httpd-php'; break;
+					// case 'html': return 'htmlmixed'; break;
 					case 'md': case 'markdown': return 'markdown'; break;
 				}
 				return ext;

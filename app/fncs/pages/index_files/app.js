@@ -236,7 +236,7 @@ window.contApp = new (function( px ){
 							.append( $('<li class="divider">') )
 							.append( $('<li>')
 								.append( $('<a>')
-									.text( 'show DEC' )
+									.text( '埋め込みコメントを表示する' )
 									.attr({
 										'data-path': prop.pageInfo.path ,
 										'href':'javascript:;'

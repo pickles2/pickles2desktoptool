@@ -74,7 +74,7 @@ window.px2dtGuiEditor.fieldDefinitions.multitext = _.defaults( new (function( px
 			)
 			.append($('<ul class="horizontal">')
 				.append($('<li class="horizontal-li"><label><input type="radio" name="editor-'+mod.name+'" value="" /> HTML</label></li>'))
-				.append($('<li class="horizontal-li"><label><input type="radio" name="editor-'+mod.name+'" value="text" /> Text</label></li>'))
+				.append($('<li class="horizontal-li"><label><input type="radio" name="editor-'+mod.name+'" value="text" /> テキスト</label></li>'))
 				.append($('<li class="horizontal-li"><label><input type="radio" name="editor-'+mod.name+'" value="markdown" /> Markdown</label></li>'))
 			)
 		;

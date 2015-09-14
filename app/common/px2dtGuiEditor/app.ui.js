@@ -1343,7 +1343,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					'margin': '1em'
 				} )
 				.append($('<h2>')
-					.text( 'DEC (コメント)' )
+					.text( '埋め込みコメント入力欄' )
 				)
 				.append( ((function( field, data ){
 					return $('<div>')
@@ -1357,7 +1357,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 		;
 
 		px.dialog({
-			"title": modTpl&&modTpl.info.name||data.modId ,
+			"title": "モジュール名: "+(modTpl&&modTpl.info.name||data.modId) ,
 			"body": $editWindow ,
 			"buttons":[]
 		});

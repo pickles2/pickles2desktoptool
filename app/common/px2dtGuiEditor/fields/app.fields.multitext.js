@@ -49,7 +49,7 @@ window.px2dtGuiEditor.fieldDefinitions.multitext = _.defaults( new (function( px
 			rtn = fieldData;
 		}else if( typeof(fieldData) === typeof('') ){
 			rtn.src = fieldData;
-			rtn.editor = 'html';
+			rtn.editor = 'markdown';
 		}
 		rtn.src = rtn.src||'';
 		rtn.editor = rtn.editor||'';

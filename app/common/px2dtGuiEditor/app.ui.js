@@ -558,17 +558,6 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					// 　outerHTML を取得する方法を変更。
 			}
 
-			// ビルトイン・DECフィールド
-			if( data.dec ){
-				rtn = (function(html, dec){
-					var $tmp = $('<div>').html(html);
-					$tmp.find('>*').eq(0).attr({
-						'data-dec': (dec?dec:'')
-					});
-					return $tmp.html();
-				})(rtn, data.dec);
-			}
-
 			// ビルトイン・アンカーフィールド
 			if( data.anchor ){
 				rtn = (function(html, anchor){
@@ -578,6 +567,17 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					});
 					return $tmp.html();
 				})(rtn, data.anchor);
+			}
+
+			// ビルトイン・DECフィールド
+			if( data.dec ){
+				rtn = (function(html, dec){
+					var $tmp = $('<div>').html(html);
+					$tmp.find('>*').eq(0).attr({
+						'data-dec': (dec?dec:'')
+					});
+					return $tmp.html();
+				})(rtn, data.dec);
 			}
 
 			return rtn;

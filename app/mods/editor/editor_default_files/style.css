@@ -37,8 +37,6 @@ body{
 
 .editor_frame,
 .editor_frame *{
-	font-size: medium !important;
-	font-family: monospace !important;
 }
 .contents .editor_frame pre{
 	overflow: inherit;

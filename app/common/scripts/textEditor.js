@@ -74,6 +74,10 @@ window.textEditor = new (function(){
 		for( var idx in themeList ){
 			rtn += '<link rel="stylesheet" href="'+_path_base+'/../codemirror/theme/'+themeList[idx]+'.css" />';
 		}
+
+		// textEditor custom CSS
+		rtn += '<link rel="stylesheet" href="'+_path_base+'/../styles/textEditor.css" />';
+
 		document.write(rtn);
 	})();
 

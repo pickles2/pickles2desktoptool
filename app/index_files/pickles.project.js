@@ -229,7 +229,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		var rtn = conf.path_files;
 		var $data = {
 			'dirname': px.utils.dirname(contentPath),
-			'filename': px.utils.basename(px.utils.trim_extension(contentPath)),
+			'filename': px.utils.basename(px.utils.trim_extension(px.utils.trim_extension(contentPath))),
 			'ext': px.utils.getExtension(contentPath).toLowerCase(),
 		};
 		rtn = rtn.replace( '{$dirname}', $data['dirname'], rtn );

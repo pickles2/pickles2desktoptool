@@ -7,7 +7,7 @@ return call_user_func( function(){
 	// config for project.
 	$conf->custom = new stdClass;
 	$conf->custom->packageJson = json_decode( file_get_contents(__DIR__.'/../../../../package.json') );
-	$conf->custom->composerJson = json_decode( file_get_contents(__DIR__.'/../composer.json') );
+	$conf->custom->composerJson = json_decode( file_get_contents(__DIR__.'/../../../../composer.json') );
 
 	// project
 	$conf->name = $conf->custom->packageJson->window->title.' - HELP'; // サイト名

@@ -48,8 +48,13 @@ pre code{
 	color: #eee;
 }
 .theme_si:before{
-	content: url('data:image/svg+xml;base64,<?= base64_encode( $px->fs()->read_file( './../../../app/common/images/logo_bg.svg' ) ) ?>');
-	margin: 0 20px 0 0;
+	display: inline-block;
+	content: " ";
+	background: url('data:image/svg+xml;base64,<?= base64_encode( $px->fs()->read_file( './../../../app/common/images/logo_bg.svg' ) ) ?>') center center no-repeat;
+	background-size: contain;
+	margin: 0 0.5em 0 0;
+	width: 1em;
+	height: 1em;
 }
 
 /**

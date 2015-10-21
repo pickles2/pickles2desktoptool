@@ -27,20 +27,7 @@ window.contApp = new (function(px, $){
 					.data('num', i)
 					.click( function(e){
 						var path = pj.get('path')+'/'+pj.get('home_dir')+'/sitemaps/'+$(this).data('filename');
-
-						window.px.utils.spawn('open',
-							[path],
-							{
-								success: function(data){
-								} ,
-								error: function(data){
-									alert('error!');
-								} ,
-								complete: function(code){
-								}
-							}
-						);
-
+						px.utils.openURL( path );
 					} )
 					.text( filelist[i] )
 				)

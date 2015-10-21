@@ -831,6 +831,10 @@ new (function($, window){
 				_Keypress.simple_combo("backspace", function(e) {
 					// バックスペースキーで編集画面などが閉じてしまう問題の対策。
 					// px.message("You pressed backspace");
+					switch(e.target.tagName.toLowerCase()){
+						case 'input': case 'textarea':
+							return true; break;
+					}
 					e.preventDefault();
 					e.stopPropagation();
 					return false;
@@ -838,6 +842,10 @@ new (function($, window){
 				_Keypress.simple_combo("delete", function(e) {
 					// バックスペースキーで編集画面などが閉じてしまう問題の対策。
 					// px.message("You pressed delete");
+					switch(e.target.tagName.toLowerCase()){
+						case 'input': case 'textarea':
+							return true; break;
+					}
 					e.preventDefault();
 					e.stopPropagation();
 					return false;

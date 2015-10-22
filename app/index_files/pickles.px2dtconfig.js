@@ -22,6 +22,34 @@
 		$tpl.find('[name=apps_texteditor]').val( px.getDb().apps.texteditor );
 		$tpl.find('[name=apps_texteditor_for_dir]').val( px.getDb().apps.texteditorForDir );
 
+		var fileInputs = [
+			'php',
+			'git',
+			'apps_texteditor',
+			'apps_texteditor_for_dir'
+		];
+		for(var idx in fileInputs){
+			if( px.getPlatform()=='win' ){
+				$tpl.find('[name='+fileInputs[idx]+'__file]')
+					.bind('change', function(){
+						var val = $(this).val();if(!val){return;}
+						var name = $(this).attr('name');
+						name = name.replace(new RegExp('__file$'), '');
+						$tpl.find('[name='+name+']').val( val );
+					})
+					.hide()
+				;
+				$tpl.find('.'+fileInputs[idx]+'__file').click(function(){
+					var name = $(this).attr('class');
+					$('[name='+name+']').click();
+				});
+			}else{
+				// Macでは上手く動かなかった。 → ボタン削除
+				$tpl.find('[name='+fileInputs[idx]+'__file]').remove();
+				$tpl.find('.'+fileInputs[idx]+'__file').remove();
+			}
+		}
+
 		px.dialog({
 			title: 'Pickles 2 Desktop Tool 設定' ,
 			body: $tpl ,

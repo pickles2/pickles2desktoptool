@@ -11,13 +11,13 @@ window.px2dtGuiEditor.fieldDefinitions.table = _.defaults( new (function( px, px
 		var realpath = JSON.parse( JSON.stringify( realpathSelected ) );
 		tmpResInfo.ext = px.utils.getExtension( realpath ).toLowerCase();
 		switch( tmpResInfo.ext ){
-			case 'csv':                          tmpResInfo.type = 'text/csv';  break;
-			case 'doc':                          tmpResInfo.type = 'application/msword';  break;
-			case 'xls':                          tmpResInfo.type = 'application/vnd.ms-excel';  break;
-			case 'ppt':                          tmpResInfo.type = 'application/vnd.ms-powerpoint';  break;
-			case 'docx':                         tmpResInfo.type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';  break;
-			case 'xlsx':                         tmpResInfo.type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';  break;
-			case 'pptx':                         tmpResInfo.type = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';  break;
+			case 'csv':    tmpResInfo.type = 'text/csv';  break;
+			case 'doc':    tmpResInfo.type = 'application/msword';  break;
+			case 'xls':    tmpResInfo.type = 'application/vnd.ms-excel';  break;
+			case 'ppt':    tmpResInfo.type = 'application/vnd.ms-powerpoint';  break;
+			case 'docx':   tmpResInfo.type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';  break;
+			case 'xlsx':   tmpResInfo.type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';  break;
+			case 'pptx':   tmpResInfo.type = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';  break;
 			default:
 				tmpResInfo.type = 'text/csv'; break;
 		}
@@ -102,6 +102,7 @@ window.px2dtGuiEditor.fieldDefinitions.table = _.defaults( new (function( px, px
 						px.utils.openURL(realpath);
 					})
 				)
+				.append( $('<div class="small">※外部アプリケーションが起動します。編集後、<strong>外部アプリケーションを終了してから</strong>、「保存する」ボタンをクリックしてください。</div>') )
 			;
 		}
 
@@ -260,7 +261,12 @@ window.px2dtGuiEditor.fieldDefinitions.table = _.defaults( new (function( px, px
 		cmd += '&renderer=' + px.php.urlencode( data.renderer );
 		cmd += '"';
 		data.output = px.execSync( cmd );
-		data.output = JSON.parse(data.output+'');
+		try {
+			data.output = JSON.parse(data.output+'');
+		} catch (e) {
+			px.log( '?PX=px2dthelper.convert_table_excel2html NOT work cleanly.' );
+			px.log( data.output );
+		}
 
 		return data;
 	}// this.saveEditorContent()

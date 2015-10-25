@@ -19,7 +19,7 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 			[
 				px.cmd('composer'),
 				'create-project',
-				'tomk79/pickles2',
+				'pickles2/pickles2',
 				'./',
 				'dev-master'
 			],

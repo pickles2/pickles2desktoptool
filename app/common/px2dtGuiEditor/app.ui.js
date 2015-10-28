@@ -16,6 +16,17 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 	var _Keypress = {};
 	this.Keypress = _Keypress;
 
+	function getCmdKeyName(){
+		switch(px.getPlatform()){
+			case 'mac':
+				return 'cmd';
+				break;
+			default:
+				return 'ctrl';
+				break;
+		}
+		return 'ctrl';
+	}
 
 	/**
 	 * フィールド初期化
@@ -166,14 +177,14 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 						_this.unselectInstance();
 						e.preventDefault();
 					});
-					_Keypress.simple_combo("cmd c", function(e) {
+					_Keypress.simple_combo(getCmdKeyName()+" c", function(e) {
 						var data = _this.getSelectedInstanceData();
 						data = JSON.stringify( data );
 						px.clipboard.set( data );
 						px.message('インスタンスをコピーしました。');
 						e.preventDefault();
 					});
-					_Keypress.simple_combo("cmd v", function(e) {
+					_Keypress.simple_combo(getCmdKeyName()+" v", function(e) {
 						var data = px.clipboard.get();
 						data = JSON.parse( data );
 						// console.log(data);
@@ -186,7 +197,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 						} );
 						e.preventDefault();
 					});
-					_Keypress.simple_combo("cmd z", function(e) {
+					_Keypress.simple_combo(getCmdKeyName()+" z", function(e) {
 						px2dtGuiEditor.contentsSourceData.historyBack( function(){
 							px2dtGuiEditor.save(function(result){
 								if( !result ){
@@ -199,7 +210,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 						} );
 						e.preventDefault();
 					});
-					_Keypress.simple_combo("cmd y", function(e) {
+					_Keypress.simple_combo(getCmdKeyName()+" y", function(e) {
 						px2dtGuiEditor.contentsSourceData.historyGo( function(){
 							px2dtGuiEditor.save(function(result){
 								if( !result ){
@@ -212,7 +223,7 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 						} );
 						e.preventDefault();
 					});
-					// _Keypress.simple_combo("cmd x", function(e) {
+					// _Keypress.simple_combo(getCmdKeyName()+" x", function(e) {
 					// 	px.message('cmd x');
 					// 	e.preventDefault();
 					// });

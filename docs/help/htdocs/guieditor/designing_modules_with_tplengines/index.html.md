@@ -81,11 +81,11 @@ Twigテンプレートエンジンの書式に従います。詳しくは <a hre
 ```
 {% if _ENV.mode == 'canvas' %}
 <div>ここは、編集画面でのみ出力されるコードです。</div>
-{% else %}
+{% endif %}
 
 {% if _ENV.mode == 'finalize' %}
 <div>ここは、編集画面では出力されないコードです。</div>
-{% else %}
+{% endif %}
 ```
 
 

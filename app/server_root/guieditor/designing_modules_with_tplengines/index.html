@@ -132,11 +132,11 @@ loopフィールドの <code>name</code> と、 <code>interface.subModule[$subMo
 
 <pre><code>{% if _ENV.mode == 'canvas' %}
 &lt;div&gt;ここは、編集画面でのみ出力されるコードです。&lt;/div&gt;
-{% else %}
+{% endif %}
 
 {% if _ENV.mode == 'finalize' %}
 &lt;div&gt;ここは、編集画面では出力されないコードです。&lt;/div&gt;
-{% else %}
+{% endif %}
 </code></pre>
 						</div>
 						<div class="theme_breadcrumb"><ul><li><a href="../../index.html">ヘルプトップ</a></li><li><a href="../../contents/index.html">コンテンツ編集</a></li><li><a href="../index.html">GUI編集</a></li><li><span>Twigエンジンを用いたGUIモジュール定義</span></li></ul></div>

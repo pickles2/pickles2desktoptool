@@ -345,8 +345,8 @@ window.px2dtGuiEditor.contentsSourceData = new(function(px, px2dtGuiEditor){
 				cb();
 				return this;
 			}
-			if( fromParsed.num < toParsed.num-1 ){
-				// 上から2つ以上下へ
+			if( fromParsed.num < toParsed.num ){
+				// 上から1つ以上下へ
 				toContainerInstancePath = toParsed.container + '@' + ( toParsed.num-1 );
 			}
 			this.removeInstance(fromContainerInstancePath);

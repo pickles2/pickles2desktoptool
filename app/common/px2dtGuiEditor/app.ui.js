@@ -669,6 +669,9 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 					.addClass('cont_instanceCtrlPanel-module_name')
 					.text(this.moduleTemplates&&this.moduleTemplates.info.name||this.moduleTemplates.id)
 				)
+				.append( $('<div>')
+					.addClass('cont_instanceCtrlPanel-drop_to_insert_here')
+				)
 				.width(posInfo.w-posInfo.l)
 				.height(posInfo.h-posInfo.t)
 				.offset({
@@ -787,6 +790,9 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 						.text(
 							'(+) ここにモジュールをドラッグしてください。'
 						)
+						.append( $('<div>')
+							.addClass('cont_instanceCtrlPanel-drop_to_insert_here')
+						)
 						.css(calcModuleUiStyle({
 							'display':'block',
 							'position':'absolute',
@@ -886,6 +892,9 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 							// .addClass('cont_instanceCtrlPanel-is_submodule')
 							.text(
 								'ここをダブルクリックして配列要素を追加してください。'
+							)
+							.append( $('<div>')
+								.addClass('cont_instanceCtrlPanel-drop_to_insert_here')
 							)
 							.css({
 								'display':'block',

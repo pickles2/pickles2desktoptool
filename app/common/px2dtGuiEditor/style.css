@@ -164,7 +164,7 @@ InstanceTreeViewと共用。
 
 .cont_instanceCtrlPanel.cont_instanceCtrlPanel-adding_area_module,
 .cont_instanceCtrlPanel.cont_instanceCtrlPanel-adding_area_loop{
-	overflow: hidden;
+	overflow: visible;
 	color: #000;
 	clear: both;
 	font-family: Meiryo, "Hiragino Kaku Gothic ProN", Verdana, sans-serif;
@@ -208,6 +208,39 @@ InstanceTreeViewと共用。
 	padding: 2px 10px;
 	font-size: 8px;
 	font-weight: normal;
+}
+.cont_instanceCtrlPanel-drop_to_insert_here{
+	display:none;
+	border:none;
+	background-color:#f93;
+	position: absolute;
+	left:5%; top:-8px;
+	width:90%;
+	margin:0 auto;
+	height:1px;
+}
+.cont_instanceCtrlPanel-dragentered>.cont_instanceCtrlPanel-drop_to_insert_here{
+	display:block !important;
+}
+.cont_instanceCtrlPanel-drop_to_insert_here:before,
+.cont_instanceCtrlPanel-drop_to_insert_here:after{
+	content:' ';
+	width:0;
+	height:0;
+	display: inline-block;
+	border-width:7px 0 7px 13px;
+	border-style:solid;
+	border-color:#f93;
+	border-top-color:transparent;
+	border-bottom-color:transparent;
+	position:absolute;
+	left:-5%; top:-7px;
+}
+.cont_instanceCtrlPanel-drop_to_insert_here:after{
+	border-left-width:0;
+	border-right-width:13px;
+	right:-5%;
+	left:auto;
 }
 
 /*
@@ -267,7 +300,7 @@ Instance Tree View
 
 .cont_instance_tree_view-modroot.cont_instanceCtrlPanel.cont_instanceCtrlPanel-adding_area_module,
 .cont_instance_tree_view-modroot.cont_instanceCtrlPanel.cont_instanceCtrlPanel-adding_area_loop{
-	overflow: hidden;
+	overflow: visible;
 	color: #000;
 	clear: both;
 	font-size: 9px;

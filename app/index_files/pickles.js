@@ -438,8 +438,8 @@ new (function($, window){
 	 */
 	this.openHelp = function(){
 		var port = 8081;
-		if( _path_db.network && _path_db.network.appserver && _path_db.network.appserver.port ){
-			port = _path_db.network.appserver.port;
+		if( _db.network && _db.network.appserver && _db.network.appserver.port ){
+			port = _db.network.appserver.port;
 		}
 		// _appServer.start( port, './app/server_root/', {} );
 		// var win = window.open( _appServer.getUrl(), null, 'resizable=no,scrollbars=yes,status=yes' );

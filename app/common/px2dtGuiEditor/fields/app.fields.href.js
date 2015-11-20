@@ -32,6 +32,8 @@ window.px2dtGuiEditor.fieldDefinitions.href = _.defaults( new (function( px, px2
 	this.mkEditor = function( mod, data ){
 		var changeTimer;
 		var blurTimer;
+		var $input = $('<input>');
+
 		function onChange(){
 			clearTimeout(changeTimer);
 			var $this = $(this);
@@ -54,6 +56,9 @@ window.px2dtGuiEditor.fieldDefinitions.href = _.defaults( new (function( px, px2
 								})
 								.text( pages[idx].path +' ('+pages[idx].title+')' )
 								.click(function(){
+									// console.log('path suggestion: clicked!');
+									// console.log($(this).attr('data-path'));
+									// console.log($(this).attr('data-path'));
 									$input
 										.val( $(this).attr('data-path') )
 										.focus()
@@ -66,7 +71,7 @@ window.px2dtGuiEditor.fieldDefinitions.href = _.defaults( new (function( px, px2
 				$palatte.html('').append( $html );
 			}, 100);
 		}
-		var $input = $('<input>')
+		$input
 			.attr({
 				"name":mod.name
 			})
@@ -83,7 +88,7 @@ window.px2dtGuiEditor.fieldDefinitions.href = _.defaults( new (function( px, px2
 				clearTimeout( blurTimer );
 				blurTimer = setTimeout( function(){
 					$palatte.hide();
-				}, 10 );
+				}, 200 );
 			})
 			.change()
 		;

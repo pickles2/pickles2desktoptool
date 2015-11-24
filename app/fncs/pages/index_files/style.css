@@ -67,3 +67,13 @@
 .cont_page_info-editor_comment p{
 	margin: 0.3em 0;
 }
+
+/**
+ * サイトマップ・フィルタ
+ */
+.cont_workspace_filter{
+	padding: 12px 0 0 0;
+}
+.cont_workspace_filter input{
+	width: 100%;
+}

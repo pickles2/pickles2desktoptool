@@ -7,11 +7,17 @@ window.contApp = new (function( px ){
 	var _config = null;
 	var $parent, $current, $childList;
 	var $editor = $('<div>');
-	var $preview, $previewIframe, $pageinfo, $commentView;
+	var $preview,
+		$previewIframe,
+		$pageinfo,
+		$commentView,
+		$workspaceFilter;
 
 	var _param = px.utils.parseUriParam( window.location.href );
 	var _pj = this.pj = px.getCurrentProject();
-	var _lastPreviewPath;
+	var _lastPreviewPath,
+		_currentPreviewPath,
+		_workspaceFilterKeywords='';
 
 	/**
 	 * 初期化
@@ -22,6 +28,7 @@ window.contApp = new (function( px ){
 		$previewIframe = $preview.find('iframe');
 		$pageinfo = $('.cont_page_info');
 		$commentView = $('.cont_comment_view');
+		$workspaceFilter = $('.cont_workspace_filter');
 
 		// bootstrap
 		$('*').tooltip();
@@ -48,8 +55,9 @@ window.contApp = new (function( px ){
 						var pathControot = _pj.getConfig().path_controot;
 						to = to.replace( new RegExp( '^'+px.utils.escapeRegExp( pathControot ) ), '' );
 						to = to.replace( new RegExp( '^\\/*' ), '/' );
+						_currentPreviewPath = to;
 
-						_this.pj.px2proj.get_page_info(to, function(pageInfo){
+						_this.pj.px2proj.get_page_info(_currentPreviewPath, function(pageInfo){
 							prop.pageInfo = pageInfo;
 							if( prop.pageInfo === null ){
 								_this.pj.px2proj.get_page_info('', function(pageInfo){
@@ -97,6 +105,24 @@ window.contApp = new (function( px ){
 								return false;
 							})
 						;
+
+						$workspaceFilter
+							.html('')
+							.append( $('<input>')
+								.attr({
+									'type': 'text',
+									'placeholder': 'Filter...'
+								})
+								.val(_workspaceFilterKeywords)
+								.bind('keyup', function(){
+									var $this = $(this);
+									_workspaceFilterKeywords = $this.val();
+									// console.log(_workspaceFilterKeywords);
+									_this.redraw();
+								})
+							)
+						;
+
 						setTimeout(function(){
 							var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( prop.pageInfo.path ) );
 							var realpathFiles = _pj.get_realpath_controot()+pathFiles;
@@ -500,14 +526,10 @@ window.contApp = new (function( px ){
 				'height': $(window).innerHeight() -0
 			})
 		;
-		$commentView
-			// .css({
-			// 	'height': $(window).innerHeight() - $('.container').outerHeight() -10
-			// })
-		;
+
 		$('.cont_workspace_container')
 			.css({
-				'height': $(window).innerHeight() - $('.container').outerHeight() - $commentView.outerHeight() -20,
+				'height': $(window).innerHeight() - $('.container').outerHeight() - $commentView.outerHeight() - $workspaceFilter.outerHeight() -20,
 				'margin-top': 10
 			})
 		;
@@ -565,7 +587,32 @@ window.contApp = new (function( px ){
 
 		$childList.html('').append($ul);
 
+		function isMatchKeywords(target){
+			if( typeof(target) != typeof('') ){
+				return false;
+			}
+			if( target.match(_workspaceFilterKeywords) ){
+				return true;
+			}
+			return false;
+		}
 		for( var idx in _sitemap ){
+			// console.log(_sitemap[idx].title);
+			if( _workspaceFilterKeywords.length ){
+				if(
+					!isMatchKeywords(_sitemap[idx].id) &&
+					!isMatchKeywords(_sitemap[idx].path) &&
+					!isMatchKeywords(_sitemap[idx].content) &&
+					!isMatchKeywords(_sitemap[idx].title) &&
+					!isMatchKeywords(_sitemap[idx].title_breadcrumb) &&
+					!isMatchKeywords(_sitemap[idx].title_h1) &&
+					!isMatchKeywords(_sitemap[idx].title_label) &&
+					!isMatchKeywords(_sitemap[idx].title_full)
+				){
+					// console.log('=> skiped.');
+					continue;
+				}
+			}
 			$ul.append( $('<li>')
 				.append( $('<a>')
 					.text( _sitemap[idx].title )
@@ -590,6 +637,13 @@ window.contApp = new (function( px ){
 				)
 			);
 		}
+
+		_this.pj.px2proj.get_page_info(_currentPreviewPath, function(pageInfo){
+			$childList.find('a').removeClass('current');
+			if( pageInfo !== null ){
+				$childList.find('a[data-path="'+pageInfo.path+'"]').addClass('current');
+			}
+		});
 		// $ul.listview();
 	};
 

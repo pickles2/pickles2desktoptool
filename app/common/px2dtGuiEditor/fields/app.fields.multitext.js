@@ -1,23 +1,24 @@
 window.px2dtGuiEditor.fieldDefinitions.multitext = _.defaults( new (function( px, px2dtGuiEditor ){
+	var utils79 = require('utils79');
 
 	/**
 	 * データをバインドする
 	 */
 	this.bind = function( fieldData, mode ){
 		var rtn = ''
-		if(typeof(fieldData)===typeof({}) && typeof(fieldData.src)===typeof('')){
+		if(typeof(fieldData)===typeof({}) ){
+			rtn = utils79.toStr(fieldData.src);
 			switch( fieldData.editor ){
 				case 'text':
-					rtn = px.$('<div>').text( fieldData.src ).html(); // ←HTML特殊文字変換
+					rtn = px.$('<div>').text( rtn ).html(); // ←HTML特殊文字変換
 					rtn = rtn.replace(new RegExp('\"','g'), '&quot;'); // ← jqueryで `.html()` しても、ダブルクオートは変換してくれないみたい。
 					rtn = rtn.replace(new RegExp('\r\n|\r|\n','g'), '<br />'); // ← 改行コードは改行タグに変換
 					break;
 				case 'markdown':
-					rtn = px.utils.markdown( fieldData.src );
+					rtn = px.utils.markdown( rtn );
 					break;
 				case 'html':
 				default:
-					rtn = fieldData.src;
 					break;
 			}
 		}
@@ -63,6 +64,9 @@ window.px2dtGuiEditor.fieldDefinitions.multitext = _.defaults( new (function( px
 		var rows = 12;
 		if( mod.rows ){
 			rows = mod.rows;
+		}
+		if(typeof(data) !== typeof({}) ){
+			data = {};
 		}
 		var rtn = $('<div>')
 			.append($('<textarea>')

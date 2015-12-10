@@ -1,4 +1,5 @@
 window.px2dtGuiEditor.fieldDefinitions.href = _.defaults( new (function( px, px2dtGuiEditor ){
+	var utils79 = require('utils79');
 
 	/**
 	 * データをバインドする
@@ -6,7 +7,8 @@ window.px2dtGuiEditor.fieldDefinitions.href = _.defaults( new (function( px, px2
 	this.bind = function( fieldData, mode ){
 		var rtn = ''
 		if(typeof(fieldData)===typeof('')){
-			rtn = px.$('<div>').text( fieldData ).html(); // ←HTML特殊文字変換
+			rtn = utils79.toStr(fieldData);
+			rtn = px.$('<div>').text(rtn).html(); // ←HTML特殊文字変換
 			// rtn = rtn.replace(new RegExp('\r\n|\r|\n','g'), '<br />'); // ← 属性値などに使うので、改行コードは改行コードのままじゃないとマズイ。
 		}
 		if( mode == 'canvas' && !rtn.length ){

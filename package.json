@@ -22,6 +22,7 @@
     "px2agent": "^2.0.2",
     "socket.io": "^1.3.5",
     "twig": "^0.8.2",
+    "utils79": "0.0.1-alpha.1",
     "zip-folder": "^1.0.0"
   },
   "devDependencies": {

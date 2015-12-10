@@ -1,15 +1,13 @@
 window.px2dtGuiEditor.fieldBase = new (function( px, px2dtGuiEditor ){
+	var utils79 = require('utils79');
 
 	/**
 	 * データをバインドする
 	 */
 	this.bind = function( fieldData, mode, mod ){
 		var rtn = '';
-		if( typeof(fieldData) === typeof([]) ){
-			rtn += fieldData.join('');
-		}else{
-			rtn += fieldData;
-		}
+		rtn += utils79.toStr(fieldData);
+
 		if( mode == 'canvas' && !rtn.length ){
 			rtn = $('<span>')
 				.text('(ダブルクリックしてHTMLコードを編集してください)')

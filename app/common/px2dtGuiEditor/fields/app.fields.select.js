@@ -1,15 +1,13 @@
 window.px2dtGuiEditor.fieldDefinitions.select = _.defaults( new (function( px, px2dtGuiEditor ){
+	var utils79 = require('utils79');
 
 	/**
 	 * データをバインドする
 	 */
 	this.bind = function( fieldData, mode, mod ){
 		var rtn = ''
-		if( typeof(fieldData) === typeof([]) ){
-			rtn += fieldData.join('');
-		}else{
-			rtn += fieldData;
-		}
+		rtn += utils79.toStr(fieldData);
+
 		if( !rtn.length && mod.options ){
 			var isHit = false;
 			for( var idx in mod.options ){

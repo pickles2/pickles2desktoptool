@@ -1,4 +1,5 @@
 window.px2dtGuiEditor.fieldDefinitions.markdown = _.defaults( new (function( px, px2dtGuiEditor ){
+	var utils79 = require('utils79');
 
 	/**
 	 * データをバインドする
@@ -6,7 +7,8 @@ window.px2dtGuiEditor.fieldDefinitions.markdown = _.defaults( new (function( px,
 	this.bind = function( fieldData, mode ){
 		var rtn = ''
 		if(typeof(fieldData)===typeof('')){
-			rtn = px.utils.markdown( fieldData );
+			rtn = utils79.toStr(fieldData);
+			rtn = px.utils.markdown( rtn );
 		}
 		if( mode == 'canvas' && !rtn.length ){
 			rtn = $('<span>')

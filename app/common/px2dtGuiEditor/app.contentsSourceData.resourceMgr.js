@@ -3,6 +3,7 @@ window.px2dtGuiEditor.contentsSourceData.resourceMgr = new(function(px, px2dtGui
 	var _contFilesDirPath;
 	var _resourcesDirPath;
 	var _dataJsonPath;
+	var utils79 = require('utils79');
 
 	var _resourceDb = {};
 
@@ -214,7 +215,11 @@ window.px2dtGuiEditor.contentsSourceData.resourceMgr = new(function(px, px2dtGui
 		if( typeof(res.publicFilename) == typeof('') && res.publicFilename.length ){
 			filename = res.publicFilename;
 		}
-		var rtn = './'+basename+'/resources/'+filename+'.'+res.ext;
+		var filename = utils79.toStr(filename);
+		if(!filename.length){filename = 'noname';}
+		var ext = utils79.toStr(res.ext);
+		if(!ext.length){ext = 'unknown';}
+		var rtn = './'+utils79.toStr(basename)+'/resources/'+utils79.toStr(filename)+'.'+ext;
 		return rtn;
 	}
 
@@ -224,7 +229,7 @@ window.px2dtGuiEditor.contentsSourceData.resourceMgr = new(function(px, px2dtGui
 	this.getResourceOriginalRealpath = function( resKey ){
 		var res = this.getResource( resKey );
 		var basename = px.utils.basename( px.fs.realpathSync(_contFilesDirPath) );
-		var rtn = _resourcesDirPath+'/'+resKey+'/bin.'+_resourceDb[resKey].ext;
+		var rtn = _resourcesDirPath+'/'+resKey+'/bin.'+utils79.toStr(_resourceDb[resKey].ext);
 		// var rtn = './'+basename+'/resources/'+resKey+'.'+res.ext;
 		return rtn;
 	}

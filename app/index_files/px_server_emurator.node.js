@@ -112,6 +112,9 @@
 							'Content-Type': mime
 						});
 						response.write( document_body );
+						if(mime=='text/html'){
+							response.write(getBroccoliScript());
+						}
 						response.end();
 					}
 				}
@@ -139,6 +142,9 @@
 				} else {
 					response.writeHead(200, 'OK', { 'Content-Type': mime });
 					response.write(bin);
+					if(mime=='text/html'){
+						response.write(getBroccoliScript());
+					}
 					response.end();
 				}
 			});
@@ -146,6 +152,30 @@
 		}
 		return ;
 	});
+
+	/**
+	 * broccoli-html-editor が要求するコードを取得
+	 */
+	function getBroccoliScript(){
+		var scriptSrc = fs.readFileSync(__dirname+'/../common/broccoli-html-editor/client/dist/broccoli-preview-contents.js').toString('utf-8');
+		var fin = '';
+			fin += '<script data-broccoli-receive-message="yes">'+"\n";
+			fin += 'window.addEventListener(\'message\',(function() {'+"\n";
+			fin += 'return function f(event) {'+"\n";
+			fin += 'console.log(event.origin);'+"\n";
+			fin += 'console.log(event.data);'+"\n";
+			// fin += 'if(event.origin!=\'http://127.0.0.1:8088\'){return;}'+"\n";
+			fin += 'var s=document.createElement(\'script\');'+"\n";
+			fin += 'document.querySelector(\'body\').appendChild(s);s.src=event.data.scriptUrl;'+"\n";
+			fin += 'window.removeEventListener(\'message\', f, false);'+"\n";
+			fin += '}'+"\n";
+			fin += '})(),false);'+"\n";
+			fin += '</script>'+"\n";
+			fin += '<script>';
+			fin += scriptSrc;
+			fin += '</script>'+"\n";
+		return fin;
+	}
 
 	/**
 	 * サーバーを起動

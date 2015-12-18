@@ -10,10 +10,13 @@
   "author": "Tomoya Koyanagi",
   "license": "BSD",
   "dependencies": {
+    "broccoli-html-editor": "git://github.com/pickles2/broccoli-html-editor.git",
     "execsyncs": "^0.1.1",
     "express": "^4.13.0",
     "fs-extra": "^0.24.0",
     "glob": "^5.0.10",
+    "iterate79": "0.0.1",
+    "jquery": "^2.1.4",
     "marked": "0.3.*",
     "mkdirp": "0.*",
     "node-php-bin": "0.0.1",
@@ -26,6 +29,7 @@
     "zip-folder": "^1.0.0"
   },
   "devDependencies": {
+    "gulp": "^3.9.0",
     "nw": "^0.12.3",
     "nw-builder": "^2.0.2"
   },

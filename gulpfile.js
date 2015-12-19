@@ -9,11 +9,11 @@ gulp.task("broccoli-client", function() {
 	gulp.src(["node_modules/broccoli-html-editor/client/dist/*"])
 		.pipe(gulp.dest( './app/common/broccoli-html-editor/client/dist/' ))
 	;
-	// gulp.src(["node_modules/broccoli-html-editor--table-field/dist/*"])
-	// 	.pipe(gulp.dest( './dist/libs/broccoli-html-editor--table-field/dist/' ))
-	// ;
-	// gulp.src(["node_modules/broccoli-psd-field/dist/*"])
-	// 	.pipe(gulp.dest( './dist/libs/broccoli-psd-field/dist/' ))
+	gulp.src(["node_modules/broccoli-field-table/dist/*"])
+		.pipe(gulp.dest( './app/common/broccoli-field-table/dist/' ))
+	;
+	// gulp.src(["node_modules/broccoli-field-psd/dist/*"])
+	// 	.pipe(gulp.dest( './app/common/broccoli-field-psd/dist/' ))
 	// ;
 });
 

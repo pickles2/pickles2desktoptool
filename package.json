@@ -10,6 +10,7 @@
   "author": "Tomoya Koyanagi",
   "license": "BSD",
   "dependencies": {
+    "broccoli-field-table": "git://github.com/pickles2/broccoli-field-table.git",
     "broccoli-html-editor": "git://github.com/pickles2/broccoli-html-editor.git",
     "execsyncs": "^0.1.1",
     "express": "^4.13.0",

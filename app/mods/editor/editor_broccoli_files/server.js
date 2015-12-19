@@ -59,8 +59,8 @@ window.contAppBroccoliServer = function(px, api, options, callback){
 					'pathResourceDir': data.pathResourceDir,
 					'realpathDataDir': data.realpathDataDir,
 					'customFields': {
-						// 'table': require('broccoli-html-editor--table-field'),
-						// 'psd': require('broccoli-psd-field')
+						// 'psd': require('broccoli-field-psd'),
+						'table': require('broccoli-field-table')
 					} ,
 					'bindTemplate': function(htmls, callback){
 						var fin = '';

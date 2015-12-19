@@ -168,14 +168,7 @@ html, body {
   /**
    * Remove most spacing between table cells.
    */
-  @charset "UTF-8";
-  /**
-   * FESS 1.1.2
-   * @author Tomoya Koyanagi <tomk79@gmail.com>
-   */
-  /**
-   * [static] 文字組み
-   */
+  /* ライブラリ同士の衝突吸収 */
   /**
    * [static] まわりこみ制御
    */
@@ -334,9 +327,6 @@ html, body {
    * [parts] 必須項目
    */
   /**
-   * [unit] フォーム送信ボタン
-   */
-  /**
    * [parts] リンクリスト .anchor_links
    */
   /**
@@ -473,9 +463,16 @@ html, body {
     margin: 1em 0; }
   .contents dl dd {
     margin-left: 2em; }
-  .contents body, .contents p, .contents li, .contents dt, .contents dd {
+  .contents p, .contents li, .contents dt, .contents dd {
     line-height: 1.6; }
   .contents .center {
+    /**
+     * FESS 1.2.2
+     * @author Tomoya Koyanagi <tomk79@gmail.com>
+     */
+    /**
+     * [static] 文字組み
+     */
     text-align: center; }
   .contents .left {
     text-align: left; }
@@ -903,20 +900,24 @@ html, body {
     background: #eee; }
   .contents .code {
     margin: 1em 0; }
-  .contents .code pre {
-    margin: 0; }
-  .contents .code code, .contents .code textarea {
+  .contents .code pre, .contents .code textarea {
+    margin: 0;
     border: 1px solid #999;
     background: #f5f5f5;
     padding: 1em;
     font-size: small;
     line-height: 1.5; }
-  .contents .code code {
+  .contents .code pre {
     display: block;
     width: auto;
     background: #e8e8e8;
     border: 1px dashed #999;
     overflow: auto; }
+  .contents .code pre code {
+    border: none;
+    padding: 0;
+    margin: 0;
+    background-color: transparent; }
   .contents .code textarea {
     display: block;
     width: 100%;
@@ -1061,6 +1062,14 @@ html, body {
     width: 33.333%; }
   .contents .cols .cols-col.cols-1of4 {
     width: 25%; }
+  .contents .cols .cols-col.cols-1of5 {
+    width: 20%; }
+  .contents .cols .cols-col.cols-2of5 {
+    width: 40%; }
+  .contents .cols .cols-col.cols-3of5 {
+    width: 60%; }
+  .contents .cols .cols-col.cols-4of5 {
+    width: 80%; }
   .contents .cols .cols-pad {
     margin-left: 20px; }
   .contents .cols .cols-last {
@@ -1233,35 +1242,6 @@ html, body {
     display: none; }
   .contents .date_list table th {
     white-space: nowrap; } }
-  .contents button, .contents input[type=button], .contents input[type=submit] {
-    padding: 0.5em 2.5em 0.5em 2.5em;
-    display: inline-block;
-    background-color: #f3f3f3;
-    border-radius: 0.2em;
-    border: 0;
-    -webkit-box-shadow: 0.1em 0.2em 0 0 #ccc;
-    -moz-box-shadow: 0.1em 0.2em 0 0 #ccc;
-    -ms-box-shadow: 0.1em 0.2em 0 0 #ccc;
-    box-shadow: 0.1em 0.2em 0 0 #ccc; }
-  .contents button:hover, .contents input[type=button]:hover, .contents input[type=submit]:hover {
-    background-color: #e9e9e9; }
-  .contents button:active, .contents input[type=button]:active, .contents input[type=submit]:active {
-    background-color: #ddd; }
-  @media all and (max-width: 520px) {
-  .contents button, .contents input[type=button], .contents input[type=submit] {
-    padding: 0.2em 1.5em; } }
-  @media all and (max-width: 430px) {
-  .contents button, .contents input[type=button], .contents input[type=submit] {
-    padding: 0.2em 0.5em; } }
-  .contents select {
-    display: inline-block;
-    background-color: #f3f3f3;
-    border-radius: 0.2em;
-    border: 0;
-    -webkit-box-shadow: 0.1em 0.2em 0 0 #ccc;
-    -moz-box-shadow: 0.1em 0.2em 0 0 #ccc;
-    -ms-box-shadow: 0.1em 0.2em 0 0 #ccc;
-    box-shadow: 0.1em 0.2em 0 0 #ccc; }
   @media all and (max-width: 520px) {
   .contents table.form_elements {
     border-bottom: 1px solid; }
@@ -1278,12 +1258,6 @@ html, body {
     padding: 0.2em 0.8em;
     font-size: 90%;
     border-radius: 1.2em; }
-  .contents .form_buttons .form_buttons-submit button, .contents .form_buttons .form_buttons-submit input[type=button], .contents .form_buttons .form_buttons-submit input[type=submit] {
-    font-weight: bold;
-    font-size: 130%;
-    background-color: #beb; }
-  .contents .form_buttons .form_buttons-revise button, .contents .form_buttons .form_buttons-revise input[type=button], .contents .form_buttons .form_buttons-revise input[type=submit] {
-    font-size: 80%; }
   .contents .anchor_links {
     border-radius: 1em; }
   .contents .attention_box {

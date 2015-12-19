@@ -11,8 +11,8 @@ window.contApp = new (function(){
 	 */
 	function init(){
 		$cont = $('.contents').html('');
-		$btnGitInit = $('<button>');
-		$btnGitStatus = $('<button>');
+		$btnGitInit = $('<button class="btn btn-default">');
+		$btnGitStatus = $('<button class="btn btn-default">');
 		$pre = $('<pre>');
 
 		if( !status.gitDirExists ){

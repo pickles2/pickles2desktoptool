@@ -11,10 +11,20 @@
 		opt.title = opt.title||'command:';
 		opt.body = opt.body||$('<div>');
 		opt.buttons = opt.buttons||[
-			$('<button>').text('OK').click(function(){
+			$('<button class="btn btn-primary">').text('OK').click(function(){
 				px.closeDialog();
 			})
 		];
+
+		for( var i in opt.buttons ){
+			var $btnElm = $(opt.buttons[i]);
+			$btnElm.each(function(){
+				if(!$(this).hasClass('btn')){
+					$(this).addClass('btn').addClass('btn-default');
+				}
+			});
+			opt.buttons[i] = $btnElm;
+		}
 
 		var $dialogButtons = $('<div class="dialog-buttons center">').append(opt.buttons);
 

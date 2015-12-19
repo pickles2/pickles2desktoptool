@@ -75,7 +75,7 @@ a:hover{
 /**
  * 汎用ボタン
  */
-.contents button{
+/*.contents button{
 	width: auto;
 	padding: 1em 2em;
 	margin: 2px 0;
@@ -91,7 +91,7 @@ a:hover{
 .contents button:active,
 .contents button:focus{
 	border-color: #999;
-}
+}*/
 
 /**
  * リストビュー

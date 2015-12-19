@@ -153,6 +153,7 @@ window.contApp = new (function( px ){
 		$textareas['js'] = $html.find('.editor_frame-js textarea');
 
 		$html.find('.switch_tab button').click(function(e){
+			$(this).addClass('btn').addClass('btn-default');
 			var switchTo = $(this).attr('data-switch');
 			_this.selectTab( switchTo );
 		});

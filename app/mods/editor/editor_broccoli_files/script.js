@@ -8,6 +8,11 @@ window.contApp = new (function( px ){
 	var broccoli = new Broccoli();
 	var _pj;
 
+	var $elmCanvas,
+		$elmModulePalette,
+		$elmInstanceTreeView,
+		$elmInstancePathView;
+
 	$(function(){
 
 		it79.fnc(data, [
@@ -43,12 +48,17 @@ window.contApp = new (function( px ){
 			} ,
 			function(it1, data){
 				// broccoli-html-editor standby.
+				$elmCanvas = $('#canvas');
+				$elmModulePalette = $('#palette');
+				$elmInstanceTreeView = $('#instanceTreeView');
+				$elmInstancePathView = $('#instancePathView');
+
 				broccoli.init(
 					{
-						'elmCanvas': document.getElementById('canvas'),
-						'elmModulePalette': document.getElementById('palette'),
-						'elmInstanceTreeView': document.getElementById('instanceTreeView'),
-						'elmInstancePathView': document.getElementById('instancePathView'),
+						'elmCanvas': $elmCanvas.get(0),
+						'elmModulePalette': $elmModulePalette.get(0),
+						'elmInstanceTreeView': $elmInstanceTreeView.get(0),
+						'elmInstancePathView': $elmInstancePathView.get(0),
 						'contents_area_selector': _pj.getConfig().plugins.px2dt.contents_area_selector,
 						'contents_bowl_name_by': _pj.getConfig().plugins.px2dt.contents_bowl_name_by,
 						'customFields': {
@@ -90,6 +100,14 @@ window.contApp = new (function( px ){
 	});
 
 	function onWindowResized(){
+		var h = $(window).innerHeight() - $elmInstancePathView.outerHeight();
+		// console.log(h);
+		$('.cont_outline').css( {'height': h} );
+		$elmCanvas.css( {'height': h} );
+		$elmModulePalette.css( {'height': h} );
+		$elmInstanceTreeView.css( {'height': h} );
+
+		broccoli.redraw();
 		return;
 	}
 

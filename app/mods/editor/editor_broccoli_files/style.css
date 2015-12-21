@@ -23,7 +23,14 @@
 	position: absolute;
 	top: 0; right: 0;
 	width: 15%;
-	height: 400px;
+	height: 200px;
+	overflow: auto;
+}
+#buttons{
+	position: absolute;
+	top: 200px; right: 0;
+	width: 15%;
+	height: auto;
 	overflow: auto;
 }
 #instancePathView{

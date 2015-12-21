@@ -8,10 +8,13 @@ window.contApp = new (function( px ){
 	var broccoli = new Broccoli();
 	var _pj;
 
-	var $elmCanvas,
+	var $elmButtons,
+		$elmCanvas,
 		$elmModulePalette,
 		$elmInstanceTreeView,
 		$elmInstancePathView;
+
+	var resizeTimer;
 
 	$(function(){
 
@@ -48,6 +51,7 @@ window.contApp = new (function( px ){
 			} ,
 			function(it1, data){
 				// broccoli-html-editor standby.
+				$elmButtons = $('#buttons');
 				$elmCanvas = $('#canvas');
 				$elmModulePalette = $('#palette');
 				$elmInstanceTreeView = $('#instanceTreeView');
@@ -90,6 +94,29 @@ window.contApp = new (function( px ){
 				);
 			} ,
 			function(it1, _data){
+				$elmButtons
+					.find('button.cont_btn_save_and_close')
+						.click( function(){
+							broccoli.saveContents( function(){
+								px.message( 'ページを保存しました。' );
+								window.parent.contApp.closeEditor();
+							} );
+						} )
+				;
+				$elmButtons
+					.find('button.cont_btn_save_and_preview_in_browser')
+						.click(function(){
+							broccoli.saveContents( function(){
+								px.message( 'ページを保存しました。' );
+								px.preview.serverStandby(function(){
+									px.utils.openURL( px.preview.getUrl( param.page_path ) );
+								});
+							} );
+						})
+				;
+				it1.next(_data);
+			} ,
+			function(it1, _data){
 				px.progress.close();
 				data = _data;
 				console.log(data);
@@ -100,14 +127,18 @@ window.contApp = new (function( px ){
 	});
 
 	function onWindowResized(){
-		var h = $(window).innerHeight() - $elmInstancePathView.outerHeight();
-		// console.log(h);
-		$('.cont_outline').css( {'height': h} );
-		$elmCanvas.css( {'height': h} );
-		$elmModulePalette.css( {'height': h} );
-		$elmInstanceTreeView.css( {'height': h} );
+		clearTimeout(resizeTimer);
+		resizeTimer = setTimeout(function(){
+			var h = $(window).innerHeight() - $elmInstancePathView.outerHeight();
+			// console.log(h);
+			$('.cont_outline').css( {'height': h} );
+			$elmCanvas.css( {'height': h} );
+			$elmModulePalette.css( {'height': h - $elmButtons.outerHeight()} );
+			$elmButtons.css( {'top': h - $elmButtons.outerHeight()} );
+			$elmInstanceTreeView.css( {'height': h} );
 
-		broccoli.redraw();
+			broccoli.redraw();
+		}, 1000);
 		return;
 	}
 

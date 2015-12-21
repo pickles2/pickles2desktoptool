@@ -2769,7 +2769,7 @@ fieldset[disabled] .btn {
   opacity: .65;
 }
 .btn-default {
-  color: #333;
+  color: #333 !important;
   background-color: #fff;
   border-color: #ccc;
 }
@@ -2810,7 +2810,7 @@ fieldset[disabled] .btn-default.active {
   background-color: #333;
 }
 .btn-primary {
-  color: #fff;
+  color: #fff !important;
   background-color: #428bca;
   border-color: #357ebd;
 }
@@ -2851,7 +2851,7 @@ fieldset[disabled] .btn-primary.active {
   background-color: #fff;
 }
 .btn-success {
-  color: #fff;
+  color: #fff !important;
   background-color: #5cb85c;
   border-color: #4cae4c;
 }
@@ -2892,7 +2892,7 @@ fieldset[disabled] .btn-success.active {
   background-color: #fff;
 }
 .btn-info {
-  color: #fff;
+  color: #fff !important;
   background-color: #5bc0de;
   border-color: #46b8da;
 }
@@ -2933,7 +2933,7 @@ fieldset[disabled] .btn-info.active {
   background-color: #fff;
 }
 .btn-warning {
-  color: #fff;
+  color: #fff !important;
   background-color: #f0ad4e;
   border-color: #eea236;
 }
@@ -2974,7 +2974,7 @@ fieldset[disabled] .btn-warning.active {
   background-color: #fff;
 }
 .btn-danger {
-  color: #fff;
+  color: #fff !important;
   background-color: #d9534f;
   border-color: #d43f3a;
 }

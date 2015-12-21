@@ -41,7 +41,7 @@
 						</tr>
 					</table>
 					<p class="center">
-						<button>選択したパスで続ける</button>
+						<button class="btn btn-primary">選択したパスで続ける</button>
 					</p>
 				</form>
 			</div>
@@ -71,7 +71,7 @@
 						次のボタンを押して、セットアップを続けてください。<br />
 					</p>
 					<p>
-						<button>Pickles 2 をセットアップする</button>
+						<button class="btn btn-primary">Pickles 2 をセットアップする</button>
 					</p>
 				</div>
 			</form>
@@ -193,7 +193,7 @@
 					</div>
 				</div><!-- /.row -->
 				<p><button class="btn btn-default" onclick="px.deselectProject(); px.subapp(); return false;">プロジェクト選択へ戻る</button></p>
-				<p><button class="btn btn-default" onclick="if(confirm('このプロジェクトを削除してよろしいですか？')){px.deleteProject( px.getCurrentProject().projectId, function(){px.subapp();} );} return false;">このプロジェクトを削除</button></p>
+				<p><button class="btn btn-danger" onclick="if(confirm('このプロジェクトを削除してよろしいですか？')){px.deleteProject( px.getCurrentProject().projectId, function(){px.subapp();} );} return false;">このプロジェクトを削除</button></p>
 				<hr />
 				<address class="center">---</address>
 

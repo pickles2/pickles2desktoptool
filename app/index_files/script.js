@@ -15,6 +15,12 @@ function cont_createProject(form){
 		return false;
 	}
 
+	if( pj.path.match(new RegExp('[^a-zA-Z0-9\\/\\-\\_\\.\\@\\:\\;\\\\]')) ){
+		if(!confirm('[注意] マルチバイト文字を含むパスでは、正常に動作しない場合があります。アルファベットのみで構成されたパスにセットアップすることを強くお勧めします。続けますか？')){
+			return false;
+		}
+	}
+
 	// プロジェクトを追加
 	px.createProject(
 		pj ,

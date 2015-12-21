@@ -153,9 +153,9 @@ window.px2dtGuiEditor = new (function(px){
 				template_editor += '		<div class="cont_modulelist"></div>';
 				template_editor += '		<div class="cont_btns">';
 				template_editor += '			<ul>';
-				// template_editor += '				<li><button class="cont_btn_save">保存する</button></li>';
-				template_editor += '				<li><button class="cont_btn_save_and_preview_in_browser">ブラウザでプレビュー</button></li>';
-				template_editor += '				<li><button class="cont_btn_save_and_close">閉じる</button></li>';
+				// template_editor += '				<li><button class="btn btn-default btn-block cont_btn_save">保存する</button></li>';
+				template_editor += '				<li><button class="btn btn-default btn-block cont_btn_save_and_preview_in_browser">ブラウザでプレビュー</button></li>';
+				template_editor += '				<li><button class="btn btn-primary btn-block cont_btn_save_and_close">保存して閉じる</button></li>';
 				template_editor += '			</ul>';
 				template_editor += '		</div>';
 				template_editor += '	</div><!-- / .cont_editorframe-ctrlpanel -->';

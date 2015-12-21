@@ -796,8 +796,8 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 						.css(calcModuleUiStyle({
 							'display':'block',
 							'position':'absolute',
-							'top': $elm.offset().top + 0,
-							'left': $elm.offset().left,
+							'top':  (function($elm){if($elm.size()){return $elm.offset().top  + 0;}return 0;})($elm),
+							'left': (function($elm){if($elm.size()){return $elm.offset().left + 0;}return 0;})($elm),
 							"z-index":0,
 							'width': $elm.width(),
 							'height': $elm.height(),
@@ -1187,16 +1187,16 @@ window.px2dtGuiEditor.ui = new(function(px, px2dtGuiEditor){
 		var template_module_editor = '';
 		template_module_editor += '<form action="javascript:;" method="get">';
 		template_module_editor += '	<p style="text-align:right;">';
-		template_module_editor += '		<button class="cont_tpl_module_editor-submit">保存する</button>';
+		template_module_editor += '		<button class="btn btn-primary btn-sm cont_tpl_module_editor-submit">保存する</button>';
 		template_module_editor += '	</p>';
 		template_module_editor += '	<div class="cont_tpl_module_editor-canvas">';
 		template_module_editor += '	</div>';
 		template_module_editor += '	<p style="text-align:center;">';
-		template_module_editor += '		<button class="cont_tpl_module_editor-submit">保存する</button>';
+		template_module_editor += '		<button class="btn btn-primary btn-lg btn-block cont_tpl_module_editor-submit">保存する</button>';
 		template_module_editor += '	</p>';
 		template_module_editor += '	<p style="text-align:right;">';
-		template_module_editor += '		<button class="cont_tpl_module_editor-cancel">キャンセル</button>';
-		template_module_editor += '		<button class="cont_tpl_module_editor-remove">このモジュールを削除</button>';
+		template_module_editor += '		<button class="btn btn-default cont_tpl_module_editor-cancel">キャンセル</button>';
+		template_module_editor += '		<button class="btn btn-danger cont_tpl_module_editor-remove">このモジュールを削除</button>';
 		template_module_editor += '	</p>';
 		template_module_editor += '</form>';
 

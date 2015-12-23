@@ -37,7 +37,7 @@ window.contApp = new (function( px ){
 			var datajson = px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+_pj.getContentFilesByPageContent(_cont_path)+'/guieditor.ignore/data.json';
 			if( px.fs.existsSync( datajson ) ){
 				filename_editor = 'editor_broccoli';
-				filename_editor = 'editor_gui';
+				// filename_editor = 'editor_gui';
 			}
 		}
 

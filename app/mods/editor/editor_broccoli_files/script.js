@@ -15,6 +15,20 @@ window.contApp = new (function( px ){
 		$elmInstancePathView;
 
 	var resizeTimer;
+	var _Keypress = {};
+	this.Keypress = _Keypress;
+
+	function getCmdKeyName(){
+		switch(px.getPlatform()){
+			case 'mac':
+				return 'cmd';
+				break;
+			default:
+				return 'ctrl';
+				break;
+		}
+		return 'ctrl';
+	}
 
 	$(function(){
 
@@ -114,6 +128,57 @@ window.contApp = new (function( px ){
 							} );
 						})
 				;
+				it1.next(_data);
+			} ,
+			function(it1, _data){
+				// キーボードイベントセット
+				_Keypress = new window.keypress.Listener();
+				this.Keypress = _Keypress;
+				_Keypress.simple_combo("backspace", function(e) {
+					e.preventDefault();
+					broccoli.remove(function(){
+						console.log('remove instance done.');
+					});
+				});
+				_Keypress.simple_combo("delete", function(e) {
+					e.preventDefault();
+					broccoli.remove(function(){
+						console.log('remove instance done.');
+					});
+				});
+				_Keypress.simple_combo("escape", function(e) {
+					e.preventDefault();
+					broccoli.unselectInstance();
+				});
+				_Keypress.simple_combo(getCmdKeyName()+" c", function(e) {
+					e.preventDefault();
+					broccoli.copy(function(){
+						console.log('copy instance done.');
+					});
+				});
+				_Keypress.simple_combo(getCmdKeyName()+" v", function(e) {
+					e.preventDefault();
+					broccoli.paste(function(){
+						console.log('paste instance done.');
+					});
+				});
+				_Keypress.simple_combo(getCmdKeyName()+" z", function(e) {
+					e.preventDefault();
+					broccoli.historyBack(function(){
+						console.log('historyBack done.');
+					});
+				});
+				_Keypress.simple_combo(getCmdKeyName()+" y", function(e) {
+					e.preventDefault();
+					broccoli.historyGo(function(){
+						console.log('historyGo done.');
+					});
+				});
+				// _Keypress.simple_combo(getCmdKeyName()+" x", function(e) {
+				// 	px.message('cmd x');
+				// 	e.preventDefault();
+				// });
+
 				it1.next(_data);
 			} ,
 			function(it1, _data){

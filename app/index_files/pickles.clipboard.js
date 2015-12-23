@@ -2,7 +2,7 @@
 	var clipboard = '';
 
 	/**
-	 * ダイアログを表示する
+	 * クリップボード管理オブジェクト
 	 */
 	px.clipboard = new (function(){
 

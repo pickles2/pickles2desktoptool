@@ -227,6 +227,9 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	this.getContentFilesByPageContent = function( contentPath ){
 		var conf = this.getConfig();
 		var rtn = conf.path_files;
+		if( typeof(rtn) !== typeof('') ){
+			rtn = '{$dirname}/{$filename}_files/'; // <- default
+		}
 		var $data = {
 			'dirname': px.utils.dirname(contentPath),
 			'filename': px.utils.basename(px.utils.trim_extension(px.utils.trim_extension(contentPath))),

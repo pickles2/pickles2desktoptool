@@ -135,40 +135,68 @@ window.contApp = new (function( px ){
 				_Keypress = new window.keypress.Listener();
 				this.Keypress = _Keypress;
 				_Keypress.simple_combo("backspace", function(e) {
+					switch(e.target.tagName.toLowerCase()){
+						case 'input': case 'textarea':
+						return true; break;
+					}
 					e.preventDefault();
 					broccoli.remove(function(){
 						console.log('remove instance done.');
 					});
 				});
 				_Keypress.simple_combo("delete", function(e) {
+					switch(e.target.tagName.toLowerCase()){
+						case 'input': case 'textarea':
+						return true; break;
+					}
 					e.preventDefault();
 					broccoli.remove(function(){
 						console.log('remove instance done.');
 					});
 				});
 				_Keypress.simple_combo("escape", function(e) {
+					switch(e.target.tagName.toLowerCase()){
+						case 'input': case 'textarea':
+						return true; break;
+					}
 					e.preventDefault();
 					broccoli.unselectInstance();
 				});
 				_Keypress.simple_combo(getCmdKeyName()+" c", function(e) {
+					switch(e.target.tagName.toLowerCase()){
+						case 'input': case 'textarea':
+						return true; break;
+					}
 					e.preventDefault();
 					broccoli.copy(function(){
 						console.log('copy instance done.');
 					});
 				});
 				_Keypress.simple_combo(getCmdKeyName()+" v", function(e) {
+					switch(e.target.tagName.toLowerCase()){
+						case 'input': case 'textarea':
+						return true; break;
+					}
 					e.preventDefault();
 					broccoli.paste(function(){
 						console.log('paste instance done.');
 					});
 				});
 				_Keypress.simple_combo(getCmdKeyName()+" z", function(e) {
+					switch(e.target.tagName.toLowerCase()){
+						case 'input': case 'textarea':
+						return true; break;
+					}
 					e.preventDefault();
 					broccoli.historyBack(function(){
 						console.log('historyBack done.');
 					});
 				});
 				_Keypress.simple_combo(getCmdKeyName()+" y", function(e) {
+					switch(e.target.tagName.toLowerCase()){
+						case 'input': case 'textarea':
+						return true; break;
+					}
 					e.preventDefault();
 					broccoli.historyGo(function(){
 						console.log('historyGo done.');

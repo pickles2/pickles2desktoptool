@@ -32,7 +32,7 @@
   "devDependencies": {
     "gulp": "^3.9.0",
     "nw": "^0.12.3",
-    "nw-builder": "^2.0.2"
+    "nw-builder": "^2.2.0"
   },
   "pickles2": {
     "network": {

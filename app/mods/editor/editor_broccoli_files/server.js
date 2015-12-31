@@ -38,14 +38,21 @@ window.contAppBroccoliServer = function(px, api, options, callback){
 
 				px2proj.path_files(param.page_path, '', function(localpath){
 					data.pathResourceDir = path.resolve(localpath, 'resources')+'/';
+					data.pathResourceDir = data.pathResourceDir.replace(new RegExp('\\\\','g'), '/').replace(new RegExp('^[a-zA-Z]\\:\\/'), '/');
+						// Windows でボリュームラベル "C:" などが含まれるようなパスを渡すと、
+						// broccoli-html-editor内 resourceMgr で
+						// 「Uncaught RangeError: Maximum call stack size exceeded」が起きて落ちる。
+						// ここで渡すのはウェブ側からみえる外部のパスでありサーバー内部パスではないので、
+						// ボリュームラベルが付加された値を渡すのは間違い。
 					it1.next(data);
 				});
 
 			});
 		} ,
 		function(it1, data){
-			console.log(data);
-			console.log(_pj.getConfig().plugins.px2dt);
+			// console.log(data);
+			// console.log(param);
+			// console.log(_pj.getConfig().plugins.px2dt);
 
 			// broccoli setup.
 			broccoli = new Broccoli();

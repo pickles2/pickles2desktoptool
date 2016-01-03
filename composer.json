@@ -14,10 +14,11 @@
     "require": {
         "php": ">=5.3.0" ,
         "pickles2/px-fw-2.x": "dev-develop",
-        "tomk79/px2-fess": "dev-develop",
-        "tomk79/px2-px2dthelper": "dev-develop",
-        "tomk79/px2-sitemapexcel": "2.*",
-		"tomk79/px2-path-resolver": "2.*"
+        "pickles2/broccoli-module-fess": "dev-develop",
+        "pickles2/broccoli-module-plain-html-elements": "dev-develop",
+        "pickles2/px2-px2dthelper": "dev-develop",
+        "pickles2/px2-sitemapexcel": "2.*",
+		"pickles2/px2-path-resolver": "2.*"
     },
     "require-dev": {
         "phpunit/phpunit": "4.1.*"

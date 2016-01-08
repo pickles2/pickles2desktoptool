@@ -4,14 +4,15 @@
   "description": "",
   "main": "app/index.html",
   "scripts": {
+    "preinstall": "git submodule update -i -r",
     "start": "nw",
     "build": "node ./build.js"
   },
   "author": "Tomoya Koyanagi",
   "license": "BSD",
   "dependencies": {
-    "broccoli-field-table": "git://github.com/pickles2/broccoli-field-table.git",
-    "broccoli-html-editor": "git://github.com/pickles2/broccoli-html-editor.git",
+    "broccoli-field-table": "file:submodules/broccoli-field-table",
+    "broccoli-html-editor": "file:submodules/broccoli-html-editor",
     "execsyncs": "^0.1.1",
     "express": "^4.13.0",
     "fs-extra": "^0.24.0",

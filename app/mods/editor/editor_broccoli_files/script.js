@@ -70,7 +70,12 @@ window.contApp = new (function( px ){
 				$elmModulePalette = $('#palette');
 				$elmInstanceTreeView = $('#instanceTreeView');
 				$elmInstancePathView = $('#instancePathView');
-
+				fitWindowSize(function(){
+					it1.next(data);
+				});
+			} ,
+			function(it1, data){
+				// broccoli-html-editor standby.
 				broccoli.init(
 					{
 						'elmCanvas': $elmCanvas.get(0),
@@ -96,13 +101,6 @@ window.contApp = new (function( px ){
 					} ,
 					function(){
 						// 初期化が完了すると呼びだされるコールバック関数です。
-
-						$(window).resize(function(){
-							// このメソッドは、canvasの再描画を行います。
-							// ウィンドウサイズが変更された際に、UIを再描画するよう命令しています。
-							onWindowResized();
-						}).resize();
-
 						it1.next(data);
 					}
 				);
@@ -210,9 +208,19 @@ window.contApp = new (function( px ){
 				it1.next(_data);
 			} ,
 			function(it1, _data){
+
+				$(window).resize(function(){
+					// このメソッドは、canvasの再描画を行います。
+					// ウィンドウサイズが変更された際に、UIを再描画するよう命令しています。
+					onWindowResized();
+				}).resize();
+
+				it1.next(_data);
+			} ,
+			function(it1, _data){
 				px.progress.close();
-				data = _data;
-				console.log(data);
+				// data = _data;
+				// console.log(data);
 				console.log('Started!');
 			}
 		]);
@@ -222,17 +230,25 @@ window.contApp = new (function( px ){
 	function onWindowResized(){
 		clearTimeout(resizeTimer);
 		resizeTimer = setTimeout(function(){
-			var h = $(window).innerHeight() - $elmInstancePathView.outerHeight();
-			// console.log(h);
-			$('.cont_outline').css( {'height': h} );
-			$elmCanvas.css( {'height': h} );
-			$elmModulePalette.css( {'height': h - $elmButtons.outerHeight()} );
-			$elmButtons.css( {'top': h - $elmButtons.outerHeight()} );
-			$elmInstanceTreeView.css( {'height': h} );
-
-			broccoli.redraw();
-		}, 1000);
+			fitWindowSize(function(){
+				if(broccoli.redraw){
+					broccoli.redraw();
+				}
+			});
+		}, 500);
 		return;
+	}
+
+	function fitWindowSize(callback){
+		callback = callback||function(){};
+		var h = $(window).innerHeight() - $elmInstancePathView.outerHeight();
+		// console.log(h);
+		$('.cont_outline').css( {'height': h} );
+		$elmCanvas.css( {'height': h} );
+		$elmModulePalette.css( {'height': h - $elmButtons.outerHeight()} );
+		$elmButtons.css( {'top': h - $elmButtons.outerHeight()} );
+		$elmInstanceTreeView.css( {'height': h} );
+		callback();
 	}
 
 })( window.parent.px );

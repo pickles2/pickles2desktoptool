@@ -17,7 +17,7 @@ window.contAppBroccoliServer = function(px, api, options, callback){
 	it79.fnc(data, [
 		function(it1, data){
 			param = px.utils.parseUriParam( window.location.href );
-			console.log( param );
+			// console.log( param );
 
 			_pj = px.getCurrentProject();
 			px2proj = _pj.px2proj;
@@ -93,10 +93,15 @@ window.contAppBroccoliServer = function(px, api, options, callback){
 			);
 		} ,
 		function(it1, data){
+			// console.log('--------------------- call GPI ---------------------');
+			// console.log(api);
+			// console.log(options);
 			broccoli.gpi(
 				api,
 				options,
 				function(rtn){
+					// console.log(rtn);
+					// console.log('------------------ / answered GPI ------------------');
 					it1.next(rtn);
 				}
 			);

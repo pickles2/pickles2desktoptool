@@ -345,6 +345,77 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	}// buildGuiEditContent()
 
 	/**
+	 * broccoli(サーバーサイド)を生成する
+	 */
+	this.createBroccoliServer = function(page_path, callback){
+		callback = callback || function(){};
+		var Broccoli = require('broccoli-html-editor');
+		var path = require('path');
+		var _pj = this;
+
+		var documentRoot = path.resolve(this.get('path'), this.get('entry_script'), '..')+'/'
+		var realpathDataDir,
+			pathResourceDir;
+
+		_pj.px2proj.realpath_files(page_path, '', function(realpath){
+			realpathDataDir = path.resolve(realpath, 'guieditor.ignore')+'/';
+
+			_pj.px2proj.path_files(page_path, '', function(localpath){
+				pathResourceDir = path.resolve(localpath, 'resources')+'/';
+				pathResourceDir = pathResourceDir.replace(new RegExp('\\\\','g'), '/').replace(new RegExp('^[a-zA-Z]\\:\\/'), '/');
+					// Windows でボリュームラベル "C:" などが含まれるようなパスを渡すと、
+					// broccoli-html-editor内 resourceMgr で
+					// 「Uncaught RangeError: Maximum call stack size exceeded」が起きて落ちる。
+					// ここで渡すのはウェブ側からみえる外部のパスでありサーバー内部パスではないので、
+					// ボリュームラベルが付加された値を渡すのは間違い。
+
+
+				// broccoli setup.
+				var broccoli = new Broccoli();
+
+				// console.log(broccoli);
+				broccoli.init(
+					{
+						'paths_module_template': _pj.getConfig().plugins.px2dt.paths_module_template ,
+						'documentRoot': documentRoot,
+						'pathHtml': page_path,
+						'pathResourceDir': pathResourceDir,
+						'realpathDataDir': realpathDataDir,
+						'customFields': {
+							// 'psd': require('broccoli-field-psd'),
+							'table': require('broccoli-field-table')
+						} ,
+						'bindTemplate': function(htmls, callback){
+							var fin = '';
+							for( var bowlId in htmls ){
+								if( bowlId == 'main' ){
+									fin += htmls['main']+"\n";
+									fin += "\n";
+								}else{
+									fin += '<?php ob_start(); ?>'+"\n";
+									fin += htmls[bowlId]+"\n";
+									fin += '<?php $px->bowl()->send( ob_get_clean(), '+JSON.stringify(bowlId)+' ); ?>'+"\n";
+									fin += "\n";
+								}
+							}
+							callback(fin);
+							return;
+						}
+
+					},
+					function(){
+						callback(broccoli);
+					}
+				);
+
+			});
+
+		});
+
+		return this;
+	}
+
+	/**
 	 * コンテンツをコピーする
 	 */
 	this.copyContentsData = function( pathFrom, pathTo, cb ){

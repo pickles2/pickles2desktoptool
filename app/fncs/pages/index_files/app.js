@@ -372,7 +372,7 @@ window.contApp = new (function( px ){
 												'title': '編集方法を変更する',
 												'body': $body,
 												'buttons':[
-													$('<button>')
+													$('<button class="btn btn-primary">')
 														.text('OK')
 														.click(function(){
 															var val = $body.find('input[name=proc_type]:checked').val();
@@ -382,7 +382,7 @@ window.contApp = new (function( px ){
 																}, {"force":true} );
 															} )
 														}),
-													$('<button>')
+													$('<button class="btn btn-default">')
 														.text('Cancel')
 														.click(function(){
 															px.closeDialog();

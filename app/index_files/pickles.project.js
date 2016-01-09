@@ -330,15 +330,23 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	/**
 	 * GUI編集のコンテンツをビルドする
 	 */
-	this.buildGuiEditContent = function( pagePath, cb ){
-		cb = cb||function(){};
+	this.buildGuiEditContent = function( pagePath, callback ){
+		callback = callback||function(){};
 		if( this.getPageContentProcType(pagePath) != 'html.gui' ){
-			cb(false);
+			callback(false);
 			return this;
 		}
 
-		window.px2dtGuiEditor.build(pagePath, function(result){
-			cb(result);
+		// window.px2dtGuiEditor.build(pagePath, function(result){
+		// 	callback(result);
+		// });
+		this.createBroccoliServer(pagePath, function(broccoli){
+			broccoli.buildHtml(
+				{'mode':'finalize'},
+				function(){
+					callback(true);
+				}
+			);
 		});
 
 		return this;

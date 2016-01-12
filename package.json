@@ -4,7 +4,7 @@
   "description": "",
   "main": "app/index.html",
   "scripts": {
-    "preinstall": "git submodule update -i -r",
+    "preinstall": "git submodule update -i -r -f",
     "start": "nw",
     "build": "node ./build.js"
   },

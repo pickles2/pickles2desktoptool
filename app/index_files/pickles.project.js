@@ -371,8 +371,16 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			this.createBroccoliServer(pagePath, function(broccoli){
 				broccoli.buildHtml(
 					{'mode':'finalize'},
-					function(){
-						callback(true);
+					function(htmls){
+						broccoli.options.bindTemplate(htmls, function(fin){
+							px.fs.writeFile(
+								broccoli.realpathHtml ,
+								fin ,
+								function(){
+									callback(true);
+								}
+							);
+						});
 					}
 				);
 			});

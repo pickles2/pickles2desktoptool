@@ -328,6 +328,35 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	}
 
 	/**
+	 * GUI編集エンジンの種類を取得する
+	 *
+	 * 旧GUI編集(legacy)から、新GUI編集エンジン(broccoli-html-editor)に移行する
+	 * 過渡期に使用する一時的な機能として実装します。
+	 * Pickles2 の config.php に、plugins.px2dt.guiEngine を設定すると、
+	 * GUI編集エンジンを切り替えることができます。
+	 *
+	 * 設定できる値は、以下。
+	 * - legacy = 旧GUI編集
+	 * - broccoli-html-editor = 新エンジン broccoli (default)
+	 */
+	this.getGuiEngineName = function(){
+		var conf = this.getConfig();
+		// console.log(conf);
+		// console.log(conf.plugins.px2dt);
+		// console.log(conf.plugins.px2dt.guiEngine);
+		if( conf && conf.plugins && conf.plugins.px2dt && conf.plugins.px2dt.guiEngine ){
+			switch(conf.plugins.px2dt.guiEngine){
+				case 'legacy':
+					return conf.plugins.px2dt.guiEngine;
+					break;
+				default:
+					break;
+			}
+		}
+		return 'broccoli-html-editor';
+	}
+
+	/**
 	 * GUI編集のコンテンツをビルドする
 	 */
 	this.buildGuiEditContent = function( pagePath, callback ){
@@ -337,17 +366,22 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			return this;
 		}
 
-		// window.px2dtGuiEditor.build(pagePath, function(result){
-		// 	callback(result);
-		// });
-		this.createBroccoliServer(pagePath, function(broccoli){
-			broccoli.buildHtml(
-				{'mode':'finalize'},
-				function(){
-					callback(true);
-				}
-			);
-		});
+		if(this.getGuiEngineName() == 'broccoli-html-editor'){
+			// broccoli-html-editor
+			this.createBroccoliServer(pagePath, function(broccoli){
+				broccoli.buildHtml(
+					{'mode':'finalize'},
+					function(){
+						callback(true);
+					}
+				);
+			});
+		}else{
+			// 旧GUI編集
+			window.px2dtGuiEditor.build(pagePath, function(result){
+				callback(result);
+			});
+		}
 
 		return this;
 	}// buildGuiEditContent()

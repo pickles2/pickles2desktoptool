@@ -36,8 +36,14 @@ window.contApp = new (function( px ){
 		if( parsedPath.ext == 'html' || parsedPath.ext == 'htm' ){
 			var datajson = px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+_pj.getContentFilesByPageContent(_cont_path)+'/guieditor.ignore/data.json';
 			if( px.fs.existsSync( datajson ) ){
-				filename_editor = 'editor_broccoli';
-				// filename_editor = 'editor_gui';
+				// console.log(_pj.getGuiEngineName());
+				if(_pj.getGuiEngineName() == 'broccoli-html-editor'){
+					// broccoli-html-editor
+					filename_editor = 'editor_broccoli';
+				}else{
+					// 旧GUI編集
+					filename_editor = 'editor_gui';
+				}
 			}
 		}
 

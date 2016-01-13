@@ -294,6 +294,17 @@
 						} );
 					} ,
 					function(it1, data){
+						// 選択状態の復元
+						if( selectedInstance ){
+							_this.selectInstance(selectedInstance, function(){
+								it1.next(data);
+							});
+							return;
+						}
+						it1.next(data);
+						return;
+					} ,
+					function(it1, data){
 						callback();
 						it1.next();
 					}
@@ -378,12 +389,15 @@
 		this.selectInstance = function( instancePath, callback ){
 			console.log("Select: "+instancePath);
 			callback = callback || function(){};
-			this.unselectInstance();//一旦選択解除
-			this.unfocusInstance();//フォーカスも解除
+			var broccoli = this;
+			broccoli.unselectInstance();//一旦選択解除
+			broccoli.unfocusInstance();//フォーカスも解除
 			selectedInstance = instancePath;
-			this.panels.selectInstance(instancePath, function(){
-				_this.instancePathView.update(function(){
-					callback();
+			broccoli.panels.selectInstance(instancePath, function(){
+				broccoli.instanceTreeView.selectInstance(instancePath, function(){
+					broccoli.instancePathView.update(function(){
+						callback();
+					});
 				});
 			});
 			return this;
@@ -395,9 +409,12 @@
 		this.unselectInstance = function(callback){
 			callback = callback || function(){};
 			selectedInstance = null;
-			this.panels.unselectInstance(function(){
-				_this.instancePathView.update(function(){
-					callback();
+			var broccoli = this;
+			broccoli.panels.unselectInstance(function(){
+				broccoli.instanceTreeView.unselectInstance(function(){
+					broccoli.instancePathView.update(function(){
+						callback();
+					});
 				});
 			});
 			return this;
@@ -415,8 +432,15 @@
 
 				var $targetElm = $(_this.panels.getPanelElement(instancePath));
 				if($targetElm.size()){
-					var top = $canvas.scrollTop() + $targetElm.offset().top - 30;
-					$canvas.stop().animate({"scrollTop":top} , 'fast' );
+					var minTop = $canvas.scrollTop() + $targetElm.offset().top - 30;
+					var topLine = $canvas.scrollTop();
+					var targetTop = topLine + $targetElm.offset().top;
+					var targetHeight = $targetElm.height();
+					var to = targetTop + (targetHeight/2) - ($canvas.height()/2);
+					if( to > minTop ){
+						to = minTop;
+					}
+					$canvas.stop().animate({"scrollTop":to} , 'fast' );
 				}
 
 				callback();
@@ -1750,7 +1774,9 @@ module.exports = function(broccoli){
 							return;
 						}
 						broccoli.contentsSourceData.removeInstance(instancePath, function(){
-							callback();
+							broccoli.unselectInstance(function(){
+								callback();
+							});
 						});
 					})
 				;
@@ -2068,7 +2094,11 @@ module.exports = function(broccoli){
 				mod.fields,
 				function(it1, row, idx){
 					var $li = $('<li>')
-						.text(idx)
+						.append(
+							$('<span>')
+								.text(idx) // ← field name
+								.addClass('broccoli--instance-tree-view-fieldname')
+						)
 					;
 
 					if(row.fieldType == 'input'){
@@ -2172,7 +2202,11 @@ module.exports = function(broccoli){
 				} ,
 				function(){
 					var $rtn = $('<div>')
-						.text( mod.info.name||mod.id )
+						.append(
+							$('<span>')
+								.text(mod.info.name||mod.id) // ← module name
+								.addClass('broccoli--instance-tree-view-modulename')
+						)
 						.css({
 							// "border":"1px solid #666"
 						})
@@ -2199,14 +2233,20 @@ module.exports = function(broccoli){
 							// }
 							broccoli.focusInstance( instancePath );
 						})
+						.bind('mouseover', function(e){
+							e.stopPropagation();
+							$(this).addClass('broccoli--panel__hovered')
+						})
+						.bind('mouseout',function(e){
+							$(this).removeClass('broccoli--panel__hovered')
+						})
 						.append( $('<div>')
 							.addClass('broccoli--panel-drop-to-insert-here')
 						)
-						.append( $('<ul>')
-						)
+						.append( $ul )
 					;
 					broccoli.panels.setPanelEventHandlers($rtn);
-					$rtn.find('>ul').append($ul);
+					// $rtn.find('>ul').append($ul);
 					callback($rtn);
 				}
 			);
@@ -2219,7 +2259,11 @@ module.exports = function(broccoli){
 			function(it1, row, idx){
 				// console.log(idx);
 				var $bowl = $('<li>')
-					.text('bowl.'+idx)
+					.append(
+						$('<span>')
+							.text('bowl.'+idx) // ← bowl name
+							.addClass('broccoli--instance-tree-view-bowlname')
+					)
 					.attr({
 						'data-broccoli-instance-path':'/bowl.'+idx
 					})
@@ -2255,6 +2299,35 @@ module.exports = function(broccoli){
 			}
 		);
 
+		return this;
+	}
+
+
+	/**
+	 * インスタンスを選択する
+	 */
+	this.selectInstance = function( instancePath, callback ){
+		callback = callback || function(){};
+		$instanceTreeView.find('[data-broccoli-instance-path]')
+			.filter(function (index) {
+				return $(this).attr("data-broccoli-instance-path") == instancePath;
+			})
+			.addClass('broccoli--panel__selected')
+		;
+		callback();
+		return this;
+	}
+
+	/**
+	 * モジュールインスタンスの選択状態を解除する
+	 */
+	this.unselectInstance = function(callback){
+		callback = callback || function(){};
+		$instanceTreeView.find('[data-broccoli-instance-path]')
+			.removeClass('broccoli--panel__selected')
+		;
+		// this.updateInstancePathView();
+		callback();
 		return this;
 	}
 
@@ -2584,8 +2657,6 @@ module.exports = function(broccoli){
 
 	/**
 	 * インスタンスを選択する
-	 * @param  {[type]} instancePath [description]
-	 * @return {[type]}              [description]
 	 */
 	this.selectInstance = function( instancePath, callback ){
 		callback = callback || function(){};

@@ -176,9 +176,9 @@ return call_user_func( function(){
 	// config for Pickles2 Desktop Tool.
 	$conf->plugins->px2dt = new stdClass;
 	@$conf->plugins->px2dt->paths_module_template = [
-		"PlainHTMLElements" => "./../../../vendor/pickles2/px2-mod-plain-html-elements/modules/",
+		"PlainHTMLElements" => "./../../../vendor/pickles2/broccoli-module-plain-html-elements/modules/",
 		"FESS" => "./../../../vendor/pickles2/broccoli-module-fess/modules/",
-		"SELF" => "./px-files/resources/module_templates/"
+		"local" => "./px-files/resources/module_templates/"
 	];
 
 

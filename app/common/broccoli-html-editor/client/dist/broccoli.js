@@ -344,39 +344,34 @@
 		this.editInstance = function( instancePath ){
 			this.selectInstance(instancePath);
 			console.log("Edit: "+instancePath);
-			$('body').find('.broccoli--lightbox').remove();
-			$('body')
-				.append( $('<div class="broccoli broccoli--lightbox">')
-					.append( $('<div class="broccoli--lightbox-inner">')
-					)
-				)
-			;
-			this.drawEditWindow( instancePath, $('body').find('.broccoli--lightbox-inner').get(0), function(){
-				$('body').find('.broccoli--lightbox').fadeOut('fast',function(){$(this).remove();});
-				it79.fnc({},[
-					function(it1, data){
-						// 編集パネルを一旦消去
-						_this.panels.clearPanels(function(){
+			this.lightbox( function( lbElm ){
+				_this.drawEditWindow( instancePath, lbElm, function(){
+					_this.closeLightbox(function(){});
+					it79.fnc({},[
+						function(it1, data){
+							// 編集パネルを一旦消去
+							_this.panels.clearPanels(function(){
+								it1.next(data);
+							});
+						} ,
+						function(it1, data){
+							// コンテンツデータを保存
+							_this.saveContents(function(){
+								it1.next(data);
+							});
+						} ,
+						function(it1, data){
+							// 画面を再描画
+							_this.redraw(function(){
+								it1.next(data);
+							});
+						} ,
+						function(it1, data){
+							console.log('editInstance done.');
 							it1.next(data);
-						});
-					} ,
-					function(it1, data){
-						// コンテンツデータを保存
-						_this.saveContents(function(){
-							it1.next(data);
-						});
-					} ,
-					function(it1, data){
-						// 画面を再描画
-						_this.redraw(function(){
-							it1.next(data);
-						});
-					} ,
-					function(it1, data){
-						console.log('editInstance done.');
-						it1.next(data);
-					}
-				]);
+						}
+					]);
+				} );
 			} );
 			return this;
 		}
@@ -612,7 +607,41 @@
 		}
 
 		/**
-		 * [function description]
+		 * ライトボックスを表示する
+		 */
+		this.lightbox = function( callback ){
+			callback = callback||function(){};
+			$('body').find('.broccoli--lightbox').remove();//一旦削除
+			$('body')
+				.append( $('<div class="broccoli broccoli--lightbox">')
+					.append( $('<div class="broccoli--lightbox-inner">')
+					)
+				)
+			;
+			var dom = $('body').find('.broccoli--lightbox-inner').get(0);
+			callback(dom);
+			return this;
+		}
+
+		/**
+		 * ライトボックスを閉じる
+		 */
+		this.closeLightbox = function( html, callback ){
+			callback = callback||function(){};
+			$('body').find('.broccoli--lightbox')
+				.fadeOut(
+					'fast',
+					function(){
+						$(this).remove();
+						callback();
+					}
+				)
+			;
+			return this;
+		}
+
+		/**
+		 * ユーザーへのメッセージを表示する
 		 * @param  {String}   message  メッセージ
 		 * @param  {Function} callback コールバック関数
 		 * @return {Object}            this.
@@ -1490,6 +1519,7 @@ module.exports = function(broccoli, callback){
 						'data-id': mod.moduleId,
 						'data-name': mod.moduleName,
 						'data-readme': mod.readme,
+						'data-pics': JSON.stringify(mod.pics),
 						'draggable': true //←HTML5のAPI http://www.htmq.com/dnd/
 					})
 					.on('dragstart', function(e){
@@ -1499,16 +1529,25 @@ module.exports = function(broccoli, callback){
 						updateModuleInfoPreview(null, {}, function(){});
 					})
 					.on('mouseover', function(e){
-						var html = '';
-						html += '<article>';
-						html += '<h1>'+$(this).attr('data-name')+'</h1>';
-						html += '<p>'+$(this).attr('data-id')+'</p>';
-						html += '<div>'+$(this).attr('data-readme')+'</div>';
-						html += '</article>';
+						var html = generateModuleInfoHtml(this);
 						updateModuleInfoPreview(html, {}, function(){});
 					})
 					.on('mouseout', function(e){
 						updateModuleInfoPreview(null, {}, function(){});
+					})
+					.on('dblclick', function(e){
+						var html = generateModuleInfoHtml(this);
+						broccoli.lightbox(function(elm){
+							$(elm)
+								.append(html)
+								.append( $('<button class="btn btn-primary btn-block">')
+									.text('close')
+									.bind('click', function(){
+										broccoli.closeLightbox();
+									})
+								)
+							;
+						});
 					})
 					// .tooltip({'placement':'left'})
 				);
@@ -1521,6 +1560,45 @@ module.exports = function(broccoli, callback){
 			}
 		);
 		return;
+	}
+
+	/**
+	 * モジュール情報のHTMLを生成する
+	 */
+	function generateModuleInfoHtml(elm){
+		var $elm = $(elm);
+		var html = '';
+		var $img = $elm.find('img').eq(0);
+		html += '<article class="broccoli--module-info-content">';
+		if( $img.size() ){
+			html += '<div class="broccoli--module-info-content-thumb"><img src="'+$img.attr('src')+'" /></div>';
+		}
+		html += '<h1 class="broccoli__user-selectable">'+$elm.attr('data-name')+'</h1>';
+		html += '<p class="broccoli__user-selectable">'+$elm.attr('data-id')+'</p>';
+		html += '<hr />';
+		var readme = $elm.attr('data-readme');
+		var $readme = $('<div>'+readme+'</div>')
+		$readme.find('a').each(function(){
+			$(this).attr({'target':'_blank'})
+		});
+		html += '<div class="broccoli__user-selectable">'+ (readme ? $readme.html() : '<p style="text-align:center; margin: 100px;">-- no readme --</p>' ) +'</div>';
+
+		var pics = JSON.parse( $elm.attr('data-pics') );
+		if( pics.length ){
+			// html += '<hr />';
+			html += '<div class="broccoli--module-info-content-pics">';
+			html += '<p>参考イメージ</p>';
+			html += '<ul>';
+			for( var idx in pics ){
+				console.log(pics[idx]);
+				html += '<li><img src="'+ pics[idx] +'" /></li>';
+			}
+			html += '</ul>';
+			html += '</div>';
+		}
+		html += '<hr />';
+		html += '</article>';
+		return html;
 	}
 
 	/**

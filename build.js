@@ -39,7 +39,7 @@ var nw = new NwBuilder({
 	macIcns: './app/common/images/px2-osx.icns',
 	winIco: './app/common/images/px2-win.ico',
 	platforms: [
-		// 'linux32',
+		'linux64',
 		'osx32',
 		'win32'
 	]
@@ -96,21 +96,21 @@ nw.build().then(function () {
 					}
 				);
 			},
-			// function(itPj, param){
-			// 	console.log('ZIP linux32...');
-			// 	zipFolder(
-			// 		__dirname + '/build/'+appName+'/linux32/',
-			// 		__dirname + '/build/'+appName+'-'+versionSign+'-linux32.zip',
-			// 		function(err) {
-			// 			if(err) {
-			// 				console.log('ERROR!', err);
-			// 			} else {
-			// 				console.log('success.');
-			// 			}
-			// 			itPj.next();
-			// 		}
-			// 	);
-			// },
+			function(itPj, param){
+				console.log('ZIP linux64...');
+				zipFolder(
+					__dirname + '/build/'+appName+'/linux64/',
+					__dirname + '/build/'+appName+'-'+versionSign+'-linux64.zip',
+					function(err) {
+						if(err) {
+							console.log('ERROR!', err);
+						} else {
+							console.log('success.');
+						}
+						itPj.next();
+					}
+				);
+			},
 			function(itPj, param){
 				console.log('cleanup...');
 				_utils.rmdir_r(__dirname+'/build/'+appName+'/');

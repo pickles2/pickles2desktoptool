@@ -439,9 +439,10 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 							var fin = '';
 							for( var bowlId in htmls ){
 								if( bowlId == 'main' ){
-									fin += htmls['main']+"\n";
-									fin += "\n";
+									fin += htmls['main'];
 								}else{
+									fin += "\n";
+									fin += "\n";
 									fin += '<?php ob_start(); ?>'+"\n";
 									fin += htmls[bowlId]+"\n";
 									fin += '<?php $px->bowl()->send( ob_get_clean(), '+JSON.stringify(bowlId)+' ); ?>'+"\n";

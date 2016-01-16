@@ -18,27 +18,33 @@ Pickles2 Desktop Tool のGUI編集機能は、個別に設計された小さな�
 
 
 ```
-└─ package(root)
+└─ package/ (root)
   ├─ info.json
-  ├─ category1
+  ├─ category1/
   │　├─ info.json
-  │　├─ module1
+  │　├─ module1/
   │　│　├─ README.md
   │　│　├─ info.json
   │　│　├─ template.html
   │　│　├─ module.css
   │　│　├─ module.js
-  │　│　└─ thumb.png
+  │　│　├─ finalize.js
+  │　│　├─ thumb.png
+  │　│　└─ pics/
+  │　│　 　├─ pic1.png
+  │　│　 　├─ pic2.png
+  │　│　 　├─ ・・・
+  │　│　 　└─ picN.png
   │　│
-  │　├─ module2
-  │　├─ module3
+  │　├─ module2/
+  │　├─ module3/
   │　├─ ・・・
-  │　└─ module N
+  │　└─ moduleN/
   │
-  ├─ category2
-  ├─ category3
+  ├─ category2/
+  ├─ category3/
   ├─ ・・・
-  └─ category N
+  └─ categoryN/
 ```
 
 
@@ -159,6 +165,29 @@ Pickles2 Desktop Tool のGUI編集機能は、個別に設計された小さな�
 モジュールの動作に関連するスクリプトを記述します。
 
 ここに書かれたスクリプトは、Pickles2用のプラグイン px2-px2dthelper によって収集・統合し、テーマから自動的に読み込むことができます。
+
+
+#### finalize.js
+
+ビルドされたモジュールのHTMLコードを、最終的な完成コードに加工するスクリプトを追加します。
+
+例えば、マークダウン記法で作られたシンプルなリスト要素に、クラス名を与えて複雑な装飾を行いたい場合などに利用できます。
+
+```js
+/**
+ * finalize.js
+ */
+module.exports = function(html, callback){
+
+	/* ここに加工するコードを書く。 */
+
+	// 完成したHTMLは、callback() に渡して返します。
+	callback(html);
+	return true;
+}
+```
+
+`finalize.js` は、broccoli-html-editor エンジンでのみ使用できます。
 
 
 #### thumb.png

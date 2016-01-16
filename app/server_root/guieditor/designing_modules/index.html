@@ -54,6 +54,7 @@
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_パッケージ1つあたりのファイル構成">パッケージ1つあたりのファイル構成</a><ul style="margin:0; padding:0 0 0 2em;"><li style="list-style-type:disc; display:list-item;"><a href="#hash_info.json">info.json</a></li></ul></li><li style="list-style-type:disc; display:list-item;"><a href="#hash_カテゴリ1つあたりのファイル構成">カテゴリ1つあたりのファイル構成</a><ul style="margin:0; padding:0 0 0 2em;"><li style="list-style-type:disc; display:list-item;"><a href="#hash_2_info.json">info.json</a></li></ul></li><li style="list-style-type:disc; display:list-item;"><a href="#hash_モジュール1つあたりのファイル構成">モジュール1つあたりのファイル構成</a><ul style="margin:0; padding:0 0 0 2em;"><li style="list-style-type:disc; display:list-item;"><a href="#hash_template.html">template.html</a></li>
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_module.css_(または_module.css.scss)">module.css (または module.css.scss)</a></li>
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_module.js">module.js</a></li>
+<li style="list-style-type:disc; display:list-item;"><a href="#hash_finalize.js">finalize.js</a></li>
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_thumb.png">thumb.png</a></li>
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_3_info.json">info.json</a></li>
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_README.html_(または_README.md)">README.html (または README.md)</a></li>
@@ -70,27 +71,33 @@
 
 <p>モジュールは、次のようなディレクトリ構成で表現されます。</p>
 
-<pre><code>└─ package(root)
+<pre><code>└─ package/ (root)
   ├─ info.json
-  ├─ category1
+  ├─ category1/
   │　├─ info.json
-  │　├─ module1
+  │　├─ module1/
   │　│　├─ README.md
   │　│　├─ info.json
   │　│　├─ template.html
   │　│　├─ module.css
   │　│　├─ module.js
-  │　│　└─ thumb.png
+  │　│　├─ finalize.js
+  │　│　├─ thumb.png
+  │　│　└─ pics/
+  │　│　 　├─ pic1.png
+  │　│　 　├─ pic2.png
+  │　│　 　├─ ・・・
+  │　│　 　└─ picN.png
   │　│
-  │　├─ module2
-  │　├─ module3
+  │　├─ module2/
+  │　├─ module3/
   │　├─ ・・・
-  │　└─ module N
+  │　└─ moduleN/
   │
-  ├─ category2
-  ├─ category3
+  ├─ category2/
+  ├─ category3/
   ├─ ・・・
-  └─ category N
+  └─ categoryN/
 </code></pre>
 
 <p>この構成を元に、モジュールの識別IDが生成されます。モジュールIDは次のような形式になります。</p>
@@ -204,6 +211,27 @@
 <p>モジュールの動作に関連するスクリプトを記述します。</p>
 
 <p>ここに書かれたスクリプトは、Pickles2用のプラグイン px2-px2dthelper によって収集・統合し、テーマから自動的に読み込むことができます。</p>
+
+<span id="hash_finalize.js"></span><h4>finalize.js</h4>
+
+<p>ビルドされたモジュールのHTMLコードを、最終的な完成コードに加工するスクリプトを追加します。</p>
+
+<p>例えば、マークダウン記法で作られたシンプルなリスト要素に、クラス名を与えて複雑な装飾を行いたい場合などに利用できます。</p>
+
+<pre><code class="js">/**
+ * finalize.js
+ */
+module.exports = function(html, callback){
+
+    /* ここに加工するコードを書く。 */
+
+    // 完成したHTMLは、callback() に渡して返します。
+    callback(html);
+    return true;
+}
+</code></pre>
+
+<p><code>finalize.js</code> は、broccoli-html-editor エンジンでのみ使用できます。</p>
 
 <span id="hash_thumb.png"></span><h4>thumb.png</h4>
 

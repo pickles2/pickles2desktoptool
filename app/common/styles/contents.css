@@ -45,6 +45,38 @@ a:hover{
 }
 
 /**
+ * スクロールバー
+ */
+::-webkit-scrollbar{
+	/* 1 */
+	background-color: #eee;
+	width: 8px;
+	height: 8px;
+}
+::-webkit-scrollbar-button{
+	/* 2 */
+}
+::-webkit-scrollbar-track{
+	/* 3 */
+}
+::-webkit-scrollbar-track-piece{
+	/* 4 */
+}
+::-webkit-scrollbar-thumb{
+	/* 5 */
+	background-color: #999;
+	border:1px solid #fff;
+	border-radius: 4px;
+}
+::-webkit-scrollbar-corner{
+	/* 6 */
+}
+::-webkit-resizer{
+	/* 7 */
+}
+
+
+/**
  * 選択可能領域
  */
 .selectable{

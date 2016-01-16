@@ -4,3 +4,8 @@
 	border: 1px solid #eee;
 	height: auto;
 }
+.CodeMirror pre::-webkit-scrollbar{
+	background-color: #eee;
+	width: 0px;
+	height: 0px;
+}

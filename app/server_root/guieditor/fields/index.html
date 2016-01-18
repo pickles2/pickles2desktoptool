@@ -57,8 +57,8 @@
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_table_(beta)">table (beta)</a></li>
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_html_attr_text">html_attr_text</a></li>
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_href">href</a></li>
-<li style="list-style-type:disc; display:list-item;"><a href="#hash_wysiwyg_tinymce">wysiwyg_tinymce</a></li>
-<li style="list-style-type:disc; display:list-item;"><a href="#hash_wysiwyg_rte">wysiwyg_rte</a></li>
+<li style="list-style-type:disc; display:list-item;"><a href="#hash_wysiwyg_tinymce_(legacy_のみ)">wysiwyg_tinymce (legacy のみ)</a></li>
+<li style="list-style-type:disc; display:list-item;"><a href="#hash_wysiwyg_rte_(legacy_のみ)">wysiwyg_rte (legacy のみ)</a></li>
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_select">select</a></li></ul></li><li style="list-style-type:disc; display:list-item;"><a href="#hash_moduleフィールド">moduleフィールド</a></li>
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_loopフィールド">loopフィールド</a></li>
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_if_フィールド">if フィールド</a><ul style="margin:0; padding:0 0 0 2em;"><li style="list-style-type:disc; display:list-item;"><a href="#hash_cond">cond</a></li>
@@ -101,6 +101,10 @@
         <dd>編集画面に表示される入力欄の名称を指定します。</dd>
     <dt>hidden</dt>
         <dd>この設定に<code>true</code>を指定すると、入力欄は表示されますが、HTML上には出力されないようになります。ifフィールドやechoフィールドと組み合わせて使用する場合に、<code>true</code>をセットしてください。デフォルトは <code>false</code> です。</dd>
+    <dt>description</dt>
+        <dd>フィールドの説明をMarkdown形式で記述します。</dd>
+    <dt>default</dt>
+        <dd>デフォルトの値を設定します。値の形式は、typeごとに異なります。</dd>
 
 </dl>
 
@@ -139,11 +143,11 @@ Excel形式で作成したファイルをGUI上からアップロードすると
 
 <p>リンク先を入力する入力欄を作成します。</p>
 
-<span id="hash_wysiwyg_tinymce"></span><h3>wysiwyg_tinymce</h3>
+<span id="hash_wysiwyg_tinymce_(legacy_のみ)"></span><h3>wysiwyg_tinymce (legacy のみ)</h3>
 
 <p>TinyMCEライブラリによるWYSIWYG入力欄を作成します。</p>
 
-<span id="hash_wysiwyg_rte"></span><h3>wysiwyg_rte</h3>
+<span id="hash_wysiwyg_rte_(legacy_のみ)"></span><h3>wysiwyg_rte (legacy のみ)</h3>
 
 <p>wkrteライブラリによるWYSIWYG入力欄を作成します。</p>
 

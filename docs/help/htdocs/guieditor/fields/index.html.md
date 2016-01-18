@@ -37,6 +37,10 @@ inputフィールドは、もっとも重要なフィールド種別で、編集
 		<dd>編集画面に表示される入力欄の名称を指定します。</dd>
 	<dt>hidden</dt>
 		<dd>この設定に<code>true</code>を指定すると、入力欄は表示されますが、HTML上には出力されないようになります。ifフィールドやechoフィールドと組み合わせて使用する場合に、<code>true</code>をセットしてください。デフォルトは <code>false</code> です。</dd>
+	<dt>description</dt>
+		<dd>フィールドの説明をMarkdown形式で記述します。</dd>
+	<dt>default</dt>
+		<dd>デフォルトの値を設定します。値の形式は、typeごとに異なります。</dd>
 
 </dl>
 
@@ -77,12 +81,12 @@ HTML特殊文字がエンティティ変換される点は textフィールド�
 
 リンク先を入力する入力欄を作成します。
 
-### wysiwyg_tinymce
+### wysiwyg_tinymce (legacy のみ)
 
 TinyMCEライブラリによるWYSIWYG入力欄を作成します。
 
 
-### wysiwyg_rte
+### wysiwyg_rte (legacy のみ)
 
 wkrteライブラリによるWYSIWYG入力欄を作成します。
 

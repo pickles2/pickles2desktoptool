@@ -451,6 +451,9 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 							}
 							callback(fin);
 							return;
+						} ,
+						'log': function(msg){
+							px.log(msg);
 						}
 
 					},

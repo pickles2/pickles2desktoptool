@@ -217,6 +217,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			rtn = 'html.gui';
 		}else{
 			rtn = px.utils.getExtension( pageContent );
+			// if(rtn == 'htm'){rtn = 'html';}
 		}
 		return rtn;
 	}// getPageContentProcType()
@@ -294,14 +295,14 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		}
 
 		if( procTypeBefore == 'html.gui' ){
-			if( procTypeTo == 'html' && pageInfo.content.match( new RegExp('\\.html$', 'i') ) ){
+			if( (procTypeTo == 'html'||procTypeTo == 'htm') && pageInfo.content.match( new RegExp('\\.'+procTypeTo+'$', 'i') ) ){
 				px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content );
 			}else{
 				px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content + '.' + procTypeTo );
 			}
 			px.utils.rmdir_r( contRoot + resourcPath+'guieditor.ignore/' );
 
-		}else if( procTypeBefore == 'html' ){
+		}else if( procTypeBefore == 'html'||procTypeBefore == 'htm' ){
 			if( procTypeTo == 'html.gui' ){
 				px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content );
 				mkGuiData( contRoot, resourcPath, codeBefore, procTypeBefore );
@@ -310,11 +311,11 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			}
 
 		}else{
-			if( procTypeTo == 'html.gui' || procTypeTo == 'html' ){
-				if( pageInfo.content.match( new RegExp('\\.html$', 'i') ) ){
+			if( procTypeTo == 'html.gui' || procTypeTo == 'html' || procTypeTo == 'htm' ){
+				if( pageInfo.content.match( new RegExp('\\.html?$', 'i') ) ){
 					px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content );
 				}else{
-					px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content + '.html' );
+					px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content + '.'+(procTypeTo=='html.gui' ? 'html.gui' : procTypeTo) );
 				}
 				mkGuiData( contRoot, resourcPath, codeBefore, procTypeBefore );
 			}else{

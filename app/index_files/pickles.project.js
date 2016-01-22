@@ -433,6 +433,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 						'pathResourceDir': pathResourceDir,
 						'realpathDataDir': realpathDataDir,
 						'customFields': {
+							'href': require('./../common/broccoli/broccoli-field-href/server.js'),
 							// 'psd': require('broccoli-field-psd'),
 							'table': require('broccoli-field-table')
 						} ,

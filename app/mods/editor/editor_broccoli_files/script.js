@@ -85,6 +85,7 @@ window.contApp = new (function( px ){
 						'contents_area_selector': _pj.getConfig().plugins.px2dt.contents_area_selector,
 						'contents_bowl_name_by': _pj.getConfig().plugins.px2dt.contents_bowl_name_by,
 						'customFields': {
+							'href': window.BroccoliFieldHref,
 							// 'psd': window.BroccoliFieldPSD,
 							'table': window.BroccoliFieldTable
 						},

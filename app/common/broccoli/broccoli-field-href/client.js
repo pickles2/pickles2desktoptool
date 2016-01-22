@@ -1,42 +1,109 @@
 window.BroccoliFieldHref = function(){
-	console.log('broccoli-field-href - client.js');
-	console.log(window.px);
+	// console.log('broccoli-field-href - client.js');
+	// console.log(window.px);
 
 	var php = require('phpjs');
 	var utils79 = require('utils79');
 
 	/**
-	 * データをバインドする
-	 */
-	this.bind = function( fieldData, mode, mod, callback ){
-		var rtn = '';
-		if(typeof(fieldData)===typeof('')){
-			rtn = utils79.toStr(fieldData);
-			rtn = php.htmlspecialchars( rtn ); // ←HTML特殊文字変換
-			// rtn = rtn.replace(new RegExp('\r\n|\r|\n','g'), '<br />'); // ← 属性値などに使うので、改行コードは改行コードのままじゃないとマズイ。
-		}
-		if( mode == 'canvas' && !rtn.length ){
-			rtn = '';
-		}
-		// setTimeout(function(){
-			callback(rtn);
-		// }, 0);
-		return;
-	}
-
-	/**
 	 * エディタUIを生成
 	 */
 	this.mkEditor = function( mod, data, elm, callback ){
+		var changeTimer;
+		var blurTimer;
+
+		function onChange(){
+			clearTimeout( changeTimer );
+			clearTimeout( blurTimer );
+			$palatte.stop().show('fast');
+			var $this = $(this);
+			changeTimer = setTimeout(function(){
+				var pages = $this.data('pages');
+				var $html = $('<ul>')
+					.css({
+						'padding': 20
+					})
+				;
+				for( var idx in pages ){
+					if( !pages[idx].path.match( new RegExp('^'+px.utils.escapeRegExp($this.val())) ) ){
+						continue;
+					}
+					$html
+						.append( $('<li>')
+							.css({
+								'list-style-type':'none'
+							})
+							.append( $('<a>')
+								.css({
+									'display':'block'
+								})
+								.attr({
+									'href': 'javascript:;',
+									'data-path': pages[idx].path
+								})
+								.text( pages[idx].path +' ('+pages[idx].title+')' )
+								.click(function(){
+									// console.log('path suggestion: clicked!');
+									// console.log($(this).attr('data-path'));
+									// console.log($(this).attr('data-path'));
+									clearTimeout( blurTimer );
+									$input
+										.val( $(this).attr('data-path') )
+										.focus()
+									;
+									$palatte.hide();
+								})
+							)
+						)
+					;
+				}
+				$palatte.html('').append( $html );
+			}, 100);
+		}
+
+		var $palatte = $('<div>')
+			.css({
+				'height':200,
+				'overflow':'auto',
+				'position':'absolute',
+				'background':'#f9f9f9',
+				'opacity':'0.9',
+				'width':'100%',
+				'z-index': 1000
+			})
+			.hide()
+		;
 		var $input = $('<input>')
 			.attr({
 				"name":mod.name
 			})
 			.val(data)
+			.data( 'pages', px.getCurrentProject().site.getSitemap() )
 			.css({'width':'100%','height':'auto'})
+			.change( onChange )
+			.keyup( onChange )
+			.focus(function(){
+				clearTimeout( blurTimer );
+				$palatte.show('fast');
+			})
+			.blur(function(){
+				clearTimeout( blurTimer );
+				blurTimer = setTimeout( function(){
+					$palatte.hide();
+				}, 200 );
+			})
 		;
 		var rtn = $('<div>')
 			.append( $input )
+			.append( $('<div>')
+				.css({
+					'position':'relative'
+				})
+				.click(function(){
+					clearTimeout( blurTimer );
+				})
+				.append( $palatte )
+			)
 		;
 		$(elm).html(rtn);
 		// setTimeout(function(){

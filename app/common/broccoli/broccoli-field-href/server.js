@@ -1,6 +1,6 @@
 module.exports = function(broccoli){
-	console.log('broccoli-field-href - server.js');
-	console.log(window.px);
+	// console.log('broccoli-field-href - server.js');
+	// console.log(window.px);
 
 	var php = require('phpjs');
 	var utils79 = require('utils79');
@@ -21,38 +21,6 @@ module.exports = function(broccoli){
 		// setTimeout(function(){
 			callback(rtn);
 		// }, 0);
-		return;
-	}
-
-	/**
-	 * エディタUIを生成
-	 */
-	this.mkEditor = function( mod, data, elm, callback ){
-		var $input = $('<input>')
-			.attr({
-				"name":mod.name
-			})
-			.val(data)
-			.css({'width':'100%','height':'auto'})
-		;
-		var rtn = $('<div>')
-			.append( $input )
-		;
-		$(elm).html(rtn);
-		// setTimeout(function(){
-			callback();
-		// }, 0);
-		return;
-	}
-
-	/**
-	 * エディタUIで編集した内容を保存
-	 */
-	this.saveEditorContent = function( elm, data, mod, callback ){
-		var $dom = $(elm);
-		var src = $dom.find('input').val();
-		src = JSON.parse( JSON.stringify(src) );
-		callback(src);
 		return;
 	}
 

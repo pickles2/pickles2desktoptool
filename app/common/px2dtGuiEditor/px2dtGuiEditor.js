@@ -1,7 +1,7 @@
 if(window.parent){ window.px = window.parent.px; }
 
 /**
- * GUIエディタ
+ * GUIエディタ (legacy)
  */
 window.px2dtGuiEditor = new (function(px){
 	if( !px ){ alert('px が宣言されていません。'); }

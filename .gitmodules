@@ -4,3 +4,6 @@
 [submodule "submodules/broccoli-field-table"]
 	path = submodules/broccoli-field-table
 	url = https://github.com/pickles2/broccoli-field-table.git
+[submodule "submodules/px2dt-localdata-access"]
+	path = submodules/px2dt-localdata-access
+	url = https://github.com/tomk79/node-px2dt-localdata-access.git

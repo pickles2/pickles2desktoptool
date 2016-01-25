@@ -60,6 +60,9 @@ new (function($, window){
 	var _path_data_dir = (process.env.HOME||process.env.LOCALAPPDATA) + '/'+_packageJson.pickles2.dataDirName+'/';
 	var _path_db = (process.env.HOME||process.env.LOCALAPPDATA) + '/'+_packageJson.pickles2.dataDirName+'/db.json';
 
+	var _px2dtLDA = require('px2dt-localdata-access').create(_path_data_dir);
+	this.px2dtLDA = _px2dtLDA;
+
 	// var _OS = require("os");
 	// console.log(_OS.freemem());//<-free memory
 	// console.log(_OS.totalmem());//<-total memory

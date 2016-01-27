@@ -836,7 +836,10 @@ new (function($, window){
 					// px.message("You pressed backspace");
 					switch(e.target.tagName.toLowerCase()){
 						case 'input': case 'textarea':
-							return true; break;
+							if(!$(e.target).attr('readonly')){
+								return true;
+							}
+							break;
 					}
 					e.preventDefault();
 					e.stopPropagation();
@@ -847,7 +850,10 @@ new (function($, window){
 					// px.message("You pressed delete");
 					switch(e.target.tagName.toLowerCase()){
 						case 'input': case 'textarea':
-							return true; break;
+							if(!$(e.target).attr('readonly')){
+								return true;
+							}
+							break;
 					}
 					e.preventDefault();
 					e.stopPropagation();

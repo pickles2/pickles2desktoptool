@@ -259,6 +259,39 @@ window.contApp = new (function( px ){
 									})
 								)
 							)
+							.append( $('<li>')
+								.append( $('<a>')
+									.text( 'コンテンツのソースコードを表示' )
+									.attr({
+										'data-path': prop.pageInfo.path ,
+										'href':'javascript:;'
+									})
+									.click(function(){
+										$bs3btn.find('.dropdown-toggle').click();
+										var pathCont = _pj.findPageContent( $(this).attr('data-path') );
+										var src = px.fs.readFileSync( _pj.get_realpath_controot()+pathCont );
+										px.dialog({
+											title: 'コンテンツのソースコードを表示',
+											body: $('<div>')
+												.append( $('<p>').text('ソースの閲覧・確認ができます。ここで編集はできません。'))
+												.append( $('<p>').text('GUI編集されたコンテンツの場合は、編集後にビルドされたソースが表示されています。'))
+												.append( $('<textarea>')
+													.val(src)
+													.attr({'readonly':true})
+													.css({
+														'width':'100%',
+														'height':300,
+														'font-size': 14,
+														'font-family': 'monospace'
+													})
+												)
+										});
+										return false;
+									})
+								)
+							)
+						;
+						$bs3btn.find('ul[role=menu]')
 							.append( $('<li class="divider">') )
 							.append( $('<li>')
 								.append( $('<a>')
@@ -276,6 +309,8 @@ window.contApp = new (function( px ){
 									})
 								)
 							)
+						;
+						$bs3btn.find('ul[role=menu]')
 							.append( $('<li class="divider">') )
 							.append( $('<li>')
 								.append( $('<a>')

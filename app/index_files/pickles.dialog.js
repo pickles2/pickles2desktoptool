@@ -78,8 +78,8 @@
 			.append($dialog)
 		;
 		$('body .theme_wrap')
-			.addClass('filter')
-			.addClass('filter-blur')
+			// .addClass('filter')
+			// .addClass('filter-blur')//描画がおかしくなるから一旦やめ。
 		;
 		return $dialog;
 	}//dialog()

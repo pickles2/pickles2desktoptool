@@ -18,6 +18,12 @@ $ npm install
 $ composer install
 ```
 
+### update submodules changes
+
+```
+$ npm run submodules-update
+```
+
 ### Boot(develop)
 
 ```

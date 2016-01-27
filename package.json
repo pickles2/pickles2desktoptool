@@ -6,6 +6,7 @@
   "scripts": {
     "preinstall": "git submodule update -i -r -f",
     "start": "nw",
+    "submodules-update": "rm -rfv node_modules/broccoli-html-editor; rm -rfv node_modules/broccoli-field-table; rm -rfv node_modules/node-px2dt-localdata-access; npm install; gulp;",
     "build": "node ./build.js"
   },
   "author": "Tomoya Koyanagi",

@@ -1880,6 +1880,7 @@ module.exports = function(broccoli){
 						// console.log( data );
 						// console.log( mod );
 
+						_this.lock();//フォームをロック
 						it79.ary(
 							mod.fields,
 							function(it2, field2, fieldName2){
@@ -1931,7 +1932,9 @@ module.exports = function(broccoli){
 				;
 				$editWindow.find('button.broccoli--edit-window-btn-remove')
 					.bind('click', function(){
+						_this.lock();
 						if( !confirm('このモジュールを削除します。よろしいですか？') ){
+							_this.unlock();
 							return;
 						}
 						broccoli.contentsSourceData.removeInstance(instancePath, function(){
@@ -1943,6 +1946,28 @@ module.exports = function(broccoli){
 				;
 			}
 		);
+		return this;
+	}
+
+	/**
+	 * フォーム操作を凍結する
+	 */
+	this.lock = function(callback){
+		callback = callback || function(){};
+		$editWindow.find('.broccoli--edit-window-builtin-fields').find('input, textarea').attr({'disabled': true});
+		$editWindow.find('.broccoli--edit-window-form-buttons').find('button').attr({'disabled': true});
+		callback();
+		return this;
+	}
+
+	/**
+	 * フォーム操作の凍結を解除する
+	 */
+	this.unlock = function(callback){
+		callback = callback || function(){};
+		$editWindow.find('.broccoli--edit-window-builtin-fields').find('input, textarea').attr({'disabled': false});
+		$editWindow.find('.broccoli--edit-window-form-buttons').find('button').attr({'disabled': false});
+		callback();
 		return this;
 	}
 
@@ -3381,7 +3406,7 @@ module.exports = function(broccoli){
 			rows = mod.rows;
 		}
 		var rtn = $('<div>')
-			.append($('<textarea>')
+			.append($('<textarea class="form-control">')
 				.attr({
 					"name":mod.name,
 					"rows":rows
@@ -3476,7 +3501,7 @@ module.exports = function(broccoli){
 	 * エディタUIを生成
 	 */
 	this.mkEditor = function( mod, data, elm, callback ){
-		var $input = $('<input>')
+		var $input = $('<input class="form-control">')
 			.attr({
 				"name":mod.name
 			})
@@ -3658,44 +3683,58 @@ module.exports = function(broccoli){
 			}
 
 			var $img = $('<img>');
-			rtn.append( $img
-				.attr({
-					"src": path ,
-					"data-size": res.size ,
-					"data-extension": res.ext,
-					"data-mime-type": res.type,
-					"data-base64": res.base64
-				})
+			var $inputImageName = $('<input class="form-control" style="width:12em;">');
+			rtn.append( $('<label>')
 				.css({
-					'min-width':'100px',
-					'max-width':'100%',
-					'min-height':'100px',
-					'max-height':'200px'
+					'border':'1px solid #999',
+					'padding': 10,
+					'border-radius': 5
 				})
-			);
-			rtn.append( $('<input>')
-				.attr({
-					"name":mod.name ,
-					"type":"file",
-					"webkitfile":"webkitfile"
-				})
-				.css({'width':'100%'})
-				.bind('change', function(e){
-					// console.log(e.target.files);
-					var fileInfo = e.target.files[0];
+				.append( $img
+					.attr({
+						"src": path ,
+						"data-size": res.size ,
+						"data-extension": res.ext,
+						"data-mime-type": res.type,
+						"data-base64": res.base64
+					})
+					.css({
+						'min-width':'100px',
+						'max-width':'100%',
+						'min-height':'100px',
+						'max-height':'200px'
+					})
+				)
+				.append( $('<input>')
+					.attr({
+						"name":mod.name ,
+						"type":"file",
+						"webkitfile":"webkitfile"
+					})
+					.css({'width':'100%'})
+					.bind('change', function(e){
+						// console.log(e.target.files);
+						var fileInfo = e.target.files[0];
 
-					function readSelectedLocalFile(fileInfo, callback){
-						var reader = new FileReader();
-						reader.onload = function(evt) {
-							callback( evt.target.result );
+						function readSelectedLocalFile(fileInfo, callback){
+							var reader = new FileReader();
+							reader.onload = function(evt) {
+								callback( evt.target.result );
+							}
+							reader.readAsDataURL(fileInfo);
 						}
-						reader.readAsDataURL(fileInfo);
-					}
 
-					var realpathSelected = $(this).val();
-					if( realpathSelected ){
-						readSelectedLocalFile(fileInfo, function(dataUri){
-							$img
+						var realpathSelected = $(this).val();
+						if( realpathSelected ){
+							if( !$inputImageName.val() ){
+								// アップした画像名をプリセット
+								// ただし、既に名前がセットされている場合は変更しない
+								var fname = fileInfo.name;
+								fname = fname.replace(new RegExp('\\.[a-zA-Z0-9]*$'), '');
+								$inputImageName.val(fname);
+							}
+							readSelectedLocalFile(fileInfo, function(dataUri){
+								$img
 								.attr({
 									"src": dataUri ,
 									"data-size": fileInfo.size ,
@@ -3707,27 +3746,28 @@ module.exports = function(broccoli){
 										return dataUri;
 									})(dataUri)
 								})
-							;
-						});
-					}
+								;
+							});
+						}
 
-					// _this.callGpi(
-					// 	{
-					// 		'fileInfo': fileInfo
-					// 	},
-					// 	function(result){
-					// 		console.log(result);
-					// 	}
-					// );
+						// _this.callGpi(
+						// 	{
+						// 		'fileInfo': fileInfo
+						// 	},
+						// 	function(result){
+						// 		console.log(result);
+						// 	}
+						// );
 
-				})
+					})
+				)
 			);
 			rtn.append(
 				$('<div>')
 					.append( $('<span>')
 						.text('出力ファイル名(拡張子を含まない):')
 					)
-					.append( $('<input>')
+					.append( $inputImageName
 						.attr({
 							"name":mod.name+'-publicFilename' ,
 							"type":"text",
@@ -3958,17 +3998,17 @@ module.exports = function(broccoli){
 			rows = mod.rows;
 		}
 		var rtn = $('<div>')
-			.append($('<textarea>')
+			.append($('<textarea class="form-control">')
 				.attr({
 					"name":mod.name,
 					"rows":rows
 				})
 				.css({'width':'100%','height':'auto'})
 			)
-			.append($('<ul class="horizontal">')
-				.append($('<li class="horizontal-li"><label><input type="radio" name="editor-'+php.htmlspecialchars(mod.name)+'" value="" /> HTML</label></li>'))
-				.append($('<li class="horizontal-li"><label><input type="radio" name="editor-'+php.htmlspecialchars(mod.name)+'" value="text" /> テキスト</label></li>'))
-				.append($('<li class="horizontal-li"><label><input type="radio" name="editor-'+php.htmlspecialchars(mod.name)+'" value="markdown" /> Markdown</label></li>'))
+			.append($('<p>')
+				.append($('<span style="margin-right: 10px;"><label><input type="radio" name="editor-'+php.htmlspecialchars(mod.name)+'" value="" /> HTML</label></span>'))
+				.append($('<span style="margin-right: 10px;"><label><input type="radio" name="editor-'+php.htmlspecialchars(mod.name)+'" value="text" /> テキスト</label></span>'))
+				.append($('<span style="margin-right: 10px;"><label><input type="radio" name="editor-'+php.htmlspecialchars(mod.name)+'" value="markdown" /> Markdown</label></span>'))
 			)
 		;
 		rtn.find('textarea').val(data.src);

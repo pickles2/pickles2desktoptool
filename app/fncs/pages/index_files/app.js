@@ -17,7 +17,8 @@ window.contApp = new (function( px ){
 	var _pj = this.pj = px.getCurrentProject();
 	var _lastPreviewPath,
 		_currentPreviewPath,
-		_workspaceFilterKeywords='';
+		_workspaceFilterKeywords='',
+		_workspaceFilterListLabel='title';
 
 	/**
 	 * 初期化
@@ -106,21 +107,21 @@ window.contApp = new (function( px ){
 							})
 						;
 
-						$workspaceFilter
-							.html('')
-							.append( $('<input>')
-								.attr({
-									'type': 'text',
-									'placeholder': 'Filter...'
-								})
-								.val(_workspaceFilterKeywords)
-								.bind('keyup', function(){
-									var $this = $(this);
-									_workspaceFilterKeywords = $this.val();
-									// console.log(_workspaceFilterKeywords);
-									_this.redraw();
-								})
-							)
+						// Filter
+						$workspaceFilter.find('input[type=text]')
+							.val(_workspaceFilterKeywords)
+							.bind('keyup', function(){
+								_workspaceFilterKeywords = $workspaceFilter.find('input[type=text]').val();
+								// console.log(_workspaceFilterKeywords);
+								_this.redraw();
+							})
+						;
+						$workspaceFilter.find('input[type=radio][name=list-label]')
+							.bind('change', function(){
+								_workspaceFilterListLabel = $workspaceFilter.find('input[type=radio][name=list-label]:checked').val();
+								// console.log(_workspaceFilterListLabel);
+								_this.redraw();
+							})
 						;
 
 						setTimeout(function(){
@@ -650,7 +651,9 @@ window.contApp = new (function( px ){
 			}
 			$ul.append( $('<li>')
 				.append( $('<a>')
-					.text( _sitemap[idx].title )
+					.text( function(){
+						return _sitemap[idx][_workspaceFilterListLabel];
+					} )
 					.attr( 'href', 'javascript:;' )
 					.attr( 'data-id', _sitemap[idx].id )
 					.attr( 'data-path', _sitemap[idx].path )
@@ -658,6 +661,7 @@ window.contApp = new (function( px ){
 					.css({
 						// ↓暫定だけど、階層の段をつけた。
 						'padding-left': (function(pageInfo){
+							if( _workspaceFilterListLabel != 'title' ){ return '1em'; }
 							if( !_sitemap[idx].id.length ){ return '1em'; }
 							if( !_sitemap[idx].logical_path.length ){ return '2em' }
 							var rtn = ( (_sitemap[idx].logical_path.split('>').length + 1) * 1.3)+'em';

@@ -77,3 +77,6 @@
 .cont_workspace_filter input{
 	width: 100%;
 }
+.cont_workspace_filter label{
+	overflow: hidden;
+}

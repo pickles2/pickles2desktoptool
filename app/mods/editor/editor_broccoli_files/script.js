@@ -4,7 +4,7 @@ window.contApp = new (function( px ){
 	var it79 = require('iterate79');
 	var php = require('phpjs');
 	var data = {};
-	var param = {};
+	var _param = {};
 	var broccoli = new Broccoli();
 	var _pj;
 
@@ -36,8 +36,8 @@ window.contApp = new (function( px ){
 			function(it1, data){
 				px.cancelDrop( window );
 
-				param = px.utils.parseUriParam( window.location.href );
-				// console.log( param );
+				_param = px.utils.parseUriParam( window.location.href );
+				// console.log( _param );
 
 				_pj = px.getCurrentProject();
 
@@ -58,7 +58,7 @@ window.contApp = new (function( px ){
 			function(it1, data){
 				px.preview.serverStandby( function(){
 					$('#canvas').attr({
-						"data-broccoli-preview": px.preview.getUrl( param.page_path )
+						"data-broccoli-preview": px.preview.getUrl( _param.page_path )
 					});
 					it1.next(data);
 				} );
@@ -98,6 +98,21 @@ window.contApp = new (function( px ){
 								callback(rtn);
 							});
 							return;
+						},
+						'onClickContentsLink': function(url, data){
+							// console.log(url);
+							// console.log(data);
+							var to = url;
+							var pathControot = px.preview.getUrl();
+							to = to.replace( new RegExp( '^'+px.utils.escapeRegExp( pathControot ) ), '' );
+							to = to.replace( new RegExp( '^\\/*' ), '/' );
+
+							if( to != _param.page_path ){
+								// if(confirm( 'realy to go to "'+to+'"?' )){
+								window.parent.contApp.openEditor( to );
+								// window.location.href = './index.html?page_path='+encodeURIComponent( to );
+								// }
+							}
 						}
 					} ,
 					function(){
@@ -122,7 +137,7 @@ window.contApp = new (function( px ){
 							broccoli.saveContents( function(){
 								px.message( 'ページを保存しました。' );
 								px.preview.serverStandby(function(){
-									px.utils.openURL( px.preview.getUrl( param.page_path ) );
+									px.utils.openURL( px.preview.getUrl( _param.page_path ) );
 								});
 							} );
 						})

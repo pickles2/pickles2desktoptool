@@ -166,14 +166,12 @@
 			// fin += 'console.log(event.origin);'+"\n";
 			// fin += 'console.log(event.data);'+"\n";
 			fin += 'if(window.location.hostname!=\'127.0.0.1\'){alert(\'Unauthorized access.\');return;}'+"\n";
-			fin += 'var s=document.createElement(\'script\');'+"\n";
-			fin += 'document.querySelector(\'body\').appendChild(s);s.src=event.data.scriptUrl;'+"\n";
+			// fin += 'var s=document.createElement(\'script\');'+"\n";
+			// fin += 'document.querySelector(\'body\').appendChild(s);s.src=event.data.scriptUrl;'+"\n";
+			fin += scriptSrc+';'+"\n";
 			fin += 'window.removeEventListener(\'message\', f, false);'+"\n";
 			fin += '}'+"\n";
 			fin += '})(),false);'+"\n";
-			fin += '</script>'+"\n";
-			fin += '<script>';
-			fin += scriptSrc;
 			fin += '</script>'+"\n";
 		return fin;
 	}

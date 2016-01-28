@@ -156,6 +156,7 @@ new (function($, window){
 		});}} ,
 		{"label":_appName+" 設定", "cond":"always",        "area":"shoulder", "app":null, "cb": function(){px.editPx2DTConfig();}} ,
 		{"label":"ヘルプ",               "cond":"always",             "area":"shoulder", "app":null, "cb": function(){px.openHelp();} },
+		{"label":"デベロッパーツール",     "cond":"always",             "area":"shoulder", "app":null, "cb": function(){require('nw.gui').Window.get().showDevTools();} },
 		{"label":"終了",                 "cond":"always",             "area":"shoulder", "app":null, "cb": function(){px.exit();}}
 	];
 

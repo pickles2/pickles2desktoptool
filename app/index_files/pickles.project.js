@@ -807,15 +807,20 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 					px.utils.mkdirAll( prop.realpath_resource_dir );
 				}
 				if( prop.proc_type == 'html.gui' ){
-					px.fs.mkdirSync( prop.realpath_resource_dir + '/guieditor.ignore/' );
-					px.fs.writeFile( prop.realpath_resource_dir + '/guieditor.ignore/data.json', '{}', function(err){
-						if( err ){
-							opt.error(err);
-							opt.complete();
-							return;
-						}
+					try {
+						px.fs.mkdirSync( prop.realpath_resource_dir + '/guieditor.ignore/' );
+					} catch (e) {
 						it.next(prop);
-					} );
+					} finally {
+						px.fs.writeFile( prop.realpath_resource_dir + '/guieditor.ignore/data.json', '{}', function(err){
+							if( err ){
+								opt.error(err);
+								opt.complete();
+								return;
+							}
+							it.next(prop);
+						} );
+					}
 
 				}else{
 					it.next(prop);

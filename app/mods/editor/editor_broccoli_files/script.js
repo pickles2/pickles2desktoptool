@@ -113,6 +113,9 @@ window.contApp = new (function( px ){
 								// window.location.href = './index.html?page_path='+encodeURIComponent( to );
 								// }
 							}
+						},
+						'onMessage': function( message ){
+							px.message(message);
 						}
 					} ,
 					function(){

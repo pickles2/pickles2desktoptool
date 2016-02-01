@@ -126,6 +126,12 @@ window.contApp = new (function( px ){
 			} ,
 			function(it1, _data){
 				$elmButtons
+					.find('button.cont_btn_close')
+						.click( function(){
+							window.parent.contApp.closeEditor();
+						} )
+				;
+				$elmButtons
 					.find('button.cont_btn_save_and_close')
 						.click( function(){
 							broccoli.saveContents( function(){

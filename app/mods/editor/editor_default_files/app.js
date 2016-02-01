@@ -196,6 +196,12 @@ window.contApp = new (function( px ){
 				})
 		;
 		$html
+			.find('button.cont_btn_close')
+				.click(function(){
+					window.parent.contApp.closeEditor();
+				})
+		;
+		$html
 			.find('button.cont_btn_save_and_close')
 				.click(function(){
 					save(function(result){

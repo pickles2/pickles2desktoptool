@@ -356,7 +356,7 @@
 			var broccoli = this;
 			broccoli.selectInstance(instancePath, function(){
 				broccoli.lightbox( function( lbElm ){
-					broccoli.drawEditWindow( instancePath, lbElm, function(){
+					broccoli.drawEditWindow( instancePath, lbElm, function(isSave){
 						it79.fnc({},[
 							function(it1, data){
 								// 編集パネルを一旦消去
@@ -366,6 +366,10 @@
 							} ,
 							function(it1, data){
 								// コンテンツデータを保存
+								if( !isSave ){
+									it1.next(data);
+									return;
+								}
 								_this.saveContents(function(){
 									it1.next(data);
 								});
@@ -1971,7 +1975,7 @@ module.exports = function(broccoli){
 										// 	});
 										// } ,
 										function(it2, data){
-											callback();
+											callback(true);
 											it2.next(data);
 										}
 									]
@@ -1985,7 +1989,7 @@ module.exports = function(broccoli){
 				$editWindow.find('button.broccoli--edit-window-btn-cancel')
 					.bind('click', function(){
 						_this.lock();
-						callback();
+						callback(false);
 					})
 				;
 				$editWindow.find('button.broccoli--edit-window-btn-remove')
@@ -1997,7 +2001,7 @@ module.exports = function(broccoli){
 						}
 						broccoli.contentsSourceData.removeInstance(instancePath, function(){
 							broccoli.unselectInstance(function(){
-								callback();
+								callback(true);
 							});
 						});
 					})
@@ -2304,12 +2308,8 @@ module.exports = function(broccoli){
 			callback();
 			return this;
 		}
-		$instanceTreeView.html('...');
-		var $ul = $('<ul>')
-			// .css({
-			// 	"border":"1px solid #666"
-			// })
-		;
+		// $instanceTreeView.html('...');
+		var $ul = $('<ul>');
 
 		var data = broccoli.contentsSourceData.get();
 		// console.log(data);
@@ -2346,22 +2346,6 @@ module.exports = function(broccoli){
 					;
 
 					if(row.fieldType == 'input'){
-						// broccoli.gpi(
-						// 	'field.mkPreviewHtml',
-						// 	{
-						// 		'__fieldId__': row.type ,
-						// 		'fieldData': data.fields[row.name],
-						// 		'mod': mod
-						// 	},
-						// 	function(html){
-						// 		$li.append(
-						// 			$('<span class="broccoli--instance-tree-view-fieldpreview">')
-						// 				.html('<span>'+html+'</span>')
-						// 		);
-						// 		$ul.append($li);
-						// 		it1.next();
-						// 	}
-						// );
 						var fieldDef = broccoli.getFieldDefinition( row.type ); // フィールドタイプ定義を呼び出す
 						fieldDef.mkPreviewHtml( data.fields[row.name], mod, function(html){
 							$li.append(
@@ -3685,31 +3669,25 @@ module.exports = function(broccoli){
 			[
 				function(it1, data){
 					_resMgr.getResource( rtn.resKey, function(res){
-						if( mode == 'finalize' ){
-							_resMgr.getResourcePublicPath( rtn.resKey, function(publicPath){
-								rtn.path = publicPath;
-								it1.next(data);
-							} );
-							return;
-						}else if( mode == 'canvas' ){
-							rtn.path = 'data:'+res.type+';base64,' + res.base64;
+						_resMgr.getResourcePublicPath( rtn.resKey, function(publicPath){
+							rtn.path = publicPath;
+							data.path = publicPath;
 
-							if( !res.base64 ){
+							if( mode == 'canvas' ){
 								// ↓ ダミーの Sample Image
-								rtn.path = _imgDummy;
+								data.path = _imgDummy;
+
+								if( res.base64 ){
+									data.path = 'data:'+res.type+';base64,' + res.base64;
+								}
 							}
 							it1.next(data);
-							return;
-						}
-						it1.next(data);
-						return;
+						} );
 					} );
+					return;
 				},
-				// function(it1, data){
-				// 	it1.next();
-				// },
 				function(it1, data){
-					callback(rtn.path);
+					callback(data.path);
 					it1.next();
 				}
 			]
@@ -3728,14 +3706,14 @@ module.exports = function(broccoli){
 		}
 
 		_resMgr.getResource( rtn.resKey, function(res){
-			rtn.path = 'data:'+res.type+';base64,' + res.base64;
+			var imagePath = 'data:'+res.type+';base64,' + res.base64;
 			if( !res.base64 ){
 				// ↓ ダミーの Sample Image
-				rtn.path = _imgDummy;
+				imagePath = _imgDummy;
 			}
 			var $ = cheerio.load('<img>', {decodeEntities: false});
 			$('img')
-				.attr({'src': rtn.path})
+				.attr({'src': imagePath})
 				.css({
 					'max-width': '80px',
 					'max-height': '80px'

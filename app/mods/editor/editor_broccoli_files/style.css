@@ -5,35 +5,78 @@
 	overflow: auto;
 	height: 500px;
 }
-#instanceTreeView{
+.cont_title_bar{
 	position: absolute;
 	top: 0; left: 0;
+	width: 100%;
+	height:20px;
+	font-size: 11px;
+	background-color: #666;
+	color: #999;
+	padding: 2px 15px;
+}
+.cont_title_bar:hover{
+	color: #fff;
+}
+.cont_title_bar--path{
+}
+.cont_title_bar--path:before{
+	content: " (";
+}
+.cont_title_bar--path:after{
+	content: ")";
+}
+.cont_title_bar--fnc{
+	margin-left: 20px;
+}
+.cont_title_bar--fnc a{
+	display: inline-block;
+	padding: 1px 2px;
+	margin: 0 2px;
+	color: #fff;
+}
+.cont_instanceTreeView{
+	position: absolute;
+	top: 20px; left: 0;
 	width: 20%;
 	height: 400px;
 	overflow: auto;
 }
-#canvas{
+.cont_canvas{
 	position: absolute;
-	top: 0; left: 20%;
+	top: 20px; left: 20%;
 	width: 65%;
 	height: 400px;
+	box-sizing: border-box;
+	padding: 10px;
+}
+.cont_canvas .preview_window_frame{
+	width: 100%;
+	height: 100%;
+}
+.cont_canvas--main{
+	position: absolute;
+	width: 100%;
+	height: 100%;
 	overflow: auto;
 }
-#palette{
+.cont_palette{
 	position: absolute;
-	top: 0; right: 0;
+	top: 20px; right: 0;
 	width: 15%;
 	height: 200px;
 	overflow: auto;
 }
-#buttons{
+.cont_buttons{
 	position: absolute;
 	top: 200px; right: 0;
 	width: 15%;
 	height: auto;
 	overflow: auto;
+	box-sizing: border-box;
+	padding: 5px;
 }
-#instancePathView{
+.cont_instancePathView{
 	position: fixed;
 	bottom: 0; right: 0;
 	width: 100%;

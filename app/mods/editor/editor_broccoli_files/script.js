@@ -8,7 +8,8 @@ window.contApp = new (function( px ){
 	var broccoli = new Broccoli();
 	var _pj;
 
-	var $elmButtons,
+	var $elmTitleBar,
+		$elmButtons,
 		$elmCanvas,
 		$elmModulePalette,
 		$elmInstanceTreeView,
@@ -43,21 +44,19 @@ window.contApp = new (function( px ){
 
 				it1.next(data);
 			} ,
-			// function(it1, data){
-			// 	// getting Project Info
-			// 	main.socket.send(
-			// 		'getProject',
-			// 		{'projectIdx': data.projectIdx},
-			// 		function(pjInfo){
-			// 			data.projectInfo = pjInfo;
-			// 			// console.log(data);
-			// 			it1.next(data);
-			// 		}
-			// 	);
-			// } ,
+			function(it1, data){
+				// getting pageInfo
+				_pj.px2proj.get_page_info(
+					_param.page_path,
+					function(pageInfo){
+						data.pageInfo = pageInfo;
+						it1.next(data);
+					}
+				);
+			} ,
 			function(it1, data){
 				px.preview.serverStandby( function(){
-					$('#canvas').attr({
+					$('.cont_canvas .cont_canvas--main').attr({
 						"data-broccoli-preview": px.preview.getUrl( _param.page_path )
 					});
 					it1.next(data);
@@ -65,11 +64,12 @@ window.contApp = new (function( px ){
 			} ,
 			function(it1, data){
 				// broccoli-html-editor standby.
-				$elmButtons = $('#buttons');
-				$elmCanvas = $('#canvas');
-				$elmModulePalette = $('#palette');
-				$elmInstanceTreeView = $('#instanceTreeView');
-				$elmInstancePathView = $('#instancePathView');
+				$elmTitleBar = $('.cont_title_bar');
+				$elmButtons = $('.cont_buttons');
+				$elmCanvas = $('.cont_canvas');
+				$elmModulePalette = $('.cont_palette');
+				$elmInstanceTreeView = $('.cont_instanceTreeView');
+				$elmInstancePathView = $('.cont_instancePathView');
 				fitWindowSize(function(){
 					it1.next(data);
 				});
@@ -78,7 +78,7 @@ window.contApp = new (function( px ){
 				// broccoli-html-editor standby.
 				broccoli.init(
 					{
-						'elmCanvas': $elmCanvas.get(0),
+						'elmCanvas': $elmCanvas.find('.cont_canvas--main').get(0),
 						'elmModulePalette': $elmModulePalette.get(0),
 						'elmInstanceTreeView': $elmInstanceTreeView.get(0),
 						'elmInstancePathView': $elmInstancePathView.get(0),
@@ -94,7 +94,7 @@ window.contApp = new (function( px ){
 							// broccoliは、バックグラウンドで様々なデータ通信を行います。
 							// GPIは、これらのデータ通信を行うための汎用的なAPIです。
 							contAppBroccoliServer(px, api, options, function(rtn){
-								console.log(rtn);
+								// console.log(rtn);
 								callback(rtn);
 							});
 							return;
@@ -124,7 +124,31 @@ window.contApp = new (function( px ){
 					}
 				);
 			} ,
-			function(it1, _data){
+			function(it1, data){
+				$elmTitleBar
+					.append( $('<span class="cont_title_bar--title">')
+						.text(data.pageInfo.title)
+					)
+					.append( $('<span class="cont_title_bar--path">')
+						.text(data.pageInfo.path)
+					)
+					.append( $('<span class="cont_title_bar--fnc">')
+						.append( $('<a href="javascript:;">')
+							.text('toggle "instance Tree View"')
+							.click( function(){
+								if( $elmInstanceTreeView.is(':visible') ){
+									$elmInstanceTreeView.hide(0, function(){
+										onWindowResized();
+									});
+								}else{
+									$elmInstanceTreeView.show(0, function(){
+										onWindowResized();
+									});
+								}
+							} )
+						)
+					)
+				;
 				$elmButtons
 					.find('button.cont_btn_close')
 						.click( function(){
@@ -151,7 +175,7 @@ window.contApp = new (function( px ){
 							} );
 						})
 				;
-				it1.next(_data);
+				it1.next(data);
 			} ,
 			function(it1, _data){
 				// キーボードイベントセット
@@ -268,11 +292,31 @@ window.contApp = new (function( px ){
 		callback = callback||function(){};
 		var h = $(window).innerHeight() - $elmInstancePathView.outerHeight();
 		// console.log(h);
+		var hToolBar = $elmTitleBar.outerHeight();
 		$('.cont_outline').css( {'height': h} );
-		$elmCanvas.css( {'height': h} );
-		$elmModulePalette.css( {'height': h - $elmButtons.outerHeight()} );
-		$elmButtons.css( {'top': h - $elmButtons.outerHeight()} );
-		$elmInstanceTreeView.css( {'height': h} );
+		$elmCanvas.css( {
+			'height': h - hToolBar
+		} );
+		$elmModulePalette.css( {
+			'height': h - $elmButtons.outerHeight() - hToolBar
+		} );
+		$elmButtons.css( {
+			'top': h - $elmButtons.outerHeight()
+		} );
+		$elmInstanceTreeView.css( {
+			'height': h - hToolBar
+		} );
+		if( $elmInstanceTreeView.is(':visible') ){
+			$elmCanvas.css( {
+				'left': '20%',
+				'width': '65%'
+			} );
+		}else{
+			$elmCanvas.css( {
+				'left': 0,
+				'width': '85%'
+			} );
+		}
 		callback();
 	}
 

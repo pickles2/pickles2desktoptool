@@ -191,13 +191,21 @@ ul.listview li a.current{
 	-o-border-image:      url("../images/windowframe.png") 63 17 18 62 / 63px 17px 18px 62px repeat stretch;
 	-ms-border-image:     url("../images/windowframe.png") 63 17 18 62 / 63px 17px 18px 62px repeat stretch;
 	box-sizing: border-box;
-	position: relative;
+	position: relative; left: 0; top: 0;
 	height: 300px;
 }
-.preview_window_frame > iframe{
-	margin: -13px -2px -13px -57px;
+.preview_window_frame--inner{
+	/*padding: -13px -2px -13px -57px;*/
+	margin: 0;
+	/*width: 100%; height: 100%;*/
+	display: block;
+	position: absolute;
+	top:-13px; right:-12px; bottom:-13px; left:-57px;
+	border: none;
+	box-sizing: border-box;
+}
+.preview_window_frame--inner > iframe{
 	width: 100%; height: 100%;
-	position: absolute; left:0; top:0;
 	border: none;
 	box-sizing: border-box;
 }

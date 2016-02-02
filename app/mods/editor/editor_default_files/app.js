@@ -271,7 +271,6 @@ window.contApp = new (function( px ){
 			windowResize();
 		});
 
-		window.initContentsCSS($html);
 		px.progress.close();
 	}
 

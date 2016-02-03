@@ -12,7 +12,7 @@ Copy `Pickles2DesktopTool.app` to your Application Folder.
 ### Initial Setup
 
 ```
-$ git clone https://bitbucket.org/tomk79/pickles2desktoptool.git
+$ git clone https://github.com/pickles2/pickles2desktoptool.git
 $ cd pickles2desktoptool
 $ npm install
 $ composer install

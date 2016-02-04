@@ -690,15 +690,18 @@ window.contApp = new (function( px ){
 	 * エディター画面を開く
 	 */
 	this.openEditor = function( pagePath ){
+		var pageInfo = _pj.site.getPageInfo( pagePath );
+		if( !pageInfo ){
+			alert('ERROR: Undefined page path. - ' + pagePath);
+			return this;
+		}
+
 		this.closeEditor();//一旦閉じる
 
 		// プログレスモード表示
 		px.progress.start({
 			'blindness':true
 		});
-
-		var pageInfo = _pj.site.getPageInfo( pagePath );
-		if( !pageInfo ){ alert('ERROR: Undefined page path.'); return this; }
 
 		var contPath = _pj.findPageContent( pagePath );
 		var contRealpath = _pj.get('path')+'/'+contPath;

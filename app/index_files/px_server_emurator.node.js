@@ -27,6 +27,11 @@
 		var parsedUrl = url.parse(request.url, true);
 		var params = parsedUrl.query;
 		var path = parsedUrl.pathname;
+		var search = parsedUrl.search;
+		// console.log(request.url);
+		// console.log(parsedUrl);
+		// console.log(params);
+		// console.log(path);
 
 		var pj = px.getCurrentProject();
 		// console.log( pj.getConfig().path_controot );
@@ -87,7 +92,7 @@
 					pj.get('path')+'/'+pj.get('entry_script') ,
 					'-o', 'json' ,
 					'-u', 'Mozilla/5.0' ,
-					path
+					path+search
 				] ,
 				{
 					success: function(data){

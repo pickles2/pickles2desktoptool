@@ -75,7 +75,7 @@ nw.build().then(function () {
 						if(err) {
 							console.log('ERROR!', err);
 						} else {
-							console.log('success.');
+							console.log('success. - '+'./build/'+appName+'-'+versionSign+'-osx64.zip');
 						}
 						itPj.next();
 					}
@@ -90,7 +90,7 @@ nw.build().then(function () {
 						if(err) {
 							console.log('ERROR!', err);
 						} else {
-							console.log('success.');
+							console.log('success. - '+'./build/'+appName+'-'+versionSign+'-win32.zip');
 						}
 						itPj.next();
 					}
@@ -105,7 +105,7 @@ nw.build().then(function () {
 						if(err) {
 							console.log('ERROR!', err);
 						} else {
-							console.log('success.');
+							console.log('success. - '+'./build/'+appName+'-'+versionSign+'-linux64.zip');
 						}
 						itPj.next();
 					}

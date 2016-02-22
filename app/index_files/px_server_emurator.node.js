@@ -86,44 +86,45 @@
 		path = path.replace( new RegExp( '^'+px.utils.escapeRegExp( pj.getConfig().path_controot ) ), '/' );
 
 		if( applyPx ){
-			px.utils.spawn(
-				'php',
+
+			var proc = px.nodePhpBin.spawn(
 				[
 					pj.get('path')+'/'+pj.get('entry_script') ,
 					'-o', 'json' ,
 					'-u', 'Mozilla/5.0' ,
 					path+search
 				] ,
-				{
-					success: function(data){
-						_cmdData += data;
-					},
-					complete: function(code){
-						var dataDecoded, document_body, statusCode = 500;
-						try{
-							dataDecoded = JSON.parse(_cmdData);
-							document_body = dataDecoded.body_base64;
-							statusCode = dataDecoded.status;
-							document_body = (new Buffer(document_body, 'base64')).toString();
-						}catch(e){
-							document_body = _cmdData;
-							statusCode = 500;
-							console.log('disabled to decode Base64 data.');
-							console.log(document_body);
-						}
-
-						response.writeHead( statusCode, 'OK', {
-							'Connection': 'close' ,
-							'Content-Type': mime
-						});
-						response.write( document_body );
-						if(mime=='text/html'){
-							response.write(getBroccoliScript());
-						}
-						response.end();
-					}
-				}
+				{}
 			);
+			proc.stdout.on('data', function(data){
+				_cmdData += data;
+			});
+			proc.stderr.on('data', function(){});
+			proc.on('close', function(code){
+				var dataDecoded, document_body, statusCode = 500;
+				try{
+					dataDecoded = JSON.parse(_cmdData);
+					document_body = dataDecoded.body_base64;
+					statusCode = dataDecoded.status;
+					document_body = (new Buffer(document_body, 'base64')).toString();
+				}catch(e){
+					document_body = _cmdData;
+					statusCode = 500;
+					console.log('disabled to decode Base64 data.');
+					console.log(document_body);
+				}
+
+				response.writeHead( statusCode, 'OK', {
+					'Connection': 'close' ,
+					'Content-Type': mime
+				});
+				response.write( document_body );
+				if(mime=='text/html'){
+					response.write(getBroccoliScript());
+				}
+				response.end();
+			});
+
 			return ;
 		}else{
 			fs.readFile( px.utils.dirname( pj.get('path')+'/'+pj.get('entry_script') ) + path, function(error, bin){

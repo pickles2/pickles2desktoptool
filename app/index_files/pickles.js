@@ -95,6 +95,8 @@ new (function($, window){
 
 	this.textEditor = window.textEditor;
 
+	this.nodePhpBin = {};//init内で初期化される
+
 	if( !_utils.isDirectory( _path_data_dir ) ){
 		_fs.mkdirSync( _path_data_dir );
 		if( !_utils.isDirectory( _path_data_dir ) ){
@@ -208,6 +210,10 @@ new (function($, window){
 		if( !_utils.isDirectory( _path_data_dir+'commands/composer/' ) ){
 			_fs.mkdirSync( _path_data_dir+'commands/composer/' );
 		}
+		px.nodePhpBin = require('node-php-bin').get({
+			'bin': px.cmd('php')
+		});
+
 		if( !_utils.isFile( _path_data_dir+'commands/composer/composer.phar' ) ){
 			(function(){
 				var opt = {
@@ -405,7 +411,8 @@ new (function($, window){
 	this.cmd = function(cmd){
 		if( cmd == 'composer' ){
 			return _path_data_dir+'commands/composer/composer.phar';
-		}else if( cmd == 'open' ){
+		}
+		if( cmd == 'open' ){
 			if(_platform=='win'){
 				return 'explorer';
 			}
@@ -413,9 +420,9 @@ new (function($, window){
 		if( _db.commands && _db.commands[cmd] ){
 			return _db.commands[cmd];
 		}
-		// if( cmd == 'php' ){
-		// 	return require('node-php-bin').get().getPath();
-		// }
+		if( cmd == 'php' ){
+			return require('node-php-bin').get().getPath();
+		}
 		return cmd;
 	}
 
@@ -442,12 +449,12 @@ new (function($, window){
 	 */
 	this.openHelp = function(){
 		var port = 8081;
+		if( _packageJson && _packageJson.pickles2 && _packageJson.pickles2.network && _packageJson.pickles2.network.appserver && _packageJson.pickles2.network.appserver.port ){
+			port = _packageJson.pickles2.network.appserver.port;
+		}
 		if( _db.network && _db.network.appserver && _db.network.appserver.port ){
 			port = _db.network.appserver.port;
 		}
-		// _appServer.start( port, './app/server_root/', {} );
-		// var win = window.open( _appServer.getUrl(), null, 'resizable=no,scrollbars=yes,status=yes' );
-		// $(win).width(300).height(400);
 
 		_appServer.serverStandby( port, './app/server_root/', function(){
 			px.utils.openURL( _appServer.getUrl() );

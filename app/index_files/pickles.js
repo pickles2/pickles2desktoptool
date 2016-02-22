@@ -2,6 +2,7 @@ new (function($, window){
 	window.px = _this = this;
 	this.$ = $;
 	this._ = _;
+	this.process = process;
 
 	/**
 	 * Pickles 2 Desktop Tool のバージョン情報を取得する。

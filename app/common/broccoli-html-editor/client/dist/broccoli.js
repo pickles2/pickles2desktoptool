@@ -518,13 +518,27 @@
 			var data = {};
 			data.data = [];
 			data.data[0] = this.contentsSourceData.get( instancePath );
-			data.resources = {}; // TODO: 未実装
-			// console.log(data);
-			data = JSON.stringify( data, null, 1 );
-			this.clipboard.set( data );
-			this.message('インスタンスをコピーしました。');
+			data.resources = {};
+			this.contentsSourceData.extractResourceId(data.data[0], function(resourceIdList){
+				// console.log(resourceIdList);
+				it79.ary(
+					resourceIdList ,
+					function(it1, row1, idx1){
+						_this.resourceMgr.getResource(row1, function(resInfo){
+							data.resources[row1] = resInfo;
+							it1.next();
+						});
+					} ,
+					function(){
+						// console.log(data);
+						data = JSON.stringify( data, null, 1 );
+						_this.clipboard.set( data );
+						_this.message('インスタンスをコピーしました。');
+						callback(true);
+					}
+				);
 
-			callback(true);
+			});
 			return;
 		}
 
@@ -550,9 +564,9 @@
 				callback(false);
 				return;
 			}
-			console.log(data.data[0]);
-			_this.contentsSourceData.duplicateInstance(data.data[0], function(newData){
-				console.log(newData);
+			// console.log(data.data[0]);
+			_this.contentsSourceData.duplicateInstance(data.data[0], data.resources, function(newData){
+				// console.log(newData);
 
 				_this.contentsSourceData.addInstance( newData, selectedInstance, function(){
 					_this.message('インスタンスをペーストしました。');
@@ -758,6 +772,8 @@ module.exports = function(broccoli){
 		$("body").append(copyArea);
 		copyArea.select();
 		document.execCommand("copy");
+		// console.log('copied.');
+		// console.log(text);
 		copyArea.remove();
 		return this;
 	}// broccoli.clipboard.set();
@@ -1195,7 +1211,7 @@ module.exports = function(broccoli){
 	 *
 	 * このメソッドは、インスタンスパスではなく、インスタンスの実体を受け取ります。
 	 */
-	this.duplicateInstance = function( objInstance, callback ){
+	this.duplicateInstance = function( objInstance, objResources, callback ){
 		callback = callback || function(){};
 		var _this = this;
 		var newData = JSON.parse( JSON.stringify( objInstance ) );
@@ -1207,7 +1223,7 @@ module.exports = function(broccoli){
 			modTpl.fields,
 			function(it1, field, fieldName){
 				if( modTpl.fields[fieldName].fieldType == 'input' ){
-					broccoli.getFieldDefinition(modTpl.fields[fieldName].type).duplicateData( objInstance.fields[fieldName], function( result ){
+					broccoli.getFieldDefinition(modTpl.fields[fieldName].type).duplicateData( objInstance.fields[fieldName], objResources, function( result ){
 						newData.fields[fieldName] = result;
 						it1.next();
 						return;
@@ -1217,7 +1233,7 @@ module.exports = function(broccoli){
 					it79.ary(
 						objInstance.fields[fieldName],
 						function(it2, row2, idx2){
-							_this.duplicateInstance( objInstance.fields[fieldName][idx2], function( result ){
+							_this.duplicateInstance( objInstance.fields[fieldName][idx2], objResources, function( result ){
 								newData.fields[fieldName][idx2] = result;
 								it2.next();
 							} );
@@ -1231,7 +1247,7 @@ module.exports = function(broccoli){
 					it79.ary(
 						objInstance.fields[fieldName],
 						function(it2, row2, idx2){
-							_this.duplicateInstance( objInstance.fields[fieldName][idx2], function( result ){
+							_this.duplicateInstance( objInstance.fields[fieldName][idx2], objResources, function( result ){
 								newData.fields[fieldName][idx2] = result;
 								it2.next();
 							} );
@@ -1259,7 +1275,78 @@ module.exports = function(broccoli){
 			}
 		);
 		return this;
-	}
+	} // duplicateInstance()
+
+	/**
+	 * インスタンスからリソースIDを抽出する(非同期)
+	 *
+	 * このメソッドは、リソースの実体ではなく、IDを格納する配列を返します。
+	 */
+	this.extractResourceId = function( objInstance, callback ){
+		callback = callback || function(){};
+		var _this = this;
+		var resourceIdList = [];
+		var modTpl = _this.getModule( objInstance.modId, objInstance.subModName );
+
+		// 初期データ追加
+		var fieldList = _.keys( modTpl.fields );
+		it79.ary(
+			modTpl.fields,
+			function(it1, field, fieldName){
+				if( modTpl.fields[fieldName].fieldType == 'input' ){
+					broccoli.getFieldDefinition(modTpl.fields[fieldName].type).extractResourceId( objInstance.fields[fieldName], function( result ){
+						resourceIdList = resourceIdList.concat(result);
+						it1.next();
+						return;
+					} );
+					return;
+				}else if( modTpl.fields[fieldName].fieldType == 'module' ){
+					it79.ary(
+						objInstance.fields[fieldName],
+						function(it2, row2, idx2){
+							_this.extractResourceId( objInstance.fields[fieldName][idx2], function( result ){
+								resourceIdList = resourceIdList.concat(result);
+								it2.next();
+							} );
+						},
+						function(){
+							it1.next();
+						}
+					);
+					return;
+				}else if( modTpl.fields[fieldName].fieldType == 'loop' ){
+					it79.ary(
+						objInstance.fields[fieldName],
+						function(it2, row2, idx2){
+							_this.extractResourceId( objInstance.fields[fieldName][idx2], function( result ){
+								resourceIdList = resourceIdList.concat(result);
+								it2.next();
+							} );
+						},
+						function(){
+							it1.next();
+						}
+					);
+					return;
+				}else if( modTpl.fields[fieldName].fieldType == 'if' ){
+					it1.next();
+					return;
+				}else if( modTpl.fields[fieldName].fieldType == 'echo' ){
+					it1.next();
+					return;
+				}
+				it1.next();
+				return;
+			},
+			function(){
+				// setTimeout( function(){ cb(resourceIdList); }, 0 );
+				broccoli.resourceMgr.init(function(){
+					callback(resourceIdList);
+				});
+			}
+		);
+		return this;
+	}// extractResourceId()
 
 	/**
 	 * インスタンスを削除する(非同期)
@@ -1575,6 +1662,7 @@ module.exports = function(broccoli, callback){
 						'data-id': mod.moduleId,
 						'data-name': mod.moduleName,
 						'data-readme': mod.readme,
+						'data-clip': JSON.stringify(mod.clip),
 						'data-pics': JSON.stringify(mod.pics),
 						'draggable': true //←HTML5のAPI http://www.htmq.com/dnd/
 					})
@@ -1582,6 +1670,7 @@ module.exports = function(broccoli, callback){
 						// px.message( $(this).data('id') );
 						event.dataTransfer.setData('method', 'add' );
 						event.dataTransfer.setData('modId', $(this).attr('data-id') );
+						event.dataTransfer.setData('modClip', $(this).attr('data-clip') );
 						updateModuleInfoPreview(null, {'elm': this}, function(){});
 					})
 					.on('mouseover', function(e){
@@ -2872,7 +2961,8 @@ module.exports = function(broccoli){
 					$(this).removeClass('broccoli--panel__drag-entered');
 					return;
 				}
-				if( subModNameFrom.length ){
+				if( subModNameFrom.length ){ // ドロップ元のインスタンスがサブモジュールだったら
+
 					if( method === 'moveTo' ){
 						// これはloop要素(=subModNameがある場合)を並べ替えるための moveTo です。
 						// その他のインスタンスをここに移動したり、作成することはできません。
@@ -2923,14 +3013,39 @@ module.exports = function(broccoli){
 						return;
 					}
 					var modId = event.dataTransfer.getData("modId");
+					var modClip = event.dataTransfer.getData("modClip");
+					try {
+						modClip = JSON.parse(modClip);
+					} catch (e) {
+						modClip = false;
+					}
 					// console.log(modId);
-					broccoli.contentsSourceData.addInstance( modId, $(this).attr('data-broccoli-instance-path'), function(){
-						// コンテンツを保存
-						broccoli.contentsSourceData.save(function(){
-							// alert('インスタンスを追加しました。');
-							broccoli.redraw();
+					// console.log(modClip);
+					if( modClip !== false ){
+						console.log('クリップがドロップされました。');
+
+						broccoli.contentsSourceData.duplicateInstance(modClip.data[0], modClip.resources, function(newData){
+							// console.log(newData);
+
+							broccoli.contentsSourceData.addInstance( newData, moveTo, function(){
+								broccoli.message('クリップを挿入しました。');
+								broccoli.contentsSourceData.save(function(){
+									broccoli.redraw();
+								});
+							} );
+
 						});
-					} );
+
+					}else{
+						broccoli.contentsSourceData.addInstance( modId, $(this).attr('data-broccoli-instance-path'), function(){
+							// コンテンツを保存
+							broccoli.contentsSourceData.save(function(){
+								// alert('インスタンスを追加しました。');
+								broccoli.redraw();
+							});
+						} );
+
+					}
 				}
 				return;
 			})
@@ -3569,12 +3684,23 @@ module.exports = function(broccoli){
 	/**
 	 * データを複製する (Client Side)
 	 */
-	this.duplicateData = function( data, callback ){
+	this.duplicateData = function( data, resources, callback ){
 		callback = callback||function(){};
 		data = JSON.parse( JSON.stringify( data ) );
 		callback(data);
 		return this;
 	}
+
+	/**
+	 * データから使用するリソースのリソースIDを抽出する (Client Side)
+	 */
+	this.extractResourceId = function( data, callback ){
+		callback = callback||function(){};
+		data = [];
+		callback(data);
+		return this;
+	}
+
 
 	/**
 	 * エディタUIで編集した内容を保存 (Client Side)
@@ -3927,18 +4053,20 @@ module.exports = function(broccoli){
 	}
 
 	/**
-	 * データを複製する
+	 * データを複製する (Client Side)
 	 */
-	this.duplicateData = function( data, callback ){
+	this.duplicateData = function( data, resources, callback ){
 		data = JSON.parse( JSON.stringify( data ) );
 		it79.fnc(
 			data,
 			[
 				function(it1, data){
-					_resMgr.duplicateResource( data.resKey, function(newResKey){
-						// console.log(newResKey);
-						data.resKey = newResKey;
-						it1.next(data);
+					_resMgr.addResource( function(newResKey){
+						_resMgr.updateResource( newResKey, resources[data.resKey], function(result){
+							// console.log(newResKey);
+							data.resKey = newResKey;
+							it1.next(data);
+						} );
 					} );
 				} ,
 				function(it1, data){
@@ -3954,6 +4082,17 @@ module.exports = function(broccoli){
 			]
 		);
 		return;
+	}
+
+	/**
+	 * データから使用するリソースのリソースIDを抽出する (Client Side)
+	 */
+	this.extractResourceId = function( data, callback ){
+		callback = callback||function(){};
+		resourceIdList = [];
+		resourceIdList.push(data.resKey);
+		callback(resourceIdList);
+		return this;
 	}
 
 	/**

@@ -10,7 +10,6 @@ window.contAppBroccoliServer = function(px, api, options, callback){
 	callback = callback||function(){};
 	// console.log(data);
 
-	var Broccoli = require('broccoli-html-editor');
 	var broccoli,
 		px2proj;
 

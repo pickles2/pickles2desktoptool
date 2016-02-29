@@ -211,7 +211,8 @@ new (function($, window){
 		if( !_utils.isDirectory( _path_data_dir+'commands/composer/' ) ){
 			_fs.mkdirSync( _path_data_dir+'commands/composer/' );
 		}
-		px.nodePhpBin = require('node-php-bin').get({
+		px.NodePhpBin = require('node-php-bin');
+		px.nodePhpBin = px.NodePhpBin.get({
 			'bin': px.cmd('php')
 		});
 

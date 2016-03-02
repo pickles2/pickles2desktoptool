@@ -195,57 +195,61 @@ new (function($, window){
 
 		px.log( 'Application start;' );
 
-		if(!_db){_db = {};}
-		if(!_db.commands){_db.commands = {};}
-		if(!_db.projects){_db.projects = [];}
-		if(!_db.network){_db.network = {};}
-		if(!_db.network.preview){_db.network.preview = {};}
-		if(!_db.network.appserver){_db.network.appserver = {};}
-		if(!_db.apps){_db.apps = {};}
-		if(!_db.apps.texteditor){_db.apps.texteditor = null;}
-		if(!_db.apps.texteditorForDir){_db.apps.texteditorForDir = null;}
+		px.load(function(){
+			if(!_db){_db = {};}
+			if(!_db.commands){_db.commands = {};}
+			if(!_db.projects){_db.projects = [];}
+			if(!_db.network){_db.network = {};}
+			if(!_db.network.preview){_db.network.preview = {};}
+			if(!_db.network.appserver){_db.network.appserver = {};}
+			if(!_db.apps){_db.apps = {};}
+			if(!_db.apps.texteditor){_db.apps.texteditor = null;}
+			if(!_db.apps.texteditorForDir){_db.apps.texteditorForDir = null;}
 
-		if( !_utils.isDirectory( _path_data_dir+'commands/' ) ){
-			_fs.mkdirSync( _path_data_dir+'commands/' );
-		}
-		if( !_utils.isDirectory( _path_data_dir+'commands/composer/' ) ){
-			_fs.mkdirSync( _path_data_dir+'commands/composer/' );
-		}
-		px.NodePhpBin = require('node-php-bin');
-		px.nodePhpBin = px.NodePhpBin.get({
-			'bin': px.cmd('php')
-		});
+			if( !_utils.isDirectory( _path_data_dir+'commands/' ) ){
+				_fs.mkdirSync( _path_data_dir+'commands/' );
+			}
+			if( !_utils.isDirectory( _path_data_dir+'commands/composer/' ) ){
+				_fs.mkdirSync( _path_data_dir+'commands/composer/' );
+			}
+			px.NodePhpBin = require('node-php-bin');
+			px.nodePhpBin = px.NodePhpBin.get({
+				'bin': px.cmd('php')
+			});
 
-		if( !_utils.isFile( _path_data_dir+'commands/composer/composer.phar' ) ){
-			(function(){
-				var pathComposerPhar{
-					'from': require('path').resolve('./app/common/composer/composer.phar') ,
-					'to': require('path').resolve(_path_data_dir, './commands/composer/composer.phar')
-				};
-				_fsEx.copy(pathComposerPhar.from, pathComposerPhar.to, function(err){
-					if( err ){
-						console.error(err);
+			if( !_utils.isFile( _path_data_dir+'commands/composer/composer.phar' ) ){
+				(function(){
+					var pathComposerPhar = {
+						'from': require('path').resolve('./app/common/composer/composer.phar') ,
+						'to': require('path').resolve(_path_data_dir, './commands/composer/composer.phar')
+					};
+					_fsEx.copy(pathComposerPhar.from, pathComposerPhar.to, function(err){
+						if( err ){
+							console.error(err);
+							alert('composer.phar のコピーに失敗しました。');
+							px.closeDialog();
+							cb();
+							return;
+						}
+						_db.commands.composer = pathComposerPhar.to;
+						px.save();
 						px.closeDialog();
 						cb();
-						return;
-					}
-					_db.commands.composer = pathComposerPhar;
-					px.save();
-					px.closeDialog();
-					cb();
-				});
+					});
 
-				var opt = {
-					'title': '初期設定中...',
-					'body': $('<p>'+_appName+' を初期設定しています。インターネットに接続したまま、しばらくお待ちください。</p>') ,
-					'buttons': []
-				};
+					var opt = {
+						'title': '初期設定中...',
+						'body': $('<p>'+_appName+' を初期設定しています。しばらくお待ちください。</p>') ,
+						'buttons': []
+					};
 
-				px.dialog(opt);
-			})();
-		}else{
-			cb();
-		}
+					px.dialog(opt);
+				})();
+			}else{
+				cb();
+			}
+
+		});
 
 		return;
 	}
@@ -255,6 +259,11 @@ new (function($, window){
 	 */
 	this.load = function(cb){
 		cb = cb||function(){};
+		if( !this.utils.isFile(_path_db) ){
+			cb();
+			return false;
+		}
+
 		_db = require( _path_db );
 		_db.projects = _db.projects||[];
 		_db.projects.sort( function(a, b){

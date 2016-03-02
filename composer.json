@@ -1,18 +1,8 @@
 {
-    "name": "tomk79/pickles2desktoptool-help",
-    "description": "",
-    "keywords": ["pickles"],
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Tomoya Koyanagi",
-            "email": "tomk79@gmail.com"
-        }
-    ],
     "repositories": [
     ],
     "require": {
-        "php": ">=5.3.0" ,
+        "php": ">=5.4.0" ,
         "pickles2/px-fw-2.x": "dev-develop",
         "pickles2/broccoli-module-fess": "dev-develop",
         "pickles2/broccoli-module-plain-html-elements": "dev-develop",

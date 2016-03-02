@@ -164,9 +164,13 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	}
 	/**
 	 * composerを実行する
+	 * 
 	 * node-php-bin の PHP などを考慮して、
 	 * -c, -d オプションの解決を自動的にやっている前提で、
 	 * composer コマンドを実行します。
+	 * 基本的には px.execComposer() をラップするメソッドですが、
+	 * cwd オプションを自動的に付与する点が異なります。
+	 *
 	 * @param  {[type]} cmd  [description]
 	 * @param  {[type]} opts [description]
 	 * @return {[type]}      [description]

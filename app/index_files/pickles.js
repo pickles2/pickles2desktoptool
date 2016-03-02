@@ -218,21 +218,28 @@ new (function($, window){
 
 		if( !_utils.isFile( _path_data_dir+'commands/composer/composer.phar' ) ){
 			(function(){
+				var pathComposerPhar{
+					'from': require('path').resolve('./app/common/composer/composer.phar') ,
+					'to': require('path').resolve(_path_data_dir, './commands/composer/composer.phar')
+				};
+				_fsEx.copy(pathComposerPhar.from, pathComposerPhar.to, function(err){
+					if( err ){
+						console.error(err);
+						px.closeDialog();
+						cb();
+						return;
+					}
+					_db.commands.composer = pathComposerPhar;
+					px.save();
+					px.closeDialog();
+					cb();
+				});
+
 				var opt = {
 					'title': '初期設定中...',
 					'body': $('<p>'+_appName+' を初期設定しています。インターネットに接続したまま、しばらくお待ちください。</p>') ,
 					'buttons': []
 				};
-				px.utils.exec(
-					px.cmd('php') + ' -r "readfile(\'https://getcomposer.org/installer\');" | ' + px.cmd('php') ,
-					function(){
-						_db.commands.composer = _path_data_dir+'commands/composer/composer.phar';
-						px.save();
-						px.closeDialog();
-						cb();
-					},
-					{cd: _path_data_dir+'commands/composer/'}
-				);
 
 				px.dialog(opt);
 			})();

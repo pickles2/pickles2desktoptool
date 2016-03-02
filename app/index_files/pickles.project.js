@@ -162,7 +162,27 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		);
 		return this;
 	}
-
+	/**
+	 * composerを実行する
+	 * node-php-bin の PHP などを考慮して、
+	 * -c, -d オプションの解決を自動的にやっている前提で、
+	 * composer コマンドを実行します。
+	 * @param  {[type]} cmd  [description]
+	 * @param  {[type]} opts [description]
+	 * @return {[type]}      [description]
+	 */
+	this.execComposer = function( cmd, opts ){
+		opts = opts||{};
+		opts.success = opts.success||function(){};
+		opts.error = opts.error||function(){};
+		opts.complete = opts.complete||function(){};
+		opts.cwd = this.get_realpath_composer_root();
+		px.execComposer(
+			cmd ,
+			opts
+		);
+		return this;
+	}
 	/**
 	 * プロジェクトのフォルダを開く
 	 */

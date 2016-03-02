@@ -44,11 +44,10 @@ function cont_selfupdate_conposer(btn){
 	$(btn).attr('disabled', 'disabled');
 	$('#cont_maintenance .cont_console').html('');
 
-	px.NodePhpBin.get().script(
-		[px.cmd('composer'), 'self-update'],
-		{
-			'cwd': pj.get_realpath_composer_root()
-		} ,
+	pj.execComposer(
+		[
+			'self-update'
+		] ,
 		{
 			success: function(data){
 				$('#cont_maintenance .cont_console').text(
@@ -74,11 +73,8 @@ function cont_selfupdate_conposer(btn){
 function cont_update_proj(btn){
 	$(btn).attr('disabled', 'disabled');
 	$('#cont_update .cont_console').html('');
-	px.NodePhpBin.get().script(
-		[px.cmd('composer'), 'update'],
-		{
-			'cwd': pj.get_realpath_composer_root()
-		} ,
+	pj.execComposer(
+		['update'],
 		{
 			success: function(data){
 				$('#cont_update .cont_console').text(
@@ -105,11 +101,8 @@ function cont_install_proj(btn){
 	$(btn).attr('disabled', 'disabled');
 	$('#cont_status .cont_console').html('');
 
-	px.NodePhpBin.get().script(
-		[px.cmd('composer'), 'install'],
-		{
-			'cwd': pj.get_realpath_composer_root()
-		} ,
+	pj.execComposer(
+		['install'],
 		{
 			success: function(data){
 				$('#cont_status .cont_console').text(
@@ -133,11 +126,8 @@ function cont_show_packages(btn, opt){
 	$(btn).attr('disabled', 'disabled');
 	$('#cont_status .cont_console').html('');
 
-	px.NodePhpBin.get().script(
-		[px.cmd('composer'), 'show', opt],
-		{
-			'cwd': pj.get_realpath_composer_root()
-		} ,
+	pj.execComposer(
+		['show', opt],
 		{
 			success: function(data){
 				$('#cont_status .cont_console').text(

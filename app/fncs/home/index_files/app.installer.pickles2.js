@@ -14,6 +14,21 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 		}
 
 		var $msg = $('<div>');
+		// px.execComposer(
+		// 	[
+		// 		'create-project',
+		// 		'--no-interaction',
+		// 		'pickles2/pickles2',
+		// 		'./',
+		// 		'dev-master'
+		// 	] ,
+		// 	{
+		// 		'cwd': path,
+		// 		'complete': function(data, code){
+		//
+		// 		}
+		// 	}
+		// );
 		px.spawnDialog(
 			px.cmd('php'),
 			[

@@ -429,6 +429,38 @@ new (function($, window){
 	}
 
 	/**
+	 * composerを実行する
+	 * node-php-bin の PHP などを考慮して、
+	 * -c, -d オプションの解決を自動的にやっている前提で、
+	 * composer コマンドを実行します。
+	 * @param  {[type]} cmd  [description]
+	 * @param  {[type]} opts [description]
+	 * @return {[type]}      [description]
+	 */
+	this.execComposer = function( cmd, opts ){
+		opts = opts||{};
+		opts.success = opts.success||function(){};
+		opts.error = opts.error||function(){};
+		opts.complete = opts.complete||function(){};
+		if( typeof(cmd) == typeof('') ){
+			cmd = [cmd];
+		}
+		cmd.unshift(px.cmd('composer'));
+		px.nodePhpBin.script(
+			cmd ,
+			{
+				'cwd': opts.cwd
+			} ,
+			{
+				'success': opts.success,
+				'error': opts.error,
+				'complete': opts.complete
+			}
+		);
+		return this;
+	}
+
+	/**
 	 * DBデータまるごと取得
 	 */
 	this.getDb = function(){

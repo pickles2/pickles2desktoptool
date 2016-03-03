@@ -1,6 +1,6 @@
 
 
-Pickles 2 Desktop Tool のヘルプへようこそ。
+<?= htmlspecialchars($px->conf()->appname) ?> のヘルプへようこそ。
 
 
 <?php

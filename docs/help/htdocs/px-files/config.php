@@ -10,7 +10,8 @@ return call_user_func( function(){
 	$conf->custom->composerJson = json_decode( file_get_contents(__DIR__.'/../../../../composer.json') );
 
 	// project
-	$conf->name = $conf->custom->packageJson->window->title.' - HELP'; // サイト名
+	$conf->appname = $conf->custom->packageJson->window->title; // アプリ名(custom)
+	$conf->name = $conf->appname.' - HELP'; // サイト名
 	$conf->domain = null; // ドメイン
 	$conf->path_controot = '/'; // コンテンツルートディレクトリ
 

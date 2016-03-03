@@ -1,7 +1,7 @@
 
 
 
-Pickles2 Desktop Tool のGUI編集機能は、個別に設計された小さな部品 __ドキュメントモジュール__ を組み合わせて構築するインターフェイスです。
+<?= htmlspecialchars($px->conf()->appname) ?> のGUI編集機能は、個別に設計された小さな部品 __ドキュメントモジュール__ を組み合わせて構築するインターフェイスです。
 
 ここでは、ドキュメントモジュールのテンプレートを定義する方法について説明します。
 
@@ -257,7 +257,7 @@ picsディレクトリに置かれた画像は、README.html(.md) と共にス�
 
 ### Config にディレクトリを登録
 
-Pickles2 Desktop Tool の設定は、Pickles2 の Config `$conf->plugins->px2dt` に記述します。 次の例を参考に、`paths_module_template` 欄にモジュールのパスを設定してください。
+<?= htmlspecialchars($px->conf()->appname) ?> の設定は、Pickles2 の Config `$conf->plugins->px2dt` に記述します。 次の例を参考に、`paths_module_template` 欄にモジュールのパスを設定してください。
 
 ```
 @$conf->plugins->px2dt->paths_module_template = [
@@ -270,7 +270,3 @@ Pickles2 Desktop Tool の設定は、Pickles2 の Config `$conf->plugins->px2dt`
 `paths_module_template` の添字(上記の例では、"SELF")は、モジュールのIDの一部として利用されます。コンテンツに使用した後から変更すると、モジュール構造が壊れ、作成済みのコンテンツが失われる場合がありますので注意してください。添字には、半角英数字と、ハイフン、アンダースコア が使えます。
 
 Pickles2 の Config は、`./px-files/config.php` に保存されます。
-
-
-
-

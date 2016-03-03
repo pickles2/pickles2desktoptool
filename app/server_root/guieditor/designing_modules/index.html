@@ -44,7 +44,7 @@
 						<div class="theme_breadcrumb"><ul><li><a href="../../index.html">ヘルプトップ</a></li><li><a href="../../contents/index.html">コンテンツ編集</a></li><li><a href="../index.html">GUI編集</a></li><li><span>GUIモジュール定義</span></li></ul></div>
 						<h1>GUIモジュール定義</h1>
 						<div class="contents">
-<p>Pickles2 Desktop Tool のGUI編集機能は、個別に設計された小さな部品 <strong>ドキュメントモジュール</strong> を組み合わせて構築するインターフェイスです。</p>
+<p>Pickles 2 Desktop Tool のGUI編集機能は、個別に設計された小さな部品 <strong>ドキュメントモジュール</strong> を組み合わせて構築するインターフェイスです。</p>
 
 <p>ここでは、ドキュメントモジュールのテンプレートを定義する方法について説明します。</p>
 
@@ -296,7 +296,7 @@ module.exports = function(html, callback){
 
 <span id="hash_Config_にディレクトリを登録"></span><h3>Config にディレクトリを登録</h3>
 
-<p>Pickles2 Desktop Tool の設定は、Pickles2 の Config <code>$conf-&gt;plugins-&gt;px2dt</code> に記述します。 次の例を参考に、<code>paths_module_template</code> 欄にモジュールのパスを設定してください。</p>
+<p>Pickles 2 Desktop Tool の設定は、Pickles2 の Config <code>$conf-&gt;plugins-&gt;px2dt</code> に記述します。 次の例を参考に、<code>paths_module_template</code> 欄にモジュールのパスを設定してください。</p>
 
 <pre><code>@$conf-&gt;plugins-&gt;px2dt-&gt;paths_module_template = [
   "SELF" =&gt; "./px-files/resources/module_templates/"

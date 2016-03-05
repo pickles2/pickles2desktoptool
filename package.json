@@ -6,7 +6,7 @@
   "scripts": {
     "preinstall": "git submodule update -i -r -f",
     "start": "nw",
-    "submodules-update": "rm -rfv node_modules/broccoli-html-editor; rm -rfv node_modules/broccoli-field-table; rm -rfv node_modules/node-px2dt-localdata-access; npm install; gulp;",
+    "submodules-update": "rm -rfv node_modules/broccoli-html-editor; rm -rfv node_modules/broccoli-field-table; rm -rfv node_modules/node-px2dt-localdata-access; rm -rfv node_modules/node-express-pickles2; npm install; gulp;",
     "build": "node ./build.js"
   },
   "author": "Tomoya Koyanagi",
@@ -16,6 +16,7 @@
     "broccoli-html-editor": "file:submodules/broccoli-html-editor",
     "execsyncs": "^0.1.1",
     "express": "^4.13.0",
+    "express-pickles2": "file:submodules/node-express-pickles2",
     "fs-extra": "^0.24.0",
     "glob": "^5.0.10",
     "iterate79": "0.0.1",

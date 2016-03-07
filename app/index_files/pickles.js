@@ -88,7 +88,6 @@ new (function($, window){
 	this.execSync = _execSync;
 
 	var _nw_gui = require('nw.gui');
-	// this.server = require('./index_files/px_server_emulator.node.js').init(this,$);
 	var _appName = _packageJson.window.title;
 	window.document.title = _appName;
 

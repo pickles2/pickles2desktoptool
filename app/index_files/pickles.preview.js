@@ -1,5 +1,5 @@
-(function(px, $){
-	var _previewServer = require('./index_files/px_server_emulator.node.js').init(px, $);
+(function(px){
+	var _previewServer = require('./index_files/px_server_emulator.node.js').init(px);
 	px.preview = new (function(){
 		this.getUrl = function( path ){
 			var port = this.getPort();
@@ -43,4 +43,4 @@
 
 	})();
 
-})(px, jQuery);
+})(px);

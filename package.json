@@ -23,7 +23,7 @@
     "jquery": "^2.1.4",
     "marked": "0.3.*",
     "mkdirp": "0.*",
-    "node-php-bin": "^0.2.1",
+    "node-php-bin": "^0.2.2",
     "node-search-in-directory": "0.0.1",
     "phpjs": "^1.3.2",
     "px2agent": "^2.0.4",

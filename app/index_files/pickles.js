@@ -211,10 +211,16 @@ new (function($, window){
 			if( !_utils.isDirectory( _path_data_dir+'commands/composer/' ) ){
 				_fs.mkdirSync( _path_data_dir+'commands/composer/' );
 			}
+
 			px.NodePhpBin = require('node-php-bin');
-			px.nodePhpBin = px.NodePhpBin.get({
-				'bin': px.cmd('php')
-			});
+			var npboption = {};
+			if( _db.commands && _db.commands['php'] ){
+				npboption = {
+					'bin': _db.commands['php'] ,
+					'ini': null
+				};
+			}
+			px.nodePhpBin = px.NodePhpBin.get(npboption);
 
 			if( !_utils.isFile( _path_data_dir+'commands/composer/composer.phar' ) ){
 				(function(){

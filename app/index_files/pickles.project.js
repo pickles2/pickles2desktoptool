@@ -100,6 +100,8 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 							_px2DTConfig = _config.plugins.px2dt;
 						}
 					}catch(e){
+						console.log('FAILED to load config.');
+						console.log(data_memo);
 						_config = false;
 						_px2DTConfig = false;
 					}
@@ -164,7 +166,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	}
 	/**
 	 * composerを実行する
-	 * 
+	 *
 	 * node-php-bin の PHP などを考慮して、
 	 * -c, -d オプションの解決を自動的にやっている前提で、
 	 * composer コマンドを実行します。
@@ -907,7 +909,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				'ini': px.nodePhpBin.getIniPath(),
 				'extension_dir': px.nodePhpBin.getExtensionDir()
 			};
-			// console.log(px2agentOption);
+			console.log(px2agentOption);
 			_px2proj = px.px2agent.createProject(
 				_path.resolve( pj.get('path') + '/' + pj.get('entry_script') ) ,
 				px2agentOption

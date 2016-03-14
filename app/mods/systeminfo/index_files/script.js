@@ -43,6 +43,19 @@
 					it.next();
 
 				}
+			},
+			function(){
+				$('.cont_support_page_link')
+					.append( $('<button>')
+						.addClass('btn')
+						.addClass('btn-default')
+						.addClass('btn-block')
+						.click(function(){
+							px.utils.openURL('https://github.com/pickles2/pickles2desktoptool/issues');
+						})
+						.text('Github Issues ページへ、フィードバックを投稿してください。')
+					)
+				;
 			}
 		);
 

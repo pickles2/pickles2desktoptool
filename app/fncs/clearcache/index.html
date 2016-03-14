@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8" />
-		<title>clearcache - Pickles 2 Desktop Tool</title>
+		<title>キャッシュを消去 - Pickles 2 Desktop Tool</title>
 
 		<meta name="viewport" content="width=device-width" />
 		<meta name="keywords" content="" />
@@ -45,7 +45,7 @@
 					{
 						cd: pj.get('path'),
 						title: 'キャッシュをクリア',
-						description: $msg.text('Pickles のキャッシュをクリアしています。'),
+						description: $msg.text('Pickles 2 のキャッシュをクリアしています。'),
 						success: function(data){
 							$('.cont_console').text(
 								$('.cont_console').text() + data
@@ -57,7 +57,7 @@
 							);
 						} ,
 						cmdComplete: function(code){
-							$msg.text( 'Pickles のキャッシュをクリアしました。' );
+							$msg.text( 'Pickles 2 のキャッシュをクリアしました。' );
 						} ,
 						complete: function(dataFin){
 							$(btn).removeAttr('disabled');
@@ -71,12 +71,12 @@
 	</head>
 	<body>
 		<div class="container">
-			<h1>clearcache</h1>
+			<h1>キャッシュを消去</h1>
 		</div>
 		<div class="contents">
 			<div class="container">
 
-				<p><button class="btn btn-default btn-block" onclick="cont_clearcache(this); return false;">Pickles のキャッシュをクリアする</button></p>
+				<p><button class="btn btn-default btn-block" onclick="cont_clearcache(this); return false;">Pickles 2 のキャッシュをクリアする</button></p>
 				<pre class="cont_console" style="max-height:360px;">console:
 </pre>
 

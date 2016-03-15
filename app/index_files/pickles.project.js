@@ -458,6 +458,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 						'pathHtml': page_path,
 						'pathResourceDir': pathResourceDir,
 						'realpathDataDir': realpathDataDir,
+						'contents_bowl_name_by': _pj.getConfig().plugins.px2dt.contents_bowl_name_by,
 						'customFields': {
 							'href': require('./../common/broccoli/broccoli-field-href/server.js'),
 							// 'psd': require('broccoli-field-psd'),

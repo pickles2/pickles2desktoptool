@@ -51,6 +51,10 @@
     "colors": {
       "defaultKeyColor": "#000"
     },
+    "forum":{
+        "url": "https://timeslist.com/WTL0100/input/a/180/p/pickles2/",
+        "title": "TIMESLIST Forum"
+    },
     "credit": "(C)Pickles 2 Project."
   },
   "window": {

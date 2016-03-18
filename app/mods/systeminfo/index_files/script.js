@@ -51,9 +51,9 @@
 						.addClass('btn-default')
 						.addClass('btn-block')
 						.click(function(){
-							px.utils.openURL('https://github.com/pickles2/pickles2desktoptool/issues');
+							px.utils.openURL( px.packageJson.pickles2.forum.url );
 						})
-						.text('Github Issues ページへ、フィードバックを投稿してください。')
+						.text(px.packageJson.pickles2.forum.title + ' ページへ、フィードバックを投稿してください。')
 					)
 				;
 			}

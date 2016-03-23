@@ -6,7 +6,7 @@
 				{"title":"Pickles 2 Desktop Tool version", "val": px.getVersion()},
 				{"title":"Platform", "val": px.getPlatform()},
 				{"title":"PHP version", "cmd": px.cmd('php') + ' -v'},
-				{"title":"PHP path", "cmd": 'which ' + px.cmd('php')},
+				{"title":"PHP path", "cmd": (px.cmd('php')=='php'?'which '+px.cmd('php'):'echo '+px.cmd('php'))},
 				{"title":"composer version", "cmd": px.cmd('php') + ' ' + px.cmd('composer') + ' --version'},
 				{"title":"node version", "cmd": 'node -v'},
 				{"title":"git version", "cmd": 'git --version'},
@@ -43,6 +43,19 @@
 					it.next();
 
 				}
+			},
+			function(){
+				$('.cont_support_page_link')
+					.append( $('<button>')
+						.addClass('btn')
+						.addClass('btn-default')
+						.addClass('btn-block')
+						.click(function(){
+							px.utils.openURL( px.packageJson.pickles2.forum.url );
+						})
+						.text(px.packageJson.pickles2.forum.title + ' ページへ、フィードバックを投稿してください。')
+					)
+				;
 			}
 		);
 

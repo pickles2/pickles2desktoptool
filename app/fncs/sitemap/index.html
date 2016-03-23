@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8" />
-		<title>Filelist - Pickles 2 Desktop Tool</title>
+		<title>サイトマップ - Pickles 2 Desktop Tool</title>
 
 		<meta name="viewport" content="width=device-width" />
 		<meta name="keywords" content="" />
@@ -31,13 +31,13 @@
 	</head>
 	<body>
 		<div class="container">
-			<h1>Sitemap Filelist</h1>
+			<h1>サイトマップ</h1>
 		</div>
 		<div class="contents">
 			<div class="container">
 				<div class="row">
 					<div class="col-md-6">
-						<h2>サイトマップファイル一覧</h2>
+						<h2>ファイル一覧</h2>
 						<div class="unit cont_filelist_sitemap">Loading...</div>
 						<p class="center"><button class="btn btn-default" onclick="contApp.openInFinder(); return false;">sitemaps フォルダを開く</button></p>
 					</div>
@@ -76,6 +76,7 @@
 								<tr><th>M</th><td class="selectable">keywords</td><td>metaキーワード</td></tr>
 								<tr><th>N</th><td class="selectable">description</td><td>metaディスクリプション</td></tr>
 								<tr><th>O</th><td class="selectable">category_top_flg</td><td>カテゴリトップフラグ</td></tr>
+								<tr><th>P</th><td class="selectable">role</td><td>ロール</td></tr>
 							</tbody>
 						</table>
 						</div><!-- /.unit -->
@@ -84,7 +85,7 @@
 						<ul>
 							<li>定義列は、任意に並べ替えることができます。</li>
 							<li>定義は任意の名称で追加することができ、コンテンツやテーマから簡単に参照できます。例えば、 <code>* custom_col</code> と定義した列の値は、<code class="selectable">$px->site()->get_page_info( 'page_id', 'custom_col' )</code> や <code class="selectable">$px->site()->get_current_page_info( 'custom_col' )</code> で取得することができます。</li>
-							<li>サイトマップCSVを、グラフィカルなExcelの形式(*.xlsx)で編集することができます。<a href="https://github.com/tomk79/px2-sitemapexcel" onclick="px.utils.openURL( this.href ); return false;">px2-sitemapexcel プラグイン</a>をプロジェクトに設定してください。</li>
+							<li>サイトマップCSVを、グラフィカルなExcelの形式(*.xlsx)で編集することができます。<a href="https://github.com/ç" onclick="px.utils.openURL( this.href ); return false;">pickles2/px2-sitemapexcel プラグイン</a>をプロジェクトに設定してください。</li>
 						</ul>
 					</div>
 				</div>

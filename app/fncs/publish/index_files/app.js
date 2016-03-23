@@ -78,63 +78,101 @@ window.contApp = new (function(px, $){
 	 * パブリッシュを実行する
 	 */
 	this.publish = function(){
-		var region = prompt('パブリッシュ対象のパスを指定してください。スラッシュから始まるパスで指定します。省略時、すべてのファイルが対象になります。','/');
-		if( region === null ){
-			return true;
-		}
-		// alert(px.php.urlencode(region));
+		var $body = $($('#template-dialog_publish_options').html());
+		px.dialog({
+			'title': 'パブリッシュ範囲',
+			'body': $body,
+			'buttons':[
+				$('<button>')
+					.text('パブリッシュを実行')
+					.attr({'type':'submit'})
+					.addClass('btn btn-primary')
+					.click(function(){
+						var region = $body.find('input[name=path_region]').val();
+						// var region = prompt('パブリッシュ対象のパスを指定してください。スラッシュから始まるパスで指定します。省略時、すべてのファイルが対象になります。','/');
+						if( region === null ){
+							return true;
+						}
+						// alert(px.php.urlencode(region));
 
-		_this.progressReport.init(
-			_this,
-			$cont,
-			{
-				"spawnCmd": 'php',
-				"spawnCmdOpts": [
-					_pj.get('path')+'/'+_pj.get('entry_script') ,
-					'/?PX=publish.run&path_region='+px.php.urlencode(region)
-				] ,
-				"cmdCd": _pj.get('path'),
-				"complete": function(){
-					px.message( 'パブリッシュを完了しました。' );
-					init();
-				}
-			}
-		);
+						var str_paths_ignore_val = $body.find('textarea[name=paths_ignore]').val();
+						// alert(str_paths_ignore_val);
+						var str_paths_ignore = '';
+						var ary_paths_ignore = str_paths_ignore_val.split(new RegExp('\r\n|\r|\n','g'));
+						for( var i in ary_paths_ignore ){
+							ary_paths_ignore[i] = px.php.trim(ary_paths_ignore[i]);
+							if( !px.php.strlen(ary_paths_ignore[i]) ){
+								ary_paths_ignore[i] = undefined;
+								delete(ary_paths_ignore[i]);
+							}
+						}
+						// console.log(ary_paths_ignore);
+						if( typeof(ary_paths_ignore) == typeof('') ){
+							ary_paths_ignore = [ary_paths_ignore];
+						}
+						if( typeof(ary_paths_ignore) == typeof([]) ){
+							for( var i in ary_paths_ignore ){
+								str_paths_ignore += '&paths_ignore[]='+px.php.urlencode(ary_paths_ignore[i]);
+							}
+						}
+						// alert(str_paths_ignore);
+
+						px.closeDialog();
+
+						_this.progressReport.init(
+							_this,
+							$cont,
+							{
+								"spawnCmdOpts": [
+									_pj.get('path')+'/'+_pj.get('entry_script') ,
+									'/?PX=publish.run&path_region='+px.php.urlencode(region)+str_paths_ignore
+								] ,
+								"cmdCd": _pj.get('path'),
+								"complete": function(){
+									px.message( 'パブリッシュを完了しました。' );
+									init();
+								}
+							}
+						);
+					}),
+				$('<button>')
+					.text('Cancel')
+					.addClass('btn btn-default')
+					.click(function(){
+						px.closeDialog();
+					})
+			]
+		});
+
 		return true;
+	}
 
-		// var $msg = $('<div>');
-		// px.progress.start();
-		// px.spawnDialog(
-		// 	'php',
-		// 	[
-		// 		_pj.get('path')+'/'+_pj.get('entry_script') ,
-		// 		'/?PX=publish.run'
-		// 	] ,
-		// 	{
-		// 		cd: _pj.get('path'),
-		// 		title: 'パブリッシュ',
-		// 		description: $msg.text('静的なHTMLをパブリッシュしています。'),
-		// 		success: function(data){
-		// 		} ,
-		// 		error: function(data){
-		// 		} ,
-		// 		cmdComplete: function(code){
-		// 			$msg.text( 'パブリッシュを完了しました。' );
-		// 			px.progress.close();
-		// 		} ,
-		// 		complete: function(dataFin){
-		// 			px.message( 'パブリッシュを完了しました。' );
-		// 			init();
-		// 		}
-		// 	}
-		// );
+	/**
+	 * 一時パブリッシュ先ディレクトリを開く
+	 */
+	this.open_publish_tmp_dir = function(){
+		window.px.utils.openURL(_pj.get('path')+'/'+_pj.get('home_dir')+'/_sys/ram/publish/');
 	}
 
 	/**
 	 * パブリッシュ先ディレクトリを開く
 	 */
 	this.open_publish_dir = function(){
-		window.px.utils.openURL(_pj.get('path')+'/'+_pj.get('home_dir')+'/_sys/ram/publish/');
+		var conf = _pj.getConfig();
+		if( !conf.path_publish_dir ){
+			alert('パブリッシュ先ディレクトリは設定されていません。\nプロジェクト設定(config.php) で $conf->path_publish_dir を設定してください。');
+			return;
+		}
+
+		var path = '';
+		if( typeof(conf.path_publish_dir) == typeof('') ){
+			path = px.path.resolve( px.php.dirname(_pj.get('path')+'/'+_pj.get('entry_script')), conf.path_publish_dir );
+		}
+		if( !px.utils.isDirectory(path) ){
+			alert('設定されたパブリッシュ先ディレクトリが存在しません。存在する有効なディレクトリである必要があります。\nプロジェクト設定(config.php) で $conf->path_publish_dir を設定してください。');
+			return;
+		}
+		window.px.utils.openURL(path);
 	}
 
 	/**

@@ -43,11 +43,12 @@ function cont_init(){
 function cont_selfupdate_conposer(btn){
 	$(btn).attr('disabled', 'disabled');
 	$('#cont_maintenance .cont_console').html('');
-	window.px.utils.spawn(
-		px.cmd('php'),
-		[px.cmd('composer'), 'self-update'],
+
+	pj.execComposer(
+		[
+			'self-update'
+		] ,
 		{
-			cd: pj.get_realpath_composer_root(),
 			success: function(data){
 				$('#cont_maintenance .cont_console').text(
 					$('#cont_maintenance .cont_console').text() + data
@@ -58,7 +59,7 @@ function cont_selfupdate_conposer(btn){
 					$('#cont_maintenance .cont_console').text() + data
 				);
 			} ,
-			complete: function(code){
+			complete: function(data, error, code){
 				// $('.cont_console').text(
 				// 	$('.cont_console').text() + code
 				// );
@@ -72,11 +73,9 @@ function cont_selfupdate_conposer(btn){
 function cont_update_proj(btn){
 	$(btn).attr('disabled', 'disabled');
 	$('#cont_update .cont_console').html('');
-	window.px.utils.spawn(
-		px.cmd('php'),
-		[px.cmd('composer'), 'update'],
+	pj.execComposer(
+		['update'],
 		{
-			cd: pj.get_realpath_composer_root(),
 			success: function(data){
 				$('#cont_update .cont_console').text(
 					$('#cont_update .cont_console').text() + data
@@ -87,7 +86,7 @@ function cont_update_proj(btn){
 					$('#cont_update .cont_console').text() + data
 				);
 			} ,
-			complete: function(code){
+			complete: function(data, error, code){
 				// $('.cont_console').text(
 				// 	$('.cont_console').text() + code
 				// );
@@ -101,11 +100,10 @@ function cont_update_proj(btn){
 function cont_install_proj(btn){
 	$(btn).attr('disabled', 'disabled');
 	$('#cont_status .cont_console').html('');
-	window.px.utils.spawn(
-		px.cmd('php'),
-		[px.cmd('composer'), 'install'],
+
+	pj.execComposer(
+		['install'],
 		{
-			cd: pj.get_realpath_composer_root(),
 			success: function(data){
 				$('#cont_status .cont_console').text(
 					$('#cont_status .cont_console').text() + data
@@ -116,7 +114,7 @@ function cont_install_proj(btn){
 					$('#cont_status .cont_console').text() + data
 				);
 			} ,
-			complete: function(code){
+			complete: function(data, error, code){
 				$(btn).removeAttr('disabled');
 				px.message( 'composer install 完了しました。' );
 			}
@@ -127,11 +125,10 @@ function cont_install_proj(btn){
 function cont_show_packages(btn, opt){
 	$(btn).attr('disabled', 'disabled');
 	$('#cont_status .cont_console').html('');
-	window.px.utils.spawn(
-		px.cmd('php'),
-		[px.cmd('composer'), 'show', opt],
+
+	pj.execComposer(
+		['show', opt],
 		{
-			cd: pj.get_realpath_composer_root(),
 			success: function(data){
 				$('#cont_status .cont_console').text(
 					$('#cont_status .cont_console').text() + data
@@ -142,7 +139,7 @@ function cont_show_packages(btn, opt){
 					$('#cont_status .cont_console').text() + data
 				);
 			} ,
-			complete: function(code){
+			complete: function(data, error, code){
 				$(btn).removeAttr('disabled');
 				px.message( 'composer show 完了しました。' );
 			}
@@ -183,4 +180,3 @@ function cont_resizeEvent(){
 $(function(){
 	cont_init();
 });
-

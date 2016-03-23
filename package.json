@@ -1,12 +1,12 @@
 {
   "name": "Pickles2DesktopTool",
-  "version": "2.0.0-beta.9.2",
+  "version": "2.0.0-beta.10",
   "description": "",
   "main": "app/index.html",
   "scripts": {
     "preinstall": "git submodule update -i -r -f",
     "start": "nw",
-    "submodules-update": "rm -rfv node_modules/broccoli-html-editor; rm -rfv node_modules/broccoli-field-table; rm -rfv node_modules/node-px2dt-localdata-access; npm install; gulp;",
+    "submodules-update": "rm -rfv node_modules/broccoli-html-editor; rm -rfv node_modules/broccoli-field-table; rm -rfv node_modules/node-px2dt-localdata-access; rm -rfv node_modules/express-pickles2; npm install; gulp;",
     "build": "node ./build.js"
   },
   "author": "Tomoya Koyanagi",
@@ -16,16 +16,17 @@
     "broccoli-html-editor": "file:submodules/broccoli-html-editor",
     "execsyncs": "^0.1.1",
     "express": "^4.13.0",
+    "express-pickles2": "file:submodules/node-express-pickles2",
     "fs-extra": "^0.24.0",
     "glob": "^5.0.10",
     "iterate79": "0.0.1",
     "jquery": "^2.1.4",
     "marked": "0.3.*",
     "mkdirp": "0.*",
-    "node-php-bin": "0.0.1",
+    "node-php-bin": "^0.2.3",
     "node-search-in-directory": "0.0.1",
     "phpjs": "^1.3.2",
-    "px2agent": "^2.0.2",
+    "px2agent": "^2.0.4",
     "px2dt-localdata-access": "file:submodules/node-px2dt-localdata-access",
     "socket.io": "^1.3.5",
     "twig": "^0.8.2",
@@ -50,7 +51,11 @@
     "colors": {
       "defaultKeyColor": "#000"
     },
-    "credit": "Pickles 2 (C)Tomoya Koyanagi."
+    "forum":{
+        "url": "https://timeslist.com/WTL0100/input/a/180/p/pickles2/",
+        "title": "TIMESLIST Forum"
+    },
+    "credit": "(C)Pickles 2 Project."
   },
   "window": {
     "title": "Pickles 2 Desktop Tool",

@@ -16,7 +16,7 @@ window.contApp = new (function(px){
 		$cont
 			.append( $btn
 				.click( function(){ rebuild(this); } )
-				.text('GUI編集コンテンツを更新する')
+				.text('すべてのGUI編集コンテンツを一括再構成する')
 			)
 			.append( $pre
 				.addClass( 'cont_console' )

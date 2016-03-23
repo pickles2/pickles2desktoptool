@@ -44,7 +44,7 @@
 						<div class="theme_breadcrumb"><ul><li><a href="../../index.html">ヘルプトップ</a></li><li><a href="../../contents/index.html">コンテンツ編集</a></li><li><a href="../index.html">GUI編集</a></li><li><span>GUIモジュール定義</span></li></ul></div>
 						<h1>GUIモジュール定義</h1>
 						<div class="contents">
-<p>Pickles2 Desktop Tool のGUI編集機能は、個別に設計された小さな部品 <strong>ドキュメントモジュール</strong> を組み合わせて構築するインターフェイスです。</p>
+<p>Pickles 2 Desktop Tool のGUI編集機能は、個別に設計された小さな部品 <strong>ドキュメントモジュール</strong> を組み合わせて構築するインターフェイスです。</p>
 
 <p>ここでは、ドキュメントモジュールのテンプレートを定義する方法について説明します。</p>
 
@@ -58,7 +58,7 @@
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_thumb.png">thumb.png</a></li>
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_3_info.json">info.json</a></li>
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_README.html_(または_README.md)">README.html (または README.md)</a></li>
-<li style="list-style-type:disc; display:list-item;"><a href="#hash_pics/*.png">pics/*.png</a></li></ul></li></ul></li><li style="list-style-type:disc; display:list-item;"><a href="#hash_モジュールをプロジェクトに登録する">モジュールをプロジェクトに登録する</a><ul style="margin:0; padding:0 0 0 2em;"><li style="list-style-type:disc; display:list-item;"><a href="#hash_Config_画面を開く">Config 画面を開く</a></li>
+<li style="list-style-type:disc; display:list-item;"><a href="#hash_pics/*.png">pics/*.png</a></li></ul></li><li style="list-style-type:disc; display:list-item;"><a href="#hash_クリップモジュール">クリップモジュール</a></li></ul></li><li style="list-style-type:disc; display:list-item;"><a href="#hash_モジュールをプロジェクトに登録する">モジュールをプロジェクトに登録する</a><ul style="margin:0; padding:0 0 0 2em;"><li style="list-style-type:disc; display:list-item;"><a href="#hash_Config_画面を開く">Config 画面を開く</a></li>
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_Config_にディレクトリを登録">Config にディレクトリを登録</a></li></ul>
 </li></ul>
 </div>
@@ -270,6 +270,22 @@ module.exports = function(html, callback){
 <p>picsディレクトリに置かれた画像は、README.html(.md) と共にスタイルガイドなどに表示されます。
 モジュール名だけでは内容を把握しにくかったり、微妙に異なる他のモジュールと区別しなければならない場合などに、ユーザーの判断を助けるヒントとして活用できます。</p>
 
+<span id="hash_クリップモジュール"></span><h3>クリップモジュール</h3>
+
+<p>クリップモジュールは、特殊なモジュール形態です。</p>
+
+<p>他のモジュールを組み合わせて予めプリセットを構成し、コンテンツに配置することができます。</p>
+
+<p><code>template.html</code> を置かず、代わりに <code>clip.json</code> を設置すると、クリップモジュールとして認識されます。</p>
+
+<p><code>clip.json</code> の編集手順は次の通りです。</p>
+
+<ol>
+<li>任意のコンテンツをGUI編集します。</li>
+<li>クリップしたいインスタンスを選択し、コピーします。この操作で、JSON形式のテキストがクリップボードにコピーされます。</li>
+<li>この状態で clip.json を開き、ペーストします。</li>
+</ol>
+
 <span id="hash_モジュールをプロジェクトに登録する"></span><h2>モジュールをプロジェクトに登録する</h2>
 
 <p>モジュールの定義ができたら、コンフィグ画面からモジュールとして登録します。</p>
@@ -280,7 +296,7 @@ module.exports = function(html, callback){
 
 <span id="hash_Config_にディレクトリを登録"></span><h3>Config にディレクトリを登録</h3>
 
-<p>Pickles2 Desktop Tool の設定は、Pickles2 の Config <code>$conf-&gt;plugins-&gt;px2dt</code> に記述します。 次の例を参考に、<code>paths_module_template</code> 欄にモジュールのパスを設定してください。</p>
+<p>Pickles 2 Desktop Tool の設定は、Pickles2 の Config <code>$conf-&gt;plugins-&gt;px2dt</code> に記述します。 次の例を参考に、<code>paths_module_template</code> 欄にモジュールのパスを設定してください。</p>
 
 <pre><code>@$conf-&gt;plugins-&gt;px2dt-&gt;paths_module_template = [
   "SELF" =&gt; "./px-files/resources/module_templates/"
@@ -337,7 +353,7 @@ module.exports = function(html, callback){
 			<div class="container theme_footer_shouldernavi">
 <ul><li><a href="../../index.html">ヘルプトップ</a></li></ul>			</div>
 			<div class="container">
-				<p style="text-align:center;">Pickles 2 (C)Tomoya Koyanagi.</p>
+				<p style="text-align:center;">(C)Pickles 2 Project.</p>
 			</div>
 		</footer>
 	</body>

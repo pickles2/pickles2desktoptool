@@ -82,7 +82,7 @@ window.contApp.installer.git = new (function( px, contApp ){
 				var path_composer = pj.get_realpath_composer_root();
 				px.utils.spawn(
 					px.cmd('php'),
-					[px.cmd('composer'), 'install'],
+					[px.cmd('composer'), 'install', '--no-interaction'],
 					{
 						cd: path_composer,
 						success: function(data){

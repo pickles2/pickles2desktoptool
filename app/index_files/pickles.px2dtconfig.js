@@ -54,18 +54,27 @@
 			title: 'Pickles 2 Desktop Tool 設定' ,
 			body: $tpl ,
 			buttons: [
-				$('<button>').text('OK').click(function(){
-					px.getDb().commands.php = $tpl.find('[name=php]').val();
-					px.getDb().commands.git = $tpl.find('[name=git]').val();
-					px.getDb().network.preview.port = $tpl.find('[name=network_preview_port]').val();
-					px.getDb().network.appserver.port = $tpl.find('[name=network_appserver_port]').val();
-					px.getDb().apps.texteditor = $tpl.find('[name=apps_texteditor]').val();
-					px.getDb().apps.texteditorForDir = $tpl.find('[name=apps_texteditor_for_dir]').val();
-					px.closeDialog();
-				}) ,
-				$('<button>').text('Cancel').click(function(){
-					px.closeDialog();
-				})
+				$('<button>')
+					.text('OK')
+					.addClass('btn')
+					.addClass('btn-primary')
+					.click(function(){
+						px.getDb().commands.php = $tpl.find('[name=php]').val();
+						px.getDb().commands.git = $tpl.find('[name=git]').val();
+						px.getDb().network.preview.port = $tpl.find('[name=network_preview_port]').val();
+						px.getDb().network.appserver.port = $tpl.find('[name=network_appserver_port]').val();
+						px.getDb().apps.texteditor = $tpl.find('[name=apps_texteditor]').val();
+						px.getDb().apps.texteditorForDir = $tpl.find('[name=apps_texteditor_for_dir]').val();
+						px.closeDialog();
+					}
+				) ,
+				$('<button>')
+					.text('Cancel')
+					.addClass('btn')
+					.addClass('btn-default')
+					.click(function(){
+						px.closeDialog();
+					})
 			]
 		});
 	}

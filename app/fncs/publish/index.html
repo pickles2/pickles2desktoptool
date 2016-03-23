@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8" />
-		<title>Publish - Pickles 2 Desktop Tool</title>
+		<title>パブリッシュ - Pickles 2 Desktop Tool</title>
 
 		<meta name="viewport" content="width=device-width" />
 		<meta name="keywords" content="" />
@@ -35,7 +35,7 @@
 			<div class="unit center">
 				<p>パブリッシュは実行されていません。</p>
 				<p>次のボタンを押して、パブリッシュを実行します。</p>
-				<p><button class="btn btn-default" onclick="contApp.publish(); return false;">パブリッシュする</button></p>
+				<p><button class="btn btn-primary" onclick="contApp.publish(); return false;">パブリッシュする</button></p>
 			</div>
 		</script>
 		<script id="template-before_publish-progress" type="text/template">
@@ -62,11 +62,14 @@
 			</div>
 			<div class="cont_buttons">
 				<div class="row">
-					<div class="col-xs-6">
+					<div class="col-xs-4">
 						<p><button class="btn btn-default" onclick="contApp.publish(); return false;">もう一度パブリッシュする</button></p>
 					</div>
-					<div class="col-xs-6">
-						<p><button class="btn btn-primary" onclick="contApp.open_publish_dir(); return false;">パブリッシュディレクトリを開く</button></p>
+					<div class="col-xs-4">
+						<p><button class="btn btn-default" onclick="contApp.open_publish_tmp_dir(); return false;">一時パブリッシュデータを開く</button></p>
+					</div>
+					<div class="col-xs-4">
+						<p><button class="btn btn-primary" onclick="contApp.open_publish_dir(); return false;">パブリッシュ先ディレクトリを開く</button></p>
 					</div>
 				</div>
 			</div>
@@ -93,10 +96,23 @@
 		<script id="template-on_publish" type="text/template">
 			<p>ただいまパブリッシュプロセスが進行しています。しばらくお待ち下さい。</p>
 		</script>
+		<script id="template-dialog_publish_options" type="text/template">
+			<!-- <h2>パブリッシュ対象範囲</h2> -->
+			<div class="form-group">
+				<label for="path_region">パブリッシュ対象範囲</label>
+				<input type="text" class="form-control" id="path_region" name="path_region" placeholder="/" value="/" />
+				<span class="help-block">パブリッシュ対象のディレクトリパスを指定してください。スラッシュから始まるパスで指定します。省略時、すべてのファイルが対象になります。</span>
+
+				<label for="paths_ignore">パブリッシュ対象外範囲</label>
+				<textarea class="form-control" id="paths_ignore" name="paths_ignore" placeholder="/path/ignore/1/
+/path/ignore/2/" rows="5"></textarea>
+				<span class="help-block">パブリッシュ対象外にするディレクトリパスを指定してください。スラッシュから始まるパスで指定します。1行1ディレクトリで複数件指定できます。</span>
+			</div>
+		</script>
 	</head>
 	<body>
 		<div class="container">
-			<h1>Publish</h1>
+			<h1>パブリッシュ</h1>
 		</div>
 		<div class="container">
 			<div class="contents">

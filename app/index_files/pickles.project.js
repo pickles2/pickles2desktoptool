@@ -100,6 +100,8 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 							_px2DTConfig = _config.plugins.px2dt;
 						}
 					}catch(e){
+						console.log('FAILED to load config.');
+						console.log(data_memo);
 						_config = false;
 						_px2DTConfig = false;
 					}
@@ -162,7 +164,31 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		);
 		return this;
 	}
-
+	/**
+	 * composerを実行する
+	 *
+	 * node-php-bin の PHP などを考慮して、
+	 * -c, -d オプションの解決を自動的にやっている前提で、
+	 * composer コマンドを実行します。
+	 * 基本的には px.execComposer() をラップするメソッドですが、
+	 * cwd オプションを自動的に付与する点が異なります。
+	 *
+	 * @param  {[type]} cmd  [description]
+	 * @param  {[type]} opts [description]
+	 * @return {[type]}      [description]
+	 */
+	this.execComposer = function( cmd, opts ){
+		opts = opts||{};
+		opts.success = opts.success||function(){};
+		opts.error = opts.error||function(){};
+		opts.complete = opts.complete||function(){};
+		opts.cwd = this.get_realpath_composer_root();
+		px.execComposer(
+			cmd ,
+			opts
+		);
+		return this;
+	}
 	/**
 	 * プロジェクトのフォルダを開く
 	 */
@@ -476,6 +502,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	 */
 	this.copyContentsData = function( pathFrom, pathTo, cb ){
 		cb = cb || function(){};
+		var _this = this;
 
 		var contRoot = this.get_realpath_controot();
 
@@ -490,50 +517,78 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		to.procType = this.getPageContentProcType( pathTo );
 
 
-		// 一旦削除する
-		if( px.utils.isFile( contRoot+'/'+to.pathContent ) ){
-			px.utils.rm( contRoot+'/'+to.pathContent );
-		}
-		if( px.utils.isDirectory( contRoot+'/'+to.pathFiles ) ){
-			px.utils.rmdir_r( contRoot+'/'+to.pathFiles );
-		}
+		px.utils.iterateFnc([
+			function(it, prop){
+				// 一旦削除する
+				if( px.utils.isFile( contRoot+'/'+to.pathContent ) ){
+					px.utils.rm( contRoot+'/'+to.pathContent );
+				}
+				if( px.utils.isDirectory( contRoot+'/'+to.pathFiles ) ){
+					px.utils.rmdir_r( contRoot+'/'+to.pathFiles );
+				}
+				it.next(prop);
+			} ,
+			function(it, prop){
+				// 格納ディレクトリを作る
+				if( px.utils.isDirectory( contRoot+'/'+to.pathFiles ) ){
+					it.next(prop);
+					return;
+				}
+				// 再帰的に作る mkdirAll()
+				if( !px.utils.mkdirAll( contRoot+'/'+to.pathFiles ) ){
+					it.next(prop);
+					return;
+				}
+				it.next(prop);
+			} ,
+			function(it, prop){
+				// 複製する
+				if( px.utils.isFile( contRoot+'/'+from.pathContent ) ){
+					px.utils.copy( contRoot+'/'+from.pathContent, contRoot+'/'+to.pathContent );
+				}
+				if( px.utils.isDirectory( contRoot+'/'+from.pathFiles ) ){
+					px.utils.copy_r( contRoot+'/'+from.pathFiles, contRoot+'/'+to.pathFiles );
+				}
+				it.next(prop);
+			} ,
+			function(it, prop){
 
-		// 複製する
-		if( px.utils.isFile( contRoot+'/'+from.pathContent ) ){
-			px.utils.copy( contRoot+'/'+from.pathContent, contRoot+'/'+to.pathContent );
-		}
-		if( px.utils.isDirectory( contRoot+'/'+from.pathFiles ) ){
-			px.utils.copy_r( contRoot+'/'+from.pathFiles, contRoot+'/'+to.pathFiles );
-		}
+				// コンテンツのprocTypeが異なる場合
+				if( from.procType !== to.procType ){
+					// 拡張子を合わせる作業
+					var toPageInfo = _this.site.getPageInfo( pathTo );
 
-		// コンテンツのprocTypeが異なる場合
-		if( from.procType !== to.procType ){
-			// 拡張子を合わせる作業
-			var toPageInfo = this.site.getPageInfo( pathTo );
-
-			switch( from.procType ){
-				case 'html':
-				case 'html.gui':
-					var toPathContent = toPageInfo.content;
-					if( !toPageInfo.content.match( new RegExp('\\.html$', 'i') ) ){
-						toPathContent = toPageInfo.content + '.html';
+					switch( from.procType ){
+						case 'html':
+						case 'html.gui':
+							var toPathContent = toPageInfo.content;
+							if( !toPageInfo.content.match( new RegExp('\\.html$', 'i') ) ){
+								toPathContent = toPageInfo.content + '.html';
+							}
+							px.fs.renameSync(
+								contRoot+'/'+to.pathContent,
+								contRoot+'/'+toPathContent
+							);
+							break;
+						default:
+							px.fs.renameSync(
+								contRoot+'/'+to.pathContent,
+								contRoot+'/'+toPageInfo.content + '.' + from.procType
+							);
+							break;
 					}
-					px.fs.renameSync(
-						contRoot+'/'+to.pathContent,
-						contRoot+'/'+toPathContent
-					);
-					break;
-				default:
-					px.fs.renameSync(
-						contRoot+'/'+to.pathContent,
-						contRoot+'/'+toPageInfo.content + '.' + from.procType
-					);
-					break;
+
+				}
+
+				it.next(prop);
+			} ,
+			function(it, prop){
+				cb();
+				return;
+				it.next(prop);
 			}
+		]).start({});
 
-		}
-
-		cb();
 		return true;
 	}
 
@@ -849,9 +904,15 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	 */
 	px.utils.iterateFnc([
 		function(itPj, pj){
+			var px2agentOption = {
+				'bin': px.nodePhpBin.getPath(),
+				'ini': px.nodePhpBin.getIniPath(),
+				'extension_dir': px.nodePhpBin.getExtensionDir()
+			};
+			console.log(px2agentOption);
 			_px2proj = px.px2agent.createProject(
 				_path.resolve( pj.get('path') + '/' + pj.get('entry_script') ) ,
-				{'bin': px.cmd('php')}
+				px2agentOption
 			);
 			pj.px2proj = _px2proj;
 

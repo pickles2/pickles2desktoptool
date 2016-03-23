@@ -2,6 +2,7 @@ new (function($, window){
 	window.px = _this = this;
 	this.$ = $;
 	this._ = _;
+	this.process = process;
 
 	/**
 	 * Pickles 2 Desktop Tool のバージョン情報を取得する。
@@ -87,13 +88,14 @@ new (function($, window){
 	this.execSync = _execSync;
 
 	var _nw_gui = require('nw.gui');
-	// this.server = require('./index_files/px_server_emurator.node.js').init(this,$);
 	var _appName = _packageJson.window.title;
 	window.document.title = _appName;
 
 	this.progress = new require('./index_files/pickles.progress.js').init(this, $);
 
 	this.textEditor = window.textEditor;
+
+	this.nodePhpBin = {};//init内で初期化される
 
 	if( !_utils.isDirectory( _path_data_dir ) ){
 		_fs.mkdirSync( _path_data_dir );
@@ -147,7 +149,7 @@ new (function($, window){
 		{"label":"プレビュー",           "cond":"pxStandby",          "area":"shoulder", "app":"fncs/preview/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"コンテンツを移動する", "cond":"pxStandby",          "area":"shoulder", "app":"fncs/movecontents/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"検索",               "cond":"pxStandby",          "area":"shoulder", "app":"fncs/search/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"GUIコンテンツ一括更新","cond":"pxStandby",          "area":"shoulder", "app":"fncs/rebuild_guiedit_contents/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+		{"label":"GUI編集コンテンツを一括再構成","cond":"pxStandby",          "area":"shoulder", "app":"fncs/rebuild_guiedit_contents/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"キャッシュを消去",     "cond":"pxStandby",          "area":"shoulder", "app":"fncs/clearcache/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		// {"label":"Reload(dev)",          "cond":"always", "cb": function(){window.location.href='index.html?';}} ,
 		{"label":"システム情報",         "cond":"always",             "area":"shoulder", "app":null, "cb": function(){px.dialog({
@@ -192,45 +194,67 @@ new (function($, window){
 
 		px.log( 'Application start;' );
 
-		if(!_db){_db = {};}
-		if(!_db.commands){_db.commands = {};}
-		if(!_db.projects){_db.projects = [];}
-		if(!_db.network){_db.network = {};}
-		if(!_db.network.preview){_db.network.preview = {};}
-		if(!_db.network.appserver){_db.network.appserver = {};}
-		if(!_db.apps){_db.apps = {};}
-		if(!_db.apps.texteditor){_db.apps.texteditor = null;}
-		if(!_db.apps.texteditorForDir){_db.apps.texteditorForDir = null;}
+		px.load(function(){
+			if(!_db){_db = {};}
+			if(!_db.commands){_db.commands = {};}
+			if(!_db.projects){_db.projects = [];}
+			if(!_db.network){_db.network = {};}
+			if(!_db.network.preview){_db.network.preview = {};}
+			if(!_db.network.appserver){_db.network.appserver = {};}
+			if(!_db.apps){_db.apps = {};}
+			if(!_db.apps.texteditor){_db.apps.texteditor = null;}
+			if(!_db.apps.texteditorForDir){_db.apps.texteditorForDir = null;}
 
-		if( !_utils.isDirectory( _path_data_dir+'commands/' ) ){
-			_fs.mkdirSync( _path_data_dir+'commands/' );
-		}
-		if( !_utils.isDirectory( _path_data_dir+'commands/composer/' ) ){
-			_fs.mkdirSync( _path_data_dir+'commands/composer/' );
-		}
-		if( !_utils.isFile( _path_data_dir+'commands/composer/composer.phar' ) ){
-			(function(){
-				var opt = {
-					'title': '初期設定中...',
-					'body': $('<p>'+_appName+' を初期設定しています。インターネットに接続したまま、しばらくお待ちください。</p>') ,
-					'buttons': []
+			if( !_utils.isDirectory( _path_data_dir+'commands/' ) ){
+				_fs.mkdirSync( _path_data_dir+'commands/' );
+			}
+			if( !_utils.isDirectory( _path_data_dir+'commands/composer/' ) ){
+				_fs.mkdirSync( _path_data_dir+'commands/composer/' );
+			}
+
+			px.NodePhpBin = require('node-php-bin');
+			var npboption = {};
+			if( _db.commands && _db.commands['php'] ){
+				npboption = {
+					'bin': _db.commands['php'] ,
+					'ini': null
 				};
-				px.utils.exec(
-					px.cmd('php') + ' -r "readfile(\'https://getcomposer.org/installer\');" | ' + px.cmd('php') ,
-					function(){
-						_db.commands.composer = _path_data_dir+'commands/composer/composer.phar';
+			}
+			px.nodePhpBin = px.NodePhpBin.get(npboption);
+
+			if( !_utils.isFile( _path_data_dir+'commands/composer/composer.phar' ) ){
+				(function(){
+					var pathComposerPhar = {
+						'from': require('path').resolve('./app/common/composer/composer.phar') ,
+						'to': require('path').resolve(_path_data_dir, './commands/composer/composer.phar')
+					};
+					_fsEx.copy(pathComposerPhar.from, pathComposerPhar.to, function(err){
+						if( err ){
+							console.error(err);
+							alert('composer.phar のコピーに失敗しました。');
+							px.closeDialog();
+							cb();
+							return;
+						}
+						_db.commands.composer = pathComposerPhar.to;
 						px.save();
 						px.closeDialog();
 						cb();
-					},
-					{cd: _path_data_dir+'commands/composer/'}
-				);
+					});
 
-				px.dialog(opt);
-			})();
-		}else{
-			cb();
-		}
+					var opt = {
+						'title': '初期設定中...',
+						'body': $('<p>'+_appName+' を初期設定しています。しばらくお待ちください。</p>') ,
+						'buttons': []
+					};
+
+					px.dialog(opt);
+				})();
+			}else{
+				cb();
+			}
+
+		});
 
 		return;
 	}
@@ -240,6 +264,11 @@ new (function($, window){
 	 */
 	this.load = function(cb){
 		cb = cb||function(){};
+		if( !this.utils.isFile(_path_db) ){
+			cb();
+			return false;
+		}
+
 		_db = require( _path_db );
 		_db.projects = _db.projects||[];
 		_db.projects.sort( function(a, b){
@@ -405,7 +434,8 @@ new (function($, window){
 	this.cmd = function(cmd){
 		if( cmd == 'composer' ){
 			return _path_data_dir+'commands/composer/composer.phar';
-		}else if( cmd == 'open' ){
+		}
+		if( cmd == 'open' ){
 			if(_platform=='win'){
 				return 'explorer';
 			}
@@ -413,10 +443,42 @@ new (function($, window){
 		if( _db.commands && _db.commands[cmd] ){
 			return _db.commands[cmd];
 		}
-		// if( cmd == 'php' ){
-		// 	return require('node-php-bin').get().getPath();
-		// }
+		if( cmd == 'php' ){
+			return require('node-php-bin').get().getPath();
+		}
 		return cmd;
+	}
+
+	/**
+	 * composerを実行する
+	 * node-php-bin の PHP などを考慮して、
+	 * -c, -d オプションの解決を自動的にやっている前提で、
+	 * composer コマンドを実行します。
+	 * @param  {[type]} cmd  [description]
+	 * @param  {[type]} opts [description]
+	 * @return {[type]}      [description]
+	 */
+	this.execComposer = function( cmd, opts ){
+		opts = opts||{};
+		opts.success = opts.success||function(){};
+		opts.error = opts.error||function(){};
+		opts.complete = opts.complete||function(){};
+		if( typeof(cmd) == typeof('') ){
+			cmd = [cmd];
+		}
+		cmd.unshift(px.cmd('composer'));
+		px.nodePhpBin.script(
+			cmd ,
+			{
+				'cwd': opts.cwd
+			} ,
+			{
+				'success': opts.success,
+				'error': opts.error,
+				'complete': opts.complete
+			}
+		);
+		return this;
 	}
 
 	/**
@@ -442,12 +504,12 @@ new (function($, window){
 	 */
 	this.openHelp = function(){
 		var port = 8081;
+		if( _packageJson && _packageJson.pickles2 && _packageJson.pickles2.network && _packageJson.pickles2.network.appserver && _packageJson.pickles2.network.appserver.port ){
+			port = _packageJson.pickles2.network.appserver.port;
+		}
 		if( _db.network && _db.network.appserver && _db.network.appserver.port ){
 			port = _db.network.appserver.port;
 		}
-		// _appServer.start( port, './app/server_root/', {} );
-		// var win = window.open( _appServer.getUrl(), null, 'resizable=no,scrollbars=yes,status=yes' );
-		// $(win).width(300).height(400);
 
 		_appServer.serverStandby( port, './app/server_root/', function(){
 			px.utils.openURL( _appServer.getUrl() );

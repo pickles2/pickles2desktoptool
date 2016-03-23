@@ -14,11 +14,27 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 		}
 
 		var $msg = $('<div>');
+		// px.execComposer(
+		// 	[
+		// 		'create-project',
+		// 		'--no-interaction',
+		// 		'pickles2/pickles2',
+		// 		'./',
+		// 		'dev-master'
+		// 	] ,
+		// 	{
+		// 		'cwd': path,
+		// 		'complete': function(data, code){
+		//
+		// 		}
+		// 	}
+		// );
 		px.spawnDialog(
 			px.cmd('php'),
 			[
 				px.cmd('composer'),
 				'create-project',
+				'--no-interaction',
 				'pickles2/pickles2',
 				'./',
 				'dev-master'
@@ -26,7 +42,7 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 			{
 				cd: path,
 				title: 'Pickles 2 のセットアップ',
-				description: $msg.text('Pickles をセットアップしています。この処理はしばらく時間がかかります。'),
+				description: $msg.text('Pickles 2 をセットアップしています。この処理はしばらく時間がかかります。'),
 				success: function(data){
 				} ,
 				error: function(data){
@@ -35,7 +51,7 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 					px.log('Composer Setup Error: '+ data);
 				} ,
 				cmdComplete: function(code){
-					$msg.text('Pickles のセットアップが完了しました。');
+					$msg.text('Pickles 2 のセットアップが完了しました。');
 				},
 				complete: function(dataFin){
 					opt.complete();

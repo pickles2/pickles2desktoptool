@@ -700,7 +700,8 @@ window.contApp = new (function( px ){
 
 		// プログレスモード表示
 		px.progress.start({
-			'blindness':true
+			'blindness':true,
+			'showProgressBar': true
 		});
 
 		var contPath = _pj.findPageContent( pagePath );

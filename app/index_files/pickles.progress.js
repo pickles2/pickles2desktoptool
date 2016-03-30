@@ -6,6 +6,14 @@ module.exports.init = function( px, $ ) {
 	// プログレス画面を表示している間は、キーボードやマウスの操作を受け付けません。
 	// 見えないフォーム `$keycatcher` にフォーカスを当て、キーボード操作を拾って捨てています。
 
+	var htmlProgress = ''
+		+'<div class="progress">'+"\n"
+		+'  <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 100%">'+"\n"
+		+'    <span class="sr-only"></span>'+"\n"
+		+'  </div>'+"\n"
+		+'</div>'+"\n"
+	;
+
 	var _this = this;
 	var $keycatcher = $('<input>');
 	var $progress = $('<div>')
@@ -27,6 +35,23 @@ module.exports.init = function( px, $ ) {
 		.bind( 'mousedown', function(e){stopKeyboard();} )
 		.bind( 'mouseup', function(e){stopKeyboard();} )
 		.bind( 'click', function(e){stopKeyboard();} )
+		.append( $('<div class="px2dt-progress-bar">')
+			.css({
+				'width': '600px',
+				'max-width': '80%',
+				'margin': 'auto auto'
+			})
+			.append( $('<div>')
+				.html(htmlProgress)
+			)
+			.append( $('<div>')
+				.css({
+					'color':'#fff',
+					'text-align': 'center'
+				})
+				.html('しばらくお待ちください...')
+			)
+		)
 	;
 
 	function stopKeyboard(){
@@ -48,6 +73,11 @@ module.exports.init = function( px, $ ) {
 				'z-index': 15000
 			})
 		;
+		if( options.showProgressBar ){
+			$progress.find('.px2dt-progress-bar').show();
+		}else{
+			$progress.find('.px2dt-progress-bar').hide();
+		}
 		$('body').append( $progress );
 		stopKeyboard();
 		return this;

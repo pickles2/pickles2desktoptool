@@ -10,22 +10,19 @@ window.BroccoliFieldHref = function(){
 	 */
 	this.mkEditor = function( mod, data, elm, callback ){
 		var changeTimer;
-		var blurTimer;
 
 		function onChange(){
 			clearTimeout( changeTimer );
-			clearTimeout( blurTimer );
-			$palatte.stop().show('fast');
 			var $this = $(this);
 			changeTimer = setTimeout(function(){
 				var pages = $this.data('pages');
 				var $html = $('<ul>')
 					.css({
-						'padding': 20
+						'padding': '0.5em 2em'
 					})
 				;
 				for( var idx in pages ){
-					if( !pages[idx].path.match( new RegExp('^'+px.utils.escapeRegExp($this.val())) ) ){
+					if( !pages[idx].path.match( new RegExp(utils79.regexp_quote( $this.val() )) ) ){
 						continue;
 					}
 					$html
@@ -46,12 +43,10 @@ window.BroccoliFieldHref = function(){
 									// console.log('path suggestion: clicked!');
 									// console.log($(this).attr('data-path'));
 									// console.log($(this).attr('data-path'));
-									clearTimeout( blurTimer );
 									$input
 										.val( $(this).attr('data-path') )
 										.focus()
 									;
-									$palatte.hide();
 								})
 							)
 						)
@@ -63,17 +58,17 @@ window.BroccoliFieldHref = function(){
 
 		var $palatte = $('<div>')
 			.css({
-				'height':200,
-				'overflow':'auto',
-				'position':'absolute',
-				'background':'#f9f9f9',
-				'opacity':'0.9',
-				'width':'100%',
+				'height': 120,
+				'overflow': 'auto',
+				'position': 'relative',
+				'background': '#f9f9f9',
+				'width': '100%',
+				'font-size': 12,
 				'z-index': 1000
 			})
-			.hide()
 		;
 		var $input = $('<input>')
+			.addClass('form-control')
 			.attr({
 				"name":mod.name
 			})
@@ -82,16 +77,6 @@ window.BroccoliFieldHref = function(){
 			.css({'width':'100%','height':'auto'})
 			.change( onChange )
 			.keyup( onChange )
-			.focus(function(){
-				clearTimeout( blurTimer );
-				$palatte.show('fast');
-			})
-			.blur(function(){
-				clearTimeout( blurTimer );
-				blurTimer = setTimeout( function(){
-					$palatte.hide();
-				}, 200 );
-			})
 		;
 		var rtn = $('<div>')
 			.append( $input )
@@ -99,16 +84,13 @@ window.BroccoliFieldHref = function(){
 				.css({
 					'position':'relative'
 				})
-				.click(function(){
-					clearTimeout( blurTimer );
-				})
 				.append( $palatte )
 			)
 		;
 		$(elm).html(rtn);
-		// setTimeout(function(){
-			callback();
-		// }, 0);
+
+		$input.change();
+		callback();
 		return;
 	}
 

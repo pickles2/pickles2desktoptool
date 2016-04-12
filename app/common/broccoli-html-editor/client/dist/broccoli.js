@@ -1,9 +1,4 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-(function(window){
-	window.Broccoli = require('./libs/broccoli-client.js');
-})(window);
-
-},{"./libs/broccoli-client.js":2}],2:[function(require,module,exports){
 /**
  * broccoli-client.js
  */
@@ -19,6 +14,17 @@
 			}
 		}
 	})().replace(/\\/g, '/').replace(/\/[^\/]*\/?$/, '');
+
+	// bootstrap をロード
+	document.write('<link rel="stylesheet" href="'+__dirname+'/libs/bootstrap/dist/css/bootstrap.css" />');
+	// document.write('<script src="'+__dirname+'/libs/bootstrap/dist/js/bootstrap.js"></script>');
+		// ↑ bootstrap.js は、 window.jQuery が存在していないと利用できない。
+		// 　 = bootstrap.js を利用するためには、jQueryをグローバルに宣言しなければならない(隠蔽できない)
+		// 　 ということのようなので、差し迫って必要がない限りは bootstrap.js をロードしないことにする。
+
+	// broccoli-html-editor をロード
+	document.write('<link rel="stylesheet" href="'+__dirname+'/broccoli.css" />');
+
 
 	module.exports = function(){
 		// if(!window){delete(require.cache[require('path').resolve(__filename)]);}
@@ -817,7 +823,7 @@
 
 })(module);
 
-},{"../../../libs/fncs/incrementInstancePath.js":22,"../../../libs/fncs/parseModuleId.js":23,"./../../../libs/fieldBase.js":13,"./../../../libs/fields/app.fields.href.js":14,"./../../../libs/fields/app.fields.html.js":15,"./../../../libs/fields/app.fields.html_attr_text.js":16,"./../../../libs/fields/app.fields.image.js":17,"./../../../libs/fields/app.fields.markdown.js":18,"./../../../libs/fields/app.fields.multitext.js":19,"./../../../libs/fields/app.fields.select.js":20,"./../../../libs/fields/app.fields.text.js":21,"./clipboard.js":3,"./contentsSourceData.js":4,"./drawModulePalette.js":5,"./editWindow.js":6,"./instancePathView.js":8,"./instanceTreeView.js":9,"./panels.js":10,"./postMessenger.js":11,"./resourceMgr.js":12,"iterate79":119,"jquery":120,"underscore":127}],3:[function(require,module,exports){
+},{"../../../libs/fncs/incrementInstancePath.js":22,"../../../libs/fncs/parseModuleId.js":23,"./../../../libs/fieldBase.js":13,"./../../../libs/fields/app.fields.href.js":14,"./../../../libs/fields/app.fields.html.js":15,"./../../../libs/fields/app.fields.html_attr_text.js":16,"./../../../libs/fields/app.fields.image.js":17,"./../../../libs/fields/app.fields.markdown.js":18,"./../../../libs/fields/app.fields.multitext.js":19,"./../../../libs/fields/app.fields.select.js":20,"./../../../libs/fields/app.fields.text.js":21,"./clipboard.js":2,"./contentsSourceData.js":3,"./drawModulePalette.js":4,"./editWindow.js":5,"./instancePathView.js":7,"./instanceTreeView.js":8,"./panels.js":9,"./postMessenger.js":10,"./resourceMgr.js":11,"iterate79":119,"jquery":120,"underscore":127}],2:[function(require,module,exports){
 /**
  * clipboard.js
  * クリップボード管理オブジェクト
@@ -859,7 +865,7 @@ module.exports = function(broccoli){
 
 }
 
-},{"jquery":120}],4:[function(require,module,exports){
+},{"jquery":120}],3:[function(require,module,exports){
 /**
  * contentsSourceData.js
  */
@@ -1679,7 +1685,7 @@ module.exports = function(broccoli){
 
 }
 
-},{"./history.js":7,"iterate79":119,"path":102,"phpjs":123,"underscore":127}],5:[function(require,module,exports){
+},{"./history.js":6,"iterate79":119,"path":102,"phpjs":123,"underscore":127}],4:[function(require,module,exports){
 /**
  * drawModulePalette.js
  */
@@ -1700,6 +1706,9 @@ module.exports = function(broccoli, callback){
 	var twig = require('twig');
 	var $ = require('jquery');
 
+	var btIconClosed = '<span class="glyphicon glyphicon-menu-right"></span> ';
+	var btIconOpened = '<span class="glyphicon glyphicon-menu-down"></span> ';
+
 	// カテゴリの階層を描画
 	function drawCategories(categories, $ul, callback){
 		it79.ary(
@@ -1708,11 +1717,17 @@ module.exports = function(broccoli, callback){
 				var $liCat = $('<li>');
 				var $ulMod = $('<ul>');
 				$liCat.append( $('<a>')
-					.text(category.categoryName)
+					.append( btIconOpened )
+					.append( $('<span>').text(category.categoryName)  )
 					.attr({'href':'javascript:;'})
 					.click(function(){
 						$(this).toggleClass('broccoli--module-palette__closed');
 						$ulMod.toggle(100)
+						if( $(this).hasClass('broccoli--module-palette__closed') ){
+							$(this).find('.glyphicon').get(0).outerHTML = btIconClosed;
+						}else{
+							$(this).find('.glyphicon').get(0).outerHTML = btIconOpened;
+						}
 					})
 				);
 				$ul.append( $liCat );
@@ -1913,11 +1928,17 @@ module.exports = function(broccoli, callback){
 						var $li = $('<li>');
 						var $ulCat = $('<ul>');
 						$li.append( $('<a>')
-							.text( pkg.packageName )
+							.append( btIconOpened )
+							.append( $('<span>').text( pkg.packageName ) )
 							.attr({'href':'javascript:;'})
 							.click(function(){
 								$(this).toggleClass('broccoli--module-palette__closed');
 								$ulCat.toggle(100)
+								if( $(this).hasClass('broccoli--module-palette__closed') ){
+									$(this).find('.glyphicon').get(0).outerHTML = btIconClosed;
+								}else{
+									$(this).find('.glyphicon').get(0).outerHTML = btIconOpened;
+								}
 							})
 						);
 
@@ -2007,7 +2028,7 @@ module.exports = function(broccoli, callback){
 	return;
 }
 
-},{"iterate79":119,"jquery":120,"path":102,"phpjs":123,"twig":126}],6:[function(require,module,exports){
+},{"iterate79":119,"jquery":120,"path":102,"phpjs":123,"twig":126}],5:[function(require,module,exports){
 /**
  * editWindow.js
  */
@@ -2023,65 +2044,70 @@ module.exports = function(broccoli){
 	var $ = require('jquery');
 
 	var $editWindow;
-	var tplFrame = '';
-	tplFrame += '<div class="broccoli--edit-window">';
-	tplFrame += '	<form action="javascript:;">';
-	tplFrame += '		<h2 class="broccoli--edit-window-module-name">---</h2>';
-	tplFrame += '		<div class="broccoli--edit-window-fields">';
-	tplFrame += '		</div>';
-	tplFrame += '		<div><a href="javascript:;" class="broccoli--edit-window-builtin-fields-switch">詳細設定を表示する</a></div>';
-	tplFrame += '		<div class="broccoli--edit-window-builtin-fields">';
-	tplFrame += '			<div class="form-group">';
-	tplFrame += '				<label for="broccoli--edit-window-builtin-anchor-field">アンカー</label>';
-	tplFrame += '				<input type="text" class="form-control" id="broccoli--edit-window-builtin-anchor-field" placeholder="">';
-	tplFrame += '			</div>';
-	tplFrame += '			<div class="form-group">';
-	tplFrame += '				<label for="broccoli--edit-window-builtin-dec-field">埋め込みコメント入力欄</label>';
-	tplFrame += '				<textarea class="form-control" id="broccoli--edit-window-builtin-dec-field" placeholder=""></textarea>';
-	tplFrame += '			</div>';
-	tplFrame += '		</div>';
-	tplFrame += '		<div class="broccoli--edit-window-form-buttons">';
-	tplFrame += '			<div class="container-fluid">';
-	tplFrame += '				<div class="row">';
-	tplFrame += '					<div class="col-sm-6 col-sm-offset-3">';
-	tplFrame += '						<div class="btn-group btn-group-justified" role="group">';
-	tplFrame += '							<div class="btn-group">';
-	tplFrame += '								<button disabled="disabled" type="submit" class="btn btn-primary btn-lg">OK</button>';
-	tplFrame += '							</div>';
-	tplFrame += '						</div>';
-	tplFrame += '					</div>';
-	tplFrame += '				</div>';
-	tplFrame += '			</div>';
-	tplFrame += '			<div class="container-fluid">';
-	tplFrame += '				<div class="row">';
-	tplFrame += '					<div class="col-sm-4">';
-	tplFrame += '						<div class="btn-group btn-group-justified" role="group" style="margin-top:20px;">';
-	tplFrame += '							<div class="btn-group">';
-	tplFrame += '								<button disabled="disabled" type="button" class="btn btn-default btn-sm broccoli--edit-window-btn-cancel">キャンセル</button>';
-	tplFrame += '							</div>';
-	tplFrame += '						</div>';
-	tplFrame += '					</div>';
-	tplFrame += '					<div class="col-sm-4 col-sm-offset-4">';
-	tplFrame += '						<div class="btn-group btn-group-justified" role="group" style="margin-top:20px;">';
-	tplFrame += '							<div class="btn-group">';
-	tplFrame += '								<button disabled="disabled" type="button" class="btn btn-danger btn-sm broccoli--edit-window-btn-remove">このモジュールを削除する</button>';
-	tplFrame += '							</div>';
-	tplFrame += '						</div>';
-	tplFrame += '					</div>';
-	tplFrame += '				</div>';
-	tplFrame += '			</div>';
-	tplFrame += '		</div>';
-	tplFrame += '	</form>';
-	tplFrame += '</div>';
+	var tplFrame = ''
+				+ '<div class="broccoli--edit-window">'
+				+ '	<form action="javascript:;">'
+				+ '		<h2 class="broccoli--edit-window-module-name">---</h2>'
+				+ '		<div class="broccoli--edit-window-fields">'
+				+ '		</div>'
+				+ '		<div><a href="javascript:;" class="broccoli--edit-window-builtin-fields-switch"><span class="glyphicon glyphicon-menu-right"></span>  詳細設定を表示する</a></div>'
+				+ '		<div class="broccoli--edit-window-builtin-fields">'
+				+ '			<div class="form-group">'
+				+ '				<label for="broccoli--edit-window-builtin-anchor-field">アンカー</label>'
+				+ '				<div class="input-group">'
+				+ '					<span class="input-group-addon" id="basic-addon1">#</span>'
+				+ '					<input type="text" class="form-control" id="broccoli--edit-window-builtin-anchor-field" placeholder="">'
+				+ '				</div>'
+				+ '			</div>'
+				+ '			<div class="form-group">'
+				+ '				<label for="broccoli--edit-window-builtin-dec-field">埋め込みコメント入力欄</label>'
+				+ '				<textarea class="form-control" id="broccoli--edit-window-builtin-dec-field" placeholder=""></textarea>'
+				+ '			</div>'
+				+ '		</div>'
+				+ '		<div class="broccoli--edit-window-form-buttons">'
+				+ '			<div class="container-fluid">'
+				+ '				<div class="row">'
+				+ '					<div class="col-sm-6 col-sm-offset-3">'
+				+ '						<div class="btn-group btn-group-justified" role="group">'
+				+ '							<div class="btn-group">'
+				+ '								<button disabled="disabled" type="submit" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-ok"></span> OK</button>'
+				+ '							</div>'
+				+ '						</div>'
+				+ '					</div>'
+				+ '				</div>'
+				+ '			</div>'
+				+ '			<div class="container-fluid">'
+				+ '				<div class="row">'
+				+ '					<div class="col-sm-4">'
+				+ '						<div class="btn-group btn-group-justified" role="group" style="margin-top:20px;">'
+				+ '							<div class="btn-group">'
+				+ '								<button disabled="disabled" type="button" class="btn btn-default btn-sm broccoli--edit-window-btn-cancel">キャンセル</button>'
+				+ '							</div>'
+				+ '						</div>'
+				+ '					</div>'
+				+ '					<div class="col-sm-4 col-sm-offset-4">'
+				+ '						<div class="btn-group btn-group-justified" role="group" style="margin-top:20px;">'
+				+ '							<div class="btn-group">'
+				+ '								<button disabled="disabled" type="button" class="btn btn-danger btn-sm broccoli--edit-window-btn-remove"><span class="glyphicon glyphicon-trash"></span> このモジュールを削除する</button>'
+				+ '							</div>'
+				+ '						</div>'
+				+ '					</div>'
+				+ '				</div>'
+				+ '			</div>'
+				+ '		</div>'
+				+ '	</form>'
+				+ '</div>'
+	;
 
-	var tplField = '';
-	tplField += '<div class="broccoli--edit-window-field">';
-	tplField += '	<h3>---</h3>';
-	tplField += '	<div class="broccoli--edit-window-field-description">';
-	tplField += '	</div>';
-	tplField += '	<div class="broccoli--edit-window-field-content">';
-	tplField += '	</div>';
-	tplField += '</div>';
+	var tplField = ''
+				+ '<div class="broccoli--edit-window-field">'
+				+ '	<h3>---</h3>'
+				+ '	<div class="broccoli--edit-window-field-description">'
+				+ '	</div>'
+				+ '	<div class="broccoli--edit-window-field-content">'
+				+ '	</div>'
+				+ '</div>'
+	;
 
 
 	/**
@@ -2121,10 +2147,10 @@ module.exports = function(broccoli){
 			$editWindow.find('.broccoli--edit-window-builtin-fields').toggle('fast', function(){
 				if($(this).is(':visible')){
 					$this.addClass(className);
-					$this.text('詳細設定を隠す')
+					$this.html('<span class="glyphicon glyphicon-menu-down"></span> 詳細設定を隠す')
 				}else{
 					$this.removeClass(className);
-					$this.text('詳細設定を表示する')
+					$this.html('<span class="glyphicon glyphicon-menu-right"></span>  詳細設定を表示する')
 				}
 			});
 		});
@@ -2370,7 +2396,7 @@ module.exports = function(broccoli){
 	return;
 }
 
-},{"iterate79":119,"jquery":120,"path":102,"phpjs":123}],7:[function(require,module,exports){
+},{"iterate79":119,"jquery":120,"path":102,"phpjs":123}],6:[function(require,module,exports){
 /**
  * history.js
  */
@@ -2452,7 +2478,7 @@ module.exports = function(broccoli){
 
 }
 
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /**
  * instancePathView.js
  */
@@ -2636,7 +2662,7 @@ module.exports = function(broccoli){
 	return;
 }
 
-},{"iterate79":119,"jquery":120,"path":102,"phpjs":123,"twig":126}],9:[function(require,module,exports){
+},{"iterate79":119,"jquery":120,"path":102,"phpjs":123,"twig":126}],8:[function(require,module,exports){
 /**
  * instanceTreeView.js
  */
@@ -2752,6 +2778,13 @@ module.exports = function(broccoli){
 											broccoli.focusInstance( instancePath );
 										} );
 									})
+									.bind('mouseover', function(e){
+										e.stopPropagation();
+										$(this).addClass('broccoli--panel__hovered')
+									})
+									.bind('mouseout',function(e){
+										$(this).removeClass('broccoli--panel__hovered')
+									})
 									.append( $('<div>')
 										.addClass('broccoli--panel-drop-to-insert-here')
 									)
@@ -2803,6 +2836,13 @@ module.exports = function(broccoli){
 										broccoli.selectInstance( selectInstancePath, function(){
 											broccoli.focusInstance( instancePath );
 										} );
+									})
+									.bind('mouseover', function(e){
+										e.stopPropagation();
+										$(this).addClass('broccoli--panel__hovered')
+									})
+									.bind('mouseout',function(e){
+										$(this).removeClass('broccoli--panel__hovered')
 									})
 									.append( $('<div>')
 										.addClass('broccoli--panel-drop-to-insert-here')
@@ -3013,7 +3053,7 @@ module.exports = function(broccoli){
 	return;
 }
 
-},{"iterate79":119,"jquery":120,"path":102,"phpjs":123,"twig":126}],10:[function(require,module,exports){
+},{"iterate79":119,"jquery":120,"path":102,"phpjs":123,"twig":126}],9:[function(require,module,exports){
 /**
  * panels.js
  */
@@ -3145,7 +3185,9 @@ module.exports = function(broccoli){
 				}
 
 				if( $this.attr('data-broccoli-is-appender') == 'yes' ){
-					instancePath = php.dirname(instancePath);
+					broccoli.message('編集できません。ここには、モジュールをドロップして追加または移動することができます。');
+					// instancePath = php.dirname(instancePath);
+					return;
 				}
 				broccoli.editInstance( instancePath );
 			})
@@ -3441,7 +3483,7 @@ module.exports = function(broccoli){
 	return;
 }
 
-},{"iterate79":119,"jquery":120,"path":102,"phpjs":123,"twig":126}],11:[function(require,module,exports){
+},{"iterate79":119,"jquery":120,"path":102,"phpjs":123,"twig":126}],10:[function(require,module,exports){
 /**
  * postMessenger.js
  * iframeに展開されるプレビューHTMLとの通信を仲介します。
@@ -3541,7 +3583,7 @@ module.exports = function(broccoli, iframe){
 	return;
 }
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /**
  * resourceMgr.js
  */
@@ -3851,7 +3893,12 @@ module.exports = function(broccoli){
 
 }
 
-},{"iterate79":119,"path":102,"phpjs":123}],13:[function(require,module,exports){
+},{"iterate79":119,"path":102,"phpjs":123}],12:[function(require,module,exports){
+(function(window){
+	window.Broccoli = require('./apis/broccoli-client.js');
+})(window);
+
+},{"./apis/broccoli-client.js":1}],13:[function(require,module,exports){
 /**
  * fieldBase.js
  */
@@ -58713,4 +58760,4 @@ function whitelist(str, chars) {
   return str.replace(new RegExp('[^' + chars + ']+', 'g'), '');
 }
 module.exports = exports['default'];
-},{"./util/assertString":190}]},{},[1])
+},{"./util/assertString":190}]},{},[12])

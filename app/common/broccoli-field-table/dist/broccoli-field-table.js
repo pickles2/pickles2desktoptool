@@ -88,31 +88,68 @@ module.exports = function(broccoli){
 		// if( typeof(data.original) !== typeof({}) ){ data.original = {}; }
 		var res = _resMgr.getResource( data.resKey );
 
+		var appMode = broccoli.getAppMode();
 		var $excel = $('<div data-excel-info>');
 		rtn.append( $excel );
 		// console.log(data);
+
 		if( data.resKey ){
-			$excel.html('')
-				.append( $('<button type="button" class="btn btn-default">Excelで編集する</button>')
-					.attr({
-						'data-excel-resKey': data.resKey
-					})
-					.click(function(){
-						var resKey = $(this).attr('data-excel-resKey');
-						_this.callGpi(
-							{
-								'api': 'openOuternalEditor',
-								'data': {
-									'resKey': resKey
+
+			if( appMode == 'desktop' ){
+				// desktop版
+				$excel.html('')
+					.append( $('<button type="button" class="btn btn-default">編集する</button>')
+						.attr({
+							'data-excel-resKey': data.resKey
+						})
+						.click(function(){
+							var resKey = $(this).attr('data-excel-resKey');
+							_this.callGpi(
+								{
+									'api': 'openOuternalEditor',
+									'data': {
+										'resKey': resKey
+									}
+								} ,
+								function(output){
+									if(!output.result){
+										alert('失敗しました。'+"\n"+output.message);
+									}
+									return;
 								}
-							} ,
-							function(output){
-								return;
-							}
-						);
-					})
-				)
-			;
+							);
+						})
+					)
+				;
+
+			}else{
+				// Web版
+				$excel.html('')
+					.append( $('<button type="button" class="btn btn-default">ダウンロードする</button>')
+						.attr({
+							'data-excel-resKey': data.resKey
+						})
+						.click(function(){
+							var resKey = $(this).attr('data-excel-resKey');
+							_this.callGpi(
+								{
+									'api': 'getFileInfo',
+									'data': {
+										'resKey': resKey
+									}
+								} ,
+								function(fileInfp){
+									var anchor = document.createElement("a");
+									anchor.href = 'data:application/octet-stream;base64,'+fileInfp.base64;
+									anchor.download = "bin."+fileInfp.ext;
+									anchor.click();
+									return;
+								}
+							);
+						})
+					)
+				;
+			}
 		}
 
 		rtn.append( $('<input>')
@@ -408,6 +445,17 @@ module.exports = function(broccoli){
 					options.data,
 					[
 						function(it1, data){
+							var appMode = broccoli.getAppMode();
+							// console.log(appMode);
+							if( appMode != 'desktop' ){
+								var message = 'appModeが不正です。';
+								// console.log( message );
+								callback({'result':false, 'message': message});
+								return;
+							}
+							it1.next(data);
+						} ,
+						function(it1, data){
 							_resMgr.getResourceOriginalRealpath( data.resKey, function(realpath){
 								// console.log(realpath);
 								data.realpath = realpath;
@@ -420,11 +468,18 @@ module.exports = function(broccoli){
 							it1.next(data);
 						} ,
 						function(it1, data){
-							callback({'result':'OK'});
+							callback({'result':true});
 							it1.next(data);
 						}
 					]
 				);
+				break;
+
+			case 'getFileInfo':
+				_resMgr.getResource( options.data.resKey, function(resInfo){
+					// console.log(resInfo);
+					callback(resInfo);
+				} );
 				break;
 
 			case 'excel2html':
@@ -1035,7 +1090,7 @@ process.chdir = function (dir) {
 
 },{}],7:[function(require,module,exports){
 /*!
- * jQuery JavaScript Library v2.2.2
+ * jQuery JavaScript Library v2.2.3
  * http://jquery.com/
  *
  * Includes Sizzle.js
@@ -1045,7 +1100,7 @@ process.chdir = function (dir) {
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2016-03-17T17:51Z
+ * Date: 2016-04-05T19:26Z
  */
 
 (function( global, factory ) {
@@ -1101,7 +1156,7 @@ var support = {};
 
 
 var
-	version = "2.2.2",
+	version = "2.2.3",
 
 	// Define a local copy of jQuery
 	jQuery = function( selector, context ) {
@@ -10511,7 +10566,7 @@ jQuery.fn.load = function( url, params, callback ) {
 		// If it fails, this function gets "jqXHR", "status", "error"
 		} ).always( callback && function( jqXHR, status ) {
 			self.each( function() {
-				callback.apply( self, response || [ jqXHR.responseText, status, jqXHR ] );
+				callback.apply( this, response || [ jqXHR.responseText, status, jqXHR ] );
 			} );
 		} );
 	}

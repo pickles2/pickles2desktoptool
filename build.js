@@ -1,3 +1,4 @@
+var fs = require('fs');
 var _utils = require('./app/index_files/_utils.node.js');
 var NwBuilder = require('nw-builder');
 var zipFolder = require('zip-folder');
@@ -25,16 +26,51 @@ console.log('');
 
 console.log('Build...');
 var nw = new NwBuilder({
-	files: (function(dep){
+	files: (function(packageJson){
 		var rtn = [
 			'./package.json',
 			'./app/**'
 		];
-		for(var i in dep){
-			rtn.push( './node_modules/'+i+'/**' );
+		var nodeModules = fs.readdirSync('./node_modules/');
+		for(var i in nodeModules){
+			var modName = nodeModules[i];
+			switch(modName){
+				case '.bin':
+				case 'node-sass':
+				case 'gulp':
+				case 'nw':
+				case 'nw-builder':
+				case 'mocha':
+				case 'spawn-sync':
+					// ↑これらは除外するパッケージ
+					break;
+				case 'broccoli-html-editor':
+					// 必要なファイルだけ丁寧に抜き出す
+					rtn.push( './node_modules/'+modName+'/package.json' );
+					rtn.push( './node_modules/'+modName+'/composer.json' );
+					rtn.push( './node_modules/'+modName+'/client/dist/**' );
+					rtn.push( './node_modules/'+modName+'/libs/**' );
+					break;
+				case 'broccoli-field-table':
+					// 必要なファイルだけ丁寧に抜き出す
+					rtn.push( './node_modules/'+modName+'/package.json' );
+					rtn.push( './node_modules/'+modName+'/composer.json' );
+					rtn.push( './node_modules/'+modName+'/dist/**' );
+					rtn.push( './node_modules/'+modName+'/libs/**' );
+					rtn.push( './node_modules/'+modName+'/vendor/**' );
+					break;
+				default:
+					// まるっと登録するパッケージ
+					rtn.push( './node_modules/'+modName+'/**' );
+					break;
+			}
 		}
+		// for(var i in dep){
+		// 	rtn.push( './node_modules/'+i+'/**' );
+		// }
+		// console.log(rtn);
 		return rtn;
-	})(packageJson.dependencies) , // use the glob format
+	})(packageJson) , // use the glob format
 	version: 'v0.12.3',// <- version number of node-webkit
 	macIcns: './app/common/images/px2-osx.icns',
 	winIco: './app/common/images/px2-win.ico',

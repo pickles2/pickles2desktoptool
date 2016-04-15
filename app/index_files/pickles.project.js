@@ -453,6 +453,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				// console.log(broccoli);
 				broccoli.init(
 					{
+						'appMode': 'desktop', // 'web' or 'desktop'. default to 'web'
 						'paths_module_template': _pj.getConfig().plugins.px2dt.paths_module_template ,
 						'documentRoot': documentRoot,
 						'pathHtml': page_path,

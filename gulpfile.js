@@ -24,13 +24,17 @@ gulp.task("broccoli-client", function() {
 gulp.task("provisional", function() {
 	// nw-builderがビルドに失敗するようになったので
 	// 暫定的に、ビルドが通っていたときのライブラリのバックアップから復元する。
-	gulp.src(["_libs/**/*"])
-		.pipe(gulp.dest( './node_modules/' ))
-	;
+	// gulp.src(["_libs/**/*"])
+	// 	.pipe(gulp.dest( './node_modules/' ))
+	// ;
 
 	// Windows版ビルドが正常起動しなくなったため追加。
 	// broccoli-html-editor に導入した sass のディレクトリ階層が深すぎたのが原因か？
-	fsx.removeSync(__dirname+'/node_modules/broccoli-html-editor/node_modules/node-sass/');
+	// fsx.removeSync(__dirname+'/node_modules/broccoli-html-editor/submodules/');
+	// fsx.removeSync(__dirname+'/node_modules/broccoli-html-editor/tests/');
+	// fsx.removeSync(__dirname+'/node_modules/broccoli-field-table/submodules/');
+	// fsx.removeSync(__dirname+'/node_modules/broccoli-field-table/tests/');
+	// fsx.removeSync(__dirname+'/node_modules/broccoli-html-editor/node_modules/node-sass/');
 });
 
 

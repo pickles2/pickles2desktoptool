@@ -30,7 +30,6 @@
 	 * broccoli-html-editor が要求するコードを取得
 	 */
 	function getBroccoliScript(){
-		var scriptSrc = fs.readFileSync(__dirname+'/../common/broccoli-html-editor/client/dist/broccoli-preview-contents.js').toString('utf-8');
 		var fin = '';
 			fin += '<script data-broccoli-receive-message="yes">'+"\n";
 			// fin += 'console.log(window.location);'+"\n";
@@ -40,9 +39,8 @@
 			// fin += 'console.log(event.data);'+"\n";
 			fin += 'if(window.location.hostname!=\'127.0.0.1\'){alert(\'Unauthorized access.\');return;}'+"\n";
 			fin += 'if(!event.data.scriptUrl){return;}'+"\n";
-			// fin += 'var s=document.createElement(\'script\');'+"\n";
-			// fin += 'document.querySelector(\'body\').appendChild(s);s.src=event.data.scriptUrl;'+"\n";
-			fin += scriptSrc+';'+"\n";
+			fin += 'var s=document.createElement(\'script\');'+"\n";
+			fin += 'document.querySelector(\'body\').appendChild(s);s.src=event.data.scriptUrl;'+"\n";
 			fin += 'window.removeEventListener(\'message\', f, false);'+"\n";
 			fin += '}'+"\n";
 			fin += '})(),false);'+"\n";

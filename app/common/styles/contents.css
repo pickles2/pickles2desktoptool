@@ -220,6 +220,16 @@ ul.listview li a.current{
 .contents .btn-group button{
 	margin: inherit;
 }
+.btn-default {
+	color: #333 !important;
+}
+.btn-primary ,
+.btn-success ,
+.btn-info ,
+.btn-warning ,
+.btn-danger {
+	color: #fff !important;
+}
 
 /**
  * Bootstrap3 Tooltip

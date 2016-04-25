@@ -176,6 +176,22 @@ window.contApp = new (function(px, $){
 	}
 
 	/**
+	 * パブリッシュ中状態からの復旧方法の開閉
+	 */
+	this.toggle_how_to_recovery_on_publish = function(target,a){
+		var $this = $(a);
+		var $target = $(target);
+		$target.toggle('fast',function(){
+			$this.removeClass('glyphicon-menu-right').removeClass('glyphicon-menu-down');
+			if( $target.is(":hidden") ){
+				$this.addClass('glyphicon-menu-right');
+			}else{
+				$this.addClass('glyphicon-menu-down');
+			}
+		});
+	}
+
+	/**
 	 * ステータスを取得
 	 */
 	this.getStatus = function(){

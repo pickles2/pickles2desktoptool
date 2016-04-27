@@ -94,7 +94,29 @@
 			</div>
 		</script>
 		<script id="template-on_publish" type="text/template">
-			<p>ただいまパブリッシュプロセスが進行しています。しばらくお待ち下さい。</p>
+			<p>ただいまパブリッシュプロセスが進行しています。</p>
+			<p>しばらくお待ち下さい...。</p>
+			<p><a href="javascript:;" onclick="contApp.toggle_how_to_recovery_on_publish('.cont_recovery_on_publish',this);return false;" class="glyphicon glyphicon-menu-right">しばらく待ってもこの状態から復旧しない場合は...&lt;詳細&gt;</a></p>
+			<div class="cont_recovery_on_publish" style="display:none;">
+
+				<h2>これはどういう状態ですか？</h2>
+				<p>Pickles 2 のパブリッシュプロセスは、二重起動を避けるために、次のパスにロックファイルを生成します。</p>
+				<ul>
+					<li><code>./px-files/_sys/ram/publish/applock.txt</code></li>
+				</ul>
+
+				<p>このファイルは、パブリッシュ開始時に生成され、パブリッシュ完了時に削除されます。</p>
+				<p>パブリッシュ中であれば、このファイルが存在することは健康な状態です。しかし、パブリッシュの途中でプロセスが異常終了した場合(途中でアプリを落とす、なども含む)、このファイルが残ってしまうため、次のパブリッシュが実行できない状態になります。</p>
+
+				<h2>復旧方法</h2>
+				<p>ロックファイル <code>./px-files/_sys/ram/publish/applock.txt</code> を手動で<a href="javascript:contApp.open_publish_tmp_dir();">削除します</a>。</p>
+
+				<ul class="notes">
+					<li class="notes-li">※ただし、バックグラウンドでプロセスが進行中ではないか、事前に確認してください。</li>
+					<li class="notes-li">※<code>applock.txt</code> をテキストファイルで開くと、このファイルを生成したプロセスの <strong>プロセスID</strong> と <strong>最終アクセス日時</strong> が記載されています。この情報が手がかりになるはずです。</li>
+				</ul>
+
+			</div>
 		</script>
 		<script id="template-dialog_publish_options" type="text/template">
 			<!-- <h2>パブリッシュ対象範囲</h2> -->

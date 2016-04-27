@@ -45,7 +45,7 @@ $ npm run build
 
 ## 更新履歴 - Change log
 
-### Pickles 2 Desktop Tool 2.0.0-beta.11 build. (2016年4月xx日)
+### Pickles 2 Desktop Tool 2.0.0-beta.11 (2016年4月27日)
 
 - broccoli-html-editor
   - ソース編集欄が高機能エディタ(Ace Editor) に対応。
@@ -63,11 +63,11 @@ $ npm run build
   - パラメータ THEME をセッションに記憶するようになった。
 - その他の細かい修正とチューニング
 
-### Pickles 2 Desktop Tool 2.0.0-beta.10.1 build. (2016年3月24日)
+### Pickles 2 Desktop Tool 2.0.0-beta.10.1 (2016年3月24日)
 
 - broccoli: tableフィールドが、変換後のHTMLソースを表示できないことがある不具合を修正。
 
-### Pickles 2 Desktop Tool 2.0.0-beta.10 build. (2016年3月23日)
+### Pickles 2 Desktop Tool 2.0.0-beta.10 (2016年3月23日)
 
 - PHPコマンドを内蔵
 - 「他のページから複製して取り込む」が失敗することがある不具合を修正
@@ -80,17 +80,17 @@ $ npm run build
 - Pickles 2 サーバーエミュレータを express-pickles2 に変更
 - その他複数の不具合の修正
 
-### Pickles 2 Desktop Tool 2.0.0-beta.9.2 build. (2016年2月18日)
+### Pickles 2 Desktop Tool 2.0.0-beta.9.2 (2016年2月18日)
 
 - broccoli: 新規のリソース登録ができない不具合を修正。
 
-### Pickles 2 Desktop Tool 2.0.0-beta.9.1 build. (2016年2月13日)
+### Pickles 2 Desktop Tool 2.0.0-beta.9.1 (2016年2月13日)
 
 - PxServerEmuratorが、GETパラメータを.px_execute.phpにバイパスするようになった。
 - broccoli: editWindowで、ビルトインフィールドをデフォルトで隠すようにした。
 - broccoli: resourceMgrでファイルのsizeが記録されていない(古いバージョンのデータ)場合に、リソースを扱えない不具合を修正。
 
-### Pickles 2 Desktop Tool 2.0.0-beta.9 build. (2016年2月5日)
+### Pickles 2 Desktop Tool 2.0.0-beta.9 (2016年2月5日)
 
 - GUI編集のエンジンを刷新した broccoli-html-editor を標準実装した
   - Pickles2 の config.php に、plugins.px2dt.guiEngine を設定すると、GUI編集エンジンを切り替えることができます。(legacy=旧エンジン、broccoli=新エンジン)
@@ -110,7 +110,7 @@ $ npm run build
 - issueの投稿先URLを変更
 - その他、UIの調整、不具合の修正など
 
-### Pickles 2 Desktop Tool 2.0.0-beta.8 build. (2015年11月20日)
+### Pickles 2 Desktop Tool 2.0.0-beta.8 (2015年11月20日)
 
 - デフォルトのインストールパッケージを pickles2/pickles2 に変更
 - input[type=text], textarea にて、Backspace と Delete キーが無効化される問題を修正
@@ -124,7 +124,7 @@ $ npm run build
 - その他いくつかの細かい修正
 
 
-### Pickles 2 Desktop Tool 2.0.0-beta.7 build. (2015年10月1日)
+### Pickles 2 Desktop Tool 2.0.0-beta.7 (2015年10月1日)
 
 - Pickles2 の新しい設定項目 $conf->path_files に対応した。
 - コンテンツエリアのセレクタをPickles2のコンフィグ $conf->plugins->px2dt->contents_area_selector, $conf->plugins->px2dt->contents_bowl_name_by に設定できるようになった。
@@ -143,7 +143,7 @@ $ npm run build
 - その他、細かい表示の調整、不具合の修正など。
 
 
-### Pickles 2 Desktop Tool 2.0.0-beta.6 build. (2015年8月3日)
+### Pickles 2 Desktop Tool 2.0.0-beta.6 (2015年8月3日)
 
 - HOME画面に README.md を表示するようになった。
 - 部分パブリッシュができるようになった。対象のパスを指定して実行します。

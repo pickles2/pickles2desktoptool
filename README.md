@@ -48,7 +48,6 @@ $ npm run build
 ### Pickles 2 Desktop Tool 2.0.0-beta.11 build. (2016年4月xx日)
 
 - broccoli-html-editor
-  - サーバー側設定に appMode を追加。
   - ソース編集欄が高機能エディタ(Ace Editor) に対応。
   - hrefフィールドのサジェスト機能が常に表示されるように変更。
   - imageフィールドに、ローカルディスク上の画像ファイルをドラッグ＆ドロップで登録できるようになった。

@@ -45,6 +45,10 @@ $ npm run build
 
 ## 更新履歴 - Change log
 
+### Pickles 2 Desktop Tool 2.0.0-beta.12 (2016年xx月xx日)
+
+- ?????
+
 ### Pickles 2 Desktop Tool 2.0.0-beta.11 (2016年4月27日)
 
 - broccoli-html-editor

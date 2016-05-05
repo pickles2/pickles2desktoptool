@@ -10,3 +10,6 @@
 [submodule "submodules/node-express-pickles2"]
 	path = submodules/node-express-pickles2
 	url = https://github.com/tomk79/node-express-pickles2.git
+[submodule "submodules/node-pickles2-contents-editor"]
+	path = submodules/node-pickles2-contents-editor
+	url = https://github.com/pickles2/node-pickles2-contents-editor.git

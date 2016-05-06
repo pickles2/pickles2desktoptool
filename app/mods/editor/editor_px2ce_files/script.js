@@ -44,7 +44,7 @@ window.contApp = new (function( px ){
 				'complete': function(){
 					window.parent.contApp.closeEditor();
 				},
-				'onClickContentsLink': function( uri, data ){
+				'onClickContentsLink': function( url, data ){
 					// console.log(url);
 					// console.log(data);
 					// function preg_quote(str, delimiter){

@@ -499,6 +499,34 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	}
 
 	/**
+	 * pickles2-contents-editor(サーバーサイド)を生成する
+	 */
+	this.createPickles2ContentsEditorServer = function(callback){
+		callback = callback || function(){};
+		var Px2CE = require('pickles2-contents-editor');
+		var _pj = this;
+
+		// pickles2-contents-editor setup.
+		var px2ce = new Px2CE();
+
+		// console.log(broccoli);
+		px2ce.init(
+			{
+				'appMode': 'desktop', // 'web' or 'desktop'. default to 'web'
+				'entryScript': require('path').resolve( _pj.get('path'), _pj.get('entry_script') ),
+				'log': function(msg){
+					px.log(msg);
+				}
+			},
+			function(){
+				callback(px2ce);
+			}
+		);
+
+		return this;
+	}
+
+	/**
 	 * コンテンツをコピーする
 	 */
 	this.copyContentsData = function( pathFrom, pathTo, cb ){

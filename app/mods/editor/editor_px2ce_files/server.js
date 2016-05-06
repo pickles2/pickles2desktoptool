@@ -1,11 +1,11 @@
 window.contAppPx2CEServer = function(px, input, callback){
 	var _this = this;
-	var php = px.php;
+	var php = require('phpjs');
 	var data = {};
 	var param = {};
 
-	// var path = require('path');
-	var it79 = px.it79;
+	var path = require('path');
+	var it79 = require('iterate79');
 
 	callback = callback||function(){};
 	// console.log(data);

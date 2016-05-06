@@ -748,8 +748,8 @@ window.contApp = new (function( px ){
 					} )
 					.css({
 						'position':'absolute',
-						'top':15,
-						'right':15,
+						'bottom':5,
+						'right':5,
 						'font-size':'18px',
 						'color':'#333',
 						'background-color':'#eee',

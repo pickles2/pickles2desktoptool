@@ -26,6 +26,11 @@ window.contApp = new (function( px ){
 				'preview':{ // プレビュー用サーバーの情報を設定します。
 					'origin': elmA.origin
 				},
+				'customFields': {
+					'href': window.BroccoliFieldHref,
+					// 'psd': window.BroccoliFieldPSD,
+					'table': window.BroccoliFieldTable
+				},
 				'gpiBridge': function(input, callback){
 					// GPI(General Purpose Interface) Bridge
 					// broccoliは、バックグラウンドで様々なデータ通信を行います。

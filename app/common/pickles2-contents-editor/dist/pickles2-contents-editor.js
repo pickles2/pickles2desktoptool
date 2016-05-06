@@ -15155,6 +15155,13 @@ module.exports = function(px2ce){
 							"data-broccoli-preview": px2ce.options.preview.origin + page_path
 						});
 
+						var customFields = {};
+						customFields.table = window.BroccoliFieldTable;
+						for( var idx in px2ce.options.customFields ){
+							customFields[idx] = px2ce.options.customFields[idx];
+						}
+						// console.log(customFields);
+
 						broccoli = new Broccoli();
 						broccoli.init(
 							{
@@ -15167,11 +15174,7 @@ module.exports = function(px2ce){
 								//  この例では、data-contents属性が付いている要素が編集可能領域として認識されます。
 								'contents_bowl_name_by': px2conf.plugins.px2dt.contents_bowl_name_by,
 								// ↑bowlの名称を、data-contents属性値から取得します。
-								'customFields': {
-									// 'href': require('./../common/broccoli/broccoli-field-href/server.js'),
-									// // 'psd': require('broccoli-field-psd'),
-									'table': window.BroccoliFieldTable
-								},
+								'customFields': customFields,
 								'gpiBridge': function(api, options, callback){
 									// GPI(General Purpose Interface) Bridge
 									// broccoliは、バックグラウンドで様々なデータ通信を行います。
@@ -15746,6 +15749,7 @@ module.exports = function(px2ce){
 			var _this = this;
 			// console.log(options);
 			this.options = options;
+			this.options.customFields = this.options.customFields || {}; // custom fields
 			this.options.gpiBridge = this.options.gpiBridge || function(){ alert('gpiBridge required.'); };
 			this.options.complete = this.options.complete || function(){ alert('finished.'); };
 			this.options.onClickContentsLink = this.options.onClickContentsLink || function(uri, data){ alert('onClickContentsLink: '+uri); };

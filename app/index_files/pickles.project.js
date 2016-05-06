@@ -514,6 +514,11 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			{
 				'appMode': 'desktop', // 'web' or 'desktop'. default to 'web'
 				'entryScript': require('path').resolve( _pj.get('path'), _pj.get('entry_script') ),
+				'customFields': {
+					'href': require('./../common/broccoli/broccoli-field-href/server.js'),
+					// 'psd': require('broccoli-field-psd'),
+					'table': require('broccoli-field-table')
+				} ,
 				'log': function(msg){
 					px.log(msg);
 				}

@@ -47,7 +47,7 @@ $ npm run build
 
 ### Pickles 2 Desktop Tool 2.0.0-beta.12 (2016年xx月xx日)
 
-- コンテンツ編集UIを pickles2-contents-editor に差し替えた。
+- コンテンツ編集UIを pickles2-contents-editor に差し替えた。(broccoli-html-editorをラップするUIライブラリ)
 
 ### Pickles 2 Desktop Tool 2.0.0-beta.11 (2016年4月27日)
 
@@ -109,7 +109,7 @@ $ npm run build
 - コンテンツのソースコードを表示する機能 追加
 - デベロッパーツールを開く機能を追加
 - 絶対パスのどこかに日本語を含むディレクトリにインストールされようとした場合に、警告を表示するようにした
-- *.htm の場合に、GUIコンテンツ編集画面を起動できない不具合を修正
+- \*.htm の場合に、GUIコンテンツ編集画面を起動できない不具合を修正
 - Mac OSX 向けのビルドで、32bit版を廃止し、64bit版を追加した
 - issueの投稿先URLを変更
 - その他、UIの調整、不具合の修正など

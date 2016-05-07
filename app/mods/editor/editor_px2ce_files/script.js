@@ -19,68 +19,72 @@ window.contApp = new (function( px ){
 		var elmA = document.createElement('a');
 		elmA.href = _page_url;
 
-		pickles2ContentsEditor.init(
-			{
-				'page_path': _param.page_path , // <- 編集対象ページのパス
-				'elmCanvas': document.getElementById('canvas'), // <- 編集画面を描画するための器となる要素
-				'preview':{ // プレビュー用サーバーの情報を設定します。
-					'origin': elmA.origin
-				},
-				'customFields': {
-					'href': window.BroccoliFieldHref,
-					// 'psd': window.BroccoliFieldPSD,
-					'table': window.BroccoliFieldTable
-				},
-				'gpiBridge': function(input, callback){
-					// GPI(General Purpose Interface) Bridge
-					// broccoliは、バックグラウンドで様々なデータ通信を行います。
-					// GPIは、これらのデータ通信を行うための汎用的なAPIです。
-					window.contAppPx2CEServer(px, input, function(rtn){
-						// console.log(rtn);
-						callback(rtn);
-					});
-					return;
-				},
-				'complete': function(){
-					window.parent.contApp.closeEditor();
-				},
-				'onClickContentsLink': function( url, data ){
-					// console.log(url);
-					// console.log(data);
-					// function preg_quote(str, delimiter){
-					// 	return (str + '').replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\' + (delimiter || '') + '-]', 'g'), '\\$&');
-					// }
-					_page_url.match(new RegExp('^([a-zA-Z0-9]+\\:\\/\\/[^\\/]+\\/)'));
-					var currentDomain = RegExp.$1;
-
-					if( url.match( new RegExp(px.utils.escapeRegExp( currentDomain )) ) ){
-						// プレビューサーバーのドメインと一致したら、通す。
-					}else if( url.match( new RegExp('^(?:[a-zA-Z0-9]+\\:|\\/\\/)') ) ){
-						alert('リンク先('+url+')は管理外のURLです。');
+		window.contAppPx2CEServer(px, _param.page_path, function(px2ceServer){
+			pickles2ContentsEditor.init(
+				{
+					'page_path': _param.page_path , // <- 編集対象ページのパス
+					'elmCanvas': document.getElementById('canvas'), // <- 編集画面を描画するための器となる要素
+					'preview':{ // プレビュー用サーバーの情報を設定します。
+						'origin': elmA.origin
+					},
+					'customFields': {
+						'href': window.BroccoliFieldHref,
+						// 'psd': window.BroccoliFieldPSD,
+						'table': window.BroccoliFieldTable
+					},
+					'gpiBridge': function(input, callback){
+						// GPI(General Purpose Interface) Bridge
+						// broccoliは、バックグラウンドで様々なデータ通信を行います。
+						// GPIは、これらのデータ通信を行うための汎用的なAPIです。
+						px2ceServer.gpi(
+							input,
+							function(rtn){
+								callback(rtn);
+							}
+						);
 						return;
-					}
-					var to = url;
-					var pathControot = px.preview.getUrl();
-					to = to.replace( new RegExp( '^'+px.utils.escapeRegExp( pathControot ) ), '/' );
-					to = to.replace( new RegExp( '^\\/+' ), '/' );
+					},
+					'complete': function(){
+						window.parent.contApp.closeEditor();
+					},
+					'onClickContentsLink': function( url, data ){
+						// console.log(url);
+						// console.log(data);
+						// function preg_quote(str, delimiter){
+						// 	return (str + '').replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\' + (delimiter || '') + '-]', 'g'), '\\$&');
+						// }
+						_page_url.match(new RegExp('^([a-zA-Z0-9]+\\:\\/\\/[^\\/]+\\/)'));
+						var currentDomain = RegExp.$1;
 
-					if( to != _param.page_path ){
-						if( !confirm( '"'+to+'" へ遷移しますか?' ) ){
+						if( url.match( new RegExp(px.utils.escapeRegExp( currentDomain )) ) ){
+							// プレビューサーバーのドメインと一致したら、通す。
+						}else if( url.match( new RegExp('^(?:[a-zA-Z0-9]+\\:|\\/\\/)') ) ){
+							alert('リンク先('+url+')は管理外のURLです。');
 							return;
 						}
-						window.parent.contApp.openEditor( to );
+						var to = url;
+						var pathControot = px.preview.getUrl();
+						to = to.replace( new RegExp( '^'+px.utils.escapeRegExp( pathControot ) ), '/' );
+						to = to.replace( new RegExp( '^\\/+' ), '/' );
+
+						if( to != _param.page_path ){
+							if( !confirm( '"'+to+'" へ遷移しますか?' ) ){
+								return;
+							}
+							window.parent.contApp.openEditor( to );
+						}
+					},
+					'onMessage': function( message ){
+						px.message(message);
 					}
 				},
-				'onMessage': function( message ){
-					px.message(message);
+				function(){
+					// スタンバイ完了したら呼び出されるコールバックメソッドです。
+					console.info('standby!!');
+					px.progress.close();
 				}
-			},
-			function(){
-				// スタンバイ完了したら呼び出されるコールバックメソッドです。
-				console.info('standby!!');
-				px.progress.close();
-			}
-		);
+			);
+		});
 
 		return this;
 	}

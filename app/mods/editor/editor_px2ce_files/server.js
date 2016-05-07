@@ -1,4 +1,4 @@
-window.contAppPx2CEServer = function(px, input, callback){
+window.contAppPx2CEServer = function(px, page_path, callback){
 	callback = callback||function(){};
 
 	var _this = this;
@@ -26,6 +26,7 @@ window.contAppPx2CEServer = function(px, input, callback){
 			// console.log(_pj.getConfig().plugins.px2dt);
 
 			_pj.createPickles2ContentsEditorServer(
+				page_path ,
 				function(b){
 					px2ce = b;
 					console.log('px2ce callbacked.');
@@ -35,21 +36,7 @@ window.contAppPx2CEServer = function(px, input, callback){
 
 		} ,
 		function(it1, data){
-			// console.log('--------------------- call GPI ---------------------');
-			// console.log(input);
-			px2ce.gpi(
-				input,
-				function(rtn){
-					// console.log(rtn);
-					// console.log('------------------ / answered GPI ------------------');
-					it1.next(rtn);
-				}
-			);
-			return;
-
-		} ,
-		function(it1, data){
-			callback(data);
+			callback(px2ce);
 			it1.next(data);
 		}
 	]);

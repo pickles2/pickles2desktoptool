@@ -1,4 +1,6 @@
 window.contAppPx2CEServer = function(px, input, callback){
+	callback = callback||function(){};
+
 	var _this = this;
 	var php = require('phpjs');
 	var data = {};
@@ -6,12 +8,8 @@ window.contAppPx2CEServer = function(px, input, callback){
 
 	var path = require('path');
 	var it79 = require('iterate79');
+	var px2ce;
 
-	callback = callback||function(){};
-	// console.log(data);
-
-	var px2ce,
-		px2proj;
 
 	it79.fnc(data, [
 		function(it1, data){
@@ -19,7 +17,6 @@ window.contAppPx2CEServer = function(px, input, callback){
 			// console.log( param );
 
 			_pj = px.getCurrentProject();
-			px2proj = _pj.px2proj;
 
 			it1.next(data);
 		} ,

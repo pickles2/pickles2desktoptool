@@ -83,6 +83,9 @@ new (function($, window){
 	var _php = require('phpjs');
 	this.php = _php;
 
+	var _it79 = require('iterate79');
+	this.it79 = _it79;
+
 	// var _execSync = require('exec-sync');
 	var _execSync = require('execsyncs')
 	this.execSync = _execSync;

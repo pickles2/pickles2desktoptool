@@ -1,7 +1,5 @@
 window.px = window.parent.px;
 window.contApp = new (function( px ){
-	if( !px ){ alert('px が宣言されていません。'); }
-
 	var _this = this;
 	var _pj = px.getCurrentProject();
 
@@ -31,7 +29,7 @@ window.contApp = new (function( px ){
 	 * エディターを起動
 	 */
 	function openEditor(){
-		var filename_editor = 'editor_default';
+		var filename_editor = 'editor_px2ce';
 		var parsedPath = px.utils.parsePath(_cont_path);
 		if( parsedPath.ext == 'html' || parsedPath.ext == 'htm' ){
 			var datajson = px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+_pj.getContentFilesByPageContent(_cont_path)+'/guieditor.ignore/data.json';
@@ -39,7 +37,7 @@ window.contApp = new (function( px ){
 				// console.log(_pj.getGuiEngineName());
 				if(_pj.getGuiEngineName() == 'broccoli-html-editor'){
 					// broccoli-html-editor
-					filename_editor = 'editor_broccoli';
+					filename_editor = 'editor_px2ce';
 				}else{
 					// 旧GUI編集
 					filename_editor = 'editor_gui';
@@ -60,35 +58,6 @@ window.contApp = new (function( px ){
 		return true;
 	}
 
-	/**
-	 * リロード処理
-	 */
-	function reloadEditor(){
-		// なぜこれだけ相対パスの起点が違うのか？？？ 謎...。
-		window.location.href = './mods/editor/index.html?page_path='+encodeURIComponent( _param.page_path );
-		return true;
-	}
-
-	this.createContent = function(val){
-		_pj.initContentFiles( _param.page_path,
-			{
-				"proc_type": val ,
-				success: function(){
-					px.message('コンテンツを生成しました。');
-					reloadEditor();
-				} ,
-				error: function(err){
-					alert(err);
-				}
-			}
-		);
-		return true;
-	}
-
-
-	function resizeEvent(){
-	}
-
 	function init(){
 		if( _pageInfo.path.match( new RegExp('^alias[0-9]*\\:(.*)$') ) ){
 			// エイリアスはリダイレクトする
@@ -96,34 +65,12 @@ window.contApp = new (function( px ){
 			redirectEditor( to );
 			return this;
 		}
-
-		if( px.fs.existsSync( _cont_realpath ) ){
-			openEditor();
-			return this;
-		}
-
-		$('.contents')
-			.html('')
-			.append(
-				_.template( $('#cont_tpl_create_content').html() )
-					({
-						'basename': _cont_path_info.basename
-					})
-			)
-		;
-
-		px.cancelDrop( window );
-		resizeEvent();
-
-		px.progress.close();
+		openEditor();
 		return this;
 	}
 
 	$(function(){
 		init();
 	})
-	$(window).resize(function(){
-		resizeEvent();
-	});
 
 })( window.parent.px );

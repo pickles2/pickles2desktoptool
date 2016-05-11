@@ -23,43 +23,10 @@
 
 		<!-- Local Resources -->
 		<link rel="stylesheet" href="./index_files/style.css" type="text/css" />
-		<script src="./index_files/app.js"></script>
+		<script src="./index_files/script.js" charset="utf-8"></script>
 
-		<script type="text/template" id="cont_tpl_create_content">
-			<div class="container">
-				<div class="unit">
-					<p>コンテンツファイルが存在しません。</p>
-					<p>次の中からコンテンツの種類を選択し、作成してください。</p>
-				</div>
-				<form action="javascript:alert('unknown error.');" method="get" class="cont_main_form" onsubmit="return !contApp.createContent( $(this).find('input[name=proc_type]:checked').val() );">
-					<div class="cont_options">
-						<ul>
-							<li><label><input type="radio" name="proc_type" value="html.gui" checked="checked" /> HTML + GUI Editor (<%= basename %> + data files)</label></li>
-							<li><label><input type="radio" name="proc_type" value="html" /> HTML (<%= basename %>)</label></li>
-							<li><label><input type="radio" name="proc_type" value="md" /> Markdown (<%= basename %>.md)</label></li>
-						</ul>
-					</div>
-					<div class="cont_btns">
-						<ul>
-							<li><button class="cont_btn_save btn btn-primary">コンテンツファイルを作成する</button></li>
-						</ul>
-					</div>
-				</form>
-			</div>
-		</script>
-		<style>
-			.cont_btns{}
-			.cont_btns ul,
-			.cont_btns ul li{
-				margin:0; padding:0 20px;
-				list-style-type: none;
-				text-align:center;
-			}
-			.cont_btns ul li{
-				display:inline-block;
-			}
-		</style>
 	</head>
-	<body class="contents">
+	<body>
+		<div id="canvas"></div>
 	</body>
 </html>

@@ -499,6 +499,40 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	}
 
 	/**
+	 * pickles2-contents-editor(サーバーサイド)を生成する
+	 */
+	this.createPickles2ContentsEditorServer = function(page_path, callback){
+		callback = callback || function(){};
+		var Px2CE = require('pickles2-contents-editor');
+		var _pj = this;
+
+		// pickles2-contents-editor setup.
+		var px2ce = new Px2CE();
+
+		// console.log(broccoli);
+		px2ce.init(
+			{
+				'page_path': page_path,
+				'appMode': 'desktop', // 'web' or 'desktop'. default to 'web'
+				'entryScript': require('path').resolve( _pj.get('path'), _pj.get('entry_script') ),
+				'customFields': {
+					'href': require('./../common/broccoli/broccoli-field-href/server.js'),
+					// 'psd': require('broccoli-field-psd'),
+					'table': require('broccoli-field-table')
+				} ,
+				'log': function(msg){
+					px.log(msg);
+				}
+			},
+			function(){
+				callback(px2ce);
+			}
+		);
+
+		return this;
+	}
+
+	/**
 	 * コンテンツをコピーする
 	 */
 	this.copyContentsData = function( pathFrom, pathTo, cb ){

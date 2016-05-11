@@ -14,6 +14,9 @@ gulp.task("broccoli-client", function() {
 	gulp.src(["node_modules/broccoli-field-table/dist/**/*"])
 		.pipe(gulp.dest( './app/common/broccoli-field-table/dist/' ))
 	;
+	gulp.src(["node_modules/pickles2-contents-editor/dist/**/*"])
+		.pipe(gulp.dest( './app/common/pickles2-contents-editor/dist/' ))
+	;
 	// gulp.src(["node_modules/broccoli-field-psd/dist/*"])
 	// 	.pipe(gulp.dest( './app/common/broccoli-field-psd/dist/' ))
 	// ;

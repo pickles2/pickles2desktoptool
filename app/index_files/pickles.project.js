@@ -935,6 +935,13 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	}
 
 	/**
+	 * 検索オブジェクトを生成・取得する
+	 */
+	this.git = function(){
+		return new (require('./pickles.project.git.js'))(px, this);
+	}
+
+	/**
 	 * projectオブジェクトを初期化
 	 */
 	px.utils.iterateFnc([

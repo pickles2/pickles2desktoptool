@@ -3,7 +3,13 @@ window.contApp = new (function(px, $){
 	var _this = this;
 	var pj = px.getCurrentProject();
 	var filelist = pj.getSitemapFilelist();
+	this.git = pj.git();
+	// console.log(git);
 
+	/**
+	 * initialize
+	 * @return {void} no return;
+	 */
 	function init(){
 
 		$('.cont_filelist_sitemap')
@@ -45,7 +51,7 @@ window.contApp = new (function(px, $){
 	}
 
 	/**
-	 * イベント
+	 * 初期化イベント発火
 	 */
 	$(function(){
 		init();

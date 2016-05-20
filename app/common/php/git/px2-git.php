@@ -28,7 +28,7 @@ class px2git{
 
 		$this->entryScript = $arg->entryScript;
 		$this->method = $arg->method;
-		$this->px2git = new tomk79\pickles2\git\main( $this->entryScript );
+		$this->px2git = new \tomk79\pickles2\git\main( $this->entryScript );
 	}
 
 	/**
@@ -36,17 +36,22 @@ class px2git{
 	 * @return void no return.
 	 */
 	public function execute(){
+		$result = '';
 		switch( $this->method ){
+			case 'status':
 			case 'commit_sitemap':
-				$this->px2git->commit_sitemap();
+				$result = $this->px2git->{$this->method}();
+				return $result;
 				break;
 		}
-		return;
+		return $result;
 	}
 }
 
 
 
 $obj = new px2git();
-$obj->execute();
+$rtn = $obj->execute();
+@header('Content-type: application/json');
+print json_encode($rtn);
 exit();

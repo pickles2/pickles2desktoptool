@@ -1,6 +1,7 @@
 <?php
 
 require_once(__DIR__.'/../../../../vendor/autoload.php');
+require_once(__DIR__.'/px2-git-copy.php');
 
 class px2git{
 	/** px2-git object */
@@ -28,7 +29,7 @@ class px2git{
 
 		$this->entryScript = $arg->entryScript;
 		$this->method = $arg->method;
-		$this->px2git = new \tomk79\pickles2\git\main( $this->entryScript );
+		$this->px2git = new \tomk79\pickles2\git_copy\main( $this->entryScript );
 	}
 
 	/**
@@ -39,6 +40,7 @@ class px2git{
 		$result = '';
 		switch( $this->method ){
 			case 'status':
+			case 'status_sitemap':
 			case 'commit_sitemap':
 				$result = $this->px2git->{$this->method}();
 				return $result;

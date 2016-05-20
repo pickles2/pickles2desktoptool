@@ -67,5 +67,11 @@ module.exports = function( px, pj ) {
 	 */
 	this.status = new apiGen('status');
 
+	/**
+	 * git status (サイトマップのみ)
+	 * @return {[type]} [description]
+	 */
+	this.statusSitemap = new apiGen('status_sitemap');
+
 	return this;
 };

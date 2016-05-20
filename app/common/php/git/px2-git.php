@@ -10,6 +10,9 @@ class px2git{
 	/** method */
 	private $method;
 
+	/** options */
+	private $options;
+
 	/** entryScript path */
 	private $entryScript;
 
@@ -29,6 +32,10 @@ class px2git{
 
 		$this->entryScript = $arg->entryScript;
 		$this->method = $arg->method;
+		$this->options = $arg->options;
+		if( !is_array($this->options) ){
+			$this->options = array();
+		}
 		$this->px2git = new \tomk79\pickles2\git_copy\main( $this->entryScript );
 	}
 
@@ -42,7 +49,10 @@ class px2git{
 			case 'status':
 			case 'status_sitemap':
 			case 'commit_sitemap':
-				$result = $this->px2git->{$this->method}();
+				$result = call_user_func_array(
+					array($this->px2git, $this->method),
+					$this->options
+				);
 				return $result;
 				break;
 		}

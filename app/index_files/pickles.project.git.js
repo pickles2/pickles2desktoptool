@@ -11,12 +11,21 @@ module.exports = function( px, pj ) {
 
 	function apiGen(apiName){
 		return new (function(apiName){
-			this.fnc = function(callback){
+			this.fnc = function(options, callback){
+				if( arguments.length == 2 ){
+					options = arguments[0];
+					callback = arguments[1];
+				}else{
+					callback = arguments[0];
+				}
+
+				options = options||[];
 				callback = callback||function(){};
 
 				var param = {
 					'method': apiName,
-					'entryScript': entryScript
+					'entryScript': entryScript,
+					'options': options
 				};
 
 				// PHPスクリプトを実行する
@@ -45,8 +54,8 @@ module.exports = function( px, pj ) {
 									console.error('Failed to parse JSON string.');
 								}
 								console.log(rtn, err, code);
-								callback();
-							},1000);
+								callback(rtn, err, code);
+							},500);
 						}
 					}
 				);

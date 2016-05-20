@@ -65,7 +65,7 @@ module.exports.init = function( px, $ ) {
 		options = (options?options:{});
 		$progress
 			.css({
-				'background': (options.blindness?'rgba(0, 0, 0, 0.8)':'rgba(0, 0, 0, 0)'),
+				'background': (options.blindness?'rgba(0, 0, 0, 0.5)':'rgba(0, 0, 0, 0)'),
 				'width': $(window).width(),
 				'height': $(window).height(),
 				'position': 'fixed',

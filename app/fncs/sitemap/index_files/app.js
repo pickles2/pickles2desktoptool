@@ -44,6 +44,62 @@ window.contApp = new (function(px, $){
 	}
 
 	/**
+	 * サイトマップをコミットする
+	 */
+	this.commitSitemap = function(){
+		var $body = $('<div>');
+		var $ul = $('<ul>');
+		var $commitComment = $('<textarea>');
+
+		px.progress.start({'blindness': true, 'showProgressBar': true});
+
+		this.git.statusSitemap(function(result){
+			// console.log(result);
+			$body.html('');
+			$body.append( $('<p>').text('branch: ' + result.branch) );
+			for( var idx in result.changes ){
+				var $li = $('<li>').text( result.changes[idx].file );
+				$ul.append( $li );
+			}
+			$body.append( $ul );
+			$body.append( $commitComment );
+
+			px.dialog({
+				'title': 'サイトマップをコミットする',
+				'body': $body,
+				'buttons':[
+					$('<button>')
+					.text('コミット')
+					.attr({'type':'submit'})
+					.addClass('btn btn-primary')
+					.click(function(){
+						px.progress.start({'blindness': true, 'showProgressBar': true});
+						var commitComment = $commitComment.val();
+						// console.log(commitComment);
+						_this.git.commitSitemap([commitComment], function(){
+							alert('コミットしました。');
+							px.progress.close();
+							px.closeDialog();
+						});
+
+					}),
+					$('<button>')
+					.text('キャンセル')
+					.addClass('btn btn-default')
+					.click(function(){
+						px.closeDialog();
+					})
+				]
+			});
+			px.progress.close();
+
+		});
+
+
+		return this;
+	}
+
+	/**
 	 * フォルダを開く
 	 */
 	this.openInFinder = function(){

@@ -48,6 +48,7 @@ $ npm run build
 ### Pickles 2 Desktop Tool 2.0.0-beta.12 (2016年xx月xx日)
 
 - コンテンツ編集UIを pickles2-contents-editor に差し替えた。(broccoli-html-editorをラップするUIライブラリ)
+- その他の細かい修正とチューニング
 
 ### Pickles 2 Desktop Tool 2.0.0-beta.11 (2016年4月27日)
 

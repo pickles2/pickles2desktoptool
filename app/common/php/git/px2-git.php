@@ -47,8 +47,9 @@ class px2git{
 		$result = '';
 		switch( $this->method ){
 			case 'status':
-			case 'status_sitemap':
-			case 'commit_sitemap':
+			case 'status_contents':
+			case 'commit_sitemaps':
+			case 'commit_contents':
 				$result = call_user_func_array(
 					array($this->px2git, $this->method),
 					$this->options

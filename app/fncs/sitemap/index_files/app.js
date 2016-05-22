@@ -53,12 +53,12 @@ window.contApp = new (function(px, $){
 
 		px.progress.start({'blindness': true, 'showProgressBar': true});
 
-		this.git.statusSitemap(function(result){
-			// console.log(result);
+		this.git.status(function(result){
+			console.log(result);
 			$body.html('');
 			$body.append( $('<p>').text('branch: ' + result.branch) );
-			for( var idx in result.changes ){
-				var $li = $('<li>').text( result.changes[idx].file );
+			for( var idx in result.div.sitemaps ){
+				var $li = $('<li>').text( result.div.sitemaps[idx].file );
 				$ul.append( $li );
 			}
 			$body.append( $ul );
@@ -76,7 +76,7 @@ window.contApp = new (function(px, $){
 						px.progress.start({'blindness': true, 'showProgressBar': true});
 						var commitComment = $commitComment.val();
 						// console.log(commitComment);
-						_this.git.commitSitemap([commitComment], function(){
+						_this.git.commitSitemaps([commitComment], function(){
 							alert('コミットしました。');
 							px.progress.close();
 							px.closeDialog();

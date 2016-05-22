@@ -68,7 +68,13 @@ module.exports = function( px, pj ) {
 	 * サイトマップをコミットする
 	 * @return {[type]} [description]
 	 */
-	this.commitSitemap = new apiGen('commit_sitemap');
+	this.commitSitemap = new apiGen('commit_sitemaps');
+
+	/**
+	 * ページのコンテンツをコミットする
+	 * @return {[type]} [description]
+	 */
+	this.commitContents = new apiGen('commit_contents');
 
 	/**
 	 * git status
@@ -77,10 +83,10 @@ module.exports = function( px, pj ) {
 	this.status = new apiGen('status');
 
 	/**
-	 * git status (サイトマップのみ)
+	 * git status (contents)
 	 * @return {[type]} [description]
 	 */
-	this.statusSitemap = new apiGen('status_sitemap');
+	this.statusContents = new apiGen('status_contents');
 
 	return this;
 };

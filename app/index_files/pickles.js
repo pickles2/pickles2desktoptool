@@ -39,6 +39,8 @@ new (function($, window){
 	// this.git = _git;
 	var _twig = require('twig');
 	this.twig = _twig;
+	var _utils79 = require('utils79');
+	this.utils79 = _utils79;
 
 	var _mkdirp = require('mkdirp');
 	this.mkdirp = _mkdirp;

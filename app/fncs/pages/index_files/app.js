@@ -443,6 +443,23 @@ window.contApp = new (function( px ){
 									})
 									.click(function(){
 										_this.commitContents( $(this).attr('data-path') );
+										$bs3btn.find('.dropdown-toggle').click();
+										return false;
+									})
+								)
+							)
+						;
+						$bs3btn.find('ul[role=menu]')
+							.append( $('<li>')
+								.append( $('<a>')
+									.text( 'コンテンツのコミットログ' )
+									.attr({
+										'data-path': prop.pageInfo.path ,
+										'href':'javascript:;'
+									})
+									.click(function(){
+										_this.logContents( $(this).attr('data-path') );
+										$bs3btn.find('.dropdown-toggle').click();
 										return false;
 									})
 								)
@@ -616,6 +633,52 @@ window.contApp = new (function( px ){
 					.click(function(){
 						px.closeDialog();
 					})
+				]
+			});
+			px.progress.close();
+
+		});
+
+
+		return this;
+	}
+
+
+	/**
+	 * コンテンツのコミットログを表示する
+	 */
+	this.logContents = function( page_path ){
+		var $body = $('<div>');
+		var $ul = $('<ul>');
+
+		px.progress.start({'blindness': true, 'showProgressBar': true});
+
+		this.git.logContents([page_path], function(result){
+			console.log(result);
+			$body.html('');
+			for( var idx in result ){
+				var $li = $('<li>').text( result[idx].title );
+				$ul.append( $li );
+			}
+			$body.append( $ul );
+
+			px.dialog({
+				'title': 'コンテンツのコミットログ',
+				'body': $body,
+				'buttons':[
+					$('<button>')
+						.text('終了')
+						.attr({'type':'submit'})
+						.addClass('btn btn-primary')
+						.click(function(){
+							px.closeDialog();
+						}),
+					$('<button>')
+						.text('キャンセル')
+						.addClass('btn btn-default')
+						.click(function(){
+							px.closeDialog();
+						})
 				]
 			});
 			px.progress.close();

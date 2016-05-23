@@ -112,6 +112,38 @@ class main{
 	}
 
 	/**
+	 * git log (特定ページのコンテンツに限る)
+	 * @return array result
+	 */
+	public function log_contents($page_path){
+		// $logs = array();
+		$contents_path_info = $this->get_contents_path_info($page_path);
+		$logs1 = $this->git->log(null, $contents_path_info['realpath_content'], array());
+		$logs2 = $this->git->log(null, $contents_path_info['realpath_files'], array());
+		$logs = array_merge($logs1, $logs2);
+		usort($logs, function($a, $b){
+			$adate = @strtotime( $a['date'] );
+			$bdate = @strtotime( $b['date'] );
+			if( $adate > $bdate ){
+				return -1;
+			}elseif( $adate < $bdate ){
+				return 1;
+			}
+			return 0;
+		});
+		$logs_hash_done = array();
+		foreach( $logs as $key=>$row ){
+			if( $logs_hash_done[$row['hash']] ){
+				unset( $logs[$key] );
+				continue;
+			}
+			$logs_hash_done[$row['hash']] = true;
+		}
+		// var_dump($logs);
+		return $logs;
+	}
+
+	/**
 	 * git status
 	 * @return array result
 	 */
@@ -336,6 +368,34 @@ class main{
 		return $res;
 	}
 
+
+	/**
+	 * ページパスから、コンテンツのパス情報一式を得る
+	 * @param  string $page_path ページのパス
+	 * @return array             コンテンツのパス情報一式
+	 */
+	private function get_contents_path_info($page_path){
+		$ary = array();
+		$ary['page_path'] = $page_path;
+		$ary['realpath_controot'] = $this->fs->get_realpath($this->path_docroot.'/'.$this->path_controot);
+		if( is_string($this->px) && is_file($this->px) ){
+			$ary['page_path'] = json_decode( $this->execute_px2('/?PX=api.get.href&linkto='.urlencode($ary['page_path'])) );
+			$ary['page_info'] = json_decode( $this->execute_px2('/?PX=api.get.page_info&path='.urlencode($ary['page_path'])) );
+			$ary['realpath_content'] = $ary['realpath_controot'].'/'.$ary['page_info']->content;
+			$ary['realpath_files'] = json_decode( $this->execute_px2($ary['page_path'].'?PX=api.get.realpath_files') );
+		}elseif( is_object($this->px) ){
+			$ary['page_path'] = $this->px->href($ary['page_path']);
+			$ary['page_info'] = $this->px->get_page_info($ary['page_path']);
+			$ary['realpath_content'] = $ary['realpath_controot'].'/'.$ary['page_info']['content'];
+			$ary['realpath_files'] = $this->px->realpath_files();
+		}else{
+			return false;
+		}
+		// var_dump( $realpath_content );
+		$ary['realpath_content'] = $this->fs->get_realpath( $ary['realpath_content'] );
+		$ary['realpath_files'] = $this->fs->get_realpath( $ary['realpath_files'].'/' );
+		return $ary;
+	}
 
 	/**
 	 * コマンドを実行し、標準出力値を返す

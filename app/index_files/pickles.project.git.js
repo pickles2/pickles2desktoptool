@@ -88,5 +88,17 @@ module.exports = function( px, pj ) {
 	 */
 	this.statusContents = new apiGen('status_contents');
 
+	/**
+	 * git log
+	 * @return {[type]} [description]
+	 */
+	this.log = new apiGen('log');
+
+	/**
+	 * コンテンツのコミットログを取得する
+	 * @return {[type]} [description]
+	 */
+	this.logContents = new apiGen('log_contents');
+
 	return this;
 };

@@ -49,8 +49,9 @@ $ npm run build
 
 - コンテンツ編集UIを pickles2-contents-editor に差し替えた。(broccoli-html-editorをラップするUIライブラリ)
 - コンテンツをコミットする機能を追加。
+- コンテンツ別のコミットログを表示する機能を追加。
 - サイトマップをコミットする機能を追加。
-- その他の細かい修正とチューニング
+- その他の細かい修正とチューニング。
 
 ### Pickles 2 Desktop Tool 2.0.0-beta.11 (2016年4月27日)
 

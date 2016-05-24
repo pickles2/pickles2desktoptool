@@ -23,13 +23,29 @@ console.log('Cleanup...');
 })( __dirname+'/build/' );
 console.log('');
 
+function getTimeString(){
+	var date = new Date();
+	return date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
+}
+function writeLog(row){
+	fs.appendFile( __dirname+'/build/buildlog.txt', row+"\n" ,'utf8', function(err){
+		if(err){
+			console.error(err);
+		}
+	} );
+	console.log(row);
+}
+writeLog( getTimeString() );
 
-console.log('Build...');
+writeLog('Build...');
 var nw = new NwBuilder({
 	files: (function(packageJson){
 		var rtn = [
 			'./package.json',
-			'./app/**'
+			'./app/**',
+			'./composer.json',
+			'./vendor/**',
+			'./docs/**'
 		];
 		var nodeModules = fs.readdirSync('./node_modules/');
 		for(var i in nodeModules){
@@ -82,12 +98,13 @@ var nw = new NwBuilder({
 });
 
 //Log stuff you want
-nw.on('log',  console.log);
+nw.on('log',  writeLog);
 
 // Build returns a promise
 nw.build().then(function () {
 
-	console.log('all build done!');
+	writeLog('all build done!');
+	writeLog( getTimeString() );
 
 	(function(){
 		var versionSign = packageJson.version;
@@ -103,57 +120,58 @@ nw.build().then(function () {
 
 		_utils.iterateFnc([
 			function(itPj, param){
-				console.log('ZIP osx64...');
+				writeLog('ZIP osx64...');
 				zipFolder(
 					__dirname + '/build/'+appName+'/osx64/',
 					__dirname + '/build/'+appName+'-'+versionSign+'-osx64.zip',
 					function(err) {
 						if(err) {
-							console.log('ERROR!', err);
+							writeLog('ERROR!', err);
 						} else {
-							console.log('success. - '+'./build/'+appName+'-'+versionSign+'-osx64.zip');
+							writeLog('success. - '+'./build/'+appName+'-'+versionSign+'-osx64.zip');
 						}
 						itPj.next();
 					}
 				);
 			},
 			function(itPj, param){
-				console.log('ZIP win32...');
+				writeLog('ZIP win32...');
 				zipFolder(
 					__dirname + '/build/'+appName+'/win32/',
 					__dirname + '/build/'+appName+'-'+versionSign+'-win32.zip',
 					function(err) {
 						if(err) {
-							console.log('ERROR!', err);
+							writeLog('ERROR!', err);
 						} else {
-							console.log('success. - '+'./build/'+appName+'-'+versionSign+'-win32.zip');
+							writeLog('success. - '+'./build/'+appName+'-'+versionSign+'-win32.zip');
 						}
 						itPj.next();
 					}
 				);
 			},
 			function(itPj, param){
-				console.log('ZIP linux64...');
+				writeLog('ZIP linux64...');
 				zipFolder(
 					__dirname + '/build/'+appName+'/linux64/',
 					__dirname + '/build/'+appName+'-'+versionSign+'-linux64.zip',
 					function(err) {
 						if(err) {
-							console.log('ERROR!', err);
+							writeLog('ERROR!', err);
 						} else {
-							console.log('success. - '+'./build/'+appName+'-'+versionSign+'-linux64.zip');
+							writeLog('success. - '+'./build/'+appName+'-'+versionSign+'-linux64.zip');
 						}
 						itPj.next();
 					}
 				);
 			},
 			function(itPj, param){
-				console.log('cleanup...');
+				writeLog('cleanup...');
 				_utils.rmdir_r(__dirname+'/build/'+appName+'/');
 				itPj.next();
 			},
 			function(itPj, param){
-				console.log('all zip done!');
+				writeLog( getTimeString() );
+				writeLog('all zip done!');
 				itPj.next();
 			}
 		]).start({});
@@ -161,5 +179,7 @@ nw.build().then(function () {
 	})();
 
 }).catch(function (error) {
+	writeLog("ERROR:");
+	writeLog(error);
 	console.error(error);
 });

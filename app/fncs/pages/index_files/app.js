@@ -592,7 +592,7 @@ window.contApp = new (function( px ){
 	 */
 	this.commitContents = function( page_path ){
 		var $body = $('<div>');
-		var $ul = $('<ul>');
+		var $ul = $('<ul class="list-group">');
 		var $commitComment = $('<textarea>');
 
 		px.progress.start({'blindness': true, 'showProgressBar': true});
@@ -602,7 +602,7 @@ window.contApp = new (function( px ){
 			$body.html('');
 			$body.append( $('<p>').text('branch: ' + result.branch) );
 			for( var idx in result.changes ){
-				var $li = $('<li>').text( result.changes[idx].file );
+				var $li = $('<li class="list-group-item">').text( result.changes[idx].file );
 				$ul.append( $li );
 			}
 			$body.append( $ul );
@@ -649,7 +649,7 @@ window.contApp = new (function( px ){
 	 */
 	this.logContents = function( page_path ){
 		var $body = $('<div>');
-		var $ul = $('<ul>');
+		var $ul = $('<ul class="list-group">');
 
 		px.progress.start({'blindness': true, 'showProgressBar': true});
 
@@ -657,7 +657,7 @@ window.contApp = new (function( px ){
 			console.log(result);
 			$body.html('');
 			for( var idx in result ){
-				var $li = $('<li>').text( result[idx].title );
+				var $li = $('<li class="list-group-item">').text( result[idx].title );
 				$ul.append( $li );
 			}
 			$body.append( $ul );

@@ -48,7 +48,7 @@ window.contApp = new (function(px, $){
 	 */
 	this.commitSitemap = function(){
 		var $body = $('<div>');
-		var $ul = $('<ul>');
+		var $ul = $('<ul class="list-group">');
 		var $commitComment = $('<textarea>');
 
 		px.progress.start({'blindness': true, 'showProgressBar': true});
@@ -58,7 +58,7 @@ window.contApp = new (function(px, $){
 			$body.html('');
 			$body.append( $('<p>').text('branch: ' + result.branch) );
 			for( var idx in result.div.sitemaps ){
-				var $li = $('<li>').text( result.div.sitemaps[idx].file );
+				var $li = $('<li class="list-group-item">').text( result.div.sitemaps[idx].file );
 				$ul.append( $li );
 			}
 			$body.append( $ul );

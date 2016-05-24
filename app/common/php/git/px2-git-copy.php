@@ -116,10 +116,11 @@ class main{
 	 * @return array result
 	 */
 	public function log_contents($page_path){
-		// $logs = array();
+		// var_dump($page_path);
 		$contents_path_info = $this->get_contents_path_info($page_path);
-		$logs1 = $this->git->log(null, $contents_path_info['realpath_content'], array());
-		$logs2 = $this->git->log(null, $contents_path_info['realpath_files'], array());
+		// var_dump($contents_path_info);
+		$logs1 = $this->git->log(null, $contents_path_info['realpath_content'], array('limit'=>100000));
+		$logs2 = $this->git->log(null, $contents_path_info['realpath_files'], array('limit'=>100000));
 		$logs = array_merge($logs1, $logs2);
 		usort($logs, function($a, $b){
 			$adate = @strtotime( $a['date'] );

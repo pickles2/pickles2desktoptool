@@ -590,22 +590,19 @@ new (function($, window){
 
 			var list = this.getProjectList();
 			if( list.length ){
-				var $ul = $('<ul class="listview">');
+				var $ul = $('<div class="list-group">');
 				for( var i = 0; i < list.length; i++ ){
 					$ul.append(
-						$('<li>')
-							.append(
-								$('<a>')
-									.attr('href', 'javascript:;')
-									.data('path', list[i].path)
-									.data('num', i)
-									.click( function(){
-										px.selectProject( $(this).data('num'), function(){
-											px.subapp();
-										} );
-									} )
-									.text( list[i].name )
-								)
+						$('<a class="list-group-item">')
+							.attr('href', 'javascript:;')
+							.data('path', list[i].path)
+							.data('num', i)
+							.click( function(){
+								px.selectProject( $(this).data('num'), function(){
+									px.subapp();
+								} );
+							} )
+							.text( list[i].name )
 					);
 				}
 

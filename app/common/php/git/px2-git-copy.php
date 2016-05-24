@@ -28,12 +28,9 @@ class main{
 	 */
 	public function __construct( $px, $options = array() ){
 		$this->fs = new \tomk79\filesystem();
-		$this->git = new \PHPGit\Git();
-		if( strlen($options['bin']) ){
-			$this->git->setBin( $options['bin'] );
-		}
 		$this->req = new \tomk79\request();
 		$this->px = $px;
+		$this->git = null;
 
 		if( is_string($this->px) && is_file($this->px) ){
 			$this->path_entry_script = $this->px;
@@ -67,16 +64,30 @@ class main{
 			$base_path = dirname($base_path).'/';
 		}
 		// var_dump($this->path_git_home);
+		if( is_null($this->path_git_home) || !is_dir($this->path_git_home) ){
+			// .git が見つからなかった場合
+			return $this;
+		}
+
+		$this->git = new \PHPGit\Git();
+		if( strlen($options['bin']) ){
+			$this->git->setBin( $options['bin'] );
+		}
 		$this->git->setRepository( $this->path_git_home );
 
-
+		return $this;
 	}
+
 
 	/**
 	 * git リポジトリのパスを取得
 	 * @return string git リポジトリのパス
 	 */
 	public function get_path_git_home(){
+		if( is_null($this->path_git_home) || !is_dir($this->path_git_home) ){
+			// .git が見つからなかった場合
+			return false;
+		}
 		return $this->path_git_home;
 	}
 
@@ -105,6 +116,8 @@ class main{
 	 * @return array result
 	 */
 	public function log(){
+		if( is_null($this->git) ){ return false; }
+
 		// $logs = array();
 		$logs = $this->git->log();
 		// var_dump($logs);
@@ -116,6 +129,8 @@ class main{
 	 * @return array result
 	 */
 	public function log_contents($page_path){
+		if( is_null($this->git) ){ return false; }
+
 		// var_dump($page_path);
 		$contents_path_info = $this->get_contents_path_info($page_path);
 		// var_dump($contents_path_info);
@@ -149,6 +164,8 @@ class main{
 	 * @return array result
 	 */
 	public function status(){
+		if( is_null($this->git) ){ return false; }
+
 		// ↓px2-sitemapexcel に処理させるため、一度アクセスしておく
 		$res = $this->execute_px2('/');
 		// var_dump( $res );
@@ -196,6 +213,8 @@ class main{
 	 * @return array result
 	 */
 	public function status_contents( $page_path ){
+		if( is_null($this->git) ){ return false; }
+
 		$status = $this->status();
 		$rtn = array(
 			'branch'=>$status['branch'],
@@ -243,6 +262,8 @@ class main{
 	 * @return array result
 	 */
 	public function show(){
+		if( is_null($this->git) ){ return false; }
+
 		// ↓px2-sitemapexcel に処理させるため、一度アクセスしておく
 		$res = $this->execute_px2('/');
 		// var_dump( $res );
@@ -257,6 +278,8 @@ class main{
 	 * @return array result
 	 */
 	public function branch(){
+		if( is_null($this->git) ){ return false; }
+
 		// ↓px2-sitemapexcel に処理させるため、一度アクセスしておく
 		$res = $this->execute_px2('/');
 		// var_dump( $res );
@@ -271,6 +294,8 @@ class main{
 	 * @return array result
 	 */
 	public function tree(){
+		if( is_null($this->git) ){ return false; }
+
 		// ↓px2-sitemapexcel に処理させるため、一度アクセスしておく
 		$res = $this->execute_px2('/');
 		// var_dump( $res );
@@ -286,6 +311,8 @@ class main{
 	 * @return array result
 	 */
 	public function commit_sitemaps($commit_message = ''){
+		if( is_null($this->git) ){ return false; }
+
 		$status = $this->status();
 		if( !count($status['div']['sitemaps']) ){
 			// コミットすべきファイルがありません。
@@ -331,6 +358,8 @@ class main{
 	 * @return array result
 	 */
 	public function commit_contents($page_path, $commit_message = ''){
+		if( is_null($this->git) ){ return false; }
+
 		$status = $this->status_contents($page_path);
 		if( !count($status['changes']) ){
 			// コミットすべきファイルがありません。

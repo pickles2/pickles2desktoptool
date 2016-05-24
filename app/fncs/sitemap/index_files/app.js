@@ -53,8 +53,13 @@ window.contApp = new (function(px, $){
 
 		px.progress.start({'blindness': true, 'showProgressBar': true});
 
-		this.git.status(function(result){
-			console.log(result);
+		this.git.status(function(result, err, code){
+			// console.log(result, err, code);
+			if( result === false ){
+				alert('ERROR: '+err);
+				px.progress.close();
+				return;
+			}
 			$body.html('');
 			$body.append( $('<p>').text('branch: ' + result.branch) );
 			for( var idx in result.div.sitemaps ){

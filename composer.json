@@ -24,8 +24,5 @@
         "phpunit/phpunit": "4.1.*"
     },
     "autoload": {
-        "files": [
-            "docs/help/htdocs/px-files/themes/pickles/php/theme.php"
-        ]
     }
 }

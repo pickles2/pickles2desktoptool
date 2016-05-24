@@ -44,8 +44,7 @@ var nw = new NwBuilder({
 			'./package.json',
 			'./app/**',
 			'./composer.json',
-			'./vendor/**',
-			'./docs/**'
+			'./vendor/autoload.php'
 		];
 		var nodeModules = fs.readdirSync('./node_modules/');
 		for(var i in nodeModules){
@@ -75,16 +74,34 @@ var nw = new NwBuilder({
 					rtn.push( './node_modules/'+modName+'/libs/**' );
 					rtn.push( './node_modules/'+modName+'/vendor/**' );
 					break;
+				case 'pickles2-contents-editor':
+					// 必要なファイルだけ丁寧に抜き出す
+					rtn.push( './node_modules/'+modName+'/package.json' );
+					rtn.push( './node_modules/'+modName+'/composer.json' );
+					rtn.push( './node_modules/'+modName+'/dist/**' );
+					rtn.push( './node_modules/'+modName+'/libs/**' );
+					rtn.push( './node_modules/'+modName+'/vendor/**' );
+					break;
 				default:
 					// まるっと登録するパッケージ
 					rtn.push( './node_modules/'+modName+'/**' );
 					break;
 			}
 		}
-		// for(var i in dep){
-		// 	rtn.push( './node_modules/'+i+'/**' );
-		// }
-		// console.log(rtn);
+		var composerVendor = fs.readdirSync('./vendor/');
+		for(var i in composerVendor){
+			var modName = composerVendor[i];
+			switch(modName){
+				case 'bin':
+				case 'phpunit':
+					// ↑これらは除外するパッケージ
+					break;
+				default:
+					// まるっと登録するパッケージ
+					rtn.push( './vendor/'+modName+'/**' );
+					break;
+			}
+		}
 		return rtn;
 	})(packageJson) , // use the glob format
 	version: 'v0.12.3',// <- version number of node-webkit

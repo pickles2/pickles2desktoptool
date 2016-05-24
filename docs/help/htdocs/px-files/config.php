@@ -109,6 +109,7 @@ return call_user_func( function(){
 	// processor
 	$conf->funcs->processor = new stdClass;
 
+	require_once(__DIR__.'/themes/pickles/php/theme.php');
 	$conf->funcs->processor->html = [
 		// ページ内目次を自動生成する
 		'picklesFramework2\processors\autoindex\autoindex::exec' ,

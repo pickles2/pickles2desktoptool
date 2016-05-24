@@ -597,8 +597,13 @@ window.contApp = new (function( px ){
 
 		px.progress.start({'blindness': true, 'showProgressBar': true});
 
-		this.git.statusContents([page_path], function(result){
-			console.log(result);
+		this.git.statusContents([page_path], function(result, err, code){
+			// console.log(result, err, code);
+			if( result === false ){
+				alert('ERROR: '+err);
+				px.progress.close();
+				return;
+			}
 			$body.html('');
 			$body.append( $('<p>').text('branch: ' + result.branch) );
 			for( var idx in result.changes ){
@@ -653,8 +658,14 @@ window.contApp = new (function( px ){
 
 		px.progress.start({'blindness': true, 'showProgressBar': true});
 
-		this.git.logContents([page_path], function(result){
-			console.log(result);
+		this.git.logContents([page_path], function(result, err, code){
+			// console.log(result, err, code);
+			if( result === false ){
+				alert('ERROR: '+err);
+				px.progress.close();
+				return;
+			}
+
 			$body.html('');
 			for( var idx in result ){
 				var $li = $('<li class="list-group-item">').text( result[idx].title );

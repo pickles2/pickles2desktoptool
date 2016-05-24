@@ -51,6 +51,7 @@ module.exports = function( px, pj ) {
 								try {
 									rtn = JSON.parse(rtn);
 								} catch (e) {
+									rtn = false;
 									console.error('Failed to parse JSON string.');
 								}
 								console.log(rtn, err, code);

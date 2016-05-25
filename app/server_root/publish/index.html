@@ -22,7 +22,7 @@
 		<!-- Bootstrap Theme -->
 		<link rel="stylesheet" href="../caches/p/theme/styles/bootstrap-theme.min.css">
 		<link rel="stylesheet" href="../caches/p/theme/styles/theme.css">
-<style>
+<link rel="stylesheet" href="./index_files/style.css" /><style>
 
 </style>
 	</head>
@@ -44,27 +44,82 @@
 						<div class="theme_breadcrumb"><ul><li><a href="../index.html">ヘルプトップ</a></li><li><span>パブリッシュ</span></li></ul></div>
 						<h1>パブリッシュ</h1>
 						<div class="contents">
+<p>パブリッシュは、制作したウェブコンテンツを静的なHTMLファイルに書き出す処理です。</p>
+
 <!-- == autoindex == -->
 <div style="margin:2em 5%; border:1px solid #bbb; padding:1em; background:rgba(124, 124, 124, 0.05); border-radius:5px;">
-<div style="margin:0; padding:0; text-align:center; font-weight:bold;">INDEX</div><ul style="margin:0; padding:0 0 0 2em;"><li style="list-style-type:disc; display:list-item;"><a href="#hash_パブリッシュの手順">パブリッシュの手順</a></li>
-<li style="list-style-type:disc; display:list-item;"><a href="#hash_コマンドラインから実行する">コマンドラインから実行する</a></li></ul>
+<div style="margin:0; padding:0; text-align:center; font-weight:bold;">INDEX</div><ul style="margin:0; padding:0 0 0 2em;"><li style="list-style-type:disc; display:list-item;"><a href="#hash_パブリッシュの手順">パブリッシュの手順</a><ul style="margin:0; padding:0 0 0 2em;"><li style="list-style-type:disc; display:list-item;"><a href="#hash_コマンドラインから実行する">コマンドラインから実行する</a><ul style="margin:0; padding:0 0 0 2em;"><li style="list-style-type:disc; display:list-item;"><a href="#hash_オプション">オプション</a></li></ul></li></ul></li><li style="list-style-type:disc; display:list-item;"><a href="#hash_生成されたファイルはどこに出力されるのか？">生成されたファイルはどこに出力されるのか？</a><ul style="margin:0; padding:0 0 0 2em;"><li style="list-style-type:disc; display:list-item;"><a href="#hash_一時パブリッシュディレクトリ">一時パブリッシュディレクトリ</a></li>
+<li style="list-style-type:disc; display:list-item;"><a href="#hash_パブリッシュ先ディレクトリ">パブリッシュ先ディレクトリ</a></li></ul>
+</li></ul>
 </div>
 <!-- / == autoindex == -->
 
 
-<p>パブリッシュは、制作したウェブコンテンツを静的なHTMLファイルに書き出す処理です。</p>
-
 <span id="hash_パブリッシュの手順"></span><h2>パブリッシュの手順</h2>
 
-<p>パブリッシュタブをクリックして、パブリッシュ画面へ進みます。</p>
+<ol>
+<li>パブリッシュタブをクリックして、パブリッシュ画面へ進みます。</li>
+<li>「パブリッシュする」ボタンをクリックします。</li>
+<li>パブリッシュの条件を設定します。
 
-<span id="hash_コマンドラインから実行する"></span><h2>コマンドラインから実行する</h2>
+<ul>
+<li>パブリッシュ対象範囲: 今回のパブリッシュで対象にしたい範囲を、ディレクトリで指定できます。<code>/</code> を指定するとすべてのファイルをパブリッシュします。ページ数に応じてパブリッシュに時間がかかるので、必要な範囲を絞れば早く完了します。</li>
+<li>パブリッシュ対象外範囲: パブリッシュ対象範囲に含まれるが、パブリッシュをスキップしたいパスを指定します。</li>
+</ul></li>
+<li>「パブリッシュを実行」ボタンをクリックして、パブリッシュを開始します。</li>
+<li>パブリッシュにはある程度時間がかかります。完了するまでそのまま待ちます。</li>
+</ol>
 
-<p>次のコマンドからもパブリッシュを実行することができます。</p>
+<span id="hash_コマンドラインから実行する"></span><h3>コマンドラインから実行する</h3>
+
+<p>コマンドラインツールが使える場合は、次のコマンドからもパブリッシュを実行することができます。</p>
 
 <pre><code>$ cd {$path_controot}
 $ php .px_execute.php /?PX=publish.run
 </code></pre>
+
+<span id="hash_オプション"></span><h4>オプション</h4>
+
+<table class="def">
+<tr>
+<th>path_region</th>
+<td>対象範囲を指定する。</td>
+</tr>
+<tr>
+<th>paths_ignore</th>
+<td>path_region で指定した対象範囲のうち、パブリッシュを除外するパスを指定する。複数指定可。</td>
+</tr>
+</table>
+
+<p>オプションを設定した実行例を示します。</p>
+
+<pre><code>$ php .px_execute.php /?PX=publish.run&amp;path_region=/a/b/&amp;paths_ignore[]=/a/b/ignore1/&amp;paths_ignore[]=/a/b/ignore2/
+</code></pre>
+
+<p>この例では、対象範囲を <code>/a/b/</code> に絞った上で、 <code>/a/b/ignore1/</code> と <code>/a/b/ignore2/</code> を対象外に指定しています。</p>
+
+<span id="hash_生成されたファイルはどこに出力されるのか？"></span><h2>生成されたファイルはどこに出力されるのか？</h2>
+
+<span id="hash_一時パブリッシュディレクトリ"></span><h3>一時パブリッシュディレクトリ</h3>
+
+<p>パブリッシュしたファイルは、次の一時パブリッシュディレクトリに出力されます。</p>
+
+<pre><code>./px-files/_sys/ram/publish/*
+</code></pre>
+
+<p>次のファイルが出力されます。</p>
+
+<ul>
+<li>publish_log.csv : 今回のパブリッシュで出力されたファイルの一覧です。</li>
+<li>alert_log.csv : パブリッシュでエラーが検出された場合に生成されます。</li>
+<li>htdocs/ : 今回のパブリッシュで出力されたHTMLやリソースファイル一式が格納されます。</li>
+</ul>
+
+<span id="hash_パブリッシュ先ディレクトリ"></span><h3>パブリッシュ先ディレクトリ</h3>
+
+<p>ここには、過去にパブリッシュされたファイルに、今回パブリッシュされたファイルを加えたサイト全体のパブリッシュファイルが置かれます。</p>
+
+<p>このディレクトリは、<code>$conf-&gt;path_publish_dir</code> に設定した場所にあります。<code>$conf-&gt;path_publish_dir</code> を設定していない場合、一時パブリッシュディレクトリにのみ出力されます。</p>
 						</div>
 						<div class="theme_breadcrumb"><ul><li><a href="../index.html">ヘルプトップ</a></li><li><span>パブリッシュ</span></li></ul></div>
 					</div>

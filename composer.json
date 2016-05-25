@@ -1,5 +1,13 @@
 {
     "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/tomk79/px2-git.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/tomk79/PHPGit.git"
+        }
     ],
     "require": {
         "php": ">=5.4.0" ,
@@ -8,14 +16,13 @@
         "pickles2/broccoli-module-plain-html-elements": "dev-develop",
         "pickles2/px2-px2dthelper": "dev-develop",
         "pickles2/px2-sitemapexcel": "2.*",
-		"pickles2/px2-path-resolver": "2.*"
+        "pickles2/px2-path-resolver": "2.*",
+        "tomk79/px2-git": "dev-master",
+        "tomk79/phpgit": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "4.1.*"
     },
     "autoload": {
-        "files": [
-            "docs/help/htdocs/px-files/themes/pickles/php/theme.php"
-        ]
     }
 }

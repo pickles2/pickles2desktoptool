@@ -20,6 +20,8 @@ window.contApp = new (function( px ){
 		_workspaceFilterKeywords='',
 		_workspaceFilterListLabel='title';
 
+	this.git = _pj.git();
+
 	/**
 	 * 初期化
 	 */
@@ -434,6 +436,38 @@ window.contApp = new (function( px ){
 						$bs3btn.find('ul[role=menu]')
 							.append( $('<li>')
 								.append( $('<a>')
+									.text( 'コンテンツをコミット' )
+									.attr({
+										'data-path': prop.pageInfo.path ,
+										'href':'javascript:;'
+									})
+									.click(function(){
+										_this.commitContents( $(this).attr('data-path') );
+										$bs3btn.find('.dropdown-toggle').click();
+										return false;
+									})
+								)
+							)
+						;
+						$bs3btn.find('ul[role=menu]')
+							.append( $('<li>')
+								.append( $('<a>')
+									.text( 'コンテンツのコミットログ' )
+									.attr({
+										'data-path': prop.pageInfo.path ,
+										'href':'javascript:;'
+									})
+									.click(function(){
+										_this.logContents( $(this).attr('data-path') );
+										$bs3btn.find('.dropdown-toggle').click();
+										return false;
+									})
+								)
+							)
+						;
+						$bs3btn.find('ul[role=menu]')
+							.append( $('<li>')
+								.append( $('<a>')
 									.text( 'ページをリロード' )
 									.attr({
 										'data-path': prop.pageInfo.path ,
@@ -552,6 +586,120 @@ window.contApp = new (function( px ){
 		px.utils.openURL( realpath_comment_file );
 		return this;
 	}
+
+	/**
+	 * コンテンツをコミットする
+	 */
+	this.commitContents = function( page_path ){
+		var $body = $('<div>');
+		var $ul = $('<ul class="list-group">');
+		var $commitComment = $('<textarea>');
+
+		px.progress.start({'blindness': true, 'showProgressBar': true});
+
+		this.git.statusContents([page_path], function(result, err, code){
+			// console.log(result, err, code);
+			if( result === false ){
+				alert('ERROR: '+err);
+				px.progress.close();
+				return;
+			}
+			$body.html('');
+			$body.append( $('<p>').text('branch: ' + result.branch) );
+			for( var idx in result.changes ){
+				var $li = $('<li class="list-group-item">').text( result.changes[idx].file );
+				$ul.append( $li );
+			}
+			$body.append( $ul );
+			$body.append( $commitComment );
+
+			px.dialog({
+				'title': 'コンテンツをコミットする',
+				'body': $body,
+				'buttons':[
+					$('<button>')
+					.text('コミット')
+					.attr({'type':'submit'})
+					.addClass('btn btn-primary')
+					.click(function(){
+						px.progress.start({'blindness': true, 'showProgressBar': true});
+						var commitComment = $commitComment.val();
+						// console.log(commitComment);
+						_this.git.commitContents([page_path, commitComment], function(){
+							alert('コミットしました。');
+							px.progress.close();
+							px.closeDialog();
+						});
+
+					}),
+					$('<button>')
+					.text('キャンセル')
+					.addClass('btn btn-default')
+					.click(function(){
+						px.closeDialog();
+					})
+				]
+			});
+			px.progress.close();
+
+		});
+
+
+		return this;
+	}
+
+
+	/**
+	 * コンテンツのコミットログを表示する
+	 */
+	this.logContents = function( page_path ){
+		var $body = $('<div>');
+		var $ul = $('<ul class="list-group">');
+
+		px.progress.start({'blindness': true, 'showProgressBar': true});
+
+		this.git.logContents([page_path], function(result, err, code){
+			// console.log(result, err, code);
+			if( result === false ){
+				alert('ERROR: '+err);
+				px.progress.close();
+				return;
+			}
+
+			$body.html('');
+			for( var idx in result ){
+				var $li = $('<li class="list-group-item">').text( result[idx].title );
+				$ul.append( $li );
+			}
+			$body.append( $ul );
+
+			px.dialog({
+				'title': 'コンテンツのコミットログ',
+				'body': $body,
+				'buttons':[
+					$('<button>')
+						.text('終了')
+						.attr({'type':'submit'})
+						.addClass('btn btn-primary')
+						.click(function(){
+							px.closeDialog();
+						}),
+					$('<button>')
+						.text('キャンセル')
+						.addClass('btn btn-default')
+						.click(function(){
+							px.closeDialog();
+						})
+				]
+			});
+			px.progress.close();
+
+		});
+
+
+		return this;
+	}
+
 
 	/**
 	 * ウィンドウリサイズイベントハンドラ

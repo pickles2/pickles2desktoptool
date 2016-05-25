@@ -15101,7 +15101,7 @@ module.exports = function(px2ce){
 	/**
 	 * 初期化
 	 */
-	this.init = function(callback){
+	this.init = function(editorOption, callback){
 		callback = callback || function(){};
 
 		toolbar.init({
@@ -15403,7 +15403,7 @@ module.exports = function(px2ce){
 	/**
 	 * 初期化
 	 */
-	this.init = function(callback){
+	this.init = function(editorOption, callback){
 		callback = callback || function(){};
 
 		toolbar.init({
@@ -15555,7 +15555,35 @@ module.exports = function(px2ce){
 										$canvas.find('.pickles2-contents-editor--default-editor-body-js div').text(codes['js']).css(aceCss).get(0)
 									);
 									for(var i in $elmTextareas){
+										$elmTextareas[i].setFontSize(16);
+										$elmTextareas[i].getSession().setUseWrapMode(true);// Ace 自然改行
+										$elmTextareas[i].setShowInvisibles(true);// Ace 不可視文字の可視化
 										$elmTextareas[i].$blockScrolling = Infinity;
+										$elmTextareas[i].setTheme("ace/theme/github");
+										$elmTextareas[i].getSession().setMode("ace/mode/html");
+									}
+									$elmTextareas['html'].setTheme("ace/theme/monokai");
+									$elmTextareas['html'].getSession().setMode("ace/mode/php");
+									$elmTextareas['css'].setTheme("ace/theme/tomorrow");
+									$elmTextareas['css'].getSession().setMode("ace/mode/scss");
+									$elmTextareas['js'].setTheme("ace/theme/xcode");
+									$elmTextareas['js'].getSession().setMode("ace/mode/javascript");
+									switch(editorOption.editorType){
+										case 'md':
+											$elmTextareas['html'].setTheme("ace/theme/github");
+											$elmTextareas['html'].getSession().setMode("ace/mode/markdown");
+											$canvas.find('.pickles2-contents-editor--default-switch-tab [data-pickles2-contents-editor-switch=html]').text('Markdown');
+											break;
+										case 'txt':
+											$elmTextareas['html'].setTheme("ace/theme/katzenmilch");
+											$elmTextareas['html'].getSession().setMode("ace/mode/plain_text");
+											$canvas.find('.pickles2-contents-editor--default-switch-tab [data-pickles2-contents-editor-switch=html]').text('Text');
+											break;
+										case 'html':
+										default:
+											$elmTextareas['html'].setTheme("ace/theme/monokai");
+											$elmTextareas['html'].getSession().setMode("ace/mode/php");
+											break;
 									}
 
 								}else{
@@ -15753,7 +15781,7 @@ module.exports = function(px2ce){
 
 	var ejs = require('ejs');
 
-	this.init = function( callback ){
+	this.init = function( editorOption, callback ){
 		callback = callback || function(){};
 
 		$canvas.html((function(){
@@ -15891,6 +15919,10 @@ module.exports = function(px2ce){
 						},
 						function(editorType){
 							// console.log(editorType);
+							var editorOption = {
+								'editorType': editorType,
+								'serverConfig': serverConfig
+							};
 							switch(editorType){
 								case '.page_not_exists':
 									// ページ自体が存在しない。
@@ -15902,7 +15934,7 @@ module.exports = function(px2ce){
 									// コンテンツが存在しない
 									$canvas.html('<p>コンテンツが存在しません。</p>');
 									editor = new (require('./editor/not_exists/not_exists.js'))(_this);
-									editor.init(function(){
+									editor.init(editorOption, function(){
 										callback();
 									});
 									break;
@@ -15911,7 +15943,7 @@ module.exports = function(px2ce){
 									// broccoli
 									$canvas.html('<p>GUIエディタを起動します。</p>');
 									editor = new (require('./editor/broccoli/broccoli.js'))(_this);
-									editor.init(function(){
+									editor.init(editorOption, function(){
 										callback();
 									});
 									break;
@@ -15922,7 +15954,7 @@ module.exports = function(px2ce){
 									// defaultテキストエディタ
 									$canvas.html('<p>テキストエディタを起動します。</p>');
 									editor = new (require('./editor/default/default.js'))(_this);
-									editor.init(function(){
+									editor.init(editorOption, function(){
 										callback();
 									});
 									break;

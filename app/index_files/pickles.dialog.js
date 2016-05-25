@@ -44,8 +44,8 @@
 					'left':0, 'top':0,
 					'width':'100%', 'height':'100%',
 					'overflow':'hidden',
-					'background':'#333',
-					'opacity':0.3
+					'background':'#000',
+					'opacity':0.5
 				})
 			)
 			.append( $('<div>')

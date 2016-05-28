@@ -54,8 +54,8 @@
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_markdown">markdown</a></li>
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_multitext">multitext</a></li>
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_image">image</a></li>
-<li style="list-style-type:disc; display:list-item;"><a href="#hash_table_(beta)">table (beta)</a></li>
-<li style="list-style-type:disc; display:list-item;"><a href="#hash_html_attr_text">html_attr_text</a></li>
+<li style="list-style-type:disc; display:list-item;"><a href="#hash_table">table</a></li>
+<li style="list-style-type:disc; display:list-item;"><a href="#hash_html&amp;_95;attr&amp;_95;text">html&#95;attr&#95;text</a></li>
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_href">href</a></li>
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_wysiwyg_tinymce_(legacy_のみ)">wysiwyg_tinymce (legacy のみ)</a></li>
 <li style="list-style-type:disc; display:list-item;"><a href="#hash_wysiwyg_rte_(legacy_のみ)">wysiwyg_rte (legacy のみ)</a></li>
@@ -85,7 +85,7 @@
 
 <p>下記は実装例です。</p>
 
-<pre><code>{&amp;{"input":{"type":"html","name":"fieldname1","rows":5,"label":"HTML入力欄のサンプル","hidden":false}}&amp;}
+<pre><code>{&amp;{"input":{"type":"html","name":"fieldname1","label":"HTML入力欄のサンプル","rows":5,"hidden":false}}&amp;}
 </code></pre>
 
 <p>下記の設定値が、ほとんどのinputフィールドで共通で利用できます。</p>
@@ -94,7 +94,7 @@
     <dt>type</dt>
         <dd>inputフィールドの入力欄の種類を指定します。</dd>
     <dt>name</dt>
-        <dd>入力欄の物理名称を付与します。編集画面上には表示されません。この値により、コンテンツデータとフィールド情報とを関連付けるキーとして利用されますので、モジュールごとに重複のないように命名してください。 <code>_ENV</code> は予約語なため、name に使用できません。</dd>
+        <dd>入力欄の物理名称を付与します。編集画面上には表示されません。この値により、コンテンツデータとフィールド情報とを関連付けるキーとして利用されますので、モジュールごとに重複のないように命名してください。 name 値を変更すると、すでに使用しているモジュールでリンクが切れ、入力した値が適用されなくなることがあるので注意してください。 <code>_ENV</code> は予約語のため、name に使用できません。</dd>
     <dt>rows</dt>
         <dd>生成される入力欄の行数を指定します。</dd>
     <dt>label</dt>
@@ -128,12 +128,12 @@
 
 <p>画像の入力欄を作成します。ただし、このフィールドは <code>&lt;img&gt;</code>要素は出力しません。 src属性の中身だけを提供することに注意してください。</p>
 
-<span id="hash_table_(beta)"></span><h3>table (beta)</h3>
+<span id="hash_table"></span><h3>table</h3>
 
 <p>テーブル要素を作成します。これは、実験中のフィールドです。<br />
 Excel形式で作成したファイルをGUI上からアップロードすると、そのファイルの内容をもとにHTMLを自動生成します。</p>
 
-<span id="hash_html_attr_text"></span><h3>html_attr_text</h3>
+<span id="hash_html&amp;_95;attr&amp;_95;text"></span><h3>html&#95;attr&#95;text</h3>
 
 <p>汎用的な属性値のテキストを入力する欄を作成します。</p>
 
@@ -158,7 +158,7 @@ Excel形式で作成したファイルをGUI上からアップロードすると
 <p>selectフィールドには、特別な設定値 <code>options</code> が定義されています。<code>options</code> には、プロパティに <code>value</code> と <code>label</code> を持ったオブジェクトを配列に格納して設定します。</p>
 
 <pre><code>&lt;!-- 実装例 --&gt;
-&lt;div style="text-align:{&amp;{"input":{"type":"select", "name":"text-align", "options":[
+&lt;div style="text-align:{&amp;{"input":{"type":"select", "name":"text-align", "label":"テキスト寄せ", "options":[
     {"value":"left", "label":"左寄せ"},
     {"value":"center", "label":"中央寄せ"},
     {"value":"right", "label":"右寄せ"}
@@ -173,7 +173,7 @@ Excel形式で作成したファイルをGUI上からアップロードすると
 
 <pre><code>&lt;!-- 実装例 --&gt;
 &lt;div class="unit"&gt;
-{&amp;{"module":{"name":"main"}}&amp;}
+{&amp;{"module":{"name":"main","label":"メインエリア"}}&amp;}
 &lt;!-- /.unit --&gt;&lt;/div&gt;
 </code></pre>
 
@@ -187,7 +187,7 @@ Excel形式で作成したファイルをGUI上からアップロードすると
 
 <pre><code>&lt;!-- 実装例 --&gt;
 &lt;ul&gt;
-{&amp;{"loop":{"name":"thumb_loop"}}&amp;}
+{&amp;{"loop":{"name":"thumb_loop", "label":"サムネイルリスト"}}&amp;}
     &lt;li&gt;リスト&lt;/li&gt;
 {&amp;"endloop"&amp;}
 &lt;/ul&gt;
@@ -212,8 +212,8 @@ Excel形式で作成したファイルをGUI上からアップロードすると
 <p>condは2次元配列です。1次元目は or 条件、2次元目は and 条件として評価されます。</p>
 
 <pre><code>&lt;!-- 実装例 --&gt;
-{&amp;{"input":{"type":"html","name":"sample1"}}&amp;}
-{&amp;{"input":{"type":"html","name":"sample2"}}&amp;}
+{&amp;{"input":{"type":"html","name":"sample1","label":"サンプル1"}}&amp;}
+{&amp;{"input":{"type":"html","name":"sample2","label":"サンプル2"}}&amp;}
 
 {&amp;{"if":{"cond":[
     [
@@ -247,7 +247,7 @@ Excel形式で作成したファイルをGUI上からアップロードすると
 <p>指定した名前のフィールドに値がセットされている場合に、内容を表示します。</p>
 
 <pre><code>&lt;!-- 実装例 --&gt;
-{&amp;{"input":{"type":"html","name":"sample1"}}&amp;}
+{&amp;{"input":{"type":"html","name":"sample1","label":"サンプル1"}}&amp;}
 
 {&amp;{"if":{"is_set":"sample1"}}&amp;}
 &lt;p&gt;この部分は、sample1 に値を入力した場合のみ出力されます。&lt;/p&gt;
@@ -259,7 +259,7 @@ Excel形式で作成したファイルをGUI上からアップロードすると
 <p>echoフィールドは、別のフィールドで入力された値を出力します。</p>
 
 <pre><code>&lt;!-- 実装例 --&gt;
-{&amp;{"input":{"type":"html","name":"sample1","hidden":true}}&amp;}
+{&amp;{"input":{"type":"html","name":"sample1","label":"サンプル1","hidden":true}}&amp;}
 
 {&amp;{"echo":{"ref":"sample1"}}&amp;}
 </code></pre>

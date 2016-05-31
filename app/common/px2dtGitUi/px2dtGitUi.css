@@ -1,0 +1,14 @@
+.px2dt-git-commit{
+}
+.px2dt-git-commit .px2dt-git-commit__stats-untracked{
+	border-left: 4px solid #3f9;
+}
+.px2dt-git-commit .px2dt-git-commit__stats-modified{
+	border-left: 4px solid #f93;
+}
+.px2dt-git-commit .px2dt-git-commit__stats-deleted{
+	border-left: 4px solid #f00;
+}
+.px2dt-git-commit .px2dt-git-commit__stats-unknown{
+	border-left: 4px solid #999;
+}

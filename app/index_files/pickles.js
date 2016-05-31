@@ -145,7 +145,7 @@ new (function($, window){
 		{"label":"テーマ",               "cond":"pxStandby",          "area":"mainmenu", "app":"fncs/theme/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"コンテンツ",           "cond":"pxStandby",          "area":"mainmenu", "app":"fncs/pages/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"パブリッシュ",         "cond":"pxStandby",          "area":"mainmenu", "app":"fncs/publish/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"プロジェクトを選択",   "cond":"projectSelected",    "area":"shoulder", "app":"index.html", "cb": function(){px.deselectProject();px.subapp();}} ,
+		{"label":"ダッシュボード",      "cond":"projectSelected",    "area":"shoulder", "app":"index.html", "cb": function(){px.deselectProject();px.subapp();}} ,
 		{"label":"フォルダを開く",       "cond":"homeDirExists",      "area":"shoulder", "app":null, "cb": function(){px.getCurrentProject().open();}},
 		{"label":"ブラウザで開く",       "cond":"pxStandby",          "area":"shoulder", "app":null, "cb": function(){px.openInBrowser();}},
 		{"label":"プロジェクト設定",     "cond":"pxStandby",          "area":"shoulder", "app":"fncs/config/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,

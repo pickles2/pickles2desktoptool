@@ -8,6 +8,7 @@
 }
 .px2dt-git-commit .px2dt-git-commit__stats-deleted{
 	border-left: 4px solid #f00;
+	color: #f00;
 }
 .px2dt-git-commit .px2dt-git-commit__stats-unknown{
 	border-left: 4px solid #999;

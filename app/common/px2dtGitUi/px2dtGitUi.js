@@ -78,6 +78,7 @@ function px2dtGitUi(px, pj){
 			if( result === false ){
 				alert('ERROR: '+err);
 				px.progress.close();
+				callback();
 				return;
 			}
 			$body.html('');
@@ -123,6 +124,78 @@ function px2dtGitUi(px, pj){
 						.addClass('btn btn-default')
 						.click(function(){
 							px.closeDialog();
+						})
+				]
+			});
+			px.progress.close();
+
+		});
+
+
+		return this;
+	}
+
+	/**
+	 * コミットログを表示する
+	 */
+	this.log = function( div, options, callback ){
+		callback = callback || function(){};
+
+		var $body = $('<div>');
+		var $ul = $('<ul class="list-group">');
+
+		px.progress.start({'blindness': true, 'showProgressBar': true});
+
+		function getGitLog(div, options, callback){
+			switch( div ){
+				case 'contents':
+					_this.git.logContents([options.page_path], function(result, err, code){
+						callback(result, err, code);
+					});
+					break;
+				default:
+					_this.git.logSitemaps(function(result, err, code){
+						callback(result, err, code);
+					});
+					break;
+			}
+			return;
+		}
+
+		getGitLog(div, options, function(result, err, code){
+			// console.log(result, err, code);
+			if( result === false ){
+				alert('ERROR: '+err);
+				px.progress.close();
+				callback();
+				return;
+			}
+
+			$body.html('');
+			for( var idx in result ){
+				var $li = $('<li class="list-group-item">').text( result[idx].title );
+				$ul.append( $li );
+			}
+			$body.append( $ul );
+
+			px.dialog({
+				'title': divDb[div].label + 'のコミットログ',
+				'body': $body,
+				'buttons':[
+					$('<button>')
+						.text('終了')
+						.attr({'type':'submit'})
+						.addClass('btn btn-primary')
+						.click(function(){
+							px.closeDialog();
+							callback();
+						}),
+					$('<button>')
+						.text('キャンセル')
+						.addClass('btn btn-default')
+						.click(function(){
+							px.closeDialog();
+							callback();
 						})
 				]
 			});

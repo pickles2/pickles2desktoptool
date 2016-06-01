@@ -55,6 +55,16 @@ window.contApp = new (function(px, $){
 	}
 
 	/**
+	 * サイトマップのコミットログを表示する
+	 */
+	this.logSitemap = function(){
+		this.gitUi.log('sitemaps', {}, function(result){
+			console.log('(コミットログを表示しました)');
+		});
+		return this;
+	}
+
+	/**
 	 * フォルダを開く
 	 */
 	this.openInFinder = function(){

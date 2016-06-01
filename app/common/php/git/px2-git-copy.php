@@ -125,6 +125,20 @@ class main{
 	}
 
 	/**
+	 * git log (サイトマップに限る)
+	 * @return array result
+	 */
+	public function log_sitemaps(){
+		if( is_null($this->git) ){ return false; }
+
+		$realpath_sitemap = $this->fs->get_realpath($this->path_homedir.'sitemaps/');
+		// var_dump($realpath_sitemap);
+		$logs = $this->git->log(null, $realpath_sitemap, array('limit'=>100000));
+		// var_dump($logs);
+		return $logs;
+	}
+
+	/**
 	 * git log (特定ページのコンテンツに限る)
 	 * @return array result
 	 */

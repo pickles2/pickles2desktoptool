@@ -603,50 +603,9 @@ window.contApp = new (function( px ){
 	 * コンテンツのコミットログを表示する
 	 */
 	this.logContents = function( page_path ){
-		var $body = $('<div>');
-		var $ul = $('<ul class="list-group">');
-
-		px.progress.start({'blindness': true, 'showProgressBar': true});
-
-		this.git.logContents([page_path], function(result, err, code){
-			// console.log(result, err, code);
-			if( result === false ){
-				alert('ERROR: '+err);
-				px.progress.close();
-				return;
-			}
-
-			$body.html('');
-			for( var idx in result ){
-				var $li = $('<li class="list-group-item">').text( result[idx].title );
-				$ul.append( $li );
-			}
-			$body.append( $ul );
-
-			px.dialog({
-				'title': 'コンテンツのコミットログ',
-				'body': $body,
-				'buttons':[
-					$('<button>')
-						.text('終了')
-						.attr({'type':'submit'})
-						.addClass('btn btn-primary')
-						.click(function(){
-							px.closeDialog();
-						}),
-					$('<button>')
-						.text('キャンセル')
-						.addClass('btn btn-default')
-						.click(function(){
-							px.closeDialog();
-						})
-				]
-			});
-			px.progress.close();
-
+		this.gitUi.log('contents', {'page_path': page_path}, function(result){
+			console.log('(コミットログを表示しました)');
 		});
-
-
 		return this;
 	}
 

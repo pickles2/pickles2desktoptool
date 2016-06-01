@@ -96,6 +96,12 @@ module.exports = function( px, pj ) {
 	this.log = new apiGen('log');
 
 	/**
+	 * サイトマップのコミットログを取得する
+	 * @return {[type]} [description]
+	 */
+	this.logSitemaps = new apiGen('log_sitemaps');
+
+	/**
 	 * コンテンツのコミットログを取得する
 	 * @return {[type]} [description]
 	 */

@@ -21,7 +21,7 @@ inputフィールドは、もっとも重要なフィールド種別で、編集
 下記は実装例です。
 
 ```
-{&{"input":{"type":"html","name":"fieldname1","rows":5,"label":"HTML入力欄のサンプル","hidden":false}}&}
+{&{"input":{"type":"html","name":"fieldname1","label":"HTML入力欄のサンプル","rows":5,"hidden":false}}&}
 ```
 
 下記の設定値が、ほとんどのinputフィールドで共通で利用できます。
@@ -30,7 +30,7 @@ inputフィールドは、もっとも重要なフィールド種別で、編集
 	<dt>type</dt>
 		<dd>inputフィールドの入力欄の種類を指定します。</dd>
 	<dt>name</dt>
-		<dd>入力欄の物理名称を付与します。編集画面上には表示されません。この値により、コンテンツデータとフィールド情報とを関連付けるキーとして利用されますので、モジュールごとに重複のないように命名してください。 <code>_ENV</code> は予約語なため、name に使用できません。</dd>
+		<dd>入力欄の物理名称を付与します。編集画面上には表示されません。この値により、コンテンツデータとフィールド情報とを関連付けるキーとして利用されますので、モジュールごとに重複のないように命名してください。 name 値を変更すると、すでに使用しているモジュールでリンクが切れ、入力した値が適用されなくなることがあるので注意してください。 <code>_ENV</code> は予約語のため、name に使用できません。</dd>
 	<dt>rows</dt>
 		<dd>生成される入力欄の行数を指定します。</dd>
 	<dt>label</dt>
@@ -65,13 +65,13 @@ HTML, プレーンテキスト, Markdown形式のいずれかを選択して編�
 
 画像の入力欄を作成します。ただし、このフィールドは `<img>`要素は出力しません。 src属性の中身だけを提供することに注意してください。
 
-### table (beta)
+### table
 
 テーブル要素を作成します。これは、実験中のフィールドです。<br />
 Excel形式で作成したファイルをGUI上からアップロードすると、そのファイルの内容をもとにHTMLを自動生成します。
 
 
-### html_attr_text
+### html\_attr\_text
 
 汎用的な属性値のテキストを入力する欄を作成します。
 
@@ -98,7 +98,7 @@ selectフィールドには、特別な設定値 `options` が定義されてい
 
 ```
 <!-- 実装例 -->
-<div style="text-align:{&{"input":{"type":"select", "name":"text-align", "options":[
+<div style="text-align:{&{"input":{"type":"select", "name":"text-align", "label":"テキスト寄せ", "options":[
 	{"value":"left", "label":"左寄せ"},
 	{"value":"center", "label":"中央寄せ"},
 	{"value":"right", "label":"右寄せ"}
@@ -115,7 +115,7 @@ moduleフィールドを配置すると、GUI編集画面上にブルーのバ�
 ```
 <!-- 実装例 -->
 <div class="unit">
-{&{"module":{"name":"main"}}&}
+{&{"module":{"name":"main","label":"メインエリア"}}&}
 <!-- /.unit --></div>
 ```
 
@@ -132,7 +132,7 @@ loopフィールドを配置すると、GUI編集画面上にグリーンのバ�
 ```
 <!-- 実装例 -->
 <ul>
-{&{"loop":{"name":"thumb_loop"}}&}
+{&{"loop":{"name":"thumb_loop", "label":"サムネイルリスト"}}&}
 	<li>リスト</li>
 {&"endloop"&}
 </ul>
@@ -159,8 +159,8 @@ condは2次元配列です。1次元目は or 条件、2次元目は and 条件�
 
 ```
 <!-- 実装例 -->
-{&{"input":{"type":"html","name":"sample1"}}&}
-{&{"input":{"type":"html","name":"sample2"}}&}
+{&{"input":{"type":"html","name":"sample1","label":"サンプル1"}}&}
+{&{"input":{"type":"html","name":"sample2","label":"サンプル2"}}&}
 
 {&{"if":{"cond":[
 	[
@@ -197,7 +197,7 @@ condは2次元配列です。1次元目は or 条件、2次元目は and 条件�
 
 ```
 <!-- 実装例 -->
-{&{"input":{"type":"html","name":"sample1"}}&}
+{&{"input":{"type":"html","name":"sample1","label":"サンプル1"}}&}
 
 {&{"if":{"is_set":"sample1"}}&}
 <p>この部分は、sample1 に値を入力した場合のみ出力されます。</p>
@@ -212,7 +212,7 @@ echoフィールドは、別のフィールドで入力された値を出力し�
 
 ```
 <!-- 実装例 -->
-{&{"input":{"type":"html","name":"sample1","hidden":true}}&}
+{&{"input":{"type":"html","name":"sample1","label":"サンプル1","hidden":true}}&}
 
 {&{"echo":{"ref":"sample1"}}&}
 ```

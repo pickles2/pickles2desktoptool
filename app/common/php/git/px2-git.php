@@ -52,6 +52,7 @@ class px2git{
 			case 'commit_contents':
 			case 'log':
 			case 'log_contents':
+			case 'log_sitemaps':
 				$result = call_user_func_array(
 					array($this->px2git, $this->method),
 					$this->options

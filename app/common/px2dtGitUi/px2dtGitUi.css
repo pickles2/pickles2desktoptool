@@ -13,3 +13,34 @@
 .px2dt-git-commit .px2dt-git-commit__stats-unknown{
 	border-left: 4px solid #999;
 }
+
+.px2dt-git-commit__loglist{
+	display: flex;
+}
+.px2dt-git-commit__loglist-date{
+	width: 20%;
+	font-size: 80%;
+}
+.px2dt-git-commit__loglist-title{
+	width: 40%;
+}
+.px2dt-git-commit__loglist-name{
+	width: 20%;
+	font-size: 80%;
+}
+.px2dt-git-commit__loglist-hash{
+	width: 20%;
+	font-size: 80%;
+}
+.px2dt-git-commit__loglist>div{
+	padding: 0 0.5em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.px2dt-git-commit__loglist>div:first-child{
+	padding-left: 0;
+}
+.px2dt-git-commit__loglist>div:last-child{
+	padding-right: 0;
+}

@@ -13,6 +13,17 @@ function px2dtGitUi(px, pj){
 	};
 
 	/**
+	 * コミットログの日付表現の標準化
+	 */
+	function dateFormat(date){
+		var tmpDate = new Date(date);
+		var fillZero = function( int ){
+			return ('00000' + int).slice( -2 );
+		}
+		return tmpDate.getFullYear() + '-' + fillZero(tmpDate.getMonth()+1) + '-' + fillZero(tmpDate.getDate()) + ' ' + fillZero(tmpDate.getHours()) + ':' + fillZero(tmpDate.getMinutes()) + ':' + fillZero(tmpDate.getSeconds());
+	}
+
+	/**
 	 * ファイルの状態を判定する
 	 */
 	function fileStatusJudge(index, work_tree){
@@ -141,7 +152,7 @@ function px2dtGitUi(px, pj){
 	this.log = function( div, options, callback ){
 		callback = callback || function(){};
 
-		var $body = $('<div>');
+		var $body = $('<div class="px2dt-git-commit">');
 		var $ul = $('<ul class="list-group">');
 
 		px.progress.start({'blindness': true, 'showProgressBar': true});
@@ -173,7 +184,11 @@ function px2dtGitUi(px, pj){
 
 			$body.html('');
 			for( var idx in result ){
-				var $li = $('<li class="list-group-item">').text( result[idx].title );
+				var $li = $('<li class="list-group-item px2dt-git-commit__loglist">');
+				$li.append( $('<div class="px2dt-git-commit__loglist-date">').text( dateFormat(result[idx].date) ) );
+				$li.append( $('<div class="px2dt-git-commit__loglist-title">').text( result[idx].title ) );
+				$li.append( $('<div class="px2dt-git-commit__loglist-name">').text( result[idx].name + ' <'+result[idx].email+'>' ) );
+				$li.append( $('<div class="px2dt-git-commit__loglist-hash">').text( result[idx].hash ) );
 				$ul.append( $li );
 			}
 			$body.append( $ul );
@@ -183,20 +198,13 @@ function px2dtGitUi(px, pj){
 				'body': $body,
 				'buttons':[
 					$('<button>')
-						.text('終了')
+						.text('閉じる')
 						.attr({'type':'submit'})
-						.addClass('btn btn-primary')
-						.click(function(){
-							px.closeDialog();
-							callback();
-						}),
-					$('<button>')
-						.text('キャンセル')
 						.addClass('btn btn-default')
 						.click(function(){
 							px.closeDialog();
 							callback();
-						})
+						}),
 				]
 			});
 			px.progress.close();

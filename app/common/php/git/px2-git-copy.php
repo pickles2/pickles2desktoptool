@@ -34,12 +34,14 @@ class main{
 
 		if( is_string($this->px) && is_file($this->px) ){
 			$this->path_entry_script = $this->px;
+			$this->config = json_decode( $this->execute_px2('/?PX=api.get.config') );
 			$this->command_php = 'php';
 			$this->path_homedir = json_decode( $this->execute_px2('/?PX=api.get.path_homedir') );
 			$this->path_controot = json_decode( $this->execute_px2('/?PX=api.get.path_controot') );
 			$this->path_docroot = json_decode( $this->execute_px2('/?PX=api.get.path_docroot') );
 		}elseif( is_object($this->px) ){
 			$this->path_entry_script = $_SERVER['SCRIPT_FILENAME'];
+			$this->config = $this->px->conf();
 			$this->command_php = $this->px->conf()->commands->php;
 			$this->path_homedir = $this->px->get_path_homedir();
 			$this->path_controot = $this->px->get_path_controot();
@@ -151,6 +153,9 @@ class main{
 		$logs1 = $this->git->log(null, $contents_path_info['realpath_content'], array('limit'=>100000));
 		$logs2 = $this->git->log(null, $contents_path_info['realpath_files'], array('limit'=>100000));
 		$logs = array_merge($logs1, $logs2);
+		foreach( $contents_path_info['realpath_content_ext'] as $realpath_cont_ext ){
+			$logs = array_merge($logs, $this->git->log(null, $realpath_cont_ext, array('limit'=>100000)));
+		}
 		usort($logs, function($a, $b){
 			$adate = @strtotime( $a['date'] );
 			$bdate = @strtotime( $b['date'] );
@@ -255,7 +260,7 @@ class main{
 		// var_dump( $realpath_files );
 		foreach( $status['div']['contents'] as $idx=>$file ){
 			$realpath_file = $this->fs->get_realpath($this->path_git_home.'/'.$file['file']);
-			if( preg_match( '/^'.preg_quote($realpath_content, '/').'/', $realpath_file ) ){
+			if( preg_match( '/^'.preg_quote($realpath_content, '/').'$/', $realpath_file ) ){
 				array_push($rtn['changes'], $file);
 				unset($status['div']['contents'][$idx]);
 				continue;
@@ -265,6 +270,14 @@ class main{
 				unset($status['div']['contents'][$idx]);
 				continue;
 			}
+			foreach( $this->config->funcs->processor as $key=>$val ){
+				if( preg_match( '/^'.preg_quote($realpath_content.'.'.$key, '/').'$/', $realpath_file ) ){
+					array_push($rtn['changes'], $file);
+					unset($status['div']['contents'][$idx]);
+					continue;
+				}
+			}
+
 			// var_dump($realpath_file);
 		}
 		// var_dump($rtn);
@@ -416,7 +429,7 @@ class main{
 	/**
 	 * ページパスから、コンテンツのパス情報一式を得る
 	 * @param  string $page_path ページのパス
-	 * @return array             コンテンツのパス情報一式
+	 * @return array			 コンテンツのパス情報一式
 	 */
 	private function get_contents_path_info($page_path){
 		$ary = array();
@@ -435,9 +448,16 @@ class main{
 		}else{
 			return false;
 		}
+
 		// var_dump( $realpath_content );
 		$ary['realpath_content'] = $this->fs->get_realpath( $ary['realpath_content'] );
 		$ary['realpath_files'] = $this->fs->get_realpath( $ary['realpath_files'].'/' );
+
+		$ary['realpath_content_ext'] = array();
+		foreach( $this->config->funcs->processor as $key=>$val ){
+			$ary['realpath_content_ext'][] = $ary['realpath_content'].'.'.$key;
+		}
+
 		return $ary;
 	}
 

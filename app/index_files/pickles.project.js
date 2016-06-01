@@ -326,7 +326,10 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			}else{
 				px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content + '.' + procTypeTo );
 			}
-			px.utils.rmdir_r( contRoot + resourcPath+'guieditor.ignore/' );
+			try {
+				px.utils.rmdir_r( contRoot + resourcPath+'guieditor.ignore/' );
+			}catch(e){
+			}
 
 		}else if( procTypeBefore == 'html'||procTypeBefore == 'htm' ){
 			if( procTypeTo == 'html.gui' ){
@@ -343,9 +346,20 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				}else{
 					px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content + '.'+(procTypeTo=='html.gui' ? 'html.gui' : procTypeTo) );
 				}
-				mkGuiData( contRoot, resourcPath, codeBefore, procTypeBefore );
+				if( procTypeTo == 'html.gui' ){
+					mkGuiData( contRoot, resourcPath, codeBefore, procTypeBefore );
+				}else{
+					try {
+						px.utils.rmdir_r( contRoot + resourcPath+'guieditor.ignore/' );
+					}catch(e){
+					}
+				}
 			}else{
 				px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content + '.' + procTypeTo );
+				try {
+					px.utils.rmdir_r( contRoot + resourcPath+'guieditor.ignore/' );
+				}catch(e){
+				}
 			}
 
 		}

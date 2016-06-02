@@ -21,7 +21,7 @@ function px2dtGitUi(px, pj){
 			return ('00000' + int).slice( -2 );
 		}
 		return tmpDate.getFullYear() + '-' + fillZero(tmpDate.getMonth()+1) + '-' + fillZero(tmpDate.getDate()) + ' ' + fillZero(tmpDate.getHours()) + ':' + fillZero(tmpDate.getMinutes()) + ':' + fillZero(tmpDate.getSeconds());
-	}
+	} // dateFormat()
 
 	/**
 	 * ファイルの状態を判定する
@@ -35,7 +35,7 @@ function px2dtGitUi(px, pj){
 			return 'deleted';
 		}
 		return 'unknown';
-	}
+	} // fileStatusJudge()
 
 	/**
 	 * コミットする
@@ -144,7 +144,7 @@ function px2dtGitUi(px, pj){
 
 
 		return this;
-	}
+	} // commit()
 
 	/**
 	 * コミットログを表示する
@@ -184,12 +184,29 @@ function px2dtGitUi(px, pj){
 
 			$body.html('');
 			for( var idx in result ){
-				var $li = $('<li class="list-group-item px2dt-git-commit__loglist">');
-				$li.append( $('<div class="px2dt-git-commit__loglist-date">').text( dateFormat(result[idx].date) ) );
-				$li.append( $('<div class="px2dt-git-commit__loglist-title">').text( result[idx].title ) );
-				$li.append( $('<div class="px2dt-git-commit__loglist-name">').text( result[idx].name + ' <'+result[idx].email+'>' ) );
-				$li.append( $('<div class="px2dt-git-commit__loglist-hash">').text( result[idx].hash ) );
-				$ul.append( $li );
+				(function(){
+					var $li = $('<li class="list-group-item px2dt-git-commit__loglist">');
+					var $row = $('<div class="px2dt-git-commit__loglist-row">');
+					$row.append( $('<div class="px2dt-git-commit__loglist-row-date">').text( dateFormat(result[idx].date) ) );
+					$row.append( $('<div class="px2dt-git-commit__loglist-row-title">').text( result[idx].title ) );
+					$row.append( $('<div class="px2dt-git-commit__loglist-row-name">').text( result[idx].name + ' <'+result[idx].email+'>' ) );
+					$row.append( $('<div class="px2dt-git-commit__loglist-row-hash">').text( result[idx].hash ) );
+					var $detail = $('<div class="px2dt-git-commit__loglist-detail">').hide();
+					$li.click(function(){
+						$detail.toggle('fast', function(){
+							if( $detail.is(':visible') ){
+								$detail.html( '<div class="px2dt-loading"></div>' );
+								setTimeout(function(){
+									// TODO: この処理を実際の詳細情報取得のロジックに書き換える。
+									$detail.html( '<div>開発中です。</div>' );
+								}, 3000);
+							}else{
+								$detail.html( '' );
+							}
+						});
+					});
+					$ul.append( $li.append($row).append($detail) );
+				})();
 			}
 			$body.append( $ul );
 
@@ -213,6 +230,6 @@ function px2dtGitUi(px, pj){
 
 
 		return this;
-	}
+	} // log()
 
 }

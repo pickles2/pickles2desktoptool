@@ -39,7 +39,7 @@ module.exports = function( px, pj ) {
 					{
 						"success": function(data){
 							rtn += data;
-							console.log(data);
+							// console.log(data);
 						} ,
 						"error": function(data){
 							rtn += data;
@@ -106,6 +106,12 @@ module.exports = function( px, pj ) {
 	 * @return {[type]} [description]
 	 */
 	this.logContents = new apiGen('log_contents');
+
+	/**
+	 * git show
+	 * @return {[type]} [description]
+	 */
+	this.show = new apiGen('show');
 
 	return this;
 };

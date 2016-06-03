@@ -191,15 +191,32 @@ function px2dtGitUi(px, pj){
 					$row.append( $('<div class="px2dt-git-commit__loglist-row-title">').text( result[idx].title ) );
 					$row.append( $('<div class="px2dt-git-commit__loglist-row-name">').text( result[idx].name + ' <'+result[idx].email+'>' ) );
 					$row.append( $('<div class="px2dt-git-commit__loglist-row-hash">').text( result[idx].hash ) );
-					var $detail = $('<div class="px2dt-git-commit__loglist-detail">').hide();
+					var $detail = $('<div class="px2dt-git-commit__loglist-detail">')
+						.hide()
+						.attr({
+							'data-px2dt-hash': result[idx].hash
+						})
+						.click(function(e){
+							e.stopPropagation();
+						})
+					;
 					$li.click(function(){
 						$detail.toggle('fast', function(){
 							if( $detail.is(':visible') ){
 								$detail.html( '<div class="px2dt-loading"></div>' );
-								setTimeout(function(){
-									// TODO: この処理を実際の詳細情報取得のロジックに書き換える。
-									$detail.html( '<div>開発中です。</div>' );
-								}, 3000);
+								_this.git.show([$(this).attr('data-px2dt-hash')], function(res){
+									console.log(res);
+									$detail
+										.html( '' )
+										.append( $('<pre>')
+											.text(res)
+											.css({
+												'max-height': 300,
+												'overflow': 'auto'
+											})
+										)
+									;
+								});
 							}else{
 								$detail.html( '' );
 							}

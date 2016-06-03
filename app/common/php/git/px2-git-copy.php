@@ -288,14 +288,14 @@ class main{
 	 * git show
 	 * @return array result
 	 */
-	public function show(){
+	public function show( $hash ){
 		if( is_null($this->git) ){ return false; }
 
 		// ↓px2-sitemapexcel に処理させるため、一度アクセスしておく
 		$res = $this->execute_px2('/');
 		// var_dump( $res );
 		// $result = array();
-		$result = $this->git->show();
+		$result = $this->git->show( $hash );
 		// var_dump($result);
 		return $result;
 	}

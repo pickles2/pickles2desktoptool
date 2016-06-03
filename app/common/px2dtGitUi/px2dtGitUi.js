@@ -29,6 +29,8 @@ function px2dtGitUi(px, pj){
 	function fileStatusJudge(fileInfo){
 		if(fileInfo.work_tree == '?' && fileInfo.index == '?'){
 			return 'untracked';
+		}else if(fileInfo.work_tree == 'A' || fileInfo.index == 'A'){
+			return 'added';
 		}else if(fileInfo.work_tree == 'M' || fileInfo.index == 'M'){
 			return 'modified';
 		}else if(fileInfo.work_tree == 'D' || fileInfo.index == 'D'){
@@ -102,10 +104,10 @@ function px2dtGitUi(px, pj){
 			}else{
 				list = result.div[div];
 			}
-			for( var idx in result.changes ){
-				var fileStatus = fileStatusJudge(result.changes[idx]);
+			for( var idx in list ){
+				var fileStatus = fileStatusJudge(list[idx]);
 				var $li = $('<li class="list-group-item">')
-					.text( '['+fileStatus+'] '+result.changes[idx].file )
+					.text( '['+fileStatus+'] '+list[idx].file )
 					.addClass('px2dt-git-commit__stats-'+fileStatus)
 				;
 				$ul.append( $li );
@@ -228,6 +230,10 @@ function px2dtGitUi(px, pj){
 							if( $detail.is(':visible') ){
 								$detail.html( '<div class="px2dt-loading"></div>' );
 								_this.git.show([hash], function(res){
+									if( res.length > 2000 ){
+										// 内容が多すぎると固まるので、途中までで切る。
+										res = res.substr(0, 2000-3) + '...';
+									}
 									// console.log(res);
 									$detail
 										.html( '' )
@@ -246,14 +252,19 @@ function px2dtGitUi(px, pj){
 												if( !confirm('この操作は現在の ' + divDb[div].label + ' の変更を破棄します。よろしいですか？') ){
 													return;
 												}
+												px.progress.start({
+													'blindness':true,
+													'showProgressBar': true
+												});
 												getGitRollback(div, options, hash, function(result, err, code){
 													if( result ){
 														alert('ロールバックを完了しました。');
 													}else{
-														alert('ロールバックは失敗しました。');
-														alert('ERROR: ' + err);
+														alert('[ERROR] ロールバックは失敗しました。');
+														alert(err);
 														console.error('ERROR: ' + err);
 													}
+													px.progress.close();
 												});
 												return;
 											})

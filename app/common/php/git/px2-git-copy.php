@@ -432,12 +432,14 @@ class main{
 	 * @param  [type] $work_tree [description]
 	 * @return [type]            [description]
 	 */
-	private function fileStatusJudge($index, $work_tree){
-		if($work_tree == '?' && $index == '?'){
+	private function fileStatusJudge($file_info){
+		if($file_info['work_tree'] == '?' && $file_info['index'] == '?'){
 			return 'untracked';
-		}else if($work_tree == 'M'){
+		}else if($file_info['work_tree'] == 'A' || $file_info['index'] == 'A'){
+			return 'added';
+		}else if($file_info['work_tree'] == 'M' || $file_info['index'] == 'M'){
 			return 'modified';
-		}else if($work_tree == 'D'){
+		}else if($file_info['work_tree'] == 'D' || $file_info['index'] == 'D'){
 			return 'deleted';
 		}
 		return 'unknown';
@@ -458,9 +460,12 @@ class main{
 		foreach( $status['div']['sitemaps'] as $idx=>$file ){
 			// var_dump($file);
 			$realpath_file = $this->fs->get_realpath($this->path_git_home.'/'.$file['file']);
-			$status = $this->fileStatusJudge($file['work_tree'], $file['index']);
-			if( $status == 'untracked' ){
+			$file_status = $this->fileStatusJudge($file);
+			if( $file_status == 'untracked' ){
 				$this->fs->rm($realpath_file);
+			}elseif( $file_status == 'added' ){
+				$this->fs->rm($realpath_file);
+				$this->git->add($realpath_file, array());
 			}
 		}
 
@@ -483,9 +488,36 @@ class main{
 
 		$status = $this->status_contents($page_path);
 
-		// TODO: 未実装
+		// untracked file を削除する
+		foreach( $status['changes'] as $idx=>$file ){
+			$realpath_file = $this->fs->get_realpath($this->path_git_home.'/'.$file['file']);
+			$file_status = $this->fileStatusJudge($file);
+			if( $file_status == 'untracked' ){
+				$this->fs->rm($realpath_file);
+			}elseif( $file_status == 'added' ){
+				$this->fs->rm($realpath_file);
+				$this->git->add($realpath_file, array());
+			}
+		}
 
-		return false;
+		$path_contents = $this->get_contents_path_info($page_path);
+
+		// 差分ファイルをロールバックする
+		try {
+			$this->git->checkout->rollback( $hash, $path_contents['realpath_content'] );
+		} catch(\Exception $e) {
+		}
+		try {
+			$this->git->checkout->rollback( $hash, $path_contents['realpath_files'] );
+		} catch(\Exception $e) {
+		}
+		foreach( $path_contents['realpath_content_ext'] as $realpath ){
+			try {
+				$this->git->checkout->rollback( $hash, $realpath );
+			} catch(\Exception $e) {
+			}
+		}
+		return true;
 	}
 
 
@@ -512,7 +544,6 @@ class main{
 			return false;
 		}
 
-		// var_dump( $realpath_content );
 		$ary['realpath_content'] = $this->fs->get_realpath( $ary['realpath_content'] );
 		$ary['realpath_files'] = $this->fs->get_realpath( $ary['realpath_files'].'/' );
 

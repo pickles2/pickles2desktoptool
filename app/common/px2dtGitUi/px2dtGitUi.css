@@ -3,6 +3,9 @@
 .px2dt-git-commit .px2dt-git-commit__stats-untracked{
 	border-left: 4px solid #3f9;
 }
+.px2dt-git-commit .px2dt-git-commit__stats-added{
+	border-left: 4px solid #3f9;
+}
 .px2dt-git-commit .px2dt-git-commit__stats-modified{
 	border-left: 4px solid #f93;
 }

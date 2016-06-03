@@ -104,6 +104,12 @@ function px2dtGitUi(px, pj){
 			}else{
 				list = result.div[div];
 			}
+			if( !list.length ){
+				alert('コミットできる変更がありません。');
+				px.progress.close();
+				callback();
+				return;
+			}
 			for( var idx in list ){
 				var fileStatus = fileStatusJudge(list[idx]);
 				var $li = $('<li class="list-group-item">')

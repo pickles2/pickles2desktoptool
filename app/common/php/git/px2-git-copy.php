@@ -11,6 +11,7 @@ namespace tomk79\pickles2\git_copy;
 class main{
 
 	private $git;
+	private $fs;
 	private $req;
 	private $px;
 	private $command_php = 'php';
@@ -112,6 +113,38 @@ class main{
 		// var_dump($res);
 		return $res;
 	}
+
+	// /**
+	//  * git branch
+	//  * @return array result
+	//  */
+	// public function branch(){
+	// 	if( is_null($this->git) ){ return false; }
+	//
+	// 	// ↓px2-sitemapexcel に処理させるため、一度アクセスしておく
+	// 	$res = $this->execute_px2('/');
+	// 	// var_dump( $res );
+	// 	// $result = array();
+	// 	$result = $this->git->branch();
+	// 	// var_dump($result);
+	// 	return $result;
+	// }
+	//
+	// /**
+	//  * git ls-tree
+	//  * @return array result
+	//  */
+	// public function tree(){
+	// 	if( is_null($this->git) ){ return false; }
+	//
+	// 	// ↓px2-sitemapexcel に処理させるため、一度アクセスしておく
+	// 	$res = $this->execute_px2('/');
+	// 	// var_dump( $res );
+	// 	// $tree = array();
+	// 	$tree = $this->git->tree();
+	// 	// var_dump($tree);
+	// 	return $tree;
+	// }
 
 	/**
 	 * git log
@@ -301,38 +334,6 @@ class main{
 	}
 
 	/**
-	 * git branch
-	 * @return array result
-	 */
-	public function branch(){
-		if( is_null($this->git) ){ return false; }
-
-		// ↓px2-sitemapexcel に処理させるため、一度アクセスしておく
-		$res = $this->execute_px2('/');
-		// var_dump( $res );
-		// $result = array();
-		$result = $this->git->branch();
-		// var_dump($result);
-		return $result;
-	}
-
-	/**
-	 * git ls-tree
-	 * @return array result
-	 */
-	public function tree(){
-		if( is_null($this->git) ){ return false; }
-
-		// ↓px2-sitemapexcel に処理させるため、一度アクセスしておく
-		$res = $this->execute_px2('/');
-		// var_dump( $res );
-		// $tree = array();
-		$tree = $this->git->tree();
-		// var_dump($tree);
-		return $tree;
-	}
-
-	/**
 	 * commit sitemaps
 	 * @param string $commit_message コミットメッセージ
 	 * @return array result
@@ -423,6 +424,68 @@ class main{
 		// var_dump($res);
 
 		return $res;
+	}
+
+	/**
+	 * ファイルの状態を判定する
+	 * @param  [type] $index     [description]
+	 * @param  [type] $work_tree [description]
+	 * @return [type]            [description]
+	 */
+	private function fileStatusJudge($index, $work_tree){
+		if($work_tree == '?' && $index == '?'){
+			return 'untracked';
+		}else if($work_tree == 'M'){
+			return 'modified';
+		}else if($work_tree == 'D'){
+			return 'deleted';
+		}
+		return 'unknown';
+	} // fileStatusJudge()
+
+
+	/**
+	 * rollback sitemaps
+	 * @param string $hash コミットID
+	 * @return array result
+	 */
+	public function rollback_sitemaps( $hash ){
+		if( is_null($this->git) ){ return false; }
+
+		$status = $this->status();
+
+		// untracked file を削除する
+		foreach( $status['div']['sitemaps'] as $idx=>$file ){
+			// var_dump($file);
+			$realpath_file = $this->fs->get_realpath($this->path_git_home.'/'.$file['file']);
+			$status = $this->fileStatusJudge($file['work_tree'], $file['index']);
+			if( $status == 'untracked' ){
+				$this->fs->rm($realpath_file);
+			}
+		}
+
+		$realpath_sitemap = $this->fs->get_realpath($this->path_homedir.'sitemaps/');
+		$this->git->checkout->rollback(
+			$hash,
+			$realpath_sitemap
+		);
+		return true;
+	}
+
+	/**
+	 * rollback contents
+	 * @param string $page_path コミットするコンテンツのページパス
+	 * @param string $hash コミットID
+	 * @return array result
+	 */
+	public function rollback_contents($page_path, $hash){
+		if( is_null($this->git) ){ return false; }
+
+		$status = $this->status_contents($page_path);
+
+		// TODO: 未実装
+
+		return false;
 	}
 
 

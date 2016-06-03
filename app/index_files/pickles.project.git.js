@@ -51,8 +51,9 @@ module.exports = function( px, pj ) {
 								try {
 									rtn = JSON.parse(rtn);
 								} catch (e) {
-									rtn = false;
 									console.error('Failed to parse JSON string.');
+									console.error(rtn);
+									rtn = false;
 								}
 								console.log(rtn, err, code);
 								callback(rtn, err, code);
@@ -88,6 +89,18 @@ module.exports = function( px, pj ) {
 	 * @return {[type]} [description]
 	 */
 	this.statusContents = new apiGen('status_contents');
+
+	/**
+	 * サイトマップをロールバックする
+	 * @return {[type]} [description]
+	 */
+	this.rollbackSitemaps = new apiGen('rollback_sitemaps');
+
+	/**
+	 * ページのコンテンツをロールバックする
+	 * @return {[type]} [description]
+	 */
+	this.rollbackContents = new apiGen('rollback_contents');
 
 	/**
 	 * git log

@@ -26,14 +26,16 @@ function px2dtGitUi(px, pj){
 	/**
 	 * ファイルの状態を判定する
 	 */
-	function fileStatusJudge(index, work_tree){
-		if(work_tree == '?' && index == '?'){
+	function fileStatusJudge(fileInfo){
+		if(fileInfo.work_tree == '?' && fileInfo.index == '?'){
 			return 'untracked';
-		}else if(work_tree == 'M'){
+		}else if(fileInfo.work_tree == 'M' || fileInfo.index == 'M'){
 			return 'modified';
-		}else if(work_tree == 'D'){
+		}else if(fileInfo.work_tree == 'D' || fileInfo.index == 'D'){
 			return 'deleted';
 		}
+		console.error('unknown status type;');
+		console.error(fileInfo);
 		return 'unknown';
 	} // fileStatusJudge()
 
@@ -101,7 +103,7 @@ function px2dtGitUi(px, pj){
 				list = result.div[div];
 			}
 			for( var idx in result.changes ){
-				var fileStatus = fileStatusJudge(result.changes[idx].index, result.changes[idx].work_tree);
+				var fileStatus = fileStatusJudge(result.changes[idx]);
 				var $li = $('<li class="list-group-item">')
 					.text( '['+fileStatus+'] '+result.changes[idx].file )
 					.addClass('px2dt-git-commit__stats-'+fileStatus)
@@ -164,10 +166,30 @@ function px2dtGitUi(px, pj){
 						callback(result, err, code);
 					});
 					break;
-				default:
+				case 'sitemaps':
 					_this.git.logSitemaps(function(result, err, code){
 						callback(result, err, code);
 					});
+					break;
+				default:
+					break;
+			}
+			return;
+		}
+
+		function getGitRollback(div, options, hash, callback){
+			switch( div ){
+				case 'contents':
+					_this.git.rollbackContents([options.page_path, hash], function(result, err, code){
+						callback(result, err, code);
+					});
+					break;
+				case 'sitemaps':
+					_this.git.rollbackSitemaps([hash], function(result, err, code){
+						callback(result, err, code);
+					});
+					break;
+				default:
 					break;
 			}
 			return;
@@ -202,10 +224,11 @@ function px2dtGitUi(px, pj){
 					;
 					$li.click(function(){
 						$detail.toggle('fast', function(){
+							var hash = $(this).attr('data-px2dt-hash');
 							if( $detail.is(':visible') ){
 								$detail.html( '<div class="px2dt-loading"></div>' );
-								_this.git.show([$(this).attr('data-px2dt-hash')], function(res){
-									console.log(res);
+								_this.git.show([hash], function(res){
+									// console.log(res);
 									$detail
 										.html( '' )
 										.append( $('<pre>')
@@ -213,6 +236,26 @@ function px2dtGitUi(px, pj){
 											.css({
 												'max-height': 300,
 												'overflow': 'auto'
+											})
+										)
+										.append( $('<button>')
+											.addClass('btn')
+											.addClass('btn-primary')
+											.text('このバージョンまでロールバックする')
+											.click(function(){
+												if( !confirm('この操作は現在の ' + divDb[div].label + ' の変更を破棄します。よろしいですか？') ){
+													return;
+												}
+												getGitRollback(div, options, hash, function(result, err, code){
+													if( result ){
+														alert('ロールバックを完了しました。');
+													}else{
+														alert('ロールバックは失敗しました。');
+														alert('ERROR: ' + err);
+														console.error('ERROR: ' + err);
+													}
+												});
+												return;
 											})
 										)
 									;
@@ -238,7 +281,7 @@ function px2dtGitUi(px, pj){
 						.click(function(){
 							px.closeDialog();
 							callback();
-						}),
+						})
 				]
 			});
 			px.progress.close();

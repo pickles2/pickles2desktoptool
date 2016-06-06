@@ -3,10 +3,6 @@
         {
             "type": "git",
             "url": "https://github.com/tomk79/px2-git.git"
-        },
-        {
-            "type": "git",
-            "url": "https://github.com/tomk79/PHPGit.git"
         }
     ],
     "require": {
@@ -18,7 +14,7 @@
         "pickles2/px2-sitemapexcel": "2.*",
         "pickles2/px2-path-resolver": "2.*",
         "tomk79/px2-git": "dev-master",
-        "tomk79/phpgit": "dev-master"
+        "tomk79/phpgit": "0.3.*"
     },
     "require-dev": {
         "phpunit/phpunit": "4.1.*"

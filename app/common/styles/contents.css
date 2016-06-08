@@ -159,6 +159,27 @@ ul.listview li a.current{
 }
 
 /**
+ * ローディング
+ */
+@-webkit-keyframes px2dt--loading {
+	0% { transform: rotate(-360deg) scale(0,0); }
+	30% { transform: rotate(0deg) scale(1,1); }
+	100% { transform: rotate(360deg) scale(0,0); }
+}
+.px2dt-loading{
+	clear: both;
+	float: none;
+	display: block;
+	padding:3em;
+}
+.px2dt-loading:before{
+	display: block;
+	text-align: center;
+	content: 'now loading...';
+	-webkit-animation: px2dt--loading 1.4s infinite normal ease;
+}
+
+/**
  * .clearfix
  */
 .clearfix {

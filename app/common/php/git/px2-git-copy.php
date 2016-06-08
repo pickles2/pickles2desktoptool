@@ -11,6 +11,7 @@ namespace tomk79\pickles2\git_copy;
 class main{
 
 	private $git;
+	private $fs;
 	private $req;
 	private $px;
 	private $command_php = 'php';
@@ -112,6 +113,38 @@ class main{
 		// var_dump($res);
 		return $res;
 	}
+
+	// /**
+	//  * git branch
+	//  * @return array result
+	//  */
+	// public function branch(){
+	// 	if( is_null($this->git) ){ return false; }
+	//
+	// 	// ↓px2-sitemapexcel に処理させるため、一度アクセスしておく
+	// 	$res = $this->execute_px2('/');
+	// 	// var_dump( $res );
+	// 	// $result = array();
+	// 	$result = $this->git->branch();
+	// 	// var_dump($result);
+	// 	return $result;
+	// }
+	//
+	// /**
+	//  * git ls-tree
+	//  * @return array result
+	//  */
+	// public function tree(){
+	// 	if( is_null($this->git) ){ return false; }
+	//
+	// 	// ↓px2-sitemapexcel に処理させるため、一度アクセスしておく
+	// 	$res = $this->execute_px2('/');
+	// 	// var_dump( $res );
+	// 	// $tree = array();
+	// 	$tree = $this->git->tree();
+	// 	// var_dump($tree);
+	// 	return $tree;
+	// }
 
 	/**
 	 * git log
@@ -288,48 +321,16 @@ class main{
 	 * git show
 	 * @return array result
 	 */
-	public function show(){
+	public function show( $hash ){
 		if( is_null($this->git) ){ return false; }
 
 		// ↓px2-sitemapexcel に処理させるため、一度アクセスしておく
 		$res = $this->execute_px2('/');
 		// var_dump( $res );
 		// $result = array();
-		$result = $this->git->show();
+		$result = $this->git->show( $hash );
 		// var_dump($result);
 		return $result;
-	}
-
-	/**
-	 * git branch
-	 * @return array result
-	 */
-	public function branch(){
-		if( is_null($this->git) ){ return false; }
-
-		// ↓px2-sitemapexcel に処理させるため、一度アクセスしておく
-		$res = $this->execute_px2('/');
-		// var_dump( $res );
-		// $result = array();
-		$result = $this->git->branch();
-		// var_dump($result);
-		return $result;
-	}
-
-	/**
-	 * git ls-tree
-	 * @return array result
-	 */
-	public function tree(){
-		if( is_null($this->git) ){ return false; }
-
-		// ↓px2-sitemapexcel に処理させるため、一度アクセスしておく
-		$res = $this->execute_px2('/');
-		// var_dump( $res );
-		// $tree = array();
-		$tree = $this->git->tree();
-		// var_dump($tree);
-		return $tree;
 	}
 
 	/**
@@ -425,6 +426,100 @@ class main{
 		return $res;
 	}
 
+	/**
+	 * ファイルの状態を判定する
+	 * @param  [type] $index     [description]
+	 * @param  [type] $work_tree [description]
+	 * @return [type]            [description]
+	 */
+	private function fileStatusJudge($file_info){
+		if($file_info['work_tree'] == '?' && $file_info['index'] == '?'){
+			return 'untracked';
+		}else if($file_info['work_tree'] == 'A' || $file_info['index'] == 'A'){
+			return 'added';
+		}else if($file_info['work_tree'] == 'M' || $file_info['index'] == 'M'){
+			return 'modified';
+		}else if($file_info['work_tree'] == 'D' || $file_info['index'] == 'D'){
+			return 'deleted';
+		}
+		return 'unknown';
+	} // fileStatusJudge()
+
+
+	/**
+	 * rollback sitemaps
+	 * @param string $hash コミットID
+	 * @return array result
+	 */
+	public function rollback_sitemaps( $hash ){
+		if( is_null($this->git) ){ return false; }
+
+		$status = $this->status();
+
+		// untracked file を削除する
+		foreach( $status['div']['sitemaps'] as $idx=>$file ){
+			// var_dump($file);
+			$realpath_file = $this->fs->get_realpath($this->path_git_home.'/'.$file['file']);
+			$file_status = $this->fileStatusJudge($file);
+			if( $file_status == 'untracked' ){
+				$this->fs->rm($realpath_file);
+			}elseif( $file_status == 'added' ){
+				$this->fs->rm($realpath_file);
+				$this->git->add($realpath_file, array());
+			}
+		}
+
+		$realpath_sitemap = $this->fs->get_realpath($this->path_homedir.'sitemaps/');
+		$this->git->checkout->rollback(
+			$hash,
+			$realpath_sitemap
+		);
+		return true;
+	}
+
+	/**
+	 * rollback contents
+	 * @param string $page_path コミットするコンテンツのページパス
+	 * @param string $hash コミットID
+	 * @return array result
+	 */
+	public function rollback_contents($page_path, $hash){
+		if( is_null($this->git) ){ return false; }
+
+		$status = $this->status_contents($page_path);
+
+		// untracked file を削除する
+		foreach( $status['changes'] as $idx=>$file ){
+			$realpath_file = $this->fs->get_realpath($this->path_git_home.'/'.$file['file']);
+			$file_status = $this->fileStatusJudge($file);
+			if( $file_status == 'untracked' ){
+				$this->fs->rm($realpath_file);
+			}elseif( $file_status == 'added' ){
+				$this->fs->rm($realpath_file);
+				$this->git->add($realpath_file, array());
+			}
+		}
+
+		$path_contents = $this->get_contents_path_info($page_path);
+
+		// 差分ファイルをロールバックする
+		try {
+			$this->git->checkout->rollback( $hash, $path_contents['realpath_content'] );
+		} catch(\Exception $e) {
+		}
+		try {
+			$this->git->checkout->rollback( $hash, $path_contents['realpath_files'] );
+		} catch(\Exception $e) {
+		}
+		foreach( $path_contents['realpath_content_ext'] as $realpath ){
+			try {
+				$this->git->checkout->rollback( $hash, $realpath );
+			} catch(\Exception $e) {
+			}
+		}
+		return true;
+	}
+
 
 	/**
 	 * ページパスから、コンテンツのパス情報一式を得る
@@ -449,7 +544,6 @@ class main{
 			return false;
 		}
 
-		// var_dump( $realpath_content );
 		$ary['realpath_content'] = $this->fs->get_realpath( $ary['realpath_content'] );
 		$ary['realpath_files'] = $this->fs->get_realpath( $ary['realpath_files'].'/' );
 

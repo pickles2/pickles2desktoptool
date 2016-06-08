@@ -53,6 +53,9 @@ class px2git{
 			case 'log':
 			case 'log_contents':
 			case 'log_sitemaps':
+			case 'show':
+			case 'rollback_sitemaps':
+			case 'rollback_contents':
 				$result = call_user_func_array(
 					array($this->px2git, $this->method),
 					$this->options

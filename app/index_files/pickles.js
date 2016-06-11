@@ -218,14 +218,14 @@ new (function($, window){
 			}
 
 			px.NodePhpBin = require('node-php-bin');
-			var npboption = {};
+			px.nodePhpBinOptions = {};
 			if( _db.commands && _db.commands['php'] ){
-				npboption = {
+				px.nodePhpBinOptions = {
 					'bin': _db.commands['php'] ,
 					'ini': null
 				};
 			}
-			px.nodePhpBin = px.NodePhpBin.get(npboption);
+			px.nodePhpBin = px.NodePhpBin.get(px.nodePhpBinOptions);
 
 			if( !_utils.isFile( _path_data_dir+'commands/composer/composer.phar' ) ){
 				(function(){

@@ -1,588 +1,609 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function (__dirname){
-module.exports = function(broccoli){
-	// if( process ){
-	// 	delete(require.cache[require('path').resolve(__filename)]);
-	// }
+(function(module){
+	var initOptions = {
+		'php':{}
+	};
 
-	var $ = require('jquery');
-	var it79 = require('iterate79');
-	var php = require('phpjs');
-	var _resMgr = broccoli.resourceMgr;
-	// var _pj = px.getCurrentProject();
+	module.exports = function(broccoli){
+		// if( process ){
+		// 	delete(require.cache[require('path').resolve(__filename)]);
+		// }
+		// console.log(options);
 
-	/**
-	 * パスから拡張子を取り出して返す
-	 */
-	function getExtension(path){
-		var ext = path.replace( new RegExp('^.*?\.([a-zA-Z0-9\_\-]+)$'), '$1' );
-		ext = ext.toLowerCase();
-		return ext;
-	}
+		var $ = require('jquery');
+		var it79 = require('iterate79');
+		var php = require('phpjs');
+		var _resMgr = broccoli.resourceMgr;
+		// var _pj = px.getCurrentProject();
 
-	/**
-	 * データをバインドする
-	 */
-	this.bind = function( fieldData, mode, mod, callback ){
-		fieldData = fieldData||{};
-		var rtn = '';
-		if( fieldData.output ){
-			rtn += fieldData.output;
+		/**
+		 * パスから拡張子を取り出して返す
+		 */
+		function getExtension(path){
+			var ext = path.replace( new RegExp('^.*?\.([a-zA-Z0-9\_\-]+)$'), '$1' );
+			ext = ext.toLowerCase();
+			return ext;
 		}
 
-		if( mode == 'canvas' ){
-			if( !rtn.length ){
-				rtn += '<tr><td style="text-align:center;">ダブルクリックして編集してください。</td></tr>';
+		/**
+		 * データをバインドする
+		 */
+		this.bind = function( fieldData, mode, mod, callback ){
+			fieldData = fieldData||{};
+			var rtn = '';
+			if( fieldData.output ){
+				rtn += fieldData.output;
 			}
-		}
-		// setTimeout(function(){
-			callback(rtn);
-		// }, 0);
-		return;
-	}
 
-	/**
-	 * プレビュー用の簡易なHTMLを生成する
-	 */
-	this.mkPreviewHtml = function( fieldData, mod, callback ){
-		// InstanceTreeViewで利用する
-		fieldData = fieldData||{};
-		var rtn = '';
-		if( fieldData.output ){
-			rtn += fieldData.output;
-		}
-		rtn = $('<table>'+rtn+'</table>');
-
-		callback( rtn.get(0).outerHTML );
-		return;
-	}
-
-	/**
-	 * データを正規化する
-	 */
-	this.normalizeData = function( fieldData, mode ){
-		var rtn = fieldData;
-		if( typeof(fieldData) !== typeof({}) ){
-			rtn = {
-				"resKey":'',
-				"output":"",
-				"header_row":0,
-				"header_col":0,
-				"cell_renderer":'text',
-				"renderer":'simplify'
-			};
-		}
-		return rtn;
-	}
-
-	/**
-	 * エディタUIを生成 (Client Side)
-	 */
-	this.mkEditor = function( mod, data, elm, callback ){
-		var _this = this;
-		var rtn = $('<div>');
-		if( typeof(data) !== typeof({}) ){ data = {}; }
-		if( typeof(data.resKey) !== typeof('') ){
-			data.resKey = '';
-		}
-		// if( typeof(data.original) !== typeof({}) ){ data.original = {}; }
-		var res = _resMgr.getResource( data.resKey );
-
-		var appMode = broccoli.getAppMode();
-		var $excel = $('<div data-excel-info>');
-		rtn.append( $excel );
-		// console.log(data);
-
-		if( data.resKey ){
-
-			if( appMode == 'desktop' ){
-				// desktop版
-				$excel.html('')
-					.append( $('<button type="button" class="btn btn-default">編集する</button>')
-						.attr({
-							'data-excel-resKey': data.resKey
-						})
-						.click(function(){
-							var resKey = $(this).attr('data-excel-resKey');
-							_this.callGpi(
-								{
-									'api': 'openOuternalEditor',
-									'data': {
-										'resKey': resKey
-									}
-								} ,
-								function(output){
-									if(!output.result){
-										alert('失敗しました。'+"\n"+output.message);
-									}
-									return;
-								}
-							);
-						})
-					)
-				;
-
-			}else{
-				// Web版
-				$excel.html('')
-					.append( $('<button type="button" class="btn btn-default">ダウンロードする</button>')
-						.attr({
-							'data-excel-resKey': data.resKey
-						})
-						.click(function(){
-							var resKey = $(this).attr('data-excel-resKey');
-							_this.callGpi(
-								{
-									'api': 'getFileInfo',
-									'data': {
-										'resKey': resKey
-									}
-								} ,
-								function(fileInfp){
-									var anchor = document.createElement("a");
-									anchor.href = 'data:application/octet-stream;base64,'+fileInfp.base64;
-									anchor.download = "bin."+fileInfp.ext;
-									anchor.click();
-									return;
-								}
-							);
-						})
-					)
-				;
-			}
-		}
-
-		rtn.append( $('<input>')
-			.attr({
-				"name":mod.name ,
-				"type":"file",
-				"webkitfile":"webkitfile"
-			})
-			.css({'width':'100%'})
-			.bind('change', function(e){
-				// console.log(e.target.files);
-				var fileInfo = e.target.files[0];
-
-				function readSelectedLocalFile(fileInfo, callback){
-					var reader = new FileReader();
-					reader.onload = function(evt) {
-						callback( evt.target.result );
-					}
-					reader.readAsDataURL(fileInfo);
+			if( mode == 'canvas' ){
+				if( !rtn.length ){
+					rtn += '<tr><td style="text-align:center;">ダブルクリックして編集してください。</td></tr>';
 				}
+			}
+			// setTimeout(function(){
+				callback(rtn);
+			// }, 0);
+			return;
+		}
 
-				var realpathSelected = $(this).val();
-				if( realpathSelected ){
-					readSelectedLocalFile(fileInfo, function(dataUri){
-						$excel
-							.html('選択しました')
+		/**
+		 * プレビュー用の簡易なHTMLを生成する
+		 */
+		this.mkPreviewHtml = function( fieldData, mod, callback ){
+			// InstanceTreeViewで利用する
+			fieldData = fieldData||{};
+			var rtn = '';
+			if( fieldData.output ){
+				rtn += fieldData.output;
+			}
+			rtn = $('<table>'+rtn+'</table>');
+
+			callback( rtn.get(0).outerHTML );
+			return;
+		}
+
+		/**
+		 * データを正規化する
+		 */
+		this.normalizeData = function( fieldData, mode ){
+			var rtn = fieldData;
+			if( typeof(fieldData) !== typeof({}) ){
+				rtn = {
+					"resKey":'',
+					"output":"",
+					"header_row":0,
+					"header_col":0,
+					"cell_renderer":'text',
+					"renderer":'simplify'
+				};
+			}
+			return rtn;
+		}
+
+		/**
+		 * エディタUIを生成 (Client Side)
+		 */
+		this.mkEditor = function( mod, data, elm, callback ){
+			var _this = this;
+			var rtn = $('<div>');
+			if( typeof(data) !== typeof({}) ){ data = {}; }
+			if( typeof(data.resKey) !== typeof('') ){
+				data.resKey = '';
+			}
+			// if( typeof(data.original) !== typeof({}) ){ data.original = {}; }
+			var res = _resMgr.getResource( data.resKey );
+
+			var appMode = broccoli.getAppMode();
+			var $excel = $('<div data-excel-info>');
+			rtn.append( $excel );
+			// console.log(data);
+
+			if( data.resKey ){
+
+				if( appMode == 'desktop' ){
+					// desktop版
+					$excel.html('')
+						.append( $('<button type="button" class="btn btn-default">編集する</button>')
 							.attr({
-								"src": dataUri ,
-								"data-size": fileInfo.size ,
-								"data-extension": getExtension( fileInfo.name ),
-								"data-mime-type": fileInfo.type ,
-								"data-base64": (function(dataUri){
-									dataUri = dataUri.replace(new RegExp('^data\\:[^\\;]*\\;base64\\,'), '');
-									// console.log(dataUri);
-									return dataUri;
-								})(dataUri)
+								'data-excel-resKey': data.resKey
 							})
-						;
-					});
+							.click(function(){
+								var resKey = $(this).attr('data-excel-resKey');
+								_this.callGpi(
+									{
+										'api': 'openOuternalEditor',
+										'data': {
+											'resKey': resKey
+										}
+									} ,
+									function(output){
+										if(!output.result){
+											alert('失敗しました。'+"\n"+output.message);
+										}
+										return;
+									}
+								);
+							})
+						)
+					;
+
+				}else{
+					// Web版
+					$excel.html('')
+						.append( $('<button type="button" class="btn btn-default">ダウンロードする</button>')
+							.attr({
+								'data-excel-resKey': data.resKey
+							})
+							.click(function(){
+								var resKey = $(this).attr('data-excel-resKey');
+								_this.callGpi(
+									{
+										'api': 'getFileInfo',
+										'data': {
+											'resKey': resKey
+										}
+									} ,
+									function(fileInfp){
+										var anchor = document.createElement("a");
+										anchor.href = 'data:application/octet-stream;base64,'+fileInfp.base64;
+										anchor.download = "bin."+fileInfp.ext;
+										anchor.click();
+										return;
+									}
+								);
+							})
+						)
+					;
 				}
-			})
-		);
-		rtn.append( $('<div>')
-			.append( $('<span>').text('ヘッダー行:') )
-			.append( $('<input>')
+			}
+
+			rtn.append( $('<input>')
 				.attr({
-					"name":mod.name+':header_row' ,
-					"type":"number",
-					"value":data.header_row
+					"name":mod.name ,
+					"type":"file",
+					"webkitfile":"webkitfile"
 				})
-			)
-		);
-		rtn.append( $('<div>')
-			.append( $('<span>').text('ヘッダー列:') )
-			.append( $('<input>')
-				.attr({
-					"name":mod.name+':header_col' ,
-					"type":"number",
-					"value":data.header_col
-				})
-			)
-		);
-		rtn.append( $('<div>')
-			.append( $('<span>').text('再現方法:') )
-			.append( $('<label>')
-				.append( $('<input>')
-					.attr({
-						"name":mod.name+':renderer' ,
-						"type":"radio",
-						"value":"simplify"
-					})
-				)
-				.append( $('<span>').text('単純化') )
-			)
-			.append( $('<label>')
-				.append( $('<input>')
-					.attr({
-						"name":mod.name+':renderer' ,
-						"type":"radio",
-						"value":"strict"
-					})
-				)
-				.append( $('<span>').text('そのまま表示') )
-			)
-		);
-		rtn.find('input[name="'+mod.name+':renderer"][value="'+data.renderer+'"]').attr({'checked':'checked'});
+				.css({'width':'100%'})
+				.bind('change', function(e){
+					// console.log(e.target.files);
+					var fileInfo = e.target.files[0];
 
-		rtn.append( $('<div>')
-			.append( $('<span>').text('セルの表現方法:') )
-			.append( $('<label>')
-				.append( $('<input>')
-					.attr({
-						"name":mod.name+':cell_renderer' ,
-						"type":"radio",
-						"value":"html"
-					})
-				)
-				.append( $('<span>').text('HTML') )
-			)
-			.append( $('<label>')
-				.append( $('<input>')
-					.attr({
-						"name":mod.name+':cell_renderer' ,
-						"type":"radio",
-						"value":"text"
-					})
-				)
-				.append( $('<span>').text('テキスト') )
-			)
-			.append( $('<label>')
-				.append( $('<input>')
-					.attr({
-						"name":mod.name+':cell_renderer' ,
-						"type":"radio",
-						"value":"markdown"
-					})
-				)
-				.append( $('<span>').text('Markdown') )
-			)
-		);
-		rtn.find('input[name="'+mod.name+':cell_renderer"][value="'+data.cell_renderer+'"]').attr({'checked':'checked'});
-
-		$(elm).html(rtn);
-		setTimeout(function(){ callback(); }, 0);
-		return;
-	}
-
-	/**
-	 * データを複製する
-	 */
-	this.duplicateData = function( data, callback, resources ){
-		data = JSON.parse( JSON.stringify( data ) );
-		it79.fnc(
-			data,
-			[
-				function(it1, data){
-					_resMgr.addResource( function(newResKey){
-						_resMgr.updateResource( newResKey, resources[data.resKey], function(result){
-							// console.log(newResKey);
-							data.resKey = newResKey;
-							it1.next(data);
-						} );
-					} );
-				} ,
-				function(it1, data){
-					callback(data);
-					it1.next(data);
-				}
-			]
-		);
-		return;
-	}
-
-	/**
-	 * データから使用するリソースのリソースIDを抽出する (Client Side)
-	 */
-	this.extractResourceId = function( data, callback ){
-		callback = callback||function(){};
-		resourceIdList = [];
-		resourceIdList.push(data.resKey);
-		callback(resourceIdList);
-		return this;
-	}
-
-	/**
-	 * エディタUIで編集した内容を保存
-	 */
-	this.saveEditorContent = function( elm, data, mod, callback ){
-		var _this = this;
-		var resInfo,
-			realpathSelected;
-		var $dom = $(elm);
-		if( typeof(data) !== typeof({}) ){
-			data = {};
-		}
-		if( typeof(data.resKey) !== typeof('') ){
-			data.resKey = '';
-		}
-
-		it79.fnc(
-			data,
-			[
-				function(it1, data){
-					data.header_row = $dom.find('input[name="'+mod.name+':header_row"]').val();
-					data.header_col = $dom.find('input[name="'+mod.name+':header_col"]').val();
-					data.cell_renderer = $dom.find('input[name="'+mod.name+':cell_renderer"]:checked').val();
-					data.renderer = $dom.find('input[name="'+mod.name+':renderer"]:checked').val();
-					it1.next(data);
-				} ,
-				function(it1, data){
-					// console.log('saving image field data.');
-					_resMgr.getResource(data.resKey, function(result){
-						// console.log(result);
-						if( result === false ){
-							_resMgr.addResource(function(newResKey){
-								data.resKey = newResKey;
-								// console.log(data.resKey);
-								it1.next(data);
-							});
-							return;
+					function readSelectedLocalFile(fileInfo, callback){
+						var reader = new FileReader();
+						reader.onload = function(evt) {
+							callback( evt.target.result );
 						}
-						it1.next(data);
-					});
-				} ,
-				function(it1, data){
-					// console.log('getResource() finaly');
-					// console.log(data);
-					_resMgr.getResource(data.resKey, function(res){
-						resInfo = res;
-						// console.log(resInfo);
-						it1.next(data);
-					});
-					return;
-				} ,
-				function(it1, data){
-					realpathSelected = $dom.find('input[type=file]').val();
-					// console.log(realpathSelected);
-					if( realpathSelected ){
-						// Excelファイルが選択された場合、
-						// 選択されたファイルの情報を resourceMgr に登録する。
-						resInfo.ext = $dom.find('div[data-excel-info]').attr('data-extension');
-						resInfo.type = $dom.find('div[data-excel-info]').attr('data-mime-type');
-						resInfo.size = $dom.find('div[data-excel-info]').attr('data-size');
-						resInfo.base64 = $dom.find('div[data-excel-info]').attr('data-base64');
-
-						resInfo.isPrivateMaterial = true;
-							// リソースファイルの設置は resourceMgr が行っている。
-							// isPrivateMaterial が true の場合、公開領域への設置は行われない。
-
-						// console.log(resInfo);
-						_resMgr.updateResource( data.resKey, resInfo, function(){
-							// var res = _resMgr.getResource( data.resKey );
-							it1.next(data);
-						} );
-						return ;
-					}else{
-						// Excelファイルが選択されていない場合、
-						// 過去に登録済みの bin.xlsx が変更されている可能性があるので、
-						// bin2base64 でJSONを更新しておく。
-						_resMgr.resetBase64FromBin( data.resKey, function(){
-							it1.next(data);
-						} );
-						return ;
+						reader.readAsDataURL(fileInfo);
 					}
-					it1.next(data);
-					return ;
-				} ,
-				// function(it1, data){
-				// 	// ☓ここで一旦保存しないと、古いデータで変換してしまう。
-				// 	// ○ここで一旦保存しちゃうと、addResource() した新しいデータが削除されてしまう。
-				// 	_resMgr.save( function(){
-				// 		// var res = _resMgr.getResource( data.resKey );
-				// 		it1.next(data);
-				// 	} );
-				// } ,
-				function(it1, data){
-					_this.callGpi(
-						{
-							'api': 'excel2html',
-							'data': data
-						} ,
-						function(output){
-							data.output = output;
-							if(!php.is_string(data.output)){
-								data.output = '';
-							}
-							it1.next(data);
-							return;
-						}
-					);
-				} ,
-				function(it1, data){
-					// console.log(data);
-					callback(data);
-					it1.next(data);
-				}
-			]
-		);
 
-		return;
-	}// this.saveEditorContent()
+					var realpathSelected = $(this).val();
+					if( realpathSelected ){
+						readSelectedLocalFile(fileInfo, function(dataUri){
+							$excel
+								.html('選択しました')
+								.attr({
+									"src": dataUri ,
+									"data-size": fileInfo.size ,
+									"data-extension": getExtension( fileInfo.name ),
+									"data-mime-type": fileInfo.type ,
+									"data-base64": (function(dataUri){
+										dataUri = dataUri.replace(new RegExp('^data\\:[^\\;]*\\;base64\\,'), '');
+										// console.log(dataUri);
+										return dataUri;
+									})(dataUri)
+								})
+							;
+						});
+					}
+				})
+			);
+			rtn.append( $('<div>')
+				.append( $('<span>').text('ヘッダー行:') )
+				.append( $('<input>')
+					.attr({
+						"name":mod.name+':header_row' ,
+						"type":"number",
+						"value":data.header_row
+					})
+				)
+			);
+			rtn.append( $('<div>')
+				.append( $('<span>').text('ヘッダー列:') )
+				.append( $('<input>')
+					.attr({
+						"name":mod.name+':header_col' ,
+						"type":"number",
+						"value":data.header_col
+					})
+				)
+			);
+			rtn.append( $('<div>')
+				.append( $('<span>').text('再現方法:') )
+				.append( $('<label>')
+					.append( $('<input>')
+						.attr({
+							"name":mod.name+':renderer' ,
+							"type":"radio",
+							"value":"simplify"
+						})
+					)
+					.append( $('<span>').text('単純化') )
+				)
+				.append( $('<label>')
+					.append( $('<input>')
+						.attr({
+							"name":mod.name+':renderer' ,
+							"type":"radio",
+							"value":"strict"
+						})
+					)
+					.append( $('<span>').text('そのまま表示') )
+				)
+			);
+			rtn.find('input[name="'+mod.name+':renderer"][value="'+data.renderer+'"]').attr({'checked':'checked'});
 
-	/**
-	 * GPI (Server Side)
-	 */
-	this.gpi = function(options, callback){
-		callback = callback || function(){};
-		var nodePhpBin = require('node-php-bin').get();
+			rtn.append( $('<div>')
+				.append( $('<span>').text('セルの表現方法:') )
+				.append( $('<label>')
+					.append( $('<input>')
+						.attr({
+							"name":mod.name+':cell_renderer' ,
+							"type":"radio",
+							"value":"html"
+						})
+					)
+					.append( $('<span>').text('HTML') )
+				)
+				.append( $('<label>')
+					.append( $('<input>')
+						.attr({
+							"name":mod.name+':cell_renderer' ,
+							"type":"radio",
+							"value":"text"
+						})
+					)
+					.append( $('<span>').text('テキスト') )
+				)
+				.append( $('<label>')
+					.append( $('<input>')
+						.attr({
+							"name":mod.name+':cell_renderer' ,
+							"type":"radio",
+							"value":"markdown"
+						})
+					)
+					.append( $('<span>').text('Markdown') )
+				)
+			);
+			rtn.find('input[name="'+mod.name+':cell_renderer"][value="'+data.cell_renderer+'"]').attr({'checked':'checked'});
 
-		switch(options.api){
-			case 'openOuternalEditor':
-				it79.fnc(
-					options.data,
-					[
-						function(it1, data){
-							var appMode = broccoli.getAppMode();
-							// console.log(appMode);
-							if( appMode != 'desktop' ){
-								var message = 'appModeが不正です。';
-								// console.log( message );
-								callback({'result':false, 'message': message});
+			$(elm).html(rtn);
+			setTimeout(function(){ callback(); }, 0);
+			return;
+		}
+
+		/**
+		 * データを複製する
+		 */
+		this.duplicateData = function( data, callback, resources ){
+			data = JSON.parse( JSON.stringify( data ) );
+			it79.fnc(
+				data,
+				[
+					function(it1, data){
+						_resMgr.addResource( function(newResKey){
+							_resMgr.updateResource( newResKey, resources[data.resKey], function(result){
+								// console.log(newResKey);
+								data.resKey = newResKey;
+								it1.next(data);
+							} );
+						} );
+					} ,
+					function(it1, data){
+						callback(data);
+						it1.next(data);
+					}
+				]
+			);
+			return;
+		}
+
+		/**
+		 * データから使用するリソースのリソースIDを抽出する (Client Side)
+		 */
+		this.extractResourceId = function( data, callback ){
+			callback = callback||function(){};
+			resourceIdList = [];
+			resourceIdList.push(data.resKey);
+			callback(resourceIdList);
+			return this;
+		}
+
+		/**
+		 * エディタUIで編集した内容を保存
+		 */
+		this.saveEditorContent = function( elm, data, mod, callback ){
+			var _this = this;
+			var resInfo,
+				realpathSelected;
+			var $dom = $(elm);
+			if( typeof(data) !== typeof({}) ){
+				data = {};
+			}
+			if( typeof(data.resKey) !== typeof('') ){
+				data.resKey = '';
+			}
+
+			it79.fnc(
+				data,
+				[
+					function(it1, data){
+						data.header_row = $dom.find('input[name="'+mod.name+':header_row"]').val();
+						data.header_col = $dom.find('input[name="'+mod.name+':header_col"]').val();
+						data.cell_renderer = $dom.find('input[name="'+mod.name+':cell_renderer"]:checked').val();
+						data.renderer = $dom.find('input[name="'+mod.name+':renderer"]:checked').val();
+						it1.next(data);
+					} ,
+					function(it1, data){
+						// console.log('saving image field data.');
+						_resMgr.getResource(data.resKey, function(result){
+							// console.log(result);
+							if( result === false ){
+								_resMgr.addResource(function(newResKey){
+									data.resKey = newResKey;
+									// console.log(data.resKey);
+									it1.next(data);
+								});
 								return;
 							}
 							it1.next(data);
-						} ,
-						function(it1, data){
-							_resMgr.getResourceOriginalRealpath( data.resKey, function(realpath){
-								// console.log(realpath);
-								data.realpath = realpath;
+						});
+					} ,
+					function(it1, data){
+						// console.log('getResource() finaly');
+						// console.log(data);
+						_resMgr.getResource(data.resKey, function(res){
+							resInfo = res;
+							// console.log(resInfo);
+							it1.next(data);
+						});
+						return;
+					} ,
+					function(it1, data){
+						realpathSelected = $dom.find('input[type=file]').val();
+						// console.log(realpathSelected);
+						if( realpathSelected ){
+							// Excelファイルが選択された場合、
+							// 選択されたファイルの情報を resourceMgr に登録する。
+							resInfo.ext = $dom.find('div[data-excel-info]').attr('data-extension');
+							resInfo.type = $dom.find('div[data-excel-info]').attr('data-mime-type');
+							resInfo.size = $dom.find('div[data-excel-info]').attr('data-size');
+							resInfo.base64 = $dom.find('div[data-excel-info]').attr('data-base64');
+
+							resInfo.isPrivateMaterial = true;
+								// リソースファイルの設置は resourceMgr が行っている。
+								// isPrivateMaterial が true の場合、公開領域への設置は行われない。
+
+							// console.log(resInfo);
+							_resMgr.updateResource( data.resKey, resInfo, function(){
+								// var res = _resMgr.getResource( data.resKey );
 								it1.next(data);
 							} );
-						} ,
-						function(it1, data){
-							var desktopUtils = require('desktop-utils');
-							desktopUtils.open( data.realpath );
-							it1.next(data);
-						} ,
-						function(it1, data){
-							callback({'result':true});
-							it1.next(data);
+							return ;
+						}else{
+							// Excelファイルが選択されていない場合、
+							// 過去に登録済みの bin.xlsx が変更されている可能性があるので、
+							// bin2base64 でJSONを更新しておく。
+							_resMgr.resetBase64FromBin( data.resKey, function(){
+								it1.next(data);
+							} );
+							return ;
 						}
-					]
-				);
-				break;
-
-			case 'getFileInfo':
-				_resMgr.getResource( options.data.resKey, function(resInfo){
-					// console.log(resInfo);
-					callback(resInfo);
-				} );
-				break;
-
-			case 'excel2html':
-				it79.fnc(
-					options.data,
-					[
-						function(it1, data){
-							_resMgr.getResourceOriginalRealpath( data.resKey, function(realpath){
-								// console.log(realpath);
-								data.realpath = realpath;
+						it1.next(data);
+						return ;
+					} ,
+					// function(it1, data){
+					// 	// ☓ここで一旦保存しないと、古いデータで変換してしまう。
+					// 	// ○ここで一旦保存しちゃうと、addResource() した新しいデータが削除されてしまう。
+					// 	_resMgr.save( function(){
+					// 		// var res = _resMgr.getResource( data.resKey );
+					// 		it1.next(data);
+					// 	} );
+					// } ,
+					function(it1, data){
+						_this.callGpi(
+							{
+								'api': 'excel2html',
+								'data': data
+							} ,
+							function(output){
+								data.output = output;
+								if(!php.is_string(data.output)){
+									data.output = '';
+								}
 								it1.next(data);
-							} );
-						} ,
-						function(it1, data){
-
-							var eventEndFlg = {};
-							var timeout = {};
-							var doneFlg = false;
-							function receiveCallBack(output, eventName){
-								// node-webkit で、なぜか childProc.spawn の、
-								// stdout.on('data') より先に on('exit') が呼ばれてしまうことがある。
-								// 原因は不明。
-								// 下記は、complete と success の両方が呼ばれるまで待つようにする処理。
-								eventEndFlg[eventName] = true;
-								clearTimeout(timeout);
-								if(doneFlg){
-									return;//もう行っちゃいました。
-								}
-								if( eventName == 'complete' && (eventEndFlg['success'] || eventEndFlg['error']) ){
-									// complete が呼ばれる前に success または error が呼ばれていた場合
-									data.output = output;
-									it1.next(data);
-									return;
-								}
-								if( eventEndFlg['complete'] && (eventName == 'success' || eventName == 'error') ){
-									// complete が既に呼ばれている状態で、success または error が呼ばれた場合
-									data.output = output;
-									it1.next(data);
-									return;
-								}
-								timeout = setTimeout(function(){
-									doneFlg = true;
-									data.output = output;
-									it1.next(data);
-								}, 3000); // 3秒待っても呼ばれなかったら先へ進む
+								return;
 							}
+						);
+					} ,
+					function(it1, data){
+						// console.log(data);
+						callback(data);
+						it1.next(data);
+					}
+				]
+			);
 
-							nodePhpBin.script(
-								[
-									__dirname+'/php/excel2html.php',
-									'--path', data.realpath ,
-									'--header_row', data.header_row,
-									'--header_col', data.header_col,
-									'--cell_renderer', data.cell_renderer,
-									'--renderer', data.renderer
-								],
-								{
-									"success": function(output){
-										// console.log(output);
-										receiveCallBack(output, 'success');
-									} ,
-									"error": function(error){
-										console.error('"excel2html.php" convert ERROR');
-										console.error('see error message below:', error);
-										receiveCallBack(error, 'error');
-									} ,
-									"complete": function(output, error, code){
-										if( error || code ){
-											console.error('"excel2html.php" convert ERROR (code:'+code+')');
-											console.error('see error message below:', output);
-											var errorMsg = output;
-											output = '';
-											output += '<tr><th>"excel2html.php" convert ERROR (code:'+code+')</th></tr>';
-											output += '<tr><td>see error message below:</td></tr>';
-											output += '<tr><td>'+error+'</td></tr>';
-											output += '<tr><td>'+errorMsg+'</td></tr>';
-										}
-										receiveCallBack(output, 'complete');
-									}
+			return;
+		}// this.saveEditorContent()
+
+		/**
+		 * GPI (Server Side)
+		 */
+		this.gpi = function(options, callback){
+			callback = callback || function(){};
+			var nodePhpBin = require('node-php-bin').get(initOptions.php);
+
+			switch(options.api){
+				case 'openOuternalEditor':
+					it79.fnc(
+						options.data,
+						[
+							function(it1, data){
+								var appMode = broccoli.getAppMode();
+								// console.log(appMode);
+								if( appMode != 'desktop' ){
+									var message = 'appModeが不正です。';
+									// console.log( message );
+									callback({'result':false, 'message': message});
+									return;
 								}
-							);
+								it1.next(data);
+							} ,
+							function(it1, data){
+								_resMgr.getResourceOriginalRealpath( data.resKey, function(realpath){
+									// console.log(realpath);
+									data.realpath = realpath;
+									it1.next(data);
+								} );
+							} ,
+							function(it1, data){
+								var desktopUtils = require('desktop-utils');
+								desktopUtils.open( data.realpath );
+								it1.next(data);
+							} ,
+							function(it1, data){
+								callback({'result':true});
+								it1.next(data);
+							}
+						]
+					);
+					break;
 
-						} ,
-						function(it1, data){
-							callback(data.output);
-							it1.next(data);
-						}
-					]
-				);
-				break;
+				case 'getFileInfo':
+					_resMgr.getResource( options.data.resKey, function(resInfo){
+						// console.log(resInfo);
+						callback(resInfo);
+					} );
+					break;
 
-			default:
-				callback('ERROR: Unknown API');
-				break;
+				case 'excel2html':
+					it79.fnc(
+						options.data,
+						[
+							function(it1, data){
+								_resMgr.getResourceOriginalRealpath( data.resKey, function(realpath){
+									// console.log(realpath);
+									data.realpath = realpath;
+									it1.next(data);
+								} );
+							} ,
+							function(it1, data){
+
+								var eventEndFlg = {};
+								var timeout = {};
+								var doneFlg = false;
+								function receiveCallBack(output, eventName){
+									// node-webkit で、なぜか childProc.spawn の、
+									// stdout.on('data') より先に on('exit') が呼ばれてしまうことがある。
+									// 原因は不明。
+									// 下記は、complete と success の両方が呼ばれるまで待つようにする処理。
+									eventEndFlg[eventName] = true;
+									clearTimeout(timeout);
+									if(doneFlg){
+										return;//もう行っちゃいました。
+									}
+									if( eventName == 'complete' && (eventEndFlg['success'] || eventEndFlg['error']) ){
+										// complete が呼ばれる前に success または error が呼ばれていた場合
+										data.output = output;
+										it1.next(data);
+										return;
+									}
+									if( eventEndFlg['complete'] && (eventName == 'success' || eventName == 'error') ){
+										// complete が既に呼ばれている状態で、success または error が呼ばれた場合
+										data.output = output;
+										it1.next(data);
+										return;
+									}
+									timeout = setTimeout(function(){
+										doneFlg = true;
+										data.output = output;
+										it1.next(data);
+									}, 3000); // 3秒待っても呼ばれなかったら先へ進む
+								}
+
+								nodePhpBin.script(
+									[
+										__dirname+'/php/excel2html.php',
+										'--path', data.realpath ,
+										'--header_row', data.header_row,
+										'--header_col', data.header_col,
+										'--cell_renderer', data.cell_renderer,
+										'--renderer', data.renderer
+									],
+									{
+										"success": function(output){
+											// console.log(output);
+											receiveCallBack(output, 'success');
+										} ,
+										"error": function(error){
+											console.error('"excel2html.php" convert ERROR');
+											console.error('see error message below:', error);
+											receiveCallBack(error, 'error');
+										} ,
+										"complete": function(output, error, code){
+											if( error || code ){
+												console.error('"excel2html.php" convert ERROR (code:'+code+')');
+												console.error('see error message below:', output);
+												var errorMsg = output;
+												output = '';
+												output += '<tr><th>"excel2html.php" convert ERROR (code:'+code+')</th></tr>';
+												output += '<tr><td>see error message below:</td></tr>';
+												output += '<tr><td>'+error+'</td></tr>';
+												output += '<tr><td>'+errorMsg+'</td></tr>';
+											}
+											receiveCallBack(output, 'complete');
+										}
+									}
+								);
+
+							} ,
+							function(it1, data){
+								callback(data.output);
+								it1.next(data);
+							}
+						]
+					);
+					break;
+
+				default:
+					callback('ERROR: Unknown API');
+					break;
+			}
+
+			return this;
 		}
 
-		return this;
 	}
 
-}
+	/**
+	 * オプション付きでロード
+	 * @param  {Object} _initOptions オプション
+	 * @return {Function}            プラグインAPI
+	 */
+	module.exports.get = function(_initOptions){
+		initOptions = _initOptions || {};
+		initOptions.php = initOptions.php || {};
+		return module.exports;
+	}
+
+})(module);
 
 }).call(this,"/../libs")
-},{"desktop-utils":2,"iterate79":6,"jquery":7,"node-php-bin":8,"phpjs":10}],2:[function(require,module,exports){
+},{"desktop-utils":3,"iterate79":4,"jquery":5,"node-php-bin":6,"phpjs":9}],2:[function(require,module,exports){
+
+},{}],3:[function(require,module,exports){
 (function (process){
 /**
  * desktop-utils
@@ -716,303 +737,8 @@ module.exports = new (function(){
 
 })();
 
-}).call(this,require("1YiZ5S"))
-},{"1YiZ5S":5,"child_process":3,"fs":3,"path":4}],3:[function(require,module,exports){
-
-},{}],4:[function(require,module,exports){
-(function (process){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-// resolves . and .. elements in a path array with directory names there
-// must be no slashes, empty elements, or device names (c:\) in the array
-// (so also no leading and trailing slashes - it does not distinguish
-// relative and absolute paths)
-function normalizeArray(parts, allowAboveRoot) {
-  // if the path tries to go above the root, `up` ends up > 0
-  var up = 0;
-  for (var i = parts.length - 1; i >= 0; i--) {
-    var last = parts[i];
-    if (last === '.') {
-      parts.splice(i, 1);
-    } else if (last === '..') {
-      parts.splice(i, 1);
-      up++;
-    } else if (up) {
-      parts.splice(i, 1);
-      up--;
-    }
-  }
-
-  // if the path is allowed to go above the root, restore leading ..s
-  if (allowAboveRoot) {
-    for (; up--; up) {
-      parts.unshift('..');
-    }
-  }
-
-  return parts;
-}
-
-// Split a filename into [root, dir, basename, ext], unix version
-// 'root' is just a slash, or nothing.
-var splitPathRe =
-    /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
-var splitPath = function(filename) {
-  return splitPathRe.exec(filename).slice(1);
-};
-
-// path.resolve([from ...], to)
-// posix version
-exports.resolve = function() {
-  var resolvedPath = '',
-      resolvedAbsolute = false;
-
-  for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
-    var path = (i >= 0) ? arguments[i] : process.cwd();
-
-    // Skip empty and invalid entries
-    if (typeof path !== 'string') {
-      throw new TypeError('Arguments to path.resolve must be strings');
-    } else if (!path) {
-      continue;
-    }
-
-    resolvedPath = path + '/' + resolvedPath;
-    resolvedAbsolute = path.charAt(0) === '/';
-  }
-
-  // At this point the path should be resolved to a full absolute path, but
-  // handle relative paths to be safe (might happen when process.cwd() fails)
-
-  // Normalize the path
-  resolvedPath = normalizeArray(filter(resolvedPath.split('/'), function(p) {
-    return !!p;
-  }), !resolvedAbsolute).join('/');
-
-  return ((resolvedAbsolute ? '/' : '') + resolvedPath) || '.';
-};
-
-// path.normalize(path)
-// posix version
-exports.normalize = function(path) {
-  var isAbsolute = exports.isAbsolute(path),
-      trailingSlash = substr(path, -1) === '/';
-
-  // Normalize the path
-  path = normalizeArray(filter(path.split('/'), function(p) {
-    return !!p;
-  }), !isAbsolute).join('/');
-
-  if (!path && !isAbsolute) {
-    path = '.';
-  }
-  if (path && trailingSlash) {
-    path += '/';
-  }
-
-  return (isAbsolute ? '/' : '') + path;
-};
-
-// posix version
-exports.isAbsolute = function(path) {
-  return path.charAt(0) === '/';
-};
-
-// posix version
-exports.join = function() {
-  var paths = Array.prototype.slice.call(arguments, 0);
-  return exports.normalize(filter(paths, function(p, index) {
-    if (typeof p !== 'string') {
-      throw new TypeError('Arguments to path.join must be strings');
-    }
-    return p;
-  }).join('/'));
-};
-
-
-// path.relative(from, to)
-// posix version
-exports.relative = function(from, to) {
-  from = exports.resolve(from).substr(1);
-  to = exports.resolve(to).substr(1);
-
-  function trim(arr) {
-    var start = 0;
-    for (; start < arr.length; start++) {
-      if (arr[start] !== '') break;
-    }
-
-    var end = arr.length - 1;
-    for (; end >= 0; end--) {
-      if (arr[end] !== '') break;
-    }
-
-    if (start > end) return [];
-    return arr.slice(start, end - start + 1);
-  }
-
-  var fromParts = trim(from.split('/'));
-  var toParts = trim(to.split('/'));
-
-  var length = Math.min(fromParts.length, toParts.length);
-  var samePartsLength = length;
-  for (var i = 0; i < length; i++) {
-    if (fromParts[i] !== toParts[i]) {
-      samePartsLength = i;
-      break;
-    }
-  }
-
-  var outputParts = [];
-  for (var i = samePartsLength; i < fromParts.length; i++) {
-    outputParts.push('..');
-  }
-
-  outputParts = outputParts.concat(toParts.slice(samePartsLength));
-
-  return outputParts.join('/');
-};
-
-exports.sep = '/';
-exports.delimiter = ':';
-
-exports.dirname = function(path) {
-  var result = splitPath(path),
-      root = result[0],
-      dir = result[1];
-
-  if (!root && !dir) {
-    // No dirname whatsoever
-    return '.';
-  }
-
-  if (dir) {
-    // It has a dirname, strip trailing slash
-    dir = dir.substr(0, dir.length - 1);
-  }
-
-  return root + dir;
-};
-
-
-exports.basename = function(path, ext) {
-  var f = splitPath(path)[2];
-  // TODO: make this comparison case-insensitive on windows?
-  if (ext && f.substr(-1 * ext.length) === ext) {
-    f = f.substr(0, f.length - ext.length);
-  }
-  return f;
-};
-
-
-exports.extname = function(path) {
-  return splitPath(path)[3];
-};
-
-function filter (xs, f) {
-    if (xs.filter) return xs.filter(f);
-    var res = [];
-    for (var i = 0; i < xs.length; i++) {
-        if (f(xs[i], i, xs)) res.push(xs[i]);
-    }
-    return res;
-}
-
-// String.prototype.substr - negative index don't work in IE8
-var substr = 'ab'.substr(-1) === 'b'
-    ? function (str, start, len) { return str.substr(start, len) }
-    : function (str, start, len) {
-        if (start < 0) start = str.length + start;
-        return str.substr(start, len);
-    }
-;
-
-}).call(this,require("1YiZ5S"))
-},{"1YiZ5S":5}],5:[function(require,module,exports){
-// shim for using process in browser
-
-var process = module.exports = {};
-
-process.nextTick = (function () {
-    var canSetImmediate = typeof window !== 'undefined'
-    && window.setImmediate;
-    var canPost = typeof window !== 'undefined'
-    && window.postMessage && window.addEventListener
-    ;
-
-    if (canSetImmediate) {
-        return function (f) { return window.setImmediate(f) };
-    }
-
-    if (canPost) {
-        var queue = [];
-        window.addEventListener('message', function (ev) {
-            var source = ev.source;
-            if ((source === window || source === null) && ev.data === 'process-tick') {
-                ev.stopPropagation();
-                if (queue.length > 0) {
-                    var fn = queue.shift();
-                    fn();
-                }
-            }
-        }, true);
-
-        return function nextTick(fn) {
-            queue.push(fn);
-            window.postMessage('process-tick', '*');
-        };
-    }
-
-    return function nextTick(fn) {
-        setTimeout(fn, 0);
-    };
-})();
-
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-}
-
-// TODO(shtylman)
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-
-},{}],6:[function(require,module,exports){
+}).call(this,require("pBGvAp"))
+},{"child_process":2,"fs":2,"pBGvAp":10,"path":7}],4:[function(require,module,exports){
 /**
  * node-iterate79
  */
@@ -1088,9 +814,9 @@ process.chdir = function (dir) {
 
 })(exports);
 
-},{}],7:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /*!
- * jQuery JavaScript Library v2.2.3
+ * jQuery JavaScript Library v2.2.4
  * http://jquery.com/
  *
  * Includes Sizzle.js
@@ -1100,7 +826,7 @@ process.chdir = function (dir) {
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2016-04-05T19:26Z
+ * Date: 2016-05-20T17:23Z
  */
 
 (function( global, factory ) {
@@ -1156,7 +882,7 @@ var support = {};
 
 
 var
-	version = "2.2.3",
+	version = "2.2.4",
 
 	// Define a local copy of jQuery
 	jQuery = function( selector, context ) {
@@ -6097,13 +5823,14 @@ jQuery.Event.prototype = {
 	isDefaultPrevented: returnFalse,
 	isPropagationStopped: returnFalse,
 	isImmediatePropagationStopped: returnFalse,
+	isSimulated: false,
 
 	preventDefault: function() {
 		var e = this.originalEvent;
 
 		this.isDefaultPrevented = returnTrue;
 
-		if ( e ) {
+		if ( e && !this.isSimulated ) {
 			e.preventDefault();
 		}
 	},
@@ -6112,7 +5839,7 @@ jQuery.Event.prototype = {
 
 		this.isPropagationStopped = returnTrue;
 
-		if ( e ) {
+		if ( e && !this.isSimulated ) {
 			e.stopPropagation();
 		}
 	},
@@ -6121,7 +5848,7 @@ jQuery.Event.prototype = {
 
 		this.isImmediatePropagationStopped = returnTrue;
 
-		if ( e ) {
+		if ( e && !this.isSimulated ) {
 			e.stopImmediatePropagation();
 		}
 
@@ -7051,19 +6778,6 @@ function getWidthOrHeight( elem, name, extra ) {
 		val = name === "width" ? elem.offsetWidth : elem.offsetHeight,
 		styles = getStyles( elem ),
 		isBorderBox = jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
-
-	// Support: IE11 only
-	// In IE 11 fullscreen elements inside of an iframe have
-	// 100x too small dimensions (gh-1764).
-	if ( document.msFullscreenElement && window.top !== window ) {
-
-		// Support: IE11 only
-		// Running getBoundingClientRect on a disconnected node
-		// in IE throws an error.
-		if ( elem.getClientRects().length ) {
-			val = Math.round( elem.getBoundingClientRect()[ name ] * 100 );
-		}
-	}
 
 	// Some non-html elements return undefined for offsetWidth, so check for null/undefined
 	// svg - https://bugzilla.mozilla.org/show_bug.cgi?id=649285
@@ -8955,6 +8669,7 @@ jQuery.extend( jQuery.event, {
 	},
 
 	// Piggyback on a donor event to simulate a different one
+	// Used only for `focus(in | out)` events
 	simulate: function( type, elem, event ) {
 		var e = jQuery.extend(
 			new jQuery.Event(),
@@ -8962,27 +8677,10 @@ jQuery.extend( jQuery.event, {
 			{
 				type: type,
 				isSimulated: true
-
-				// Previously, `originalEvent: {}` was set here, so stopPropagation call
-				// would not be triggered on donor event, since in our own
-				// jQuery.event.stopPropagation function we had a check for existence of
-				// originalEvent.stopPropagation method, so, consequently it would be a noop.
-				//
-				// But now, this "simulate" function is used only for events
-				// for which stopPropagation() is noop, so there is no need for that anymore.
-				//
-				// For the 1.x branch though, guard for "click" and "submit"
-				// events is still used, but was moved to jQuery.event.stopPropagation function
-				// because `originalEvent` should point to the original event for the constancy
-				// with other events and for more focused logic
 			}
 		);
 
 		jQuery.event.trigger( e, null, elem );
-
-		if ( e.isDefaultPrevented() ) {
-			event.preventDefault();
-		}
 	}
 
 } );
@@ -10932,7 +10630,7 @@ if ( !noGlobal ) {
 return jQuery;
 }));
 
-},{}],8:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 (function (process,__dirname){
 /**
  * node-php-bin
@@ -11101,8 +10799,236 @@ module.exports = new (function(){
 
 })();
 
-}).call(this,require("1YiZ5S"),"/../node_modules/node-php-bin/libs")
-},{"1YiZ5S":5,"child_process":3,"fs":3}],9:[function(require,module,exports){
+}).call(this,require("pBGvAp"),"/../node_modules/node-php-bin/libs")
+},{"child_process":2,"fs":2,"pBGvAp":10}],7:[function(require,module,exports){
+(function (process){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+// resolves . and .. elements in a path array with directory names there
+// must be no slashes, empty elements, or device names (c:\) in the array
+// (so also no leading and trailing slashes - it does not distinguish
+// relative and absolute paths)
+function normalizeArray(parts, allowAboveRoot) {
+  // if the path tries to go above the root, `up` ends up > 0
+  var up = 0;
+  for (var i = parts.length - 1; i >= 0; i--) {
+    var last = parts[i];
+    if (last === '.') {
+      parts.splice(i, 1);
+    } else if (last === '..') {
+      parts.splice(i, 1);
+      up++;
+    } else if (up) {
+      parts.splice(i, 1);
+      up--;
+    }
+  }
+
+  // if the path is allowed to go above the root, restore leading ..s
+  if (allowAboveRoot) {
+    for (; up--; up) {
+      parts.unshift('..');
+    }
+  }
+
+  return parts;
+}
+
+// Split a filename into [root, dir, basename, ext], unix version
+// 'root' is just a slash, or nothing.
+var splitPathRe =
+    /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
+var splitPath = function(filename) {
+  return splitPathRe.exec(filename).slice(1);
+};
+
+// path.resolve([from ...], to)
+// posix version
+exports.resolve = function() {
+  var resolvedPath = '',
+      resolvedAbsolute = false;
+
+  for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
+    var path = (i >= 0) ? arguments[i] : process.cwd();
+
+    // Skip empty and invalid entries
+    if (typeof path !== 'string') {
+      throw new TypeError('Arguments to path.resolve must be strings');
+    } else if (!path) {
+      continue;
+    }
+
+    resolvedPath = path + '/' + resolvedPath;
+    resolvedAbsolute = path.charAt(0) === '/';
+  }
+
+  // At this point the path should be resolved to a full absolute path, but
+  // handle relative paths to be safe (might happen when process.cwd() fails)
+
+  // Normalize the path
+  resolvedPath = normalizeArray(filter(resolvedPath.split('/'), function(p) {
+    return !!p;
+  }), !resolvedAbsolute).join('/');
+
+  return ((resolvedAbsolute ? '/' : '') + resolvedPath) || '.';
+};
+
+// path.normalize(path)
+// posix version
+exports.normalize = function(path) {
+  var isAbsolute = exports.isAbsolute(path),
+      trailingSlash = substr(path, -1) === '/';
+
+  // Normalize the path
+  path = normalizeArray(filter(path.split('/'), function(p) {
+    return !!p;
+  }), !isAbsolute).join('/');
+
+  if (!path && !isAbsolute) {
+    path = '.';
+  }
+  if (path && trailingSlash) {
+    path += '/';
+  }
+
+  return (isAbsolute ? '/' : '') + path;
+};
+
+// posix version
+exports.isAbsolute = function(path) {
+  return path.charAt(0) === '/';
+};
+
+// posix version
+exports.join = function() {
+  var paths = Array.prototype.slice.call(arguments, 0);
+  return exports.normalize(filter(paths, function(p, index) {
+    if (typeof p !== 'string') {
+      throw new TypeError('Arguments to path.join must be strings');
+    }
+    return p;
+  }).join('/'));
+};
+
+
+// path.relative(from, to)
+// posix version
+exports.relative = function(from, to) {
+  from = exports.resolve(from).substr(1);
+  to = exports.resolve(to).substr(1);
+
+  function trim(arr) {
+    var start = 0;
+    for (; start < arr.length; start++) {
+      if (arr[start] !== '') break;
+    }
+
+    var end = arr.length - 1;
+    for (; end >= 0; end--) {
+      if (arr[end] !== '') break;
+    }
+
+    if (start > end) return [];
+    return arr.slice(start, end - start + 1);
+  }
+
+  var fromParts = trim(from.split('/'));
+  var toParts = trim(to.split('/'));
+
+  var length = Math.min(fromParts.length, toParts.length);
+  var samePartsLength = length;
+  for (var i = 0; i < length; i++) {
+    if (fromParts[i] !== toParts[i]) {
+      samePartsLength = i;
+      break;
+    }
+  }
+
+  var outputParts = [];
+  for (var i = samePartsLength; i < fromParts.length; i++) {
+    outputParts.push('..');
+  }
+
+  outputParts = outputParts.concat(toParts.slice(samePartsLength));
+
+  return outputParts.join('/');
+};
+
+exports.sep = '/';
+exports.delimiter = ':';
+
+exports.dirname = function(path) {
+  var result = splitPath(path),
+      root = result[0],
+      dir = result[1];
+
+  if (!root && !dir) {
+    // No dirname whatsoever
+    return '.';
+  }
+
+  if (dir) {
+    // It has a dirname, strip trailing slash
+    dir = dir.substr(0, dir.length - 1);
+  }
+
+  return root + dir;
+};
+
+
+exports.basename = function(path, ext) {
+  var f = splitPath(path)[2];
+  // TODO: make this comparison case-insensitive on windows?
+  if (ext && f.substr(-1 * ext.length) === ext) {
+    f = f.substr(0, f.length - ext.length);
+  }
+  return f;
+};
+
+
+exports.extname = function(path) {
+  return splitPath(path)[3];
+};
+
+function filter (xs, f) {
+    if (xs.filter) return xs.filter(f);
+    var res = [];
+    for (var i = 0; i < xs.length; i++) {
+        if (f(xs[i], i, xs)) res.push(xs[i]);
+    }
+    return res;
+}
+
+// String.prototype.substr - negative index don't work in IE8
+var substr = 'ab'.substr(-1) === 'b'
+    ? function (str, start, len) { return str.substr(start, len) }
+    : function (str, start, len) {
+        if (start < 0) start = str.length + start;
+        return str.substr(start, len);
+    }
+;
+
+}).call(this,require("pBGvAp"))
+},{"pBGvAp":10}],8:[function(require,module,exports){
 (function (global){
 // This file is generated by `make build`. 
 // Do NOT edit by hand. 
@@ -24360,7 +24286,7 @@ exports.strtr = function (str, from, to) {
 };
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 (function (global){
 phpjs = require('./build/npm');
 
@@ -24373,7 +24299,72 @@ phpjs.registerGlobals = function() {
 module.exports = phpjs;
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./build/npm":9}],11:[function(require,module,exports){
+},{"./build/npm":8}],10:[function(require,module,exports){
+// shim for using process in browser
+
+var process = module.exports = {};
+
+process.nextTick = (function () {
+    var canSetImmediate = typeof window !== 'undefined'
+    && window.setImmediate;
+    var canPost = typeof window !== 'undefined'
+    && window.postMessage && window.addEventListener
+    ;
+
+    if (canSetImmediate) {
+        return function (f) { return window.setImmediate(f) };
+    }
+
+    if (canPost) {
+        var queue = [];
+        window.addEventListener('message', function (ev) {
+            var source = ev.source;
+            if ((source === window || source === null) && ev.data === 'process-tick') {
+                ev.stopPropagation();
+                if (queue.length > 0) {
+                    var fn = queue.shift();
+                    fn();
+                }
+            }
+        }, true);
+
+        return function nextTick(fn) {
+            queue.push(fn);
+            window.postMessage('process-tick', '*');
+        };
+    }
+
+    return function nextTick(fn) {
+        setTimeout(fn, 0);
+    };
+})();
+
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+}
+
+// TODO(shtylman)
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+
+},{}],11:[function(require,module,exports){
 (function(window){
 	window.BroccoliFieldTable = require('../libs/main.js');
 })(window);

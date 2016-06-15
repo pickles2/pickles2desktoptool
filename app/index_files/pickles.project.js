@@ -476,7 +476,9 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 						'customFields': {
 							'href': require('./../common/broccoli/broccoli-field-href/server.js'),
 							// 'psd': require('broccoli-field-psd'),
-							'table': require('broccoli-field-table')
+							'table': require('broccoli-field-table').get({
+								'php': px.nodePhpBinOptions
+							})
 						} ,
 						'bindTemplate': function(htmls, callback){
 							var fin = '';
@@ -532,7 +534,9 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				'customFields': {
 					'href': require('./../common/broccoli/broccoli-field-href/server.js'),
 					// 'psd': require('broccoli-field-psd'),
-					'table': require('broccoli-field-table')
+					'table': require('broccoli-field-table').get({
+						'php': px.nodePhpBinOptions
+					})
 				} ,
 				'log': function(msg){
 					px.log(msg);

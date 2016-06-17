@@ -13,3 +13,6 @@
 [submodule "submodules/node-pickles2-contents-editor"]
 	path = submodules/node-pickles2-contents-editor
 	url = https://github.com/pickles2/node-pickles2-contents-editor.git
+[submodule "submodules/px2style"]
+	path = submodules/px2style
+	url = https://github.com/pickles2/px2style.git

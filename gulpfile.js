@@ -3,11 +3,11 @@ var fsx = require('fs-extra');
 var packageJson = require(__dirname+'/package.json');
 var _tasks = [
 	'provisional',
-	'broccoli-client'
+	'client-libs'
 ];
 
-// broccoli-client (frontend) を処理
-gulp.task("broccoli-client", function() {
+// client-libs (frontend) を処理
+gulp.task("client-libs", function() {
 	gulp.src(["node_modules/broccoli-html-editor/client/dist/**/*"])
 		.pipe(gulp.dest( './app/common/broccoli-html-editor/client/dist/' ))
 	;
@@ -20,6 +20,9 @@ gulp.task("broccoli-client", function() {
 	// gulp.src(["node_modules/broccoli-field-psd/dist/*"])
 	// 	.pipe(gulp.dest( './app/common/broccoli-field-psd/dist/' ))
 	// ;
+	gulp.src(["node_modules/px2style/dist/**/*"])
+		.pipe(gulp.dest( './app/common/px2style/dist/' ))
+	;
 });
 
 

@@ -128,7 +128,7 @@ function px2dtGitUi(px, pj){
 					$('<button>')
 						.text('コミット')
 						.attr({'type':'submit'})
-						.addClass('btn btn-primary')
+						.addClass('px2-btn px2-btn--primary')
 						.click(function(){
 							px.progress.start({'blindness': true, 'showProgressBar': true});
 							var commitComment = $commitComment.val();
@@ -142,7 +142,7 @@ function px2dtGitUi(px, pj){
 						}),
 					$('<button>')
 						.text('キャンセル')
-						.addClass('btn btn-default')
+						.addClass('px2-btn')
 						.click(function(){
 							px.closeDialog();
 						})
@@ -251,8 +251,8 @@ function px2dtGitUi(px, pj){
 											})
 										)
 										.append( $('<button>')
-											.addClass('btn')
-											.addClass('btn-primary')
+											.addClass('px2-btn')
+											.addClass('px2-btn--primary')
 											.text('このバージョンまでロールバックする')
 											.click(function(){
 												if( !confirm('この操作は現在の ' + divDb[div].label + ' の変更を破棄します。よろしいですか？') ){
@@ -294,7 +294,7 @@ function px2dtGitUi(px, pj){
 					$('<button>')
 						.text('閉じる')
 						.attr({'type':'submit'})
-						.addClass('btn btn-default')
+						.addClass('px2-btn px2-btn--primary')
 						.click(function(){
 							px.closeDialog();
 							callback();

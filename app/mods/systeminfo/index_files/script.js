@@ -47,9 +47,8 @@
 			function(){
 				$('.cont_support_page_link')
 					.append( $('<button>')
-						.addClass('btn')
-						.addClass('btn-default')
-						.addClass('btn-block')
+						.addClass('px2-btn')
+						.addClass('px2-btn--block')
 						.click(function(){
 							px.utils.openURL( px.packageJson.pickles2.forum.url );
 						})

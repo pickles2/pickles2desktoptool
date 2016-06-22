@@ -11,7 +11,7 @@
 		opt.title = opt.title||'command:';
 		opt.body = opt.body||$('<div>');
 		opt.buttons = opt.buttons||[
-			$('<button class="btn btn-primary">').text('OK').click(function(){
+			$('<button class="px2-btn px2-btn--primary">').text('OK').click(function(){
 				px.closeDialog();
 			})
 		];
@@ -19,8 +19,8 @@
 		for( var i in opt.buttons ){
 			var $btnElm = $(opt.buttons[i]);
 			$btnElm.each(function(){
-				if(!$(this).hasClass('btn')){
-					$(this).addClass('btn').addClass('btn-default');
+				if(!$(this).hasClass('btn') && !$(this).hasClass('px2-btn')){
+					$(this).addClass('px2-btn');
 				}
 			});
 			opt.buttons[i] = $btnElm;

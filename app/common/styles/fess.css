@@ -402,7 +402,7 @@ html, body {
     font-family: monospace, monospace;
     font-size: 1em; }
   .contents button, .contents input, .contents optgroup, .contents select, .contents textarea {
-    color: inherit;
+    /*color: inherit;*/
     /* 1 */
     font: inherit;
     /* 2 */

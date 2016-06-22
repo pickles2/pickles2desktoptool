@@ -22,6 +22,10 @@
 		<!-- normalize & FESS -->
 		<link rel="stylesheet" href="../../common/styles/contents.css" type="text/css" />
 
+		<!-- Pickles 2 Style -->
+		<link rel="stylesheet" href="../../common/px2style/dist/styles.css" charset="utf-8" />
+		<script src="../../common/px2style/dist/scripts.js" charset="utf-8"></script>
+
 		<!-- Local Resources -->
 		<link rel="stylesheet" href="./index_files/style.css" type="text/css" />
 		<script src="./index_files/app.js"></script>
@@ -41,7 +45,7 @@
 						</tr>
 					</table>
 					<p class="center">
-						<button class="btn btn-primary">選択したパスで続ける</button>
+						<button class="px2-btn px2-btn--primary">選択したパスで続ける</button>
 					</p>
 				</form>
 			</div>
@@ -71,7 +75,7 @@
 						次のボタンを押して、セットアップを続けてください。<br />
 					</p>
 					<p>
-						<button class="btn btn-primary">Pickles 2 をセットアップする</button>
+						<button class="px2-btn px2-btn--primary">Pickles 2 をセットアップする</button>
 					</p>
 				</div>
 			</form>
@@ -80,16 +84,16 @@
 			<h2>基本的な手順</h2>
 			<div class="cols unit">
 				<div class="cols-col cols-1of4"><div class="cols-pad">
-					<button class="btn btn-default cont_mainmenu" onclick="px.subapp('fncs/sitemap/index.html');">サイトマップを編集する</button>
+					<button class="px2-btn cont_mainmenu" onclick="px.subapp('fncs/sitemap/index.html');">サイトマップを編集する</button>
 				</div></div>
 				<div class="cols-col cols-1of4"><div class="cols-pad">
-					<button class="btn btn-default cont_mainmenu" onclick="px.subapp('fncs/theme/index.html');">テーマを編集する</button>
+					<button class="px2-btn cont_mainmenu" onclick="px.subapp('fncs/theme/index.html');">テーマを編集する</button>
 				</div></div>
 				<div class="cols-col cols-1of4"><div class="cols-pad">
-					<button class="btn btn-default cont_mainmenu" onclick="px.subapp('fncs/pages/index.html');">コンテンツを編集する</button>
+					<button class="px2-btn cont_mainmenu" onclick="px.subapp('fncs/pages/index.html');">コンテンツを編集する</button>
 				</div></div>
 				<div class="cols-col cols-1of4 cols-last"><div class="cols-pad">
-					<button class="btn btn-default cont_mainmenu" onclick="px.subapp('fncs/publish/index.html');">パブリッシュする</button>
+					<button class="px2-btn cont_mainmenu" onclick="px.subapp('fncs/publish/index.html');">パブリッシュする</button>
 				</div></div>
 			</div><!-- / .cols -->
 			<div class="more_links">
@@ -175,7 +179,7 @@
 									<td class="tpl_entry_script selectable">...</td>
 								</tr>
 							</table>
-							<p><button class="btn btn-default" onclick="contApp.editProject(); return false;">プロジェクト情報を編集する</button></p>
+							<p><button class="px2-btn" onclick="contApp.editProject(); return false;">プロジェクト情報を編集する</button></p>
 						</div><!-- /.unit -->
 
 
@@ -192,8 +196,8 @@
 						<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/pxfw" data-widget-id="567316803953504256" height="1000">@pxfwさんのツイート</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 					</div>
 				</div><!-- /.row -->
-				<p><button class="btn btn-default" onclick="px.deselectProject(); px.subapp(); return false;">ダッシュボードへ戻る</button></p>
-				<p><button class="btn btn-danger" onclick="if(confirm('このプロジェクトを削除してよろしいですか？')){px.deleteProject( px.getCurrentProject().projectId, function(){px.subapp();} );} return false;">このプロジェクトを削除</button></p>
+				<p><button class="px2-btn" onclick="px.deselectProject(); px.subapp(); return false;">ダッシュボードへ戻る</button></p>
+				<p><button class="px2-btn px2-btn--danger" onclick="if(confirm('このプロジェクトを削除してよろしいですか？')){px.deleteProject( px.getCurrentProject().projectId, function(){px.subapp();} );} return false;">このプロジェクトを削除</button></p>
 				<hr />
 				<address class="center">---</address>
 

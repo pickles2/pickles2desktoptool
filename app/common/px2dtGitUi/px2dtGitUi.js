@@ -234,7 +234,7 @@ function px2dtGitUi(px, pj){
 						$detail.toggle('fast', function(){
 							var hash = $(this).attr('data-px2dt-hash');
 							if( $detail.is(':visible') ){
-								$detail.html( '<div class="px2dt-loading"></div>' );
+								$detail.html( '<div class="px2-loading"></div>' );
 								_this.git.show([hash], function(res){
 									if( res.length > 2000 ){
 										// 内容が多すぎると固まるので、途中までで切る。

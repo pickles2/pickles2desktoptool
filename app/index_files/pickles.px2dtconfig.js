@@ -56,8 +56,8 @@
 			buttons: [
 				$('<button>')
 					.text('OK')
-					.addClass('btn')
-					.addClass('btn-primary')
+					.addClass('px2-btn')
+					.addClass('px2-btn--primary')
 					.click(function(){
 						px.getDb().commands.php = $tpl.find('[name=php]').val();
 						px.getDb().commands.git = $tpl.find('[name=git]').val();
@@ -69,9 +69,8 @@
 					}
 				) ,
 				$('<button>')
-					.text('Cancel')
-					.addClass('btn')
-					.addClass('btn-default')
+					.text('キャンセル')
+					.addClass('px2-btn')
 					.click(function(){
 						px.closeDialog();
 					})

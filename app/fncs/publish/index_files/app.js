@@ -86,7 +86,7 @@ window.contApp = new (function(px, $){
 				$('<button>')
 					.text('パブリッシュを実行')
 					.attr({'type':'submit'})
-					.addClass('btn btn-primary')
+					.addClass('px2-btn px2-btn--primary')
 					.click(function(){
 						var region = $body.find('input[name=path_region]').val();
 						// var region = prompt('パブリッシュ対象のパスを指定してください。スラッシュから始まるパスで指定します。省略時、すべてのファイルが対象になります。','/');
@@ -136,8 +136,8 @@ window.contApp = new (function(px, $){
 						);
 					}),
 				$('<button>')
-					.text('Cancel')
-					.addClass('btn btn-default')
+					.text('キャンセル')
+					.addClass('px2-btn')
 					.click(function(){
 						px.closeDialog();
 					})

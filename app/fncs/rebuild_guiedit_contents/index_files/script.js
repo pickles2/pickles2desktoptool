@@ -10,7 +10,7 @@ window.contApp = new (function(px){
 	 */
 	function init(){
 		$cont = $('.contents').html('');
-		$btn = $('<button class="btn btn-default btn-block">');
+		$btn = $('<button class="px2-btn px2-btn--block">');
 		$pre = $('<pre>');
 
 		$cont

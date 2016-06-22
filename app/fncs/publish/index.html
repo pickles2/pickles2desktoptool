@@ -21,6 +21,10 @@
 		<link rel="stylesheet" href="../../common/bootstrap/css/bootstrap.min.css" />
 		<script src="../../common/bootstrap/js/bootstrap.min.js"></script>
 
+		<!-- Pickles 2 Style -->
+		<link rel="stylesheet" href="../../common/px2style/dist/styles.css" charset="utf-8" />
+		<script src="../../common/px2style/dist/scripts.js" charset="utf-8"></script>
+
 		<!-- normalize & FESS -->
 		<link rel="stylesheet" href="../../common/styles/contents.css" type="text/css" />
 
@@ -35,7 +39,7 @@
 			<div class="unit center">
 				<p>パブリッシュは実行されていません。</p>
 				<p>次のボタンを押して、パブリッシュを実行します。</p>
-				<p><button class="btn btn-primary" onclick="contApp.publish(); return false;">パブリッシュする</button></p>
+				<p><button class="px2-btn px2-btn--primary" onclick="contApp.publish(); return false;">パブリッシュする</button></p>
 			</div>
 		</script>
 		<script id="template-before_publish-progress" type="text/template">
@@ -63,13 +67,13 @@
 			<div class="cont_buttons">
 				<div class="row">
 					<div class="col-xs-4">
-						<p><button class="btn btn-default" onclick="contApp.publish(); return false;">もう一度パブリッシュする</button></p>
+						<p><button class="px2-btn" onclick="contApp.publish(); return false;">もう一度パブリッシュする</button></p>
 					</div>
 					<div class="col-xs-4">
-						<p><button class="btn btn-default" onclick="contApp.open_publish_tmp_dir(); return false;">一時パブリッシュデータを開く</button></p>
+						<p><button class="px2-btn" onclick="contApp.open_publish_tmp_dir(); return false;">一時パブリッシュデータを開く</button></p>
 					</div>
 					<div class="col-xs-4">
-						<p><button class="btn btn-primary" onclick="contApp.open_publish_dir(); return false;">パブリッシュ先ディレクトリを開く</button></p>
+						<p><button class="px2-btn px2-btn--primary" onclick="contApp.open_publish_dir(); return false;">パブリッシュ先ディレクトリを開く</button></p>
 					</div>
 				</div>
 			</div>

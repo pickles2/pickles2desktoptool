@@ -47,8 +47,7 @@ $ npm run build
 
 ### Pickles 2 Desktop Tool 2.0.0-beta.13 (2016年??月??日)
 
-- ??????????
-
+- コンテンツやサイトマップのコミット時、gitパスの設定が無視される不具合を修正。
 
 ### Pickles 2 Desktop Tool 2.0.0-beta.12 (2016年6月23日)
 

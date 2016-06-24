@@ -1,7 +1,6 @@
 <?php
 
 require_once(__DIR__.'/../../../../vendor/autoload.php');
-require_once(__DIR__.'/px2-git-copy.php');
 
 class px2git{
 	/** px2-git object */
@@ -30,13 +29,19 @@ class px2git{
 		$arg = json_decode( $arg );
 		// var_dump($arg);
 
-		$this->entryScript = $arg->entryScript;
-		$this->method = $arg->method;
-		$this->options = $arg->options;
+		$this->entryScript = @$arg->entryScript;
+		$this->command_git = @$arg->command_git;
+		$this->method = @$arg->method;
+		$this->options = @$arg->options;
 		if( !is_array($this->options) ){
 			$this->options = array();
 		}
-		$this->px2git = new \tomk79\pickles2\git_copy\main( $this->entryScript );
+		$this->px2git = new \tomk79\pickles2\git\main(
+			$this->entryScript,
+			array(
+				'bin' => $this->command_git
+			)
+		);
 	}
 
 	/**

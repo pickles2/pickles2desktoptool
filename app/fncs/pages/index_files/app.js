@@ -657,10 +657,8 @@ window.contApp = new (function( px ){
 
 		_lastPreviewPath = path;
 		px.preview.serverStandby( function(){
-			_pj.px2proj.href(path, function(linkto){
-				$previewIframe.attr( 'src', px.preview.getUrl(linkto) );
-				cb();
-			});
+			$previewIframe.attr( 'src', px.preview.getUrl(path) );
+			cb();
 		} );
 		return this;
 	}

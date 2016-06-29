@@ -7,7 +7,7 @@ module.exports = function( px, pj ) {
 	var nodePhpBin = px.nodePhpBin;
 	var utils79 = px.utils79;
 	var path_px2git = require('path').resolve(__dirname+'/../common/php/git/px2-git.php');
-	entryScript = require('path').resolve(pj.get('path'), pj.get('entry_script'));
+	var entryScript = require('path').resolve(pj.get('path'), pj.get('entry_script'));
 
 	function apiGen(apiName){
 		return new (function(apiName){
@@ -24,9 +24,11 @@ module.exports = function( px, pj ) {
 
 				var param = {
 					'method': apiName,
+					'command_git': (px.getDb().commands.git || null),
 					'entryScript': entryScript,
 					'options': options
 				};
+				// console.log(param);
 
 				// PHPスクリプトを実行する
 				var rtn = '';

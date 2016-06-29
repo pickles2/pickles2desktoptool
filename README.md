@@ -45,6 +45,11 @@ $ npm run build
 
 ## 更新履歴 - Change log
 
+### Pickles 2 Desktop Tool 2.0.0-beta.13 (2016年??月??日)
+
+- コンテンツやサイトマップのコミット時、gitパスの設定が無視される不具合を修正。
+- コンフィグ `path_controot` が `/` 以外の場合に起きる複数の不具合を修正。
+
 ### Pickles 2 Desktop Tool 2.0.0-beta.12 (2016年6月23日)
 
 - コンテンツ編集UIを pickles2-contents-editor に差し替えた。(broccoli-html-editorをラップするUIライブラリ)

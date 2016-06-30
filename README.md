@@ -49,6 +49,7 @@ $ npm run build
 
 - コンテンツやサイトマップのコミット時、gitパスの設定が無視される不具合を修正。
 - コンフィグ `path_controot` が `/` 以外の場合に起きる複数の不具合を修正。
+- pickles2-contents-editor 更新: ローカルリソースの読み込みの記述を、 `$px->path_files()` 依存に書き換えた。
 
 ### Pickles 2 Desktop Tool 2.0.0-beta.12 (2016年6月23日)
 

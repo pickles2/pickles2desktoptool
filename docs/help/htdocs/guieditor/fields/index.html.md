@@ -98,12 +98,14 @@ selectフィールドには、特別な設定値 `options` が定義されてい
 
 ```
 <!-- 実装例 -->
-<div style="text-align:{&{"input":{"type":"select", "name":"text-align", "label":"テキスト寄せ", "options":[
+<div style="text-align:{&{"input":{"type":"select", "name":"text-align", "label":"テキスト寄せ", "display":"select" "options":[
 	{"value":"left", "label":"左寄せ"},
 	{"value":"center", "label":"中央寄せ"},
 	{"value":"right", "label":"右寄せ"}
 ]}}&};">inner html.</div>
 ```
+
+`display` に `radio` を設定すると、ラジオボタンの形式に変更することができます。省略時は `select` になります。
 
 
 ## moduleフィールド

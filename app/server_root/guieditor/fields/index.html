@@ -158,12 +158,14 @@ Excel形式で作成したファイルをGUI上からアップロードすると
 <p>selectフィールドには、特別な設定値 <code>options</code> が定義されています。<code>options</code> には、プロパティに <code>value</code> と <code>label</code> を持ったオブジェクトを配列に格納して設定します。</p>
 
 <pre><code>&lt;!-- 実装例 --&gt;
-&lt;div style="text-align:{&amp;{"input":{"type":"select", "name":"text-align", "label":"テキスト寄せ", "options":[
+&lt;div style="text-align:{&amp;{"input":{"type":"select", "name":"text-align", "label":"テキスト寄せ", "display":"select" "options":[
     {"value":"left", "label":"左寄せ"},
     {"value":"center", "label":"中央寄せ"},
     {"value":"right", "label":"右寄せ"}
 ]}}&amp;};"&gt;inner html.&lt;/div&gt;
 </code></pre>
+
+<p><code>display</code> に <code>radio</code> を設定すると、ラジオボタンの形式に変更することができます。省略時は <code>select</code> になります。</p>
 
 <span id="hash_moduleフィールド"></span><h2>moduleフィールド</h2>
 

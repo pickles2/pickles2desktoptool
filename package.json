@@ -38,8 +38,8 @@
   },
   "devDependencies": {
     "gulp": "^3.9.0",
-    "nw": "^0.12.3",
-    "nw-builder": "^2.2.0",
+    "nw": "0.12.3",
+    "nw-builder": "2.2.0",
     "px2style": "file:submodules/px2style"
   },
   "pickles2": {

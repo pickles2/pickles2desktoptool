@@ -77,7 +77,10 @@
 					}
 					callback(bin);
 					return;
-				}
+				},
+				'bin': px.nodePhpBinOptions.bin,
+				'ini': px.nodePhpBinOptions.ini,
+				'extension_dir': px.nodePhpBinOptions.extension_dir
 			},
 			_server
 		) );

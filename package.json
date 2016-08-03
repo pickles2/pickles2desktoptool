@@ -1,6 +1,6 @@
 {
   "name": "Pickles2DesktopTool",
-  "version": "2.0.0-beta.13+nb",
+  "version": "2.0.0-beta.13",
   "description": "",
   "private": true,
   "main": "app/index.html",
@@ -11,7 +11,7 @@
     "build": "node ./build.js"
   },
   "author": "Tomoya Koyanagi",
-  "license": "BSD",
+  "license": "MIT",
   "dependencies": {
     "broccoli-field-table": "file:submodules/broccoli-field-table",
     "broccoli-html-editor": "file:submodules/broccoli-html-editor",

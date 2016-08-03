@@ -45,7 +45,7 @@ $ npm run build
 
 ## 更新履歴 - Change log
 
-### Pickles 2 Desktop Tool 2.0.0-beta.13 (2016年??月??日)
+### Pickles 2 Desktop Tool 2.0.0-beta.13 (2016年8月3日)
 
 - コンテンツやサイトマップのコミット時、gitパスの設定が無視される不具合を修正。
 - コンフィグ `path_controot` が `/` 以外の場合に起きる複数の不具合を修正。
@@ -155,19 +155,19 @@ $ npm run build
 
 ### Pickles 2 Desktop Tool 2.0.0-beta.7 (2015年10月1日)
 
-- Pickles2 の新しい設定項目 $conf->path_files に対応した。
-- コンテンツエリアのセレクタをPickles2のコンフィグ $conf->plugins->px2dt->contents_area_selector, $conf->plugins->px2dt->contents_bowl_name_by に設定できるようになった。
+- Pickles2 の新しい設定項目 `$conf->path_files` に対応した。
+- コンテンツエリアのセレクタをPickles2のコンフィグ `$conf->plugins->px2dt->contents_area_selector`, `$conf->plugins->px2dt->contents_bowl_name_by` に設定できるようになった。
 - GUI Editor: 編集中にバックスペースキーを押すと前の画面に戻ってしまうことがある問題を修正。
 - GUI Editor: moduleフィールドの「ここにモジュールをドラッグしてください」の色とサイズで階層の深さが分かるように調整した。
 - GUI Editor: 隣接するモジュールのパネルを密接するようにした。
 - GUI Editor: 画像アップ済みのimageフィールドを複製すると、複製元と複製先の画像が連動してしまう不具合を修正。
 - GUI Editor: tableフィールドにExcelを初回アップすると、正常に処理されない問題を修正。
-- GUI Editor: モジュールのパッケージおよびカテゴリごとの info.json から name を読み込んで反映するようになった。
+- GUI Editor: モジュールのパッケージおよびカテゴリごとの `info.json` から `name` を読み込んで反映するようになった。
 - GUI Editor: モジュールパッケージとカテゴリ内の並び替え指定 sort に対応。
 - GUI Editor: instance Path View のUI改善。
 - GUI Editor: instanceTreeView にフィールドのプレビューが付くようになった。
 - 画像ファイルなどをドロップするとアプリに復帰できなくなる問題を修正。
-- プレビュー用サーバーで *.pdf へのリクエストに対して application/pdf MIMEタイプを返すように修正。
+- プレビュー用サーバーで `*.pdf` へのリクエストに対して application/pdf MIMEタイプを返すように修正。
 - ファイルの検索機能追加。
 - その他、細かい表示の調整、不具合の修正など。
 

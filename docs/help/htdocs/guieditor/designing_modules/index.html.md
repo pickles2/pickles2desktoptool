@@ -208,7 +208,9 @@ thumb.png は、GUI編集画面上での、モジュールのサムネイルと�
 ```
 {
   "name": ".cols (3カラム)",
-  "areaSizeDetection ": "shallow"
+  "areaSizeDetection": "shallow"
+  "interface": {},
+  "deprecated": false
 }
 ```
 
@@ -216,6 +218,7 @@ thumb.png は、GUI編集画面上での、モジュールのサムネイルと�
 <dt>name</dt><dd>モジュールの名称を設定します。</dd>
 <dt>areaSizeDetection</dt><dd>編集画面でモジュールのサイズを測る方法を指定します。<code>deep</code> は、モジュールに含まれるすべての要素のサイズを測り、最大値を探します。<code>shallow</code>を指定すると、ルートノードのみのサイズを測ります。デフォルトは<code>shallow</code>です。</dd>
 <dt>interface</dt><dd>Twigテンプレートエンジンを利用する場合に、入力欄の構造を定義します。詳しくは、<?= $px->mk_link('../designing_modules_with_tplengines/') ?> を参照してください。</dd>
+<dt>deprecated</dt><dd><code>true</code> を設定して、非推奨モジュールに指定します。</dd>
 </dl>
 
 #### README.html (または README.md)

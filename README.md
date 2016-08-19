@@ -48,6 +48,7 @@ $ npm run build
 ### Pickles 2 Desktop Tool 2.0.0-beta.14 (2016年??月??日)
 
 - GUI編集で、モジュール設定 `deprecated` を追加。非推奨のモジュールに `true` をセットすると、モジュールパレットに表示されなくなる。
+- 深いディレクトリにある新規のファイルをgitコミットできない不具合を修正。
 
 ### Pickles 2 Desktop Tool 2.0.0-beta.13 (2016年8月3日)
 

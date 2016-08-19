@@ -236,15 +236,16 @@ function px2dtGitUi(px, pj){
 							if( $detail.is(':visible') ){
 								$detail.html( '<div class="px2-loading"></div>' );
 								_this.git.show([hash], function(res){
-									if( res.length > 2000 ){
+
+									if( res.plain.length > 2000 ){
 										// 内容が多すぎると固まるので、途中までで切る。
-										res = res.substr(0, 2000-3) + '...';
+										res.plain = res.plain.substr(0, 2000-3) + '...';
 									}
 									// console.log(res);
 									$detail
 										.html( '' )
 										.append( $('<pre>')
-											.text(res)
+											.text(res.plain)
 											.css({
 												'max-height': 300,
 												'overflow': 'auto'

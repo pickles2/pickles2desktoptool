@@ -100,8 +100,8 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 							_px2DTConfig = _config.plugins.px2dt;
 						}
 					}catch(e){
-						console.log('FAILED to load config.');
-						console.log(data_memo);
+						console.error('FAILED to load "Pickles 2" config.');
+						console.error(data_memo);
 						_config = false;
 						_px2DTConfig = false;
 					}

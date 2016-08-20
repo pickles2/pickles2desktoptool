@@ -83,7 +83,22 @@ window.contApp = new (function( px ){
 						var $bs3btn = $($('#template-bootstrap3-btn-dropdown-toggle').html());
 						var $html = $('<div>')
 							.append( $('<div class="cont_page_info-prop">')
-								.text( prop.pageInfo.title+'('+prop.pageInfo.path+')'+' - '+contProcType )
+								.append( $('<span>')
+									.text( prop.pageInfo.title+'('+prop.pageInfo.path+')' )
+								)
+								.append( $('<span>')
+									// .text( contProcType )
+									.addClass( 'px2-editor-type__' + (function(contProcType){
+										switch(contProcType){
+											case 'html.gui': return 'html-gui'; break;
+											case '.not_exists': return 'not-exists'; break;
+											case '.page_not_exists': return 'page-not-exists'; break;
+											default:
+												break;
+										}
+										return contProcType;
+									})(contProcType) )
+								)
 							)
 							.append( $('<div class="cont_page_info-btn">')
 								.append( $bs3btn )

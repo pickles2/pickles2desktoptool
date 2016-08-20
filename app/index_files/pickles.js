@@ -401,8 +401,8 @@ new (function($, window){
 	/**
 	 * プロジェクトを選択する
 	 */
-	this.selectProject = function(num, cb){
-		cb = cb||function(){}
+	this.selectProject = function(num, callback){
+		callback = callback||function(){}
 		if( typeof(num) != typeof(0) ){
 			px.log( '[ERROR] FAILED to selectProject(' + typeof(num) + ')' );
 			return false;
@@ -410,7 +410,15 @@ new (function($, window){
 		_selectedProject = num;
 		// alert(num);
 		px.log( 'selectProject(' + num + ')' );
-		_pj = new (require('./index_files/pickles.project.js')).classProject( window, this, _db.projects[_selectedProject], _selectedProject, cb );
+		_pj = new (require('./index_files/pickles.project.js')).classProject(
+			window,
+			this,
+			_db.projects[_selectedProject],
+			_selectedProject,
+			function(){
+				callback();
+			}
+		);
 		px.log( 'project name = ' + _pj.get('name') );
 		return true;
 	}
@@ -605,7 +613,12 @@ new (function($, window){
 							.data('path', list[i].path)
 							.data('num', i)
 							.click( function(){
+								var timer = setTimeout(function(){
+									px.progress.start({"showProgressBar":true, 'blindness':true});
+								}, 1000);
 								px.selectProject( $(this).data('num'), function(){
+									clearTimeout(timer);
+									px.progress.close();
 									px.subapp();
 								} );
 							} )
@@ -852,8 +865,6 @@ new (function($, window){
 				});
 			} ,
 			function(it, arg){
-				// アプリケーション開始
-				px.load();
 
 				// DOMスキャン
 				$header   = $('.theme_header');
@@ -867,6 +878,7 @@ new (function($, window){
 				});
 
 				it.next(arg);
+
 			} ,
 			function(it, arg){
 				var $ul = $shoulderMenu.find('ul').hide();

@@ -148,6 +148,7 @@ new (function($, window){
 		{"label":"ダッシュボード",      "cond":"projectSelected",    "area":"shoulder", "app":"index.html", "cb": function(){px.deselectProject();px.subapp();}} ,
 		{"label":"フォルダを開く",       "cond":"homeDirExists",      "area":"shoulder", "app":null, "cb": function(){px.getCurrentProject().open();}},
 		{"label":"ブラウザで開く",       "cond":"pxStandby",          "area":"shoulder", "app":null, "cb": function(){px.openInBrowser();}},
+		{"label":"テキストエディタで開く", "cond":"pxStandby",          "area":"shoulder", "app":null, "cb": function(){px.openInTextEditor( px.getCurrentProject().get('path') );}},
 		{"label":"プロジェクト設定",     "cond":"pxStandby",          "area":"shoulder", "app":"fncs/config/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"composer",             "cond":"composerJsonExists", "area":"shoulder", "app":"fncs/composer/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 		{"label":"git",                  "cond":"homeDirExists",      "area":"shoulder", "app":"fncs/git/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
@@ -525,20 +526,25 @@ new (function($, window){
 	 * 外部テキストエディタで開く
 	 */
 	this.openInTextEditor = function( path ){
-		if( !this.getDb().apps ){
-			alert('ERROR: 外部エディタが設定されていません。');
-		}
 		var pathEditor = '';
+		var targetType = null;
 		if( this.utils.isDirectory(path) ){
+			targetType = 'dir';
 			pathEditor = this.getDb().apps.texteditorForDir;
 		}else if( px.utils.isFile(path) ){
+			targetType = 'file';
 			pathEditor = this.getDb().apps.texteditor;
 		}else{
-			alert('ERROR: 編集対象のパスが存在しません。');
+			alert('編集対象のパスが存在しません。'+"\n"+path);
+			console.error('ERROR: '+'編集対象のパスが存在しません。'+"\n"+path);
 			return false;
 		}
-		if( !pathEditor.length && !this.utils.isDirectory(pathEditor) ){
-			alert('ERROR: 外部エディタが設定されていないか、存在しません。');
+
+		var msgSudgestSetting = _appName+'設定 メニューから、アプリケーション "外部テキストエディタ'+(targetType=='dir'?'(ディレクトリを開く)':'')+'" を設定してください。';
+		if( !this.getDb().apps || ( !pathEditor.length && !this.utils.isDirectory(pathEditor) ) ){
+			alert('外部テキストエディタが設定されていないか、存在しません。' + "\n" + msgSudgestSetting);
+			console.error('ERROR: '+'外部テキストエディタが設定されていないか、存在しません。');
+			return false;
 		}
 		if(_platform=='win'){
 			px.utils.spawn(
@@ -559,6 +565,7 @@ new (function($, window){
 				{}
 			);
 		}
+		return true;
 	}
 
 

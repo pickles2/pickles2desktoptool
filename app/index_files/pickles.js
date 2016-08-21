@@ -609,7 +609,7 @@ new (function($, window){
 	 */
 	this.subapp = function(appName){
 		var $cont = $('.contents').eq(0);
-		$cont.html('<p>Loading...</p>');
+		$cont.html('<p style="text-align:center; margin: 4em auto;">Loading...</p>');
 
 		if( typeof(_selectedProject) != typeof(0) ){
 			appName = '';
@@ -618,13 +618,21 @@ new (function($, window){
 		}
 
 		if( appName ){
-			$cont
-				.html('')
-				.append(
-					$('<iframe>')
-						.attr('src', './'+appName)
-				)
-			;
+			this.loadProject(function(){ // プロジェクトオブジェクトをリロードする。
+				$cont
+					.html('')
+					.append(
+						$('<iframe>')
+							.attr('src', './'+appName)
+					)
+				;
+
+				_current_app = appName;
+				layoutReset();
+				$contents.scrollTop(0);
+			});
+			return;
+
 		}else{
 			// プロジェクト選択画面を描画
 			$cont.html( $('script#template-selectProject-page').html() );
@@ -663,10 +671,11 @@ new (function($, window){
 					.html('<p>プロジェクトは登録されていません。</p>')
 				;
 			}
+			_current_app = appName;
+			layoutReset();
+			$contents.scrollTop(0);
+			return;
 		}
-		_current_app = appName;
-		layoutReset();
-		$contents.scrollTop(0);
 	}
 
 

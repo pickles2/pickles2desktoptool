@@ -421,6 +421,7 @@ new (function($, window){
 
 		px.log( 'selectProject(' + num + ')' );
 		this.loadProject(function(){
+			px.log( 'project "' + _pj.get('name') + '" is loaded.' );
 			callback();
 		});
 		return true;
@@ -443,7 +444,7 @@ new (function($, window){
 			_db.projects[_selectedProject],
 			_selectedProject,
 			function(){
-				px.log( 'project "' + _pj.get('name') + '" is loaded.' );
+				console.log( 'project "' + _pj.get('name') + '" is reloaded.' );
 				callback();
 			}
 		);

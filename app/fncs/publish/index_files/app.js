@@ -131,6 +131,11 @@ window.contApp = new (function(px, $){
 						}
 						// alert(str_paths_ignore);
 
+						var is_keep_cache = $body.find('input[name=keep_cache]:checked').val();
+						// console.log(is_keep_cache);
+						str_keep_cache = (is_keep_cache ? '&keep_cache=1' : '')
+
+
 						px.closeDialog();
 
 						console.log('/?PX=publish.run&path_region=' + px.php.urlencode(region) + str_paths_region + str_paths_ignore);
@@ -140,7 +145,7 @@ window.contApp = new (function(px, $){
 							{
 								"spawnCmdOpts": [
 									_pj.get('path')+'/'+_pj.get('entry_script') ,
-									'/?PX=publish.run&path_region=' + px.php.urlencode(region) + str_paths_region + str_paths_ignore
+									'/?PX=publish.run&path_region=' + px.php.urlencode(region) + str_paths_region + str_paths_ignore + str_keep_cache
 								] ,
 								"cmdCd": _pj.get('path'),
 								"complete": function(){

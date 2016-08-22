@@ -88,12 +88,26 @@ window.contApp = new (function(px, $){
 					.attr({'type':'submit'})
 					.addClass('px2-btn px2-btn--primary')
 					.click(function(){
-						var region = $body.find('input[name=path_region]').val();
-						// var region = prompt('パブリッシュ対象のパスを指定してください。スラッシュから始まるパスで指定します。省略時、すべてのファイルが対象になります。','/');
-						if( region === null ){
+						var str_paths_region_val = $body.find('textarea[name=path_region]').val();
+						var str_paths_region = '';
+						var tmp_ary_paths_region = str_paths_region_val.split(new RegExp('\r\n|\r|\n','g'));
+						var ary_paths_region = [];
+						for( var i in tmp_ary_paths_region ){
+							tmp_ary_paths_region[i] = px.php.trim(tmp_ary_paths_region[i]);
+							if( px.php.strlen(tmp_ary_paths_region[i]) ){
+								ary_paths_region.push( tmp_ary_paths_region[i] );
+							}
+						}
+						if( !ary_paths_region.length ){
+							alert('パブリッシュ対象が指定されていません。1件以上指定してください。');
 							return true;
 						}
-						// alert(px.php.urlencode(region));
+						var region = ary_paths_region.shift();
+						if( typeof(ary_paths_region) == typeof([]) ){
+							for( var i in ary_paths_region ){
+								str_paths_region += '&paths_region[]='+px.php.urlencode(ary_paths_region[i]);
+							}
+						}
 
 						var str_paths_ignore_val = $body.find('textarea[name=paths_ignore]').val();
 						// alert(str_paths_ignore_val);
@@ -119,13 +133,14 @@ window.contApp = new (function(px, $){
 
 						px.closeDialog();
 
+						console.log('/?PX=publish.run&path_region=' + px.php.urlencode(region) + str_paths_region + str_paths_ignore);
 						_this.progressReport.init(
 							_this,
 							$cont,
 							{
 								"spawnCmdOpts": [
 									_pj.get('path')+'/'+_pj.get('entry_script') ,
-									'/?PX=publish.run&path_region='+px.php.urlencode(region)+str_paths_ignore
+									'/?PX=publish.run&path_region=' + px.php.urlencode(region) + str_paths_region + str_paths_ignore
 								] ,
 								"cmdCd": _pj.get('path'),
 								"complete": function(){
@@ -136,7 +151,7 @@ window.contApp = new (function(px, $){
 						);
 					}),
 				$('<button>')
-					.text('キャンセル')
+					.text(px.lb.get('ui_label.cancel'))
 					.addClass('px2-btn')
 					.click(function(){
 						px.closeDialog();

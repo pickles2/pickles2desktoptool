@@ -7,6 +7,7 @@ window.contApp = new (function(px, $){
 	var _pj, _realpathPublishDir;
 	var $cont;
 	var _status;
+	var _patterns;
 
 	/**
 	 * initialize
@@ -20,6 +21,12 @@ window.contApp = new (function(px, $){
 		_realpathPublishDir = px.path.resolve( _pj.get('path')+'/'+_pj.get('home_dir')+'/_sys/ram/publish/' )+'/';
 		$cont = $('.contents');
 		$cont.html('');
+
+		try {
+			// パブリッシュパターンの設定を読み込む。
+			_patterns = _pj.getConfig().plugins.px2dt.publish_patterns;
+		} catch (e) {
+		}
 
 		px.utils.iterateFnc([
 			function(it, arg){
@@ -78,13 +85,66 @@ window.contApp = new (function(px, $){
 	 * パブリッシュを実行する
 	 */
 	this.publish = function(){
-		var $body = $($('#template-dialog_publish_options').html());
+		var $body = $( $('#template-dialog_publish_options').html() );
+
+		(function(){
+			// パブリッシュパターンの選択UIを作る
+			var $pattern = $body.find('.cont_form_pattern');
+			$pattern.css({
+				'margin':'1em auto'
+			});
+			try {
+				// console.log(patterns);
+				if( typeof(_patterns) !== typeof([]) || !_patterns.length){
+					$pattern.remove();
+				}else{
+					var $select = $pattern.find('select');
+					$select.append('<option value="">select pattern...</option>');
+					for( var idx in _patterns ){
+						var $opt = $('<option>');
+						$opt.attr({'value': idx});
+						$opt.text( _patterns[idx].label );
+						$select.append($opt);
+					}
+					$select.change(function(){
+						var selectedValue = $(this).val();
+						// alert(selectedValue);
+						var data = _patterns[selectedValue];
+						$(this).val('');
+						if( !data ){
+							alert('ERROR: 設定を読み込めません。');
+							return;
+						}
+						try {
+							$body.find('textarea[name=path_region]').val( data.paths_region.join("\n") );
+						} catch (e) {
+							$body.find('textarea[name=path_region]').val( '/' );
+						}
+						try {
+							$body.find('textarea[name=paths_ignore]').val( data.paths_ignore.join("\n") );
+						} catch (e) {
+							$body.find('textarea[name=paths_ignore]').val( '' );
+						}
+						try {
+							$body.find('input[name=keep_cache]').prop("checked", !!(data.keep_cache));
+						} catch (e) {
+							$body.find('input[name=keep_cache]').prop("checked", false);
+						}
+						return;
+					});
+				}
+			} catch (e) {
+				// 設定されていなかったら選択欄を削除
+				$pattern.remove();
+			}
+		})();
+
 		px.dialog({
-			'title': 'パブリッシュ範囲',
+			'title': 'パブリッシュ',
 			'body': $body,
 			'buttons':[
 				$('<button>')
-					.text('パブリッシュを実行')
+					.text('パブリッシュを実行する')
 					.attr({'type':'submit'})
 					.addClass('px2-btn px2-btn--primary')
 					.click(function(){

@@ -123,7 +123,12 @@
 			</div>
 		</script>
 		<script id="template-dialog_publish_options" type="text/template">
+			<div>
 			<!-- <h2>パブリッシュ対象範囲</h2> -->
+			<div class="cont_form_pattern">
+				<select name="cont_form_pattern">
+				</select>
+			</div>
 			<div class="form-group">
 				<label for="path_region">パブリッシュ対象範囲</label>
 				<textarea class="form-control" id="path_region" name="path_region" placeholder="/" rows="5">/</textarea>
@@ -135,6 +140,7 @@
 				<span class="help-block">パブリッシュ対象外にするディレクトリパスを指定してください。スラッシュから始まるパスで指定します。1行1ディレクトリで複数件指定できます。</span>
 
 				<label><input type="checkbox" name="keep_cache" value="1" /> キャッシュを消去しない</label>
+			</div>
 			</div>
 		</script>
 	</head>

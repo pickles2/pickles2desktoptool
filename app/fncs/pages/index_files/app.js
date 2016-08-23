@@ -663,6 +663,11 @@ window.contApp = new (function( px ){
 			// path = '/';
 		}
 
+		if( path.match(new RegExp('^alias[0-9]*\\:')) ){
+			alert( 'このページはエイリアスです。' );
+			return;
+		}
+
 		if( _lastPreviewPath == path && !opt.force ){
 			// 前回ロードしたpathと同じなら、リロードをスキップ
 			cb();

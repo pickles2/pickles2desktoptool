@@ -7,6 +7,7 @@
 			if( typeof(path) !== typeof('') ){ path = ''; }
 			if( !path.length ){ path = '/'; }
 			path = path.replace( new RegExp('^\\/+'), '' );
+			path = path.replace( new RegExp('\\{(?:\\*|\\$)[\s\S]*\\}'), '' );
 
 			var pj = px.getCurrentProject();
 			var croot = '/';

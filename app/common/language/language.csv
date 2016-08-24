@@ -1,0 +1,27 @@
+key,ja,en,cn,tw
+welcome,ようこそ,Welcome,Welcome,Welcome
+menu.home,ホーム,HOME,HOME,HOME
+menu.sitemap,サイトマップ,Sitemap,网站地图,網站地圖
+menu.theme,テーマ,Theme,主题,主題
+menu.pages,コンテンツ,Contents,內容,內容
+menu.publish,パブリッシュ,Publish,发布,發布
+menu.dashboard,ダッシュボード,Dashboard,控制版面,控制版面
+menu.openFolder,フォルダを開く,Open Folder,打开文件夹,打開文件夾
+menu.openInBrowser,ブラウザで開く,Open in Browser,在浏览器中打开,在瀏覽器中打開
+menu.openInTexteditor,テキストエディタで開く,Open in Text editor,在Text editor中打开,在Text editor中打開
+menu.projectConfig,プロジェクト設定,Project Config,项目设定,項目設定
+menu.composer,composer,composer,composer,composer
+menu.git,git,git,git ,git 
+menu.preview,プレビュー,Preview,预览,預覽
+menu.moveContents,コンテンツを移動する,Move Contents,移动内容,移動內容
+menu.search,検索,Search,搜索,搜尋
+menu.updateGuiContents,GUI編集コンテンツーを一括再構成,Update all GUI Edited Contents,更新全部GUI编辑内容,更新全部GUI編輯內容
+menu.clearcache,キャッシュを消去,Clear Cache,清除缓存,清除緩存
+menu.systemInfo,システム情報,System Information,系统信息,系統信息
+menu.desktoptoolConfig,設定,Config,桌面工具设定,桌面工具設定
+menu.help,ヘルプ,Help,帮助,幫助
+menu.developerTool,デペロッパツール,Developer Tool,开发人员工具,開發人員工具
+menu.exit,終了,Exit,退出,退出
+ui_label.ok,OK,OK,OK,OK
+ui_label.cancel,キャンセル,Cancel,取消,取消
+ui_label.close,閉じる,Close,关闭,關閉

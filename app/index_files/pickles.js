@@ -139,34 +139,7 @@ new (function($, window){
 	}
 	_path_db = _fs.realpathSync( _path_db );
 	var $header, $footer, $main, $contents, $shoulderMenu;
-	var _menu = [
-		{"label":"HOME",                 "cond":"projectSelected",    "area":"mainmenu", "app":"fncs/home/index.html", "cb": function(){px.subapp();}} ,
-		{"label":"サイトマップ",         "cond":"pxStandby",          "area":"mainmenu", "app":"fncs/sitemap/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"テーマ",               "cond":"pxStandby",          "area":"mainmenu", "app":"fncs/theme/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"コンテンツ",           "cond":"pxStandby",          "area":"mainmenu", "app":"fncs/pages/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"パブリッシュ",         "cond":"pxStandby",          "area":"mainmenu", "app":"fncs/publish/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"ダッシュボード",      "cond":"projectSelected",    "area":"shoulder", "app":"index.html", "cb": function(){px.deselectProject();px.subapp();}} ,
-		{"label":"フォルダを開く",       "cond":"homeDirExists",      "area":"shoulder", "app":null, "cb": function(){px.getCurrentProject().open();}},
-		{"label":"ブラウザで開く",       "cond":"pxStandby",          "area":"shoulder", "app":null, "cb": function(){px.openInBrowser();}},
-		{"label":"プロジェクト設定",     "cond":"pxStandby",          "area":"shoulder", "app":"fncs/config/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"composer",             "cond":"composerJsonExists", "area":"shoulder", "app":"fncs/composer/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"git",                  "cond":"homeDirExists",      "area":"shoulder", "app":"fncs/git/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"プレビュー",           "cond":"pxStandby",          "area":"shoulder", "app":"fncs/preview/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"コンテンツを移動する", "cond":"pxStandby",          "area":"shoulder", "app":"fncs/movecontents/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"検索",               "cond":"pxStandby",          "area":"shoulder", "app":"fncs/search/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"GUI編集コンテンツを一括再構成","cond":"pxStandby",          "area":"shoulder", "app":"fncs/rebuild_guiedit_contents/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		{"label":"キャッシュを消去",     "cond":"pxStandby",          "area":"shoulder", "app":"fncs/clearcache/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-		// {"label":"Reload(dev)",          "cond":"always", "cb": function(){window.location.href='index.html?';}} ,
-		{"label":"システム情報",         "cond":"always",             "area":"shoulder", "app":null, "cb": function(){px.dialog({
-			title: 'システム情報',
-			body: $('<iframe>').attr('src', 'mods/systeminfo/index.html').css({'width':'100%','height':300})
-		});}} ,
-		{"label":_appName+" 設定", "cond":"always",        "area":"shoulder", "app":null, "cb": function(){px.editPx2DTConfig();}} ,
-		{"label":"ヘルプ",               "cond":"always",             "area":"shoulder", "app":null, "cb": function(){px.openHelp();} },
-		{"label":"デベロッパーツール",     "cond":"always",             "area":"shoulder", "app":null, "cb": function(){require('nw.gui').Window.get().showDevTools();} },
-		{"label":"終了",                 "cond":"always",             "area":"shoulder", "app":null, "cb": function(){px.exit();}}
-	];
-
+	var _menu = [];
 
 	/**
 	 * アプリケーションの初期化
@@ -199,67 +172,105 @@ new (function($, window){
 
 		px.log( 'Application start;' );
 
-		px.load(function(){
-			if(!_db){_db = {};}
-			if(!_db.commands){_db.commands = {};}
-			if(!_db.projects){_db.projects = [];}
-			if(!_db.network){_db.network = {};}
-			if(!_db.network.preview){_db.network.preview = {};}
-			if(!_db.network.appserver){_db.network.appserver = {};}
-			if(!_db.apps){_db.apps = {};}
-			if(!_db.apps.texteditor){_db.apps.texteditor = null;}
-			if(!_db.apps.texteditorForDir){_db.apps.texteditorForDir = null;}
+		var LangBank = require('langbank');
+		px.lb = new LangBank( require('path').resolve('./app/common/language/language.csv'), function(){
+			px.lb.setLang('ja'); // default language
+			// console.log(px.lb.get('welcome'));
 
-			if( !_utils.isDirectory( _path_data_dir+'commands/' ) ){
-				_fs.mkdirSync( _path_data_dir+'commands/' );
-			}
-			if( !_utils.isDirectory( _path_data_dir+'commands/composer/' ) ){
-				_fs.mkdirSync( _path_data_dir+'commands/composer/' );
-			}
+			px.load(function(){
+				if(!_db){_db = {};}
+				if(!_db.commands){_db.commands = {};}
+				if(!_db.projects){_db.projects = [];}
+				if(!_db.network){_db.network = {};}
+				if(!_db.network.preview){_db.network.preview = {};}
+				if(!_db.network.appserver){_db.network.appserver = {};}
+				if(!_db.apps){_db.apps = {};}
+				if(!_db.apps.texteditor){_db.apps.texteditor = null;}
+				if(!_db.apps.texteditorForDir){_db.apps.texteditorForDir = null;}
+				if(!_db.language){_db.language = 'ja';}
+				px.lb.setLang(_db.language); // default language
 
-			px.NodePhpBin = require('node-php-bin');
-			px.nodePhpBinOptions = {};
-			if( _db.commands && _db.commands['php'] ){
-				px.nodePhpBinOptions = {
-					'bin': _db.commands['php'] ,
-					'ini': null
-				};
-			}
-			px.nodePhpBin = px.NodePhpBin.get(px.nodePhpBinOptions);
+				if( !_utils.isDirectory( _path_data_dir+'commands/' ) ){
+					_fs.mkdirSync( _path_data_dir+'commands/' );
+				}
+				if( !_utils.isDirectory( _path_data_dir+'commands/composer/' ) ){
+					_fs.mkdirSync( _path_data_dir+'commands/composer/' );
+				}
 
-			if( !_utils.isFile( _path_data_dir+'commands/composer/composer.phar' ) ){
-				(function(){
-					var pathComposerPhar = {
-						'from': require('path').resolve('./app/common/composer/composer.phar') ,
-						'to': require('path').resolve(_path_data_dir, './commands/composer/composer.phar')
+				px.NodePhpBin = require('node-php-bin');
+				px.nodePhpBinOptions = {};
+				if( _db.commands && _db.commands['php'] ){
+					px.nodePhpBinOptions = {
+						'bin': _db.commands['php'] ,
+						'ini': null
 					};
-					_fsEx.copy(pathComposerPhar.from, pathComposerPhar.to, function(err){
-						if( err ){
-							console.error(err);
-							alert('composer.phar のコピーに失敗しました。');
+				}
+				px.nodePhpBin = px.NodePhpBin.get(px.nodePhpBinOptions);
+
+				_menu = [
+					{"label":px.lb.get('menu.home'),                 "cond":"projectSelected",    "area":"mainmenu", "app":"fncs/home/index.html", "cb": function(){px.subapp();}} ,
+					{"label":px.lb.get('menu.sitemap'),         "cond":"pxStandby",          "area":"mainmenu", "app":"fncs/sitemap/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+					{"label":px.lb.get('menu.theme'),               "cond":"pxStandby",          "area":"mainmenu", "app":"fncs/theme/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+					{"label":px.lb.get('menu.pages'),           "cond":"pxStandby",          "area":"mainmenu", "app":"fncs/pages/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+					{"label":px.lb.get('menu.publish'),         "cond":"pxStandby",          "area":"mainmenu", "app":"fncs/publish/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+					{"label":px.lb.get('menu.dashboard'),      "cond":"projectSelected",    "area":"shoulder", "app":"index.html", "cb": function(){px.deselectProject();px.subapp();}} ,
+					{"label":px.lb.get('menu.openFolder'),       "cond":"homeDirExists",      "area":"shoulder", "app":null, "cb": function(){px.getCurrentProject().open();}},
+					{"label":px.lb.get('menu.openInBrowser'),       "cond":"pxStandby",          "area":"shoulder", "app":null, "cb": function(){px.openInBrowser();}},
+					{"label":px.lb.get('menu.openInTexteditor'), "cond":"homeDirExists",      "area":"shoulder", "app":null, "cb": function(){px.openInTextEditor( px.getCurrentProject().get('path') );}},
+					{"label":px.lb.get('menu.projectConfig'),     "cond":"pxStandby",          "area":"shoulder", "app":"fncs/config/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+					{"label":px.lb.get('menu.composer'),             "cond":"composerJsonExists", "area":"shoulder", "app":"fncs/composer/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+					{"label":px.lb.get('menu.git'),                  "cond":"homeDirExists",      "area":"shoulder", "app":"fncs/git/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+					{"label":px.lb.get('menu.preview'),           "cond":"pxStandby",          "area":"shoulder", "app":"fncs/preview/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+					{"label":px.lb.get('menu.moveContents'), "cond":"pxStandby",          "area":"shoulder", "app":"fncs/movecontents/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+					{"label":px.lb.get('menu.search'),               "cond":"pxStandby",          "area":"shoulder", "app":"fncs/search/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+					{"label":px.lb.get('menu.updateGuiContents'),"cond":"pxStandby",          "area":"shoulder", "app":"fncs/rebuild_guiedit_contents/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+					{"label":px.lb.get('menu.clearcache'),     "cond":"pxStandby",          "area":"shoulder", "app":"fncs/clearcache/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+					// {"label":"Reload(dev)",          "cond":"always", "cb": function(){window.location.href='index.html?';}} ,
+					{"label":px.lb.get('menu.systemInfo'),         "cond":"always",             "area":"shoulder", "app":null, "cb": function(){px.dialog({
+						title: px.lb.get('menu.systemInfo'),
+						body: $('<iframe>').attr('src', 'mods/systeminfo/index.html').css({'width':'100%','height':300})
+					});}} ,
+					{"label":_appName+" "+px.lb.get('menu.desktoptoolConfig'), "cond":"always",        "area":"shoulder", "app":null, "cb": function(){px.editPx2DTConfig();}} ,
+					{"label":px.lb.get('menu.help'),               "cond":"always",             "area":"shoulder", "app":null, "cb": function(){px.openHelp();} },
+					{"label":px.lb.get('menu.developerTool'),     "cond":"always",             "area":"shoulder", "app":null, "cb": function(){require('nw.gui').Window.get().showDevTools();} },
+					{"label":px.lb.get('menu.exit'),                 "cond":"always",             "area":"shoulder", "app":null, "cb": function(){px.exit();}}
+				];
+
+				if( !_utils.isFile( _path_data_dir+'commands/composer/composer.phar' ) ){
+					(function(){
+						var pathComposerPhar = {
+							'from': require('path').resolve('./app/common/composer/composer.phar') ,
+							'to': require('path').resolve(_path_data_dir, './commands/composer/composer.phar')
+						};
+						_fsEx.copy(pathComposerPhar.from, pathComposerPhar.to, function(err){
+							if( err ){
+								console.error(err);
+								console.error('composer.phar のコピーに失敗しました。');
+								alert('composer.phar のコピーに失敗しました。');
+								px.closeDialog();
+								cb();
+								return;
+							}
+							_db.commands.composer = pathComposerPhar.to;
+							px.save();
 							px.closeDialog();
 							cb();
-							return;
-						}
-						_db.commands.composer = pathComposerPhar.to;
-						px.save();
-						px.closeDialog();
-						cb();
-					});
+						});
 
-					var opt = {
-						'title': '初期設定中...',
-						'body': $('<p>'+_appName+' を初期設定しています。しばらくお待ちください。</p>') ,
-						'buttons': []
-					};
+						var opt = {
+							'title': '初期設定中...',
+							'body': $('<p>'+_appName+' を初期設定しています。しばらくお待ちください。</p>') ,
+							'buttons': []
+						};
 
-					px.dialog(opt);
-				})();
-			}else{
-				cb();
-			}
+						px.dialog(opt);
+					})();
+				}else{
+					cb();
+				}
 
-		});
+			}); // px.load()
+		}); // new LangBank()
 
 		return;
 	}
@@ -267,10 +278,10 @@ new (function($, window){
 	/**
 	 * DBをロードする
 	 */
-	this.load = function(cb){
-		cb = cb||function(){};
-		if( !this.utils.isFile(_path_db) ){
-			cb();
+	this.load = function(callback){
+		callback = callback || function(){};
+		if( !this.utils.isFile( _path_db ) ){
+			callback();
 			return false;
 		}
 
@@ -285,18 +296,18 @@ new (function($, window){
 			}
 			return 0;
 		} );
-		cb();
+		callback();
 		return true;
 	}
 
 	/**
 	 * DBを保存する
 	 */
-	this.save = function(cb){
-		cb = cb || function(){};
+	this.save = function( callback ){
+		callback = callback || function(){};
 		var data = JSON.stringify( _db, null, 1 );
 		_fs.writeFileSync( _path_db, data, {"encoding":"utf8","mode":436,"flag":"w"} );
-		cb();
+		callback();
 		return true;
 	}
 
@@ -387,12 +398,12 @@ new (function($, window){
 	/**
 	 * プロジェクトを削除する
 	 */
-	this.deleteProject = function(projectId, cb){
-		cb = cb || function(){};
+	this.deleteProject = function(projectId, callback){
+		callback = callback || function(){};
 		_db.projects.splice( projectId, 1 );
 		this.deselectProject();
 		this.save(function(){
-			cb();
+			callback();
 		});
 		return true;
 	}
@@ -400,17 +411,43 @@ new (function($, window){
 	/**
 	 * プロジェクトを選択する
 	 */
-	this.selectProject = function(num, cb){
-		cb = cb||function(){}
+	this.selectProject = function( num, callback ){
+		callback = callback||function(){}
 		if( typeof(num) != typeof(0) ){
 			px.log( '[ERROR] FAILED to selectProject(' + typeof(num) + ')' );
 			return false;
 		}
 		_selectedProject = num;
-		// alert(num);
+
 		px.log( 'selectProject(' + num + ')' );
-		_pj = new (require('./index_files/pickles.project.js')).classProject( window, this, _db.projects[_selectedProject], _selectedProject, cb );
-		px.log( 'project name = ' + _pj.get('name') );
+		this.loadProject(function(){
+			px.log( 'project "' + _pj.get('name') + '" is loaded.' );
+			callback();
+		});
+		return true;
+	}
+
+	/**
+	 * 選択されたプロジェクトをロードする
+	 */
+	this.loadProject = function( callback ){
+		callback = callback||function(){}
+		if( typeof(_selectedProject) != typeof(0) ){
+			px.log( '[ERROR] FAILED to selectProject(' + typeof(num) + ')' );
+			return false;
+		}
+
+		// alert(num);
+		_pj = new (require('./index_files/pickles.project.js')).classProject(
+			window,
+			this,
+			_db.projects[_selectedProject],
+			_selectedProject,
+			function(){
+				console.log( 'project "' + _pj.get('name') + '" is reloaded.' );
+				callback();
+			}
+		);
 		return true;
 	}
 
@@ -525,20 +562,25 @@ new (function($, window){
 	 * 外部テキストエディタで開く
 	 */
 	this.openInTextEditor = function( path ){
-		if( !this.getDb().apps ){
-			alert('ERROR: 外部エディタが設定されていません。');
-		}
 		var pathEditor = '';
+		var targetType = null;
 		if( this.utils.isDirectory(path) ){
+			targetType = 'dir';
 			pathEditor = this.getDb().apps.texteditorForDir;
 		}else if( px.utils.isFile(path) ){
+			targetType = 'file';
 			pathEditor = this.getDb().apps.texteditor;
 		}else{
-			alert('ERROR: 編集対象のパスが存在しません。');
+			alert('編集対象のパスが存在しません。'+"\n"+path);
+			console.error('ERROR: '+'編集対象のパスが存在しません。'+"\n"+path);
 			return false;
 		}
-		if( !pathEditor.length && !this.utils.isDirectory(pathEditor) ){
-			alert('ERROR: 外部エディタが設定されていないか、存在しません。');
+
+		var msgSudgestSetting = _appName+'設定 メニューから、アプリケーション "外部テキストエディタ'+(targetType=='dir'?'(ディレクトリを開く)':'')+'" を設定してください。';
+		if( !this.getDb().apps || ( !pathEditor.length && !this.utils.isDirectory(pathEditor) ) ){
+			alert('外部テキストエディタが設定されていないか、存在しません。' + "\n" + msgSudgestSetting);
+			console.error('ERROR: '+'外部テキストエディタが設定されていないか、存在しません。');
+			return false;
 		}
 		if(_platform=='win'){
 			px.utils.spawn(
@@ -559,6 +601,7 @@ new (function($, window){
 				{}
 			);
 		}
+		return true;
 	}
 
 
@@ -567,7 +610,7 @@ new (function($, window){
 	 */
 	this.subapp = function(appName){
 		var $cont = $('.contents').eq(0);
-		$cont.html('<p>Loading...</p>');
+		$cont.html('<p style="text-align:center; margin: 4em auto;">Loading...</p>');
 
 		if( typeof(_selectedProject) != typeof(0) ){
 			appName = '';
@@ -576,13 +619,21 @@ new (function($, window){
 		}
 
 		if( appName ){
-			$cont
-				.html('')
-				.append(
-					$('<iframe>')
-						.attr('src', './'+appName)
-				)
-			;
+			this.loadProject(function(){ // プロジェクトオブジェクトをリロードする。
+				$cont
+					.html('')
+					.append(
+						$('<iframe>')
+							.attr('src', './'+appName)
+					)
+				;
+
+				_current_app = appName;
+				layoutReset();
+				$contents.scrollTop(0);
+			});
+			return;
+
 		}else{
 			// プロジェクト選択画面を描画
 			$cont.html( $('script#template-selectProject-page').html() );
@@ -598,7 +649,12 @@ new (function($, window){
 							.data('path', list[i].path)
 							.data('num', i)
 							.click( function(){
+								var timer = setTimeout(function(){
+									px.progress.start({"showProgressBar":true, 'blindness':true});
+								}, 1000);
 								px.selectProject( $(this).data('num'), function(){
+									clearTimeout(timer);
+									px.progress.close();
 									px.subapp();
 								} );
 							} )
@@ -616,10 +672,11 @@ new (function($, window){
 					.html('<p>プロジェクトは登録されていません。</p>')
 				;
 			}
+			_current_app = appName;
+			layoutReset();
+			$contents.scrollTop(0);
+			return;
 		}
-		_current_app = appName;
-		layoutReset();
-		$contents.scrollTop(0);
 	}
 
 
@@ -836,6 +893,9 @@ new (function($, window){
 	// } );
 
 
+	/**
+	 * アプリケーションを初期化
+	 */
 	$(function(){
 		px.utils.iterateFnc([
 			function(it, arg){
@@ -845,8 +905,6 @@ new (function($, window){
 				});
 			} ,
 			function(it, arg){
-				// アプリケーション開始
-				px.load();
 
 				// DOMスキャン
 				$header   = $('.theme_header');
@@ -860,6 +918,7 @@ new (function($, window){
 				});
 
 				it.next(arg);
+
 			} ,
 			function(it, arg){
 				var $ul = $shoulderMenu.find('ul').hide();

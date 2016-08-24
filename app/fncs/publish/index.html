@@ -123,16 +123,24 @@
 			</div>
 		</script>
 		<script id="template-dialog_publish_options" type="text/template">
+			<div>
 			<!-- <h2>パブリッシュ対象範囲</h2> -->
+			<div class="cont_form_pattern">
+				<select name="cont_form_pattern">
+				</select>
+			</div>
 			<div class="form-group">
 				<label for="path_region">パブリッシュ対象範囲</label>
-				<input type="text" class="form-control" id="path_region" name="path_region" placeholder="/" value="/" />
-				<span class="help-block">パブリッシュ対象のディレクトリパスを指定してください。スラッシュから始まるパスで指定します。省略時、すべてのファイルが対象になります。</span>
+				<textarea class="form-control" id="path_region" name="path_region" placeholder="/" rows="5">/</textarea>
+				<span class="help-block">パブリッシュ対象のディレクトリパスを指定してください。スラッシュから始まるパスで指定します。1行1ディレクトリで複数件指定できます。</span>
 
 				<label for="paths_ignore">パブリッシュ対象外範囲</label>
 				<textarea class="form-control" id="paths_ignore" name="paths_ignore" placeholder="/path/ignore/1/
 /path/ignore/2/" rows="5"></textarea>
 				<span class="help-block">パブリッシュ対象外にするディレクトリパスを指定してください。スラッシュから始まるパスで指定します。1行1ディレクトリで複数件指定できます。</span>
+
+				<label><input type="checkbox" name="keep_cache" value="1" /> キャッシュを消去しない</label>
+			</div>
 			</div>
 		</script>
 	</head>

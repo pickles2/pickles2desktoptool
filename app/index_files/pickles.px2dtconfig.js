@@ -14,6 +14,7 @@
 		if( !px.getDb().apps ){ px.getDb().apps = {}; }
 		if( !px.getDb().apps.texteditor ){ px.getDb().apps.texteditor = null; }
 		if( !px.getDb().apps.texteditorForDir ){ px.getDb().apps.texteditorForDir = null; }
+		if( !px.getDb().language ){ px.getDb().language = 'ja'; }
 
 		$tpl.find('[name=php]').val( px.getDb().commands.php );
 		$tpl.find('[name=git]').val( px.getDb().commands.git );
@@ -21,6 +22,7 @@
 		$tpl.find('[name=network_appserver_port]').val( px.getDb().network.appserver.port ).attr({'placeholder':px.packageJson.pickles2.network.appserver.port});
 		$tpl.find('[name=apps_texteditor]').val( px.getDb().apps.texteditor );
 		$tpl.find('[name=apps_texteditor_for_dir]').val( px.getDb().apps.texteditorForDir );
+		$tpl.find('[name=language]').val( px.getDb().language );
 
 		var fileInputs = [
 			'php',
@@ -51,11 +53,11 @@
 		}
 
 		px.dialog({
-			title: 'Pickles 2 Desktop Tool 設定' ,
+			title: px.packageJson.window.title+" "+px.lb.get('menu.desktoptoolConfig') ,
 			body: $tpl ,
 			buttons: [
 				$('<button>')
-					.text('OK')
+					.text(px.lb.get('ui_label.ok'))
 					.addClass('px2-btn')
 					.addClass('px2-btn--primary')
 					.click(function(){
@@ -65,11 +67,14 @@
 						px.getDb().network.appserver.port = $tpl.find('[name=network_appserver_port]').val();
 						px.getDb().apps.texteditor = $tpl.find('[name=apps_texteditor]').val();
 						px.getDb().apps.texteditorForDir = $tpl.find('[name=apps_texteditor_for_dir]').val();
-						px.closeDialog();
+						px.getDb().language = $tpl.find('[name=language]').val();
+						px.save(function(){
+							px.closeDialog();
+						});
 					}
 				) ,
 				$('<button>')
-					.text('キャンセル')
+					.text(px.lb.get('ui_label.cancel'))
 					.addClass('px2-btn')
 					.click(function(){
 						px.closeDialog();

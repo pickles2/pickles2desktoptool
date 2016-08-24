@@ -7,6 +7,7 @@ window.contApp = new (function(px, $){
 	var _pj, _realpathPublishDir;
 	var $cont;
 	var _status;
+	var _patterns;
 
 	/**
 	 * initialize
@@ -20,6 +21,12 @@ window.contApp = new (function(px, $){
 		_realpathPublishDir = px.path.resolve( _pj.get('path')+'/'+_pj.get('home_dir')+'/_sys/ram/publish/' )+'/';
 		$cont = $('.contents');
 		$cont.html('');
+
+		try {
+			// パブリッシュパターンの設定を読み込む。
+			_patterns = _pj.getConfig().plugins.px2dt.publish_patterns;
+		} catch (e) {
+		}
 
 		px.utils.iterateFnc([
 			function(it, arg){
@@ -78,22 +85,89 @@ window.contApp = new (function(px, $){
 	 * パブリッシュを実行する
 	 */
 	this.publish = function(){
-		var $body = $($('#template-dialog_publish_options').html());
+		var $body = $( $('#template-dialog_publish_options').html() );
+
+		(function(){
+			// パブリッシュパターンの選択UIを作る
+			var $pattern = $body.find('.cont_form_pattern');
+			$pattern.css({
+				'margin':'1em auto'
+			});
+			try {
+				// console.log(patterns);
+				if( typeof(_patterns) !== typeof([]) || !_patterns.length){
+					$pattern.remove();
+				}else{
+					var $select = $pattern.find('select');
+					$select.append('<option value="">select pattern...</option>');
+					for( var idx in _patterns ){
+						var $opt = $('<option>');
+						$opt.attr({'value': idx});
+						$opt.text( _patterns[idx].label );
+						$select.append($opt);
+					}
+					$select.change(function(){
+						var selectedValue = $(this).val();
+						// alert(selectedValue);
+						var data = _patterns[selectedValue];
+						$(this).val('');
+						if( !data ){
+							alert('ERROR: 設定を読み込めません。');
+							return;
+						}
+						try {
+							$body.find('textarea[name=path_region]').val( data.paths_region.join("\n") );
+						} catch (e) {
+							$body.find('textarea[name=path_region]').val( '/' );
+						}
+						try {
+							$body.find('textarea[name=paths_ignore]').val( data.paths_ignore.join("\n") );
+						} catch (e) {
+							$body.find('textarea[name=paths_ignore]').val( '' );
+						}
+						try {
+							$body.find('input[name=keep_cache]').prop("checked", !!(data.keep_cache));
+						} catch (e) {
+							$body.find('input[name=keep_cache]').prop("checked", false);
+						}
+						return;
+					});
+				}
+			} catch (e) {
+				// 設定されていなかったら選択欄を削除
+				$pattern.remove();
+			}
+		})();
+
 		px.dialog({
-			'title': 'パブリッシュ範囲',
+			'title': 'パブリッシュ',
 			'body': $body,
 			'buttons':[
 				$('<button>')
-					.text('パブリッシュを実行')
+					.text('パブリッシュを実行する')
 					.attr({'type':'submit'})
 					.addClass('px2-btn px2-btn--primary')
 					.click(function(){
-						var region = $body.find('input[name=path_region]').val();
-						// var region = prompt('パブリッシュ対象のパスを指定してください。スラッシュから始まるパスで指定します。省略時、すべてのファイルが対象になります。','/');
-						if( region === null ){
+						var str_paths_region_val = $body.find('textarea[name=path_region]').val();
+						var str_paths_region = '';
+						var tmp_ary_paths_region = str_paths_region_val.split(new RegExp('\r\n|\r|\n','g'));
+						var ary_paths_region = [];
+						for( var i in tmp_ary_paths_region ){
+							tmp_ary_paths_region[i] = px.php.trim(tmp_ary_paths_region[i]);
+							if( px.php.strlen(tmp_ary_paths_region[i]) ){
+								ary_paths_region.push( tmp_ary_paths_region[i] );
+							}
+						}
+						if( !ary_paths_region.length ){
+							alert('パブリッシュ対象が指定されていません。1件以上指定してください。');
 							return true;
 						}
-						// alert(px.php.urlencode(region));
+						var region = ary_paths_region.shift();
+						if( typeof(ary_paths_region) == typeof([]) ){
+							for( var i in ary_paths_region ){
+								str_paths_region += '&paths_region[]='+px.php.urlencode(ary_paths_region[i]);
+							}
+						}
 
 						var str_paths_ignore_val = $body.find('textarea[name=paths_ignore]').val();
 						// alert(str_paths_ignore_val);
@@ -117,15 +191,21 @@ window.contApp = new (function(px, $){
 						}
 						// alert(str_paths_ignore);
 
+						var is_keep_cache = $body.find('input[name=keep_cache]:checked').val();
+						// console.log(is_keep_cache);
+						str_keep_cache = (is_keep_cache ? '&keep_cache=1' : '')
+
+
 						px.closeDialog();
 
+						console.log('/?PX=publish.run&path_region=' + px.php.urlencode(region) + str_paths_region + str_paths_ignore);
 						_this.progressReport.init(
 							_this,
 							$cont,
 							{
 								"spawnCmdOpts": [
 									_pj.get('path')+'/'+_pj.get('entry_script') ,
-									'/?PX=publish.run&path_region='+px.php.urlencode(region)+str_paths_ignore
+									'/?PX=publish.run&path_region=' + px.php.urlencode(region) + str_paths_region + str_paths_ignore + str_keep_cache
 								] ,
 								"cmdCd": _pj.get('path'),
 								"complete": function(){
@@ -136,7 +216,7 @@ window.contApp = new (function(px, $){
 						);
 					}),
 				$('<button>')
-					.text('キャンセル')
+					.text(px.lb.get('ui_label.cancel'))
 					.addClass('px2-btn')
 					.click(function(){
 						px.closeDialog();

@@ -22,6 +22,7 @@
     "glob": "^5.0.10",
     "iterate79": "0.0.1",
     "jquery": "^2.1.4",
+    "langbank": "0.0.2",
     "marked": "0.3.*",
     "mkdirp": "0.*",
     "node-php-bin": "^0.2.3",

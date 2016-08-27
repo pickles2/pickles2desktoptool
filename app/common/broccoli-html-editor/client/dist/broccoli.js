@@ -908,6 +908,17 @@
 					});
 				} ,
 				function(it1, data){
+					// コンテンツを更新
+					_this.gpi(
+						'updateContents',
+						{} ,
+						function(result){
+							// console.log(result);
+							it1.next(data);
+						}
+					);
+				} ,
+				function(it1, data){
 					// console.log('editInstance done.');
 					_this.message('コンテンツを保存しました。');
 					callback(true);
@@ -3479,7 +3490,7 @@ module.exports = function(broccoli){
 
 				broccoli.contentsSourceData.moveInstanceTo( moveFrom, moveTo, function(){
 					// コンテンツを保存
-					broccoli.contentsSourceData.save(function(){
+					broccoli.saveContents(function(){
 						// alert('インスタンスを移動しました。');
 						broccoli.redraw();
 						callback();
@@ -3500,7 +3511,7 @@ module.exports = function(broccoli){
 				}
 				broccoli.contentsSourceData.moveInstanceTo( moveFrom, moveTo, function(){
 					// コンテンツを保存
-					broccoli.contentsSourceData.save(function(){
+					broccoli.saveContents(function(){
 						// alert('インスタンスを移動しました。');
 						broccoli.redraw();
 						callback();
@@ -3553,7 +3564,7 @@ module.exports = function(broccoli){
 						});
 					} ,
 					function(){
-						broccoli.contentsSourceData.save(function(){
+						broccoli.saveContents(function(){
 							broccoli.message('クリップを挿入しました。');
 							broccoli.redraw();
 							callback();
@@ -3564,7 +3575,7 @@ module.exports = function(broccoli){
 			}else{
 				broccoli.contentsSourceData.addInstance( modId, $(elm).attr('data-broccoli-instance-path'), function(){
 					// コンテンツを保存
-					broccoli.contentsSourceData.save(function(){
+					broccoli.saveContents(function(){
 						// alert('インスタンスを追加しました。');
 						broccoli.redraw();
 						callback();
@@ -4584,22 +4595,95 @@ module.exports = function(broccoli){
 				[
 					function(it1, data){
 						_resMgr.getResource( rtn.resKey, function(res){
-							_resMgr.getResourcePublicPath( rtn.resKey, function(publicPath){
-								rtn.path = publicPath;
-								data.path = publicPath;
-
-								if( mode == 'canvas' ){
-									// ↓ ダミーの Sample Image
-									data.path = _imgDummy;
-
-									if( res.base64 ){
-										data.path = 'data:'+res.type+';base64,' + res.base64;
-									}
-								}
-								it1.next(data);
-							} );
+							data.resourceInfo = res;
+							it1.next(data);
 						} );
 						return;
+					},
+					function(it1, data){
+						_resMgr.getResourcePublicRealpath( rtn.resKey, function(realpath){
+							// console.log(realpath);
+							data.publicRealpath = realpath;
+							it1.next(data);
+						} );
+						return;
+					},
+					function(it1, data){
+						const imagemin = require(''+'imagemin');
+						const imageminOptipng = require(''+'imagemin-optipng');
+						const imageminJpegtran = require(''+'imagemin-jpegtran');
+
+						data.publicRealpath.match( new RegExp('\\.([a-zA-Z0-9\\_\\-]+?)$') );
+						var ext = (RegExp.$1).toLowerCase();
+						// console.log(data.publicRealpath);
+						// console.log(utils79.dirname(data.publicRealpath));
+						// console.log(ext);
+						switch(ext){
+							case 'jpg':
+							case 'jpeg':
+							case 'jpe':
+								new imagemin()
+									.src( [data.publicRealpath] )
+									.dest( utils79.dirname(data.publicRealpath) )
+									.use( imageminJpegtran({progressive: true}) )
+									.run(function (err, files) {
+										// console.log('Images optimized (JPEG)');
+										// console.log(err);
+										// console.log(files);
+										it1.next(data);
+										return;
+									})
+								;
+								break;
+
+							case 'png':
+								new imagemin()
+									.src( [data.publicRealpath] )
+									.dest( utils79.dirname(data.publicRealpath) )
+									.use( imageminOptipng({optimizationLevel: 0}) )
+									.run(function (err, files) {
+										// console.log('Images optimized (PNG)');
+										// console.log(err);
+										// console.log(files);
+										it1.next(data);
+										return;
+									})
+								;
+								break;
+
+							default:
+								it1.next(data);
+								break;
+
+						}
+						return;
+					},
+					function(it1, data){
+						_resMgr.getResourcePublicPath( rtn.resKey, function(publicPath){
+							rtn.path = publicPath;
+							data.path = publicPath;
+							it1.next(data);
+						} );
+					},
+					function(it1, data){
+						// console.log(utils79.is_file(data.publicRealpath));
+						if( mode == 'canvas' ){
+							if( !utils79.is_file(data.publicRealpath) ){
+								// ↓ ダミーの Sample Image
+								data.path = _imgDummy;
+							}else{
+								try {
+									var imageBin = fs.readFileSync(data.publicRealpath);
+									data.path = 'data:'+data.resourceInfo.type+';base64,' + utils79.base64_encode( imageBin );
+								} catch (e) {
+									data.path = false;
+								}
+							}
+						}
+						if( data.path == false && data.resourceInfo.base64 ){
+							data.path = 'data:'+data.resourceInfo.type+';base64,' + data.resourceInfo.base64;
+						}
+						it1.next(data);
 					},
 					function(it1, data){
 						callback(data.path);
@@ -4663,7 +4747,9 @@ module.exports = function(broccoli){
 		if( typeof(fieldData) !== typeof({}) ){
 			rtn = {
 				"resKey":'',
-				"path":'about:blank'
+				"path":'about:blank',
+				"resType":'',
+				"webUrl":''
 			};
 		}
 		return rtn;

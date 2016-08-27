@@ -526,6 +526,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		var px2ce = new Px2CE();
 
 		// console.log(broccoli);
+		// console.log(require('path').resolve('/', './'+page_path));
 		px2ce.init(
 			{
 				'page_path': page_path,

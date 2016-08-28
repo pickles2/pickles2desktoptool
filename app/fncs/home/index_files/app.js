@@ -115,6 +115,12 @@ window.contApp = new (function(){
 				it.next(arg);
 			} ,
 			function(it, arg){
+				var hint = px.hint.getRandom();
+				// console.log(hint);
+				$('.cont_hint').html( hint );
+				it.next(arg);
+			} ,
+			function(it, arg){
 				// README.md を表示する
 				var readmePath = pj.get('path');
 				if( status.gitDirExists ){

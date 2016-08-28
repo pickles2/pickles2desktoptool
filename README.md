@@ -60,6 +60,7 @@ $ npm run build
 - 深いディレクトリにある新規のファイルをgitコミットできない不具合を修正。
 - Pickles 2 が深い階層にある場合に、GUI編集でHTMLを正常に更新できない不具合を修正。
 - GUI編集の `pathResourceDir` と `realpathDataDir` を設定できるようになった。
+- プロジェクトホームにヒントを表示する機能を追加。
 - その他いくつかの細かい修正。
 
 ### Pickles 2 Desktop Tool 2.0.0-beta.13 (2016年8月3日)

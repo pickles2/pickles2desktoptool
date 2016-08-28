@@ -188,6 +188,13 @@ new (function($, window){
 					return;
 				},
 				function(it1, data){
+					var Px2Hint = require('./index_files/pickles.hint.js');
+					px.hint = new Px2Hint( px, require('path').resolve('./app/common/language/hint.csv'), function(){
+						it1.next();
+					}); // new LangBank()
+					return;
+				},
+				function(it1, data){
 
 					px.load(function(){
 						it1.next();
@@ -207,7 +214,9 @@ new (function($, window){
 					if(!_db.apps.texteditor){_db.apps.texteditor = null;}
 					if(!_db.apps.texteditorForDir){_db.apps.texteditorForDir = null;}
 					if(!_db.language){_db.language = 'ja';}
-					px.lb.setLang(_db.language); // default language
+
+					px.lb.setLang(_db.language);
+					px.hint.setLang(_db.language);
 
 					if( !_utils.isDirectory( _path_data_dir+'commands/' ) ){
 						_fs.mkdirSync( _path_data_dir+'commands/' );

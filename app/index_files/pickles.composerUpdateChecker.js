@@ -109,6 +109,12 @@ module.exports = function( px, callback ) {
 						}
 						_this.checkStatus[composerRootDir].status = status;
 						_this.checkStatus[composerRootDir].result = result;
+
+						if( _this.checkStatus[composerRootDir].status == 'update_found' ){
+							console.info('composerUpdateChecker: update_found ('+_this.checkStatus[composerRootDir].name+')');
+							px.message(_this.checkStatus[composerRootDir].name + ' の composer パッケージのいくつかに、新しいバージョンが見つかりました。 いますぐ更新することをお勧めします。');
+						}
+
 						// console.log(_this.checkStatus);
 						callback( _this.checkStatus[composerRootDir] );
 						return;

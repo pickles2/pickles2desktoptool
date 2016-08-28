@@ -91,9 +91,6 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 					// composer パッケージの更新をチェックする。
 					px.composerUpdateChecker.check(pj, function(checked){
 						// console.log('composerUpdateChecker.check() done.', checked.status);
-						if( checked.status == 'update_found' ){
-							px.message(checked.name + ' の composer パッケージのいくつかに、新しいバージョンが見つかりました。 いますぐ更新することをお勧めします。');
-						}
 					});
 					itPj.next(pj);return;
 					return;

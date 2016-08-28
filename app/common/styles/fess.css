@@ -808,7 +808,6 @@ html, body {
   .contents strong {
     font-weight: bold; }
   .contents em {
-    color: #f60;
     font-weight: normal;
     font-style: normal; }
   .contents .error {

@@ -55,9 +55,10 @@ window.contApp = new (function(){
 				);
 			} ,
 			function(it, arg){
+				var $mainTaskUi = $('.cont_maintask_ui');
 				if( !status.pathExists ){
 					// パスの選択しなおしbutton
-					$('.cont_maintask_ui')
+					$mainTaskUi
 						.html( $('#template-reselectProject-path').html() )
 						.find('form')
 							.submit(function(){
@@ -67,7 +68,7 @@ window.contApp = new (function(){
 					;
 				}else if( status.pathExists && !status.composerJsonExists ){
 					// インストールボタン
-					$('.cont_maintask_ui')
+					$mainTaskUi
 						.html( $('#template-install-pickles2').html() )
 						.find('form')
 							.submit(function(){
@@ -77,30 +78,30 @@ window.contApp = new (function(){
 					;
 				}else if( status.pathExists && !status.vendorDirExists ){
 					// `composer install` ボタン
-					$('.cont_maintask_ui')
+					$mainTaskUi
 						.html( $('#template-install-composer').html() )
-						.find('form')
-							.submit(function(){
-								install(this);
-								return false;
-							})
 					;
 				}else if( status.pathExists && !status.confFileExists ){
 					// 何らかのエラーがある可能性があります
-					$('.cont_maintask_ui')
+					$mainTaskUi
 						.html( $('#template-conf-not-exists').html() )
-						.find('form')
-							.submit(function(){
-								install(this);
-								return false;
-							})
 					;
 				}else{
 					// ちゃんとインストールできてます
-					$('.cont_maintask_ui')
+					$mainTaskUi
 						.html( $('#template-standby').html() )
 					;
 				}
+
+				var errors = pj.getErrors();
+				if( errors.length ){
+					var $errors = $('<div class="selectable">');
+					for( var idx in errors ){
+						$errors.append( $('<pre>').append( $('<code>').text( errors[idx].message ) ) );
+					}
+					$mainTaskUi.append( $errors );
+				}
+
 				it.next(arg);
 			} ,
 			function(it, arg){

@@ -173,7 +173,9 @@ window.contApp = new (function(){
 		var pj = px.getCurrentProject();
 		pj.projectInfo.path = path;
 		if( !px.updateProject(pj.projectId, pj.projectInfo) ){
-			alert('ERROR');
+			var msg = 'ERROR: FAILED to update project info.';
+			console.error(msg);
+			alert(msg);
 			return false;
 		}
 		px.save(function(){

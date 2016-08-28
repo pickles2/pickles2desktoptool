@@ -133,6 +133,15 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	this.status = function(){
 		var status = {};
 		status.pathExists = px.utils.isDirectory( this.get('path') );
+		status.isPathEmptyDir = (function(isDir, path){
+			if(!isDir){return false;}
+			var ls = require('fs').readdirSync(path);
+			// console.log(ls);
+			// console.log(ls.length);
+			var rtn = !ls.length;
+			// console.log(rtn);
+			return rtn;
+		})(status.pathExists, this.get('path'));
 		status.entryScriptExists = (status.pathExists && px.utils.isFile( this.get('path')+'/'+this.get('entry_script') ) ? true : false);
 		var homeDir = this.get('path')+'/'+this.get('home_dir');
 		status.homeDirExists = (status.pathExists && px.utils.isDirectory( homeDir ) ? true : false);

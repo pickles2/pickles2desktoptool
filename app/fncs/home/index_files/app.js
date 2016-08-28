@@ -66,6 +66,16 @@ window.contApp = new (function(){
 								return false;
 							})
 					;
+				}else if( status.pathExists && !status.composerJsonExists && !status.isPathEmptyDir ){
+					// ディレクトリが空ではないためセットアップできない画面
+					$mainTaskUi
+						.html( $('#template-is-not-empty-dir').html() )
+						.find('form')
+							.submit(function(){
+								_this.selectProjectPath( $(this).find('[name=pj_path]').val() );
+								return false;
+							})
+					;
 				}else if( status.pathExists && !status.composerJsonExists ){
 					// インストールボタン
 					$mainTaskUi

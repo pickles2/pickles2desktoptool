@@ -204,6 +204,13 @@ new (function($, window){
 					return;
 				},
 				function(it1, data){
+					var ComposerUpdateChecker = require('./index_files/pickles.composerUpdateChecker.js');
+					px.composerUpdateChecker = new ComposerUpdateChecker( px, function(){
+						it1.next();
+					});
+					return;
+				},
+				function(it1, data){
 					if(!_db){_db = {};}
 					if(!_db.commands){_db.commands = {};}
 					if(!_db.projects){_db.projects = [];}

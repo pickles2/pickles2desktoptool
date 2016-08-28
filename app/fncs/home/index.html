@@ -109,11 +109,37 @@
 			</div><!-- /.more_links -->
 		</script>
 		<script type="text/template" id="template-install-composer">
-			<p><code>$ composer install</code> を実行してください。</p>
+			<div class="center">
+				<p>セットアップはまだ完了していません。</p>
+				<p><code>$ composer install</code> を実行するか、次のボタンを押して <em>composer を更新</em> してください。</p>
+				<p><button class="px2-btn px2-btn--primary" onclick="px.subapp('fncs/composer/index.html');return false;">composer を操作する</button></p>
+			</div>
+			<div class="more_links">
+				<ul>
+					<li><a href="javascript:px.getCurrentProject().open();">フォルダを開く</a></li>
+					<li><a href="javascript:px.openInTextEditor( contApp.pj.get('path') );">外部テキストエディタで開く</a></li>
+				</ul>
+				<ul>
+					<li><a href="javascript:px.subapp('fncs/config/index.html');">config.php を編集する</a></li>
+					<li><a href="javascript:px.subapp('fncs/composer/index.html');">composer を操作する</a></li>
+				</ul>
+			</div><!-- /.more_links -->
 		</script>
 		<script type="text/template" id="template-conf-not-exists">
-			<p>コンフィグ情報を正常に取得できませんでした。</p>
-			<p>PHP でエラーが発生している可能性があります。</p>
+			<div class="center">
+				<p>コンフィグ情報を正常に取得できませんでした。</p>
+				<p>PHP でエラーが発生している可能性があります。</p>
+			</div>
+			<div class="more_links">
+				<ul>
+					<li><a href="javascript:px.getCurrentProject().open();">フォルダを開く</a></li>
+					<li><a href="javascript:px.openInTextEditor( contApp.pj.get('path') );">外部テキストエディタで開く</a></li>
+				</ul>
+				<ul>
+					<li><a href="javascript:px.subapp('fncs/config/index.html');">config.php を編集する</a></li>
+					<li><a href="javascript:px.subapp('fncs/composer/index.html');">composer を操作する</a></li>
+				</ul>
+			</div><!-- /.more_links -->
 		</script>
 		<script type="text/template" id="template-form-editProject">
 			<div class="unit">
@@ -193,7 +219,7 @@
 
 					</div>
 					<div class="col-xs-4">
-						<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/pxfw" data-widget-id="567316803953504256" height="1000">@pxfwさんのツイート</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+						<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/pxfw" data-widget-id="567316803953504256" height="1000" onclick="px.utils.openURL(this.href);return false;">@pxfwさんのツイート</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 					</div>
 				</div><!-- /.row -->
 				<p><button class="px2-btn" onclick="px.deselectProject(); px.subapp(); return false;">ダッシュボードへ戻る</button></p>

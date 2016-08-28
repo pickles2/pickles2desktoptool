@@ -22,7 +22,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			px.utils.iterateFnc([
 				function(itPj, pj){
 					tmpStatus = pj.status();
-					if( !tmpStatus.pathExists ){
+					if( !tmpStatus.pathExists || !tmpStatus.entryScriptExists || !tmpStatus.vendorDirExists || !tmpStatus.composerJsonExists ){
 						_px2proj = false;
 						pj.px2proj = _px2proj;
 						itPj.next(pj);
@@ -46,7 +46,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 					return;
 				},
 				function(itPj, pj){
-					if( !tmpStatus.pathExists ){
+					if( !tmpStatus.pathExists || !tmpStatus.entryScriptExists || !tmpStatus.vendorDirExists || !tmpStatus.composerJsonExists ){
 						_config = false;
 						itPj.next(pj);
 						return;
@@ -59,7 +59,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 					return;
 				} ,
 				function(itPj, pj){
-					if( !tmpStatus.pathExists ){
+					if( !tmpStatus.pathExists || !tmpStatus.entryScriptExists || !tmpStatus.vendorDirExists || !tmpStatus.composerJsonExists ){
 						_px2DTConfig = false;
 						itPj.next(pj);
 						return;
@@ -72,7 +72,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 					return;
 				} ,
 				function(itPj, pj){
-					if( !tmpStatus.entryScriptExists ){
+					if( !tmpStatus.entryScriptExists || !tmpStatus.vendorDirExists || !tmpStatus.composerJsonExists ){
 						itPj.next(pj);return;
 					}
 					if( _config === false ){

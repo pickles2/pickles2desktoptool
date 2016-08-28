@@ -56,6 +56,17 @@ window.contApp = new (function(){
 			} ,
 			function(it, arg){
 				var $mainTaskUi = $('.cont_maintask_ui');
+
+				var isPathEmptyDir = (function(isDir, path){
+					if(!isDir){return false;}
+					var ls = px.fs.readdirSync(path);
+					// console.log(ls);
+					// console.log(ls.length);
+					var rtn = !ls.length;
+					// console.log(rtn);
+					return rtn;
+				})(status.pathExists, pj.get('path'));
+
 				if( !status.pathExists ){
 					// パスの選択しなおしbutton
 					$mainTaskUi
@@ -66,7 +77,7 @@ window.contApp = new (function(){
 								return false;
 							})
 					;
-				}else if( status.pathExists && !status.composerJsonExists && !status.isPathEmptyDir ){
+				}else if( status.pathExists && !status.composerJsonExists && !isPathEmptyDir ){
 					// ディレクトリが空ではないためセットアップできない画面
 					$mainTaskUi
 						.html( $('#template-is-not-empty-dir').html() )
@@ -113,6 +124,7 @@ window.contApp = new (function(){
 				}
 
 				it.next(arg);
+				return;
 			} ,
 			function(it, arg){
 				var hint = px.hint.getRandom();

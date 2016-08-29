@@ -533,18 +533,9 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		if(this.getGuiEngineName() == 'broccoli-html-editor'){
 			// broccoli-html-editor
 			this.createBroccoliServer(pagePath, function(broccoli){
-				broccoli.buildHtml(
-					{'mode':'finalize'},
-					function(htmls){
-						broccoli.options.bindTemplate(htmls, function(fin){
-							px.fs.writeFile(
-								broccoli.realpathHtml ,
-								fin ,
-								function(){
-									callback(true);
-								}
-							);
-						});
+				broccoli.updateContents(
+					function(result){
+						callback(result);
 					}
 				);
 			});
@@ -570,6 +561,58 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		var documentRoot = path.resolve(this.get('path'), this.get('entry_script'), '..')+'/'
 		var realpathDataDir,
 			pathResourceDir;
+		var pageInfo = this.site.getPageInfo( page_path );
+		var px2conf = this.getConfig();
+
+		function parseConfig(callback){
+			var utils79 = px.utils79;
+			// console.log(px2conf.plugins.px2dt);
+			function bind( tpl ){
+				var data = {
+					'dirname' : utils79.dirname( pageInfo.content ),
+					'filename' : utils79.basename( (function(path){
+						var rtn = path.replace( new RegExp('\\.[a-zA-Z0-9\\_\\-]+$'), '' );
+						return rtn;
+					})( pageInfo.content ) ),
+					'ext' : (function(path){
+						path.match( new RegExp('\\.([a-zA-Z0-9\\_\\-]+)$') );
+						var rtn = (RegExp.$1).toLowerCase();
+						return rtn;
+					})( pageInfo.content )
+				};
+
+				tpl = tpl.replace( '{$dirname}', data['dirname'] );
+				tpl = tpl.replace( '{$filename}', data['filename'] );
+				tpl = tpl.replace( '{$ext}', data['ext'] );
+
+				return tpl;
+			}
+
+			try {
+				if( px2conf.plugins.px2dt.guieditor.pathResourceDir ){
+					pathResourceDir = bind( px2conf.plugins.px2dt.guieditor.pathResourceDir );
+					pathResourceDir = require('path').resolve('/' + px2conf.path_controot + '/' + pathResourceDir)+'/';
+					// console.log(pathResourceDir);
+				}
+			} catch (e) {
+			}
+
+			try {
+				if( px2conf.plugins.px2dt.guieditor.realpathDataDir ){
+					realpathDataDir = bind( px2conf.plugins.px2dt.guieditor.realpathDataDir );
+					realpathDataDir = require('path').resolve('/', documentRoot+'/'+px2conf.path_controot, realpathDataDir)+'/';
+					// console.log(realpathDataDir);
+				}
+			} catch (e) {
+			}
+
+			// console.log(pathResourceDir);
+			// console.log(realpathDataDir);
+			setTimeout(function(){
+				callback();
+			}, 0);
+			return;
+		}
 
 		_pj.px2proj.realpath_files(page_path, '', function(realpath){
 			realpathDataDir = path.resolve(realpath, 'guieditor.ignore')+'/';
@@ -583,57 +626,56 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 					// ここで渡すのはウェブ側からみえる外部のパスでありサーバー内部パスではないので、
 					// ボリュームラベルが付加された値を渡すのは間違い。
 
+				parseConfig(function(){
 
-				// broccoli setup.
-				var broccoli = new Broccoli();
+					// broccoli setup.
+					var broccoli = new Broccoli();
 
-				// console.log(broccoli);
-				broccoli.init(
-					{
-						'appMode': 'desktop', // 'web' or 'desktop'. default to 'web'
-						'paths_module_template': _pj.getConfig().plugins.px2dt.paths_module_template ,
-						'documentRoot': documentRoot,
-						'pathHtml': page_path,
-						'pathResourceDir': pathResourceDir,
-						'realpathDataDir': realpathDataDir,
-						'customFields': {
-							'href': require('./../common/broccoli/broccoli-field-href/server.js'),
-							// 'psd': require('broccoli-field-psd'),
-							'table': require('broccoli-field-table').get({
-								'php': px.nodePhpBinOptions
-							})
-						} ,
-						'bindTemplate': function(htmls, callback){
-							var fin = '';
-							for( var bowlId in htmls ){
-								if( bowlId == 'main' ){
-									fin += htmls['main'];
-								}else{
-									fin += "\n";
-									fin += "\n";
-									fin += '<?php ob_start(); ?>'+"\n";
-									fin += htmls[bowlId]+"\n";
-									fin += '<?php $px->bowl()->send( ob_get_clean(), '+JSON.stringify(bowlId)+' ); ?>'+"\n";
-									fin += "\n";
+					// console.log(broccoli);
+					broccoli.init(
+						{
+							'appMode': 'desktop', // 'web' or 'desktop'. default to 'web'
+							'paths_module_template': _pj.getConfig().plugins.px2dt.paths_module_template ,
+							'documentRoot': documentRoot,
+							'pathHtml': page_path,
+							'pathResourceDir': pathResourceDir,
+							'realpathDataDir': realpathDataDir,
+							'customFields': {
+								'href': require('./../common/broccoli/broccoli-field-href/server.js'),
+								// 'psd': require('broccoli-field-psd'),
+								'table': require('broccoli-field-table').get({
+									'php': px.nodePhpBinOptions
+								})
+							} ,
+							'bindTemplate': function(htmls, callback){
+								var fin = '';
+								for( var bowlId in htmls ){
+									if( bowlId == 'main' ){
+										fin += htmls['main'];
+									}else{
+										fin += "\n";
+										fin += "\n";
+										fin += '<?php ob_start(); ?>'+"\n";
+										fin += htmls[bowlId]+"\n";
+										fin += '<?php $px->bowl()->send( ob_get_clean(), '+JSON.stringify(bowlId)+' ); ?>'+"\n";
+										fin += "\n";
+									}
 								}
+								callback(fin);
+								return;
+							} ,
+							'log': function(msg){
+								px.log(msg);
 							}
-							callback(fin);
-							return;
-						} ,
-						'log': function(msg){
-							px.log(msg);
+
+						},
+						function(){
+							callback(broccoli);
 						}
-
-					},
-					function(){
-						callback(broccoli);
-					}
-				);
-
+					);
+				});
 			});
-
 		});
-
 		return this;
 	}
 

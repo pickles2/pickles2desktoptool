@@ -3,11 +3,5 @@
 <?= htmlspecialchars($px->conf()->appname) ?> のヘルプへようこそ。
 
 
-<?php
-$children = $px->site()->get_children();
-foreach( $children as $child ){
-?>
-- <?php print $px->mk_link( $child )."\n"; ?>
-<?php
-}
-?>
+
+<a href="http://pickles2.pxt.jp/manual/">Pickles 2</a> のウェブサイトを参照してください。<br />

@@ -585,21 +585,21 @@ new (function($, window){
 	 * ヘルプページを開く
 	 */
 	this.openHelp = function(){
-		// px.utils.openURL( 'http://pickles2.pxt.jp/manual/' );
-		// return;
-
-		var port = 8081;
-		if( _packageJson && _packageJson.pickles2 && _packageJson.pickles2.network && _packageJson.pickles2.network.appserver && _packageJson.pickles2.network.appserver.port ){
-			port = _packageJson.pickles2.network.appserver.port;
-		}
-		if( _db.network && _db.network.appserver && _db.network.appserver.port ){
-			port = _db.network.appserver.port;
-		}
-
-		_appServer.serverStandby( port, './app/server_root/', function(){
-			px.utils.openURL( _appServer.getUrl() );
-		} );
+		px.utils.openURL( 'http://pickles2.pxt.jp/manual/' );
 		return;
+
+		// var port = 8081;
+		// if( _packageJson && _packageJson.pickles2 && _packageJson.pickles2.network && _packageJson.pickles2.network.appserver && _packageJson.pickles2.network.appserver.port ){
+		// 	port = _packageJson.pickles2.network.appserver.port;
+		// }
+		// if( _db.network && _db.network.appserver && _db.network.appserver.port ){
+		// 	port = _db.network.appserver.port;
+		// }
+		//
+		// _appServer.serverStandby( port, './app/server_root/', function(){
+		// 	px.utils.openURL( _appServer.getUrl() );
+		// } );
+		// return;
 	}
 
 	/**

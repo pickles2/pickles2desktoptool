@@ -1,16 +1,113 @@
 module.exports.classProject = function( window, px, projectInfo, projectId, cbStandby ) {
 	var _this = this;
-	// global.__defineGetter__('__LINE__', function () { return (new Error()).stack.split('\n')[2].split(':').reverse()[1]; }); var var_dump = function(val){ console.log(val); };
 
 	this.projectInfo = projectInfo;
 	this.projectId = projectId;
-	cbStandby = cbStandby||function(){}
+	cbStandby = cbStandby||function(){};
 
 	var _config = null;
 	var _px2DTConfig = null;
 	var _px2proj = null;
 	var _path = require('path');
+	var _pjError = [];
 
+
+	/**
+	 * projectオブジェクトを初期化
+	 */
+	function init(pj){
+		var tmpStatus;
+
+		setTimeout(function(){
+			px.utils.iterateFnc([
+				function(itPj, pj){
+					tmpStatus = pj.status();
+					if( !tmpStatus.pathExists || !tmpStatus.entryScriptExists || !tmpStatus.vendorDirExists || !tmpStatus.composerJsonExists ){
+						_px2proj = false;
+						pj.px2proj = _px2proj;
+						itPj.next(pj);
+						return;
+					}
+
+					// px2agent から プロジェクト情報を生成
+					var px2agentOption = {
+						'bin': px.nodePhpBin.getPath(),
+						'ini': px.nodePhpBin.getIniPath(),
+						'extension_dir': px.nodePhpBin.getExtensionDir()
+					};
+					// console.log(px2agentOption);
+					_px2proj = px.px2agent.createProject(
+						_path.resolve( pj.get('path') + '/' + pj.get('entry_script') ) ,
+						px2agentOption
+					);
+					pj.px2proj = _px2proj;
+
+					itPj.next(pj);
+					return;
+				},
+				function(itPj, pj){
+					if( !tmpStatus.pathExists || !tmpStatus.entryScriptExists || !tmpStatus.vendorDirExists || !tmpStatus.composerJsonExists ){
+						_config = false;
+						itPj.next(pj);
+						return;
+					}
+
+					// コンフィグをロード
+					pj.updateConfig(function(){
+						itPj.next(pj);
+					});
+					return;
+				} ,
+				function(itPj, pj){
+					if( !tmpStatus.pathExists || !tmpStatus.entryScriptExists || !tmpStatus.vendorDirExists || !tmpStatus.composerJsonExists ){
+						_px2DTConfig = false;
+						itPj.next(pj);
+						return;
+					}
+
+					// Px2DTコンフィグをロード
+					pj.updatePx2DTConfig(function(){
+						itPj.next(pj);
+					});
+					return;
+				} ,
+				function(itPj, pj){
+					if( !tmpStatus.entryScriptExists || !tmpStatus.vendorDirExists || !tmpStatus.composerJsonExists ){
+						itPj.next(pj);return;
+					}
+					if( _config === false ){
+						itPj.next(pj);return;
+					}
+
+					/**
+					 * px.site
+					 */
+					pj.site = new (require('./pickles.project.site.js'))(px, pj, function(){
+						itPj.next(pj);
+					});
+					return;
+				} ,
+				function(itPj, pj){
+					// composer パッケージの更新をチェックする。
+					px.composerUpdateChecker.check(pj, function(checked){
+						// console.log('composerUpdateChecker.check() done.', checked.status);
+					});
+					itPj.next(pj);return;
+					return;
+				} ,
+				function(itPj, pj){
+					cbStandby();
+					itPj.next(pj);
+				}
+			]).start(pj);
+		}, 0);
+		return;
+	}
+
+
+	/**
+	 * プロジェクト情報作成の入力情報を検証
+	 */
 	this.validate = function(){
 		var isError = false;
 		var errorMsg = {};
@@ -71,56 +168,71 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		})( this.get('path') );
 		return status;
 	}
+
+	/** プロジェクト情報を取得する */
 	this.get = function(key){
 		return this.projectInfo[key];
 	}
+
+	/** プロジェクト情報をセットする */
 	this.set = function(key, val){
 		this.projectInfo[key] = val;
 		return this;
 	}
+
+	/** サイトマップファイルの一覧を取得する */
 	this.getSitemapFilelist = function(){
 		var pathDir = this.get('path')+'/'+this.get('home_dir')+'/sitemaps/';
 		var filelist = px.fs.readdirSync( pathDir );
 		return filelist;
 	}
+
+	/** プロジェクト設定情報を取得する */
 	this.getConfig = function(){
 		return _config;
 	}
-	this.updateConfig = function( cb ){
-		cb = cb||function(){};
+
+	/** プロジェクト設定情報を更新する (非同期) */
+	this.updateConfig = function( callback ){
+		callback = callback||function(){};
 		this.execPx2(
 			'/?PX=api.get.config',
 			{
-				complete: function(data_memo){
+				complete: function(data_json_string){
 					_config = false;
 					_px2DTConfig = false;
 					try{
-						_config = JSON.parse(data_memo);
+						_config = JSON.parse(data_json_string);
 						if( _config.plugins && _config.plugins.px2dt ){
 							_px2DTConfig = _config.plugins.px2dt;
 						}
 					}catch(e){
-						console.error('FAILED to load "Pickles 2" config.');
-						console.error(data_memo);
+						console.error('FAILED to parse JSON "Pickles 2" config.');
+						console.error(data_json_string);
+						_this.error( 'FAILED to parse JSON "Pickles 2" config.'+"\n"+'------------'+"\n\n"+data_json_string );
 						_config = false;
 						_px2DTConfig = false;
 					}
-					cb( _config );
+					callback( _config );
 				}
 			}
 		);
 		return this;
 	}
+
+	/** Pickles 2 Desktop Tool 設定情報を取得する */
 	this.getPx2DTConfig = function(){
 		return _px2DTConfig;
 	}
-	this.updatePx2DTConfig = function( cb ){
-		cb = cb||function(){};
+
+	/** Pickles 2 Desktop Tool 設定情報を更新する (非同期) */
+	this.updatePx2DTConfig = function( callback ){
+		callback = callback||function(){};
 
 		var conf = this.getConfig();
 		if( conf.plugins && conf.plugins.px2dt ){
 			_px2DTConfig = conf.plugins.px2dt;
-			cb( _px2DTConfig );
+			callback( _px2DTConfig );
 			return this;
 		}
 
@@ -128,30 +240,41 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		var path = this.get('path')+'/'+this.get('home_dir')+'/px2dtconfig.json';
 
 		if( !px.utils.isFile( path ) ){
-			cb( null );
+			callback( null );
 			return this;
 		}
-		px.fs.readFile( path, {}, function(err, data){
+		px.fs.readFile( path, {}, function(err, data_json_string){
 			try{
-				data = JSON.parse( data.toString() );
+				_px2DTConfig = JSON.parse( data_json_string.toString() );
 			}catch(e){
-				data = false;
-				console.log('ERROR: FAILED to parse px2dtconfig.json');
+				console.error('FAILED to parse `px2dtconfig.json`.');
+				console.error(data_json_string);
+				_this.error( 'FAILED to parse `px2dtconfig.json`.'+"\n"+'------------'+"\n\n"+data_json_string );
+				_px2DTConfig = false;
 			}
-			_px2DTConfig = data;
-			cb( _px2DTConfig );
+			callback( _px2DTConfig );
 		} );
 		return this;
 	}
+
+	/** サイトマップを取得する */
 	this.getSitemap = function(){
 		return this.site.getSitemap();
 	}
-	this.updateSitemap = function( cb ){
-		return this.site.updateSitemap( cb );
+
+	/** サイトマップを更新する (非同期) */
+	this.updateSitemap = function( callback ){
+		return this.site.updateSitemap( callback );
 	}
+
+	/** Pickles 2 を実行する (非同期) */
 	this.execPx2 = function( cmd, opts ){
 		opts = opts||{};
 		opts.complete = opts.complete||function(){};
+		if( _px2proj === false ){
+			opts.complete(false);
+			return this;
+		}
 		_px2proj.query(
 			cmd,
 			{
@@ -410,18 +533,9 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		if(this.getGuiEngineName() == 'broccoli-html-editor'){
 			// broccoli-html-editor
 			this.createBroccoliServer(pagePath, function(broccoli){
-				broccoli.buildHtml(
-					{'mode':'finalize'},
-					function(htmls){
-						broccoli.options.bindTemplate(htmls, function(fin){
-							px.fs.writeFile(
-								broccoli.realpathHtml ,
-								fin ,
-								function(){
-									callback(true);
-								}
-							);
-						});
+				broccoli.updateContents(
+					function(result){
+						callback(result);
 					}
 				);
 			});
@@ -447,6 +561,58 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		var documentRoot = path.resolve(this.get('path'), this.get('entry_script'), '..')+'/'
 		var realpathDataDir,
 			pathResourceDir;
+		var pageInfo = this.site.getPageInfo( page_path );
+		var px2conf = this.getConfig();
+
+		function parseConfig(callback){
+			var utils79 = px.utils79;
+			// console.log(px2conf.plugins.px2dt);
+			function bind( tpl ){
+				var data = {
+					'dirname' : utils79.dirname( pageInfo.content ),
+					'filename' : utils79.basename( (function(path){
+						var rtn = path.replace( new RegExp('\\.[a-zA-Z0-9\\_\\-]+$'), '' );
+						return rtn;
+					})( pageInfo.content ) ),
+					'ext' : (function(path){
+						path.match( new RegExp('\\.([a-zA-Z0-9\\_\\-]+)$') );
+						var rtn = (RegExp.$1).toLowerCase();
+						return rtn;
+					})( pageInfo.content )
+				};
+
+				tpl = tpl.replace( '{$dirname}', data['dirname'] );
+				tpl = tpl.replace( '{$filename}', data['filename'] );
+				tpl = tpl.replace( '{$ext}', data['ext'] );
+
+				return tpl;
+			}
+
+			try {
+				if( px2conf.plugins.px2dt.guieditor.pathResourceDir ){
+					pathResourceDir = bind( px2conf.plugins.px2dt.guieditor.pathResourceDir );
+					pathResourceDir = require('path').resolve('/' + px2conf.path_controot + '/' + pathResourceDir)+'/';
+					// console.log(pathResourceDir);
+				}
+			} catch (e) {
+			}
+
+			try {
+				if( px2conf.plugins.px2dt.guieditor.realpathDataDir ){
+					realpathDataDir = bind( px2conf.plugins.px2dt.guieditor.realpathDataDir );
+					realpathDataDir = require('path').resolve('/', documentRoot+'/'+px2conf.path_controot, realpathDataDir)+'/';
+					// console.log(realpathDataDir);
+				}
+			} catch (e) {
+			}
+
+			// console.log(pathResourceDir);
+			// console.log(realpathDataDir);
+			setTimeout(function(){
+				callback();
+			}, 0);
+			return;
+		}
 
 		_pj.px2proj.realpath_files(page_path, '', function(realpath){
 			realpathDataDir = path.resolve(realpath, 'guieditor.ignore')+'/';
@@ -460,57 +626,56 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 					// ここで渡すのはウェブ側からみえる外部のパスでありサーバー内部パスではないので、
 					// ボリュームラベルが付加された値を渡すのは間違い。
 
+				parseConfig(function(){
 
-				// broccoli setup.
-				var broccoli = new Broccoli();
+					// broccoli setup.
+					var broccoli = new Broccoli();
 
-				// console.log(broccoli);
-				broccoli.init(
-					{
-						'appMode': 'desktop', // 'web' or 'desktop'. default to 'web'
-						'paths_module_template': _pj.getConfig().plugins.px2dt.paths_module_template ,
-						'documentRoot': documentRoot,
-						'pathHtml': page_path,
-						'pathResourceDir': pathResourceDir,
-						'realpathDataDir': realpathDataDir,
-						'customFields': {
-							'href': require('./../common/broccoli/broccoli-field-href/server.js'),
-							// 'psd': require('broccoli-field-psd'),
-							'table': require('broccoli-field-table').get({
-								'php': px.nodePhpBinOptions
-							})
-						} ,
-						'bindTemplate': function(htmls, callback){
-							var fin = '';
-							for( var bowlId in htmls ){
-								if( bowlId == 'main' ){
-									fin += htmls['main'];
-								}else{
-									fin += "\n";
-									fin += "\n";
-									fin += '<?php ob_start(); ?>'+"\n";
-									fin += htmls[bowlId]+"\n";
-									fin += '<?php $px->bowl()->send( ob_get_clean(), '+JSON.stringify(bowlId)+' ); ?>'+"\n";
-									fin += "\n";
+					// console.log(broccoli);
+					broccoli.init(
+						{
+							'appMode': 'desktop', // 'web' or 'desktop'. default to 'web'
+							'paths_module_template': _pj.getConfig().plugins.px2dt.paths_module_template ,
+							'documentRoot': documentRoot,
+							'pathHtml': page_path,
+							'pathResourceDir': pathResourceDir,
+							'realpathDataDir': realpathDataDir,
+							'customFields': {
+								'href': require('./../common/broccoli/broccoli-field-href/server.js'),
+								// 'psd': require('broccoli-field-psd'),
+								'table': require('broccoli-field-table').get({
+									'php': px.nodePhpBinOptions
+								})
+							} ,
+							'bindTemplate': function(htmls, callback){
+								var fin = '';
+								for( var bowlId in htmls ){
+									if( bowlId == 'main' ){
+										fin += htmls['main'];
+									}else{
+										fin += "\n";
+										fin += "\n";
+										fin += '<?php ob_start(); ?>'+"\n";
+										fin += htmls[bowlId]+"\n";
+										fin += '<?php $px->bowl()->send( ob_get_clean(), '+JSON.stringify(bowlId)+' ); ?>'+"\n";
+										fin += "\n";
+									}
 								}
+								callback(fin);
+								return;
+							} ,
+							'log': function(msg){
+								px.log(msg);
 							}
-							callback(fin);
-							return;
-						} ,
-						'log': function(msg){
-							px.log(msg);
+
+						},
+						function(){
+							callback(broccoli);
 						}
-
-					},
-					function(){
-						callback(broccoli);
-					}
-				);
-
+					);
+				});
 			});
-
 		});
-
 		return this;
 	}
 
@@ -526,6 +691,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		var px2ce = new Px2CE();
 
 		// console.log(broccoli);
+		// console.log(require('path').resolve('/', './'+page_path));
 		px2ce.init(
 			{
 				'page_path': page_path,
@@ -960,65 +1126,33 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	}
 
 	/**
-	 * projectオブジェクトを初期化
+	 * エラーメッセージを報告
 	 */
-	px.utils.iterateFnc([
-		function(itPj, pj){
-			var px2agentOption = {
-				'bin': px.nodePhpBin.getPath(),
-				'ini': px.nodePhpBin.getIniPath(),
-				'extension_dir': px.nodePhpBin.getExtensionDir()
-			};
-			console.log(px2agentOption);
-			_px2proj = px.px2agent.createProject(
-				_path.resolve( pj.get('path') + '/' + pj.get('entry_script') ) ,
-				px2agentOption
-			);
-			pj.px2proj = _px2proj;
+	this.error = function( message ){
+		// console.error( message );
+		_pjError.push( {
+			'message': message
+		} );
+		return true;
+	}
 
-			itPj.next(pj);
-		},
-		function(itPj, pj){
-			// コンフィグをロード
-			// var status = pj.status();
-			// if( !status.entryScriptExists ){
-			// 	itPj.next(pj);return;
-			// }
-			pj.updateConfig(function(){
-				itPj.next(pj);
-			});
-		} ,
-		function(itPj, pj){
-			// Px2DTコンフィグをロード
-			// var status = pj.status();
-			// if( !status.px2DTConfFileExists ){
-			// 	itPj.next(pj);return;
-			// }
-			pj.updatePx2DTConfig(function(){
-				itPj.next(pj);
-			});
-		} ,
-		function(itPj, pj){
-			var status = pj.status();
-			if( !status.entryScriptExists ){
-				itPj.next(pj);return;
-			}
-			if( _config === false ){
-				itPj.next(pj);return;
-			}
+	/**
+	 * エラーメッセージを取得
+	 */
+	this.getErrors = function(){
+		return _pjError;
+	}
 
-			/**
-			 * px.site
-			 */
-			pj.site = new (require('./pickles.project.site.js'))(px, pj, function(){
-				itPj.next(pj);
-			});
+	/**
+	 * エラーメッセージを消去
+	 */
+	this.clearErrors = function(){
+		_pjError = [];
+		return true;
+	}
 
-		} ,
-		function(itPj, pj){
-			cbStandby();
-			itPj.next();
-		}
-	]).start(this);
+	// オブジェクトを初期化
+	init(this);
+	return this;
 
 };

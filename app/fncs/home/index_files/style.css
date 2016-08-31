@@ -52,16 +52,6 @@ README.md 表示エリア
 	font-weight: bold;
 	text-align: center;
 }
-.contents .cont_readme_content pre{
-	background: #fafafa;
-	border: 1px solid #f0f0f0;
-}
-.contents .cont_readme_content code{
-	border: none;
-	background-color: transparent;
-	padding: 0;
-	margin: 0;
-}
 .contents .cont_readme_content .cont_readme_content-no_readme{
 	text-align:center;
 	color:#999;

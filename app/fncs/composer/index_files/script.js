@@ -91,7 +91,9 @@ function cont_update_proj(btn){
 				// 	$('.cont_console').text() + code
 				// );
 				$(btn).removeAttr('disabled');
-				px.message( 'composer update 完了しました。' );
+				px.composerUpdateChecker.clearStatus( pj, function(){
+					px.message( 'composer update 完了しました。' );
+				} );
 			}
 		}
 	);

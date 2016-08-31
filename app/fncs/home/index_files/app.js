@@ -55,10 +55,32 @@ window.contApp = new (function(){
 				);
 			} ,
 			function(it, arg){
+				var $mainTaskUi = $('.cont_maintask_ui');
+
+				var isPathEmptyDir = (function(isDir, path){
+					if(!isDir){return false;}
+					var ls = px.fs.readdirSync(path);
+					// console.log(ls);
+					// console.log(ls.length);
+					var rtn = !ls.length;
+					// console.log(rtn);
+					return rtn;
+				})(status.pathExists, pj.get('path'));
+
 				if( !status.pathExists ){
 					// パスの選択しなおしbutton
-					$('.cont_maintask_ui')
+					$mainTaskUi
 						.html( $('#template-reselectProject-path').html() )
+						.find('form')
+							.submit(function(){
+								_this.selectProjectPath( $(this).find('[name=pj_path]').val() );
+								return false;
+							})
+					;
+				}else if( status.pathExists && !status.composerJsonExists && !isPathEmptyDir ){
+					// ディレクトリが空ではないためセットアップできない画面
+					$mainTaskUi
+						.html( $('#template-is-not-empty-dir').html() )
 						.find('form')
 							.submit(function(){
 								_this.selectProjectPath( $(this).find('[name=pj_path]').val() );
@@ -67,7 +89,7 @@ window.contApp = new (function(){
 					;
 				}else if( status.pathExists && !status.composerJsonExists ){
 					// インストールボタン
-					$('.cont_maintask_ui')
+					$mainTaskUi
 						.html( $('#template-install-pickles2').html() )
 						.find('form')
 							.submit(function(){
@@ -77,31 +99,50 @@ window.contApp = new (function(){
 					;
 				}else if( status.pathExists && !status.vendorDirExists ){
 					// `composer install` ボタン
-					$('.cont_maintask_ui')
+					$mainTaskUi
 						.html( $('#template-install-composer').html() )
-						.find('form')
-							.submit(function(){
-								install(this);
-								return false;
-							})
 					;
 				}else if( status.pathExists && !status.confFileExists ){
 					// 何らかのエラーがある可能性があります
-					$('.cont_maintask_ui')
+					$mainTaskUi
 						.html( $('#template-conf-not-exists').html() )
-						.find('form')
-							.submit(function(){
-								install(this);
-								return false;
-							})
 					;
 				}else{
 					// ちゃんとインストールできてます
-					$('.cont_maintask_ui')
+					$mainTaskUi
 						.html( $('#template-standby').html() )
 					;
 				}
+
+				var errors = pj.getErrors();
+				if( errors.length ){
+					var $errors = $('<div class="selectable">');
+					for( var idx in errors ){
+						$errors.append( $('<pre>').append( $('<code>').text( errors[idx].message ) ) );
+					}
+					$mainTaskUi.append( $errors );
+				}
+
 				it.next(arg);
+				return;
+			} ,
+			function(it, arg){
+				var hint = px.hint.getRandom();
+				// console.log(hint);
+				$('.cont_hint').html( hint );
+				it.next(arg);
+			} ,
+			function(it, arg){
+				px.composerUpdateChecker.getStatus(pj, function(checked){
+					// console.log('composerUpdateChecker.check() done.', checked.status);
+					if( checked.status == 'update_found' ){
+						$('.cont_info').append( $('<div class="alert alert-info">')
+							.append( $('<span>').text('composer パッケージのいくつかに、新しいバージョンが見つかりました。') )
+							.append( $('<a href="javascript:px.subapp(\'fncs/composer/index.html\');">').text('いますぐ更新することをお勧めします。') )
+						);
+					}
+					it.next(arg);
+				});
 			} ,
 			function(it, arg){
 				// README.md を表示する
@@ -162,7 +203,9 @@ window.contApp = new (function(){
 		var pj = px.getCurrentProject();
 		pj.projectInfo.path = path;
 		if( !px.updateProject(pj.projectId, pj.projectInfo) ){
-			alert('ERROR');
+			var msg = 'ERROR: FAILED to update project info.';
+			console.error(msg);
+			alert(msg);
 			return false;
 		}
 		px.save(function(){

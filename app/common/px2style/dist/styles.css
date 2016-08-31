@@ -18,29 +18,44 @@
           align-items: stretch;
   font-family: sans-serif; }
   .px2-btn:focus, .px2-btn:hover {
-    background-color: #666;
-    color: #eee;
+    background-color: #f9f9f9;
     outline: none; }
+  .px2-btn:hover {
+    background-color: #f0f0f0; }
   .px2-btn:active {
+    background-color: #333;
+    color: #fff;
     box-shadow: inset 0 3px 15px rgba(0, 0, 0, 0.3); }
   .px2-btn.px2-btn--primary {
     border-color: #00a0e6;
     background-color: rgba(0, 160, 230, 0.05);
     color: #00a0e6; }
     .px2-btn.px2-btn--primary:focus, .px2-btn.px2-btn--primary:hover {
+      background: rgba(0, 160, 230, 0.1); }
+    .px2-btn.px2-btn--primary:hover {
+      background: rgba(0, 160, 230, 0.15); }
+    .px2-btn.px2-btn--primary:active {
       background: #00a0e6;
       color: #fff; }
   .px2-btn.px2-btn--secondary {
     border-color: #999;
     color: #999; }
     .px2-btn.px2-btn--secondary:focus, .px2-btn.px2-btn--secondary:hover {
-      background: #999;
+      background: #f9f9f9; }
+    .px2-btn.px2-btn--secondary:hover {
+      background: #f0f0f0; }
+    .px2-btn.px2-btn--secondary:active {
+      background: #333;
       color: #fff; }
   .px2-btn.px2-btn--danger {
     border-color: #e86a60;
     background-color: rgba(232, 106, 96, 0.05);
     color: #e86a60; }
     .px2-btn.px2-btn--danger:focus, .px2-btn.px2-btn--danger:hover {
+      background: rgba(232, 106, 96, 0.1); }
+    .px2-btn.px2-btn--danger:hover {
+      background: rgba(232, 106, 96, 0.15); }
+    .px2-btn.px2-btn--danger:active {
       background: #e86a60;
       color: #fff; }
   .px2-btn.px2-btn--download {
@@ -48,6 +63,10 @@
     background-color: rgba(74, 214, 77, 0.05);
     color: #4ad64d; }
     .px2-btn.px2-btn--download:focus, .px2-btn.px2-btn--download:hover {
+      background: rgba(74, 214, 77, 0.1); }
+    .px2-btn.px2-btn--download:hover {
+      background: rgba(74, 214, 77, 0.15); }
+    .px2-btn.px2-btn--download:active {
       background: #4ad64d;
       color: #fff; }
   .px2-btn--sm {

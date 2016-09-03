@@ -62,6 +62,7 @@ $ npm run build
 - GUI編集の `pathResourceDir` と `realpathDataDir` を設定できるようになった。
 - プロジェクトホームにヒントを表示する機能を追加。
 - composerパッケージの更新がある場合に通知する機能を追加。
+- プレビューサーバーがアクセスログを出力するようになった。
 - その他いくつかの細かい修正。
 
 ### Pickles 2 Desktop Tool 2.0.0-beta.13 (2016年8月3日)

@@ -600,7 +600,7 @@ new (function($, window){
 		// 	port = _db.network.appserver.port;
 		// }
 		//
-		// _appServer.serverStandby( port, './app/server_root/', function(){
+		// _appServer.serverStandby( this, port, './app/server_root/', function(){
 		// 	px.utils.openURL( _appServer.getUrl() );
 		// } );
 		// return;
@@ -652,6 +652,30 @@ new (function($, window){
 		return true;
 	}
 
+
+	/**
+	 * ループバックIPアドレスかどうか調べる
+	 */
+	this.isLoopbackIp = function( ip ){
+		switch( ip ){
+			case '127.0.0.1':
+			case '::127.0.0.1':
+			case '::ffff:127.0.0.1':
+			case '::1':
+			case '0::1':
+			case '0000::0001':
+			case '0:0:0:0:0:0:0:1':
+			case '0000:0000:0000:0000:0000:0000:0000:0001':
+				// ホワイトリスト: ローカルIPは通す
+				// ↑もっといい書き方ないか？
+				return true;
+				break;
+			default:
+				return false;
+				break;
+		}
+		return false;
+	}
 
 	/**
 	 * サブアプリケーション

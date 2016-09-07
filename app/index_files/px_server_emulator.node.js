@@ -110,29 +110,17 @@
 				// console.log(req.ip);
 				// console.log(req.connection.remoteAddress);
 
-				switch( req.ip ){
-					case '127.0.0.1':
-					case '::127.0.0.1':
-					case '::ffff:127.0.0.1':
-					case '::1':
-					case '0::1':
-					case '0000::0001':
-					case '0:0:0:0:0:0:0:1':
-					case '0000:0000:0000:0000:0000:0000:0000:0001':
-						// ホワイトリスト: ローカルIPは通す
-						// ↑もっといい書き方ないか？
-						break;
-					default:
-						res
-							.set('Content-Type', 'text/html')
-							.status(403)
-							.type('html')
-							.send('Not allowed IP address. (' + req.ip + ')')
-							.end()
-						;
-						return;
-						break;
+				if( !px.isLoopbackIp( req.ip ) ){
+					res
+						.set('Content-Type', 'text/html')
+						.status(403)
+						.type('html')
+						.send('Not allowed IP address. (' + req.ip + ')')
+						.end()
+					;
+					return;
 				}
+
 				next();
 				return;
 			} );

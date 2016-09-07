@@ -111,7 +111,8 @@ new (function($, window){
 	}
 
 	if( !_fs.existsSync( _path_db ) ){
-		_fs.writeFileSync( _path_db,
+		_fs.writeFileSync(
+			_path_db,
 			JSON.stringify(
 				{
 					"commands":{} ,
@@ -122,7 +123,8 @@ new (function($, window){
 					"projects":[] ,
 					"network":{
 						"preview":{
-							"port": _packageJson.pickles2.network.preview.port
+							"port": _packageJson.pickles2.network.preview.port,
+							"accessRestriction": "loopback"
 						},
 						"appserver":{
 							"port": _packageJson.pickles2.network.appserver.port
@@ -179,6 +181,7 @@ new (function($, window){
 					return;
 				},
 				function(it1, data){
+					// 各国語言語切替機能のロード
 					var LangBank = require('langbank');
 					px.lb = new LangBank( require('path').resolve('./app/common/language/language.csv'), function(){
 						px.lb.setLang('ja'); // default language
@@ -188,6 +191,7 @@ new (function($, window){
 					return;
 				},
 				function(it1, data){
+					// ヒント機能のロード
 					var Px2Hint = require('./index_files/pickles.hint.js');
 					px.hint = new Px2Hint( px, require('path').resolve('./app/common/language/hint.csv'), function(){
 						it1.next();

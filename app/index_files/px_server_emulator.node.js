@@ -92,6 +92,17 @@
 
 
 		(function(){
+			var accessRestriction = 'loopback';
+			try {
+				accessRestriction = px.getDb().network.preview.accessRestriction;
+			} catch (e) {
+			}
+
+			if( accessRestriction == 'off' ){
+				// 制限をかけない
+				return;
+			}
+
 			// IPアクセス制限
 			// loopback = 127.0.0.1/8, ::1/128
 			_server.set('trust proxy', ['loopback']);

@@ -141,6 +141,13 @@
 							<th>アプリケーション・サーバー用ポート番号</th>
 							<td><input type="number" name="network_appserver_port" value="" placeholder="" style="width:25%; min-width: 6em;" /></td>
 						</tr>
+						<tr>
+							<th>プレビューサーバーのアクセス制限</th>
+							<td><select name="network_preview_access_restriction">
+								<option value="loopback">ネットワークからのアクセスを拒否 (127.0.0.1 のみ許可)</option>
+								<option value="off">制限しない</option>
+							</select></td>
+						</tr>
 					</table>
 					<h2>アプリケーション - Application</h2>
 					<table class="form_elements" style="width:100%;">
@@ -158,7 +165,7 @@
 					</table>
 				</div>
 				<div class="unit">
-					<p>これらの設定を反映するために、アプリケーションを再起動してください。</p>
+					<p>これらの設定は、アプリケーションの再起動後に反映されます。</p>
 				</div>
 			</form>
 		</script>

@@ -66,26 +66,67 @@
 			return this;
 		}
 
-		// ensure log directory exists
-		fs.existsSync(_path_access_log) || fs.mkdirSync(_path_access_log);
+		var accessLogStream;
+		(function(){
+			// ensure log directory exists
+			fs.existsSync(_path_access_log) || fs.mkdirSync(_path_access_log);
 
-		// create a rotating write stream
-		var accessLogStream = FileStreamRotator.getStream({
-			'date_format': 'YYYYMMDD',
-			'filename': path.join(_path_access_log, 'access-%DATE%.log'),
-			'frequency': 'daily',
-			'verbose': false
-		});
+			// create a rotating write stream
+			accessLogStream = FileStreamRotator.getStream({
+				'date_format': 'YYYYMMDD',
+				'filename': path.join(_path_access_log, 'access-%DATE%.log'),
+				'frequency': 'daily',
+				'verbose': false
+			});
 
-		// setup the logger
-		_server.use(
-			morgan(
-				'combined',
-				{
-					'stream': accessLogStream
+			// setup the logger
+			_server.use(
+				morgan(
+					'combined',
+					{
+						'stream': accessLogStream
+					}
+				)
+			);
+		})();
+
+
+		(function(){
+			// IPアクセス制限
+			// loopback = 127.0.0.1/8, ::1/128
+			_server.set('trust proxy', ['loopback']);
+			_server.use('/*', function(req, res, next){
+				// console.log(req.ip);
+				// console.log(req.connection.remoteAddress);
+
+				switch( req.ip ){
+					case '127.0.0.1':
+					case '::127.0.0.1':
+					case '::ffff:127.0.0.1':
+					case '::1':
+					case '0::1':
+					case '0000::0001':
+					case '0:0:0:0:0:0:0:1':
+					case '0000:0000:0000:0000:0000:0000:0000:0001':
+						// ホワイトリスト: ローカルIPは通す
+						// ↑もっといい書き方ないか？
+						break;
+					default:
+						res
+							.set('Content-Type', 'text/html')
+							.status(403)
+							.type('html')
+							.send('Not allowed IP address. (' + req.ip + ')')
+							.end()
+						;
+						return;
+						break;
 				}
-			)
-		);
+				next();
+				return;
+			} );
+		})();
+
 
 		// setup Pickles 2
 		_server.use('/*', expressPickles2(
@@ -98,7 +139,7 @@
 						// console.log(realpathEntryScript);
 						_last_realpathEntryScript = realpathEntryScript;
 						accessLogStream.write(
-							realpathEntryScript+"\n",
+							'Switch Project to: ' + realpathEntryScript+"\n",
 							'utf-8'
 						);
 						callback(

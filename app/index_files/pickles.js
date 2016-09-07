@@ -111,7 +111,8 @@ new (function($, window){
 	}
 
 	if( !_fs.existsSync( _path_db ) ){
-		_fs.writeFileSync( _path_db,
+		_fs.writeFileSync(
+			_path_db,
 			JSON.stringify(
 				{
 					"commands":{} ,
@@ -122,7 +123,8 @@ new (function($, window){
 					"projects":[] ,
 					"network":{
 						"preview":{
-							"port": _packageJson.pickles2.network.preview.port
+							"port": _packageJson.pickles2.network.preview.port,
+							"accessRestriction": "loopback"
 						},
 						"appserver":{
 							"port": _packageJson.pickles2.network.appserver.port
@@ -179,6 +181,7 @@ new (function($, window){
 					return;
 				},
 				function(it1, data){
+					// 各国語言語切替機能のロード
 					var LangBank = require('langbank');
 					px.lb = new LangBank( require('path').resolve('./app/common/language/language.csv'), function(){
 						px.lb.setLang('ja'); // default language
@@ -188,6 +191,7 @@ new (function($, window){
 					return;
 				},
 				function(it1, data){
+					// ヒント機能のロード
 					var Px2Hint = require('./index_files/pickles.hint.js');
 					px.hint = new Px2Hint( px, require('path').resolve('./app/common/language/hint.csv'), function(){
 						it1.next();
@@ -585,17 +589,21 @@ new (function($, window){
 	 * ヘルプページを開く
 	 */
 	this.openHelp = function(){
-		var port = 8081;
-		if( _packageJson && _packageJson.pickles2 && _packageJson.pickles2.network && _packageJson.pickles2.network.appserver && _packageJson.pickles2.network.appserver.port ){
-			port = _packageJson.pickles2.network.appserver.port;
-		}
-		if( _db.network && _db.network.appserver && _db.network.appserver.port ){
-			port = _db.network.appserver.port;
-		}
+		px.utils.openURL( 'http://pickles2.pxt.jp/manual/' );
+		return;
 
-		_appServer.serverStandby( port, './app/server_root/', function(){
-			px.utils.openURL( _appServer.getUrl() );
-		} );
+		// var port = 8081;
+		// if( _packageJson && _packageJson.pickles2 && _packageJson.pickles2.network && _packageJson.pickles2.network.appserver && _packageJson.pickles2.network.appserver.port ){
+		// 	port = _packageJson.pickles2.network.appserver.port;
+		// }
+		// if( _db.network && _db.network.appserver && _db.network.appserver.port ){
+		// 	port = _db.network.appserver.port;
+		// }
+		//
+		// _appServer.serverStandby( this, port, './app/server_root/', function(){
+		// 	px.utils.openURL( _appServer.getUrl() );
+		// } );
+		// return;
 	}
 
 	/**
@@ -644,6 +652,30 @@ new (function($, window){
 		return true;
 	}
 
+
+	/**
+	 * ループバックIPアドレスかどうか調べる
+	 */
+	this.isLoopbackIp = function( ip ){
+		switch( ip ){
+			case '127.0.0.1':
+			case '::127.0.0.1':
+			case '::ffff:127.0.0.1':
+			case '::1':
+			case '0::1':
+			case '0000::0001':
+			case '0:0:0:0:0:0:0:1':
+			case '0000:0000:0000:0000:0000:0000:0000:0001':
+				// ホワイトリスト: ローカルIPは通す
+				// ↑もっといい書き方ないか？
+				return true;
+				break;
+			default:
+				return false;
+				break;
+		}
+		return false;
+	}
 
 	/**
 	 * サブアプリケーション

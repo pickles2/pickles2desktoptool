@@ -8,6 +8,7 @@
 		if( !px.getDb().network ){ px.getDb().network = {}; }
 		if( !px.getDb().network.preview ){ px.getDb().network.preview = {}; }
 		if( !px.getDb().network.preview.port ){ px.getDb().network.preview.port = null; }
+		if( !px.getDb().network.preview.accessRestriction ){ px.getDb().network.preview.port = 'loopback'; }
 		if( !px.getDb().network.appserver ){ px.getDb().network.appserver = {}; }
 		if( !px.getDb().network.appserver.port ){ px.getDb().network.appserver.port = null; }
 
@@ -19,6 +20,7 @@
 		$tpl.find('[name=php]').val( px.getDb().commands.php );
 		$tpl.find('[name=git]').val( px.getDb().commands.git );
 		$tpl.find('[name=network_preview_port]').val( px.getDb().network.preview.port ).attr({'placeholder':px.packageJson.pickles2.network.preview.port});
+		$tpl.find('[name=network_preview_access_restriction]').val( px.getDb().network.preview.accessRestriction );
 		$tpl.find('[name=network_appserver_port]').val( px.getDb().network.appserver.port ).attr({'placeholder':px.packageJson.pickles2.network.appserver.port});
 		$tpl.find('[name=apps_texteditor]').val( px.getDb().apps.texteditor );
 		$tpl.find('[name=apps_texteditor_for_dir]').val( px.getDb().apps.texteditorForDir );
@@ -64,6 +66,7 @@
 						px.getDb().commands.php = $tpl.find('[name=php]').val();
 						px.getDb().commands.git = $tpl.find('[name=git]').val();
 						px.getDb().network.preview.port = $tpl.find('[name=network_preview_port]').val();
+						px.getDb().network.preview.accessRestriction = $tpl.find('[name=network_preview_access_restriction]').val();
 						px.getDb().network.appserver.port = $tpl.find('[name=network_appserver_port]').val();
 						px.getDb().apps.texteditor = $tpl.find('[name=apps_texteditor]').val();
 						px.getDb().apps.texteditorForDir = $tpl.find('[name=apps_texteditor_for_dir]').val();

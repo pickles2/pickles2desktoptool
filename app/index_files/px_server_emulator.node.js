@@ -8,7 +8,11 @@
 	var path = require('path');
 	var express = require('express');
 	var expressPickles2 = require('express-pickles2');
+	var morgan = require('morgan');
+	var FileStreamRotator = require('file-stream-rotator');
 	var _server = express();
+	var _path_access_log;
+	var _last_realpathEntryScript;
 
 	var _port;
 	var _running = false;
@@ -21,6 +25,8 @@
 		if(px){ return this; }
 
 		px = _px;
+		_path_access_log = path.resolve(px.getDataDir()+'/logs/')+'/';
+		// console.log(_path_access_log);
 
 		return this;
 	}
@@ -60,16 +66,93 @@
 			return this;
 		}
 
+		var accessLogStream;
+		(function(){
+			// ensure log directory exists
+			fs.existsSync(_path_access_log) || fs.mkdirSync(_path_access_log);
+
+			// create a rotating write stream
+			accessLogStream = FileStreamRotator.getStream({
+				'date_format': 'YYYYMMDD',
+				'filename': path.join(_path_access_log, 'access-%DATE%.log'),
+				'frequency': 'daily',
+				'verbose': false
+			});
+
+			// setup the logger
+			_server.use(
+				morgan(
+					'combined',
+					{
+						'stream': accessLogStream
+					}
+				)
+			);
+		})();
+
+
+		(function(){
+			var accessRestriction = 'loopback';
+			try {
+				accessRestriction = px.getDb().network.preview.accessRestriction;
+			} catch (e) {
+			}
+
+			if( accessRestriction == 'off' ){
+				// 制限をかけない
+				return;
+			}
+
+			// IPアクセス制限
+			// loopback = 127.0.0.1/8, ::1/128
+			_server.set('trust proxy', ['loopback']);
+			_server.use('/*', function(req, res, next){
+				// console.log(req.ip);
+				// console.log(req.connection.remoteAddress);
+
+				if( !px.isLoopbackIp( req.ip ) ){
+					res
+						.set('Content-Type', 'text/html')
+						.status(403)
+						.type('html')
+						.send('Not allowed IP address. (' + req.ip + ')')
+						.end()
+					;
+					return;
+				}
+
+				next();
+				return;
+			} );
+		})();
+
+
+		// setup Pickles 2
 		_server.use('/*', expressPickles2(
 			null,
 			{
 				'liveConfig': function(callback){
 					var pj = px.getCurrentProject();
 					var realpathEntryScript = path.resolve(pj.get('path'), pj.get('entry_script'));
-					callback(
-						realpathEntryScript,
-						{}
-					);
+					if( _last_realpathEntryScript !== realpathEntryScript ){
+						// console.log(realpathEntryScript);
+						_last_realpathEntryScript = realpathEntryScript;
+						accessLogStream.write(
+							'Switch Project to: ' + realpathEntryScript+"\n",
+							'utf-8'
+						);
+						callback(
+							realpathEntryScript,
+							{}
+						);
+						return;
+					}else{
+						callback(
+							realpathEntryScript,
+							{}
+						);
+						return;
+					}
 				},
 				'processor': function(bin, ext, callback){
 					if( ext == 'html' ){

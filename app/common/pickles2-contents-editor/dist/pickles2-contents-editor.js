@@ -15968,6 +15968,9 @@ module.exports = function(px2ce){
 			this.options.preview = this.options.preview || {};
 			this.page_path = this.options.page_path;
 
+			this.page_path = this.page_path.replace( new RegExp('^(alias[0-9]*\\:)?\\/+'), '/' );
+			this.page_path = this.page_path.replace( new RegExp('\\{(?:\\*|\\$)[\s\S]*\\}'), '' );
+
 			$canvas = $(options.elmCanvas);
 			$canvas.addClass('pickles2-contents-editor');
 

@@ -354,6 +354,7 @@ window.contApp = new (function( px ){
 											'buttons':[
 												$('<button>')
 													.text('OK')
+													.addClass('px2-btn--primary')
 													.click(function(){
 														var val = $body.find('input').val();
 														var pageinfo = _this.pj.site.getPageInfo(val);

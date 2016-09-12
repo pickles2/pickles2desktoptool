@@ -9,9 +9,10 @@ menu.dashboard,Dashboard,ダッシュボード,控制版面,控制版面
 menu.openFolder,Open Folder,フォルダを開く,打开文件夹,打開文件夾
 menu.openInBrowser,Open in Browser,ブラウザで開く,在浏览器中打开,在瀏覽器中打開
 menu.openInTexteditor,Open in Text editor,テキストエディタで開く,在Text editor中打开,在Text editor中打開
+menu.openInTerminal,Open in Terminal,コマンドラインで開く,在Terminal中打开,在Terminal中打開
 menu.projectConfig,Project Config,プロジェクト設定,项目设定,項目設定
 menu.composer,composer,composer,composer,composer
-menu.git,git,git,git ,git 
+menu.git,git,git,git,git
 menu.preview,Preview,プレビュー,预览,預覽
 menu.moveContents,Move Contents,コンテンツを移動する,移动内容,移動內容
 menu.search,Search,検索,搜索,搜尋

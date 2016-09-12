@@ -256,6 +256,7 @@ new (function($, window){
 						{"label":px.lb.get('menu.openFolder'),       "cond":"homeDirExists",      "area":"shoulder", "app":null, "cb": function(){px.getCurrentProject().open();}},
 						{"label":px.lb.get('menu.openInBrowser'),       "cond":"pxStandby",          "area":"shoulder", "app":null, "cb": function(){px.openInBrowser();}},
 						{"label":px.lb.get('menu.openInTexteditor'), "cond":"homeDirExists",      "area":"shoulder", "app":null, "cb": function(){px.openInTextEditor( px.getCurrentProject().get('path') );}},
+						{"label":px.lb.get('menu.openInTerminal'), "cond":"homeDirExists",      "area":"shoulder", "app":null, "cb": function(){px.openInTerminal( px.getCurrentProject().get('path') );}},
 						{"label":px.lb.get('menu.projectConfig'),     "cond":"pxStandby",          "area":"shoulder", "app":"fncs/config/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 						{"label":px.lb.get('menu.composer'),             "cond":"composerJsonExists", "area":"shoulder", "app":"fncs/composer/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 						{"label":px.lb.get('menu.git'),                  "cond":"homeDirExists",      "area":"shoulder", "app":"fncs/git/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
@@ -645,6 +646,38 @@ new (function($, window){
 					path,
 					'-a',
 					pathEditor
+				],
+				{}
+			);
+		}
+		return true;
+	}
+
+	/**
+	 * ターミナルで開く
+	 */
+	this.openInTerminal = function( path ){
+		if( !this.utils.isDirectory(path) && !px.utils.isFile(path) ){
+			alert('編集対象のパスが存在しません。'+"\n"+path);
+			console.error('ERROR: '+'編集対象のパスが存在しません。'+"\n"+path);
+			return false;
+		}
+
+		if(_platform=='win'){
+			px.utils.spawn(
+				'cmd',
+				[
+					path
+				],
+				{}
+			);
+		}else{
+			px.utils.spawn(
+				px.cmd('open'),
+				[
+					'-a',
+					'Terminal',
+					path
 				],
 				{}
 			);

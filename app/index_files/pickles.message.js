@@ -1,7 +1,10 @@
 (function(px, $){
 	var $msgBox = $('<div class="theme_ui_px_message">');
-	// $msgBox
-	// ;
+	$msgBox
+		.css({
+			'pointer-events': 'none'
+		})
+	;
 
 	px.message = function( message, opt ){
 		opt = opt || {};

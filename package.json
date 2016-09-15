@@ -1,11 +1,11 @@
 {
   "name": "Pickles2DesktopTool",
-  "version": "2.0.0-beta.14",
+  "version": "2.0.0-beta.15+nb",
   "description": "",
   "private": true,
   "main": "app/index.html",
   "scripts": {
-    "preinstall": "git submodule update -i -r -f",
+    "preinstall": "git submodule update --init --recursive --force",
     "start": "nw",
     "submodules-update": "rm -rfv node_modules/broccoli-html-editor; rm -rfv node_modules/broccoli-field-table; rm -rfv node_modules/node-px2dt-localdata-access; rm -rfv node_modules/express-pickles2; rm -rfv node_modules/pickles2-contents-editor; rm -rfv node_modules/px2style; npm install; gulp;",
     "build": "node ./build.js"

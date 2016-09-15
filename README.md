@@ -50,6 +50,11 @@ $ npm run build
 
 ## 更新履歴 - Change log
 
+### Pickles 2 Desktop Tool 2.0.0-beta.15 (2016年??月??日)
+
+- ハンバーガーメニューに「コマンドラインで開く」を追加。
+- その他いくつかの細かい修正。
+
 ### Pickles 2 Desktop Tool 2.0.0-beta.14 (2016年9月8日)
 
 - パブリッシュのオプション `paths_region` 、 `keep_cache` に対応した。

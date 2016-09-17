@@ -875,25 +875,25 @@ new (function($, window){
 		if( cpj === null ){
 			$('.theme_id')
 				.html('')
-				.append( $('<strong>')
-					.text( _appName )
-				)
+				// .append( $('<strong>')
+				// 	.text( _appName )
+				// )
 			;
 		}else{
 			$('.theme_id')
 				.html('')
-				.append( $('<a>')
-					.attr('href', 'javascript:;')
-					.text( _appName )
-					.click(function(){
-						px.deselectProject(); px.subapp();
-						return false;
-					})
-				)
+				// .append( $('<a>')
+				// 	.attr('href', 'javascript:;')
+				// 	.text( _appName )
+				// 	.click(function(){
+				// 		px.deselectProject(); px.subapp();
+				// 		return false;
+				// 	})
+				// )
 			;
 			if( cpj.get('name') ){
 				$('.theme_id').append( $('<div>')
-					.text( '-> ' + cpj.get('name') )
+					.text( /* '-> ' + */ cpj.get('name') )
 				);
 
 			}
@@ -1019,8 +1019,17 @@ new (function($, window){
 				$shoulderMenu = $('.theme_shoulder_menu');
 
 				$header.css({
-					'background': _packageJson.pickles2.colors.defaultKeyColor
+					'border-bottom-color': _packageJson.pickles2.colors.defaultKeyColor,
+					'color': _packageJson.pickles2.colors.defaultKeyColor
 				});
+				$header.find('.theme_px2logo a')
+					.html(function(){
+						var src = _fs.readFileSync('./app/common/images/logo.svg').toString();
+						return src;
+					})
+					.find('path')
+					.attr({'fill':_packageJson.pickles2.colors.defaultKeyColor})
+				;
 
 				it.next(arg);
 

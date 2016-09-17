@@ -827,7 +827,11 @@ new (function($, window){
 			cpj_s = cpj.status()
 		}
 
-		$('.theme_gmenu').html('<ul>');
+		$('.theme_gmenu').html( $('<ul>')
+			.append( $('<li>')
+				.append( '<span>&nbsp;</span>' )
+			)
+		);
 		$shoulderMenu.find('ul').html('');
 		for( var i in _menu ){
 			if( _menu[i].cond == 'projectSelected' ){
@@ -873,30 +877,39 @@ new (function($, window){
 		}
 
 		if( cpj === null ){
+			$('.theme_px2logo').css({
+				"width": 70,
+				"height": 70
+			});
 			$('.theme_id')
-				.html('')
+				.css({"opacity":0})
 				// .append( $('<strong>')
 				// 	.text( _appName )
 				// )
 			;
 		}else{
+			$('.theme_px2logo').css({
+				"width": 50,
+				"height": 50
+			});
+			// $('.theme_id')
+			// 	.html('')
+			// 	.append( $('<a>')
+			// 		.attr('href', 'javascript:;')
+			// 		.text( _appName )
+			// 		.click(function(){
+			// 			px.deselectProject(); px.subapp();
+			// 			return false;
+			// 		})
+			// 	)
+			// ;
 			$('.theme_id')
 				.html('')
-				// .append( $('<a>')
-				// 	.attr('href', 'javascript:;')
-				// 	.text( _appName )
-				// 	.click(function(){
-				// 		px.deselectProject(); px.subapp();
-				// 		return false;
-				// 	})
-				// )
-			;
-			if( cpj.get('name') ){
-				$('.theme_id').append( $('<div>')
+				.append( $('<div>')
 					.text( /* '-> ' + */ cpj.get('name') )
-				);
-
-			}
+				)
+				.css({"opacity":1})
+			;
 		}
 
 		$('body')

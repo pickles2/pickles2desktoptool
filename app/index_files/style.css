@@ -21,7 +21,7 @@ header.theme_header {
   top: 0;
   left: 0;
   width: 100%;
-  min-height: 30px;
+  min-height: 10px;
   z-index: 100;
   border-bottom: 3px solid #00a0e6;
   box-shadow: 0 5px 13px rgba(0, 0, 0, 0.1);
@@ -37,16 +37,20 @@ header.theme_header {
       text-decoration: none; }
 
 .theme_px2logo {
+  transition: width 0.1s ease 0 , height 0.1s ease 0;
   position: fixed;
   left: 10px;
   top: 0px;
+  z-index: 1000;
   width: 50px;
   height: 50px;
   padding: 5px;
   box-sizing: border-box;
   background-color: #fff; }
   .theme_px2logo a {
-    display: inline-block; }
+    display: inline-block;
+    width: 100%;
+    height: 100%; }
   .theme_px2logo img, .theme_px2logo svg {
     width: 100%;
     height: 100%; }
@@ -56,7 +60,9 @@ header.theme_header {
   margin: 0;
   padding: 10px 0 0 0;
   float: left;
-  font-size: 13px; }
+  font-size: 13px;
+  transition: opacity 0.5s ease 0;
+  opacity: 1; }
   .theme_id * {
     margin: 0 0.5em;
     display: inline-block;
@@ -67,7 +73,7 @@ header.theme_header {
   padding: 0;
   margin: 0;
   float: right;
-  margin-right: 50px;
+  margin-right: 35px;
   margin-bottom: -3px;
   line-height: 1; }
   .theme_gmenu ul {
@@ -80,7 +86,7 @@ header.theme_header {
       padding: 0;
       list-style-type: none;
       font-size: 13px; }
-      .theme_gmenu ul li a {
+      .theme_gmenu ul li a, .theme_gmenu ul li span {
         display: block;
         margin: 0;
         padding: 12px 1em 5px;
@@ -89,12 +95,15 @@ header.theme_header {
         font-weight: normal;
         text-decoration: none;
         border-bottom: 3px solid transparent; }
-        .theme_gmenu ul li a:hover {
+        .theme_gmenu ul li a:hover, .theme_gmenu ul li span:hover {
           color: #00a0e6; }
-        .theme_gmenu ul li a.current {
+        .theme_gmenu ul li a.current, .theme_gmenu ul li span.current {
           font-weight: bold;
-          border-bottom-color: #eee;
+          border-bottom-color: rgba(255, 255, 255, 0.85);
           color: #00a0e6; }
+      .theme_gmenu ul li span {
+        padding-left: 0;
+        padding-right: 0; }
 
 .theme_shoulder_menu {
   position: fixed;

@@ -95,7 +95,7 @@ header.theme_header{
 			a,span{
 				display: block;
 				margin:0;
-				padding:12px 1em 5px;
+				padding:12px 2em 5px;
 				color: #666;
 				border: none;
 				font-weight: normal;
@@ -213,7 +213,10 @@ header.theme_header{
 // Jumbotron
 .cont_top_jumbotron{
 	background: linear-gradient(#bbb, #999);
-	color: #fff;
+	background-image: url('./images/main.png');
+	background-position: center center;
+	background-size: cover;
+	color: #00a0e6;
 	padding: 3em 0.5em;
 }
 

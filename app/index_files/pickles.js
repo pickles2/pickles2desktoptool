@@ -215,6 +215,19 @@ new (function($, window){
 					return;
 				},
 				function(it1, data){
+					// CSS拡張
+					$('head').append( $('<style>')
+						.html(
+							'.theme_gmenu ul li a:hover,'
+							+'.theme_gmenu ul li a.current{color: '+_packageJson.pickles2.colors.defaultKeyColor+';}'
+							+'.theme_shoulder_menu button {border-left: 1px solid '+_packageJson.pickles2.colors.defaultKeyColor+';}'
+							+'.theme_shoulder_menu ul li a.current {background-color: '+_packageJson.pickles2.colors.defaultKeyColor+';}'
+						)
+					);
+					it1.next();
+					return;
+				},
+				function(it1, data){
 					if(!_db){_db = {};}
 					if(!_db.commands){_db.commands = {};}
 					if(!_db.projects){_db.projects = [];}

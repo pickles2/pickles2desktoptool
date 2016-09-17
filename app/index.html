@@ -110,7 +110,7 @@
 			<form action="javascript:;" method="post">
 				<div class="unit">
 					<h2>言語 - Language</h2>
-					<p><select name="language">
+					<p><select name="language" class="form-control">
 						<option value="ja">Japanese - 日本語</option>
 						<option value="en">English</option>
 						<option value="cn">Chinese - 中文 简体</option>
@@ -121,12 +121,12 @@
 						<colgroup><col width="30%" /><col width="70%" /></colgroup>
 						<tr>
 							<th>php</th>
-							<td><input type="text" name="php" value="" placeholder="php" style="width:60%; min-width: 5em;" />
+							<td><input type="text" name="php" value="" placeholder="php" style="width:60%; min-width: 5em;" class="form-control" />
 								<input type="file" name="php__file" /><a href="javascript:;" class="php__file">ファイルを選択</a></td>
 						</tr>
 						<tr>
 							<th>git</th>
-							<td><input type="text" name="git" value="" placeholder="git" style="width:60%; min-width: 5em;" />
+							<td><input type="text" name="git" value="" placeholder="git" style="width:60%; min-width: 5em;" class="form-control" />
 								<input type="file" name="git__file" /><a href="javascript:;" class="git__file">ファイルを選択</a></td>
 						</tr>
 					</table>
@@ -135,15 +135,15 @@
 						<colgroup><col width="30%" /><col width="70%" /></colgroup>
 						<tr>
 							<th>プレビュー用ポート番号</th>
-							<td><input type="number" name="network_preview_port" value="" placeholder="" style="width:25%; min-width: 6em;" /></td>
+							<td><input type="number" name="network_preview_port" value="" placeholder="" style="width:25%; min-width: 6em;" class="form-control" /></td>
 						</tr>
 						<tr>
 							<th>アプリケーション・サーバー用ポート番号</th>
-							<td><input type="number" name="network_appserver_port" value="" placeholder="" style="width:25%; min-width: 6em;" /></td>
+							<td><input type="number" name="network_appserver_port" value="" placeholder="" style="width:25%; min-width: 6em;" class="form-control" /></td>
 						</tr>
 						<tr>
 							<th>プレビューサーバーのアクセス制限</th>
-							<td><select name="network_preview_access_restriction">
+							<td><select name="network_preview_access_restriction" class="form-control">
 								<option value="loopback">ネットワークからのアクセスを拒否 (127.0.0.1 のみ許可)</option>
 								<option value="off">制限しない</option>
 							</select></td>
@@ -154,12 +154,12 @@
 						<colgroup><col width="30%" /><col width="70%" /></colgroup>
 						<tr>
 							<th>外部テキストエディタ</th>
-							<td><input type="text" name="apps_texteditor" value="" placeholder="/path/to/your/application" style="width:60%;" />
+							<td><input type="text" name="apps_texteditor" value="" placeholder="/path/to/your/application" style="width:60%;" class="form-control" />
 								<input type="file" name="apps_texteditor__file" /><a href="javascript:;" class="apps_texteditor__file">ファイルを選択</a></td>
 						</tr>
 						<tr>
 							<th>外部テキストエディタ(ディレクトリを開く)</th>
-							<td><input type="text" name="apps_texteditor_for_dir" value="" placeholder="/path/to/your/application" style="width:60%;" />
+							<td><input type="text" name="apps_texteditor_for_dir" value="" placeholder="/path/to/your/application" style="width:60%;" class="form-control" />
 								<input type="file" name="apps_texteditor_for_dir__file" /><a href="javascript:;" class="apps_texteditor_for_dir__file">ファイルを選択</a></td>
 						</tr>
 					</table>

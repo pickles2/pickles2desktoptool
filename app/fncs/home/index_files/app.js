@@ -133,6 +133,11 @@ window.contApp = new (function(){
 				it.next(arg);
 			} ,
 			function(it, arg){
+				if( !status.pathExists || !status.composerJsonExists || !status.vendorDirExists || !status.confFileExists ){
+					// セットアップが不十分な場合は、 composer update をチェックしない。
+					it.next(arg);
+					return;
+				}
 				px.composerUpdateChecker.getStatus(pj, function(checked){
 					// console.log('composerUpdateChecker.check() done.', checked.status);
 					if( checked.status == 'update_found' ){

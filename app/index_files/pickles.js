@@ -678,9 +678,8 @@ new (function($, window){
 
 		if(_platform=='win'){
 			px.utils.spawn(
-				'start',
+				'cmd',
 				[
-					'cmd',
 					'/K',
 					'cd',
 					path

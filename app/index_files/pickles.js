@@ -677,15 +677,7 @@ new (function($, window){
 		}
 
 		if(_platform=='win'){
-			px.utils.spawn(
-				'cmd',
-				[
-					'/K',
-					'cd',
-					path
-				],
-				{}
-			);
+			px.utils.exec( 'start cmd /K cd "'+ path + '"' );
 		}else{
 			px.utils.spawn(
 				px.cmd('open'),

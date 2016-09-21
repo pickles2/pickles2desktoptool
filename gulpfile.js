@@ -1,9 +1,14 @@
-var gulp = require('gulp');
 var fsx = require('fs-extra');
+var gulp = require('gulp');
+var sass = require('gulp-sass');//CSSコンパイラ
+var plumber = require("gulp-plumber");//コンパイルエラーが起きても watch を抜けないようになる
+var rename = require("gulp-rename");//ファイル名の置き換えを行う
 var packageJson = require(__dirname+'/package.json');
 var _tasks = [
 	'provisional',
-	'client-libs'
+	'client-libs',
+	'.css',
+	'.css.scss'
 ];
 
 // client-libs (frontend) を処理
@@ -26,6 +31,25 @@ gulp.task("client-libs", function() {
 });
 
 
+// src 中の *.css.scss を処理
+gulp.task('.css.scss', function(){
+	gulp.src(["src/**/*.css.scss","!src/**/*.ignore*","!src/**/*.ignore*/*"])
+		.pipe(plumber())
+		.pipe(sass())
+		.pipe(rename({extname: ''}))
+		.pipe(gulp.dest( './app/' ))
+	;
+});
+
+// src 中の *.css を処理
+gulp.task('.css', function(){
+	gulp.src(["src/**/*.css","!src/**/*.ignore*","!src/**/*.ignore*/*"])
+		.pipe(plumber())
+		.pipe(gulp.dest( './app/' ))
+	;
+});
+
+
 // 【暫定対応】
 gulp.task("provisional", function() {
 	// nw-builderがビルドに失敗するようになったので
@@ -41,6 +65,12 @@ gulp.task("provisional", function() {
 	// fsx.removeSync(__dirname+'/node_modules/broccoli-field-table/submodules/');
 	// fsx.removeSync(__dirname+'/node_modules/broccoli-field-table/tests/');
 	// fsx.removeSync(__dirname+'/node_modules/broccoli-html-editor/node_modules/node-sass/');
+});
+
+
+// src 中のすべての拡張子を監視して処理
+gulp.task("watch", function() {
+	gulp.watch(["src/**/*"], _tasks);
 });
 
 

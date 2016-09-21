@@ -215,6 +215,19 @@ new (function($, window){
 					return;
 				},
 				function(it1, data){
+					// CSS拡張
+					$('head').append( $('<style>')
+						.html(
+							'.theme_gmenu ul li a:hover,'
+							+'.theme_gmenu ul li a.current{color: '+_packageJson.pickles2.colors.defaultKeyColor+';}'
+							+'.theme_shoulder_menu button {border-left: 1px solid '+_packageJson.pickles2.colors.defaultKeyColor+';}'
+							+'.theme_shoulder_menu ul li a.current {background-color: '+_packageJson.pickles2.colors.defaultKeyColor+';}'
+						)
+					);
+					it1.next();
+					return;
+				},
+				function(it1, data){
 					if(!_db){_db = {};}
 					if(!_db.commands){_db.commands = {};}
 					if(!_db.projects){_db.projects = [];}
@@ -664,13 +677,7 @@ new (function($, window){
 		}
 
 		if(_platform=='win'){
-			px.utils.spawn(
-				'cmd',
-				[
-					path
-				],
-				{}
-			);
+			px.utils.exec( 'start cmd /K cd "'+ path + '"' );
 		}else{
 			px.utils.spawn(
 				px.cmd('open'),
@@ -827,7 +834,11 @@ new (function($, window){
 			cpj_s = cpj.status()
 		}
 
-		$('.theme_gmenu').html('<ul>');
+		$('.theme_gmenu').html( $('<ul>')
+			.append( $('<li>')
+				.append( '<span>&nbsp;</span>' )
+			)
+		);
 		$shoulderMenu.find('ul').html('');
 		for( var i in _menu ){
 			if( _menu[i].cond == 'projectSelected' ){
@@ -873,30 +884,39 @@ new (function($, window){
 		}
 
 		if( cpj === null ){
+			$('.theme_px2logo').css({
+				"width": 70,
+				"height": 70
+			});
 			$('.theme_id')
-				.html('')
-				.append( $('<strong>')
-					.text( _appName )
-				)
+				.css({"opacity":0})
+				// .append( $('<strong>')
+				// 	.text( _appName )
+				// )
 			;
 		}else{
+			$('.theme_px2logo').css({
+				"width": 50,
+				"height": 50
+			});
+			// $('.theme_id')
+			// 	.html('')
+			// 	.append( $('<a>')
+			// 		.attr('href', 'javascript:;')
+			// 		.text( _appName )
+			// 		.click(function(){
+			// 			px.deselectProject(); px.subapp();
+			// 			return false;
+			// 		})
+			// 	)
+			// ;
 			$('.theme_id')
 				.html('')
-				.append( $('<a>')
-					.attr('href', 'javascript:;')
-					.text( _appName )
-					.click(function(){
-						px.deselectProject(); px.subapp();
-						return false;
-					})
+				.append( $('<div>')
+					.text( /* '-> ' + */ cpj.get('name') )
 				)
+				.css({"opacity":1})
 			;
-			if( cpj.get('name') ){
-				$('.theme_id').append( $('<div>')
-					.text( '-> ' + cpj.get('name') )
-				);
-
-			}
 		}
 
 		$('body')
@@ -1019,8 +1039,17 @@ new (function($, window){
 				$shoulderMenu = $('.theme_shoulder_menu');
 
 				$header.css({
-					'background': _packageJson.pickles2.colors.defaultKeyColor
+					'border-bottom-color': _packageJson.pickles2.colors.defaultKeyColor,
+					'color': _packageJson.pickles2.colors.defaultKeyColor
 				});
+				$header.find('.theme_px2logo a')
+					.html(function(){
+						var src = _fs.readFileSync('./app/common/images/logo.svg').toString();
+						return src;
+					})
+					.find('path')
+					.attr({'fill':_packageJson.pickles2.colors.defaultKeyColor})
+				;
 
 				it.next(arg);
 

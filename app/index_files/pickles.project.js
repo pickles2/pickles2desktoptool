@@ -391,15 +391,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		rtn = rtn.replace( /^\/*/, '/', rtn );
 		rtn = rtn.replace( /\/*$/, '', rtn )+'/';
 		return rtn;
-
-		// var rtn = contentPath;
-		// rtn = px.utils.trim_extension( rtn );
-		// if( this.isContentDoubleExtension(contentPath) ){
-		// 	rtn = px.utils.trim_extension( rtn );
-		// }
-		// rtn += '_files/';
-		// return rtn;
-	}
+	} // getContentFilesByPageContent
 
 	/**
 	 * コンテンツの種類(編集モード)を変更する
@@ -640,13 +632,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 							'pathHtml': page_path,
 							'pathResourceDir': pathResourceDir,
 							'realpathDataDir': realpathDataDir,
-							'customFields': {
-								'href': require('./../common/broccoli/broccoli-field-href/server.js'),
-								// 'psd': require('broccoli-field-psd'),
-								'table': require('broccoli-field-table').get({
-									'php': px.nodePhpBinOptions
-								})
-							} ,
+							'customFields': _pj.mkBroccoliCustomFieldOption() ,
 							'bindTemplate': function(htmls, callback){
 								var fin = '';
 								for( var bowlId in htmls ){
@@ -697,13 +683,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				'page_path': page_path,
 				'appMode': 'desktop', // 'web' or 'desktop'. default to 'web'
 				'entryScript': require('path').resolve( _pj.get('path'), _pj.get('entry_script') ),
-				'customFields': {
-					'href': require('./../common/broccoli/broccoli-field-href/server.js'),
-					// 'psd': require('broccoli-field-psd'),
-					'table': require('broccoli-field-table').get({
-						'php': px.nodePhpBinOptions
-					})
-				} ,
+				'customFields': _pj.mkBroccoliCustomFieldOption() ,
 				'log': function(msg){
 					px.log(msg);
 				}
@@ -714,6 +694,20 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		);
 
 		return this;
+	}
+
+	/**
+	 * broccoli-html-editorのカスタムフィールドオプションを生成する
+	 */
+	this.mkBroccoliCustomFieldOption = function(){
+		var rtn = {
+			'href': require('./../common/broccoli/broccoli-field-href/server.js'),
+			// 'psd': require('broccoli-field-psd'),
+			'table': require('broccoli-field-table').get({
+				'php': px.nodePhpBinOptions
+			})
+		};
+		return rtn;
 	}
 
 	/**

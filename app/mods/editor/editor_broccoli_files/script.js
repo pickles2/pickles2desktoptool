@@ -108,7 +108,7 @@ window.contApp = new (function( px ){
 						'elmInstancePathView': $elmInstancePathView.get(0),
 						'contents_area_selector': _pj.getConfig().plugins.px2dt.contents_area_selector,
 						'contents_bowl_name_by': _pj.getConfig().plugins.px2dt.contents_bowl_name_by,
-						'customFields': _pj.mkBroccoliCustomFieldOptionFrontend(window),
+						'customFields': _pj.mkBroccoliCustomFieldOptionFrontend(window, true),
 						'gpiBridge': function(api, options, callback){
 							// GPI(General Purpose Interface) Bridge
 							// broccoliは、バックグラウンドで様々なデータ通信を行います。

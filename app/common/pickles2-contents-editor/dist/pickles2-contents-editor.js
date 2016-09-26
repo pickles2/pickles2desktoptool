@@ -16463,8 +16463,6 @@ module.exports = function(px2ce){
 						}
 					}
 				} catch (e) {
-					console.error( 'FAILED to load custom field config: $conf->plugins->px2dt->customFields (frontend);' );
-					console.error(e);
 				}
 
 				// console.log(customFields);

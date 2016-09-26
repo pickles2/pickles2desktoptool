@@ -699,13 +699,17 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	/**
 	 * broccoli-html-editorのカスタムフィールドオプションを生成する (frontend)
 	 */
-	this.mkBroccoliCustomFieldOptionFrontend = function(window){
+	this.mkBroccoliCustomFieldOptionFrontend = function(window, isLoadProjectCustomField){
 		var rtn = {
 			'href': window.BroccoliFieldHref,
 			// 'psd': window.BroccoliFieldPSD,
 			'table': window.BroccoliFieldTable
 		};
-		var $ = require('jquery');
+
+		if( !isLoadProjectCustomField ){
+			// プロジェクトカスタムフィールドをロードしない場合
+			return rtn;
+		}
 
 		var confCustomFields = {};
 		try {
@@ -725,8 +729,6 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				}
 			}
 		} catch (e) {
-			console.error( 'FAILED to load custom field config: $conf->plugins->px2dt->customFields (frontend);' );
-			console.error(e);
 		}
 
 		return rtn;
@@ -761,8 +763,6 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				}
 			}
 		} catch (e) {
-			console.error( 'FAILED to load custom field config: $conf->plugins->px2dt->customFields (backend);' );
-			console.error(e);
 		}
 
 		return rtn;

@@ -709,7 +709,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 
 		var confCustomFields = {};
 		try {
-			confCustomFields = this.getConfig().plugins.px2dt.customFields;
+			confCustomFields = this.getConfig().plugins.px2dt.guieditor.customFields;
 			for( var fieldName in confCustomFields ){
 				try {
 					if( confCustomFields[fieldName].frontend.file && confCustomFields[fieldName].frontend.function ){
@@ -746,7 +746,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 
 		var confCustomFields = {};
 		try {
-			confCustomFields = this.getConfig().plugins.px2dt.customFields;
+			confCustomFields = this.getConfig().plugins.px2dt.guieditor.customFields;
 			for( var fieldName in confCustomFields ){
 				try {
 					if( confCustomFields[fieldName].backend.require ){

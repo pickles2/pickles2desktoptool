@@ -65,6 +65,28 @@ window.contApp = new (function( px ){
 				} );
 			} ,
 			function(it1, data){
+				// カスタムフィールドのフロントJSを読み込む
+				// 本来は pickles2.project.js の _pj.mkBroccoliCustomFieldOptionFrontend() 内に収めたい処理だが、
+				// frameをまたいでいるのでwindowが一致せず、ロードしたfunctionを認識できないため、ここに実装する。
+				var confCustomFields = _pj.getConfig().plugins.px2dt.customFields;
+				for( var fieldName in confCustomFields ){
+					try {
+						if( confCustomFields[fieldName].frontend.file && confCustomFields[fieldName].frontend.function ){
+							var pathJs = require('path').resolve(_pj.get_realpath_controot(), confCustomFields[fieldName].frontend.file);
+							var binJs = px.fs.readFileSync( pathJs ).toString();
+							$('body').append(
+								$('<script>')
+									.html(binJs)
+							);
+						}
+					} catch (e) {
+						console.error( 'FAILED to load custom field: ' + fieldName + ' (frontend);' );
+						console.error(e);
+					}
+				}
+				it1.next(data);
+			},
+			function(it1, data){
 				// broccoli-html-editor standby.
 				$elmTitleBar = $('.cont_title_bar');
 				$elmButtons = $('.cont_buttons');
@@ -86,11 +108,7 @@ window.contApp = new (function( px ){
 						'elmInstancePathView': $elmInstancePathView.get(0),
 						'contents_area_selector': _pj.getConfig().plugins.px2dt.contents_area_selector,
 						'contents_bowl_name_by': _pj.getConfig().plugins.px2dt.contents_bowl_name_by,
-						'customFields': {
-							'href': window.BroccoliFieldHref,
-							// 'psd': window.BroccoliFieldPSD,
-							'table': window.BroccoliFieldTable
-						},
+						'customFields': _pj.mkBroccoliCustomFieldOptionFrontend(window),
 						'gpiBridge': function(api, options, callback){
 							// GPI(General Purpose Interface) Bridge
 							// broccoliは、バックグラウンドで様々なデータ通信を行います。

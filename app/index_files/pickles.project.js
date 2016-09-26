@@ -632,7 +632,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 							'pathHtml': page_path,
 							'pathResourceDir': pathResourceDir,
 							'realpathDataDir': realpathDataDir,
-							'customFields': _pj.mkBroccoliCustomFieldOption() ,
+							'customFields': _pj.mkBroccoliCustomFieldOptionBackend() ,
 							'bindTemplate': function(htmls, callback){
 								var fin = '';
 								for( var bowlId in htmls ){
@@ -683,7 +683,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				'page_path': page_path,
 				'appMode': 'desktop', // 'web' or 'desktop'. default to 'web'
 				'entryScript': require('path').resolve( _pj.get('path'), _pj.get('entry_script') ),
-				'customFields': _pj.mkBroccoliCustomFieldOption() ,
+				'customFields': _pj.mkBroccoliCustomFieldOptionBackend() ,
 				'log': function(msg){
 					px.log(msg);
 				}
@@ -697,9 +697,45 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	}
 
 	/**
-	 * broccoli-html-editorのカスタムフィールドオプションを生成する
+	 * broccoli-html-editorのカスタムフィールドオプションを生成する (frontend)
 	 */
-	this.mkBroccoliCustomFieldOption = function(){
+	this.mkBroccoliCustomFieldOptionFrontend = function(window){
+		var rtn = {
+			'href': window.BroccoliFieldHref,
+			// 'psd': window.BroccoliFieldPSD,
+			'table': window.BroccoliFieldTable
+		};
+		var $ = require('jquery');
+
+		var confCustomFields = {};
+		try {
+			confCustomFields = this.getConfig().plugins.px2dt.customFields;
+			for( var fieldName in confCustomFields ){
+				try {
+					if( confCustomFields[fieldName].frontend.file && confCustomFields[fieldName].frontend.function ){
+						// console.log(eval( confCustomFields[fieldName].frontend.function ));
+						rtn[fieldName] = eval( confCustomFields[fieldName].frontend.function );
+					}else{
+						console.error( 'FAILED to load custom field: ' + fieldName + ' (frontend);' );
+						console.error( 'unknown type' );
+					}
+				} catch (e) {
+					console.error( 'FAILED to load custom field: ' + fieldName + ' (frontend);' );
+					console.error(e);
+				}
+			}
+		} catch (e) {
+			console.error( 'FAILED to load custom field config: $conf->plugins->px2dt->customFields (frontend);' );
+			console.error(e);
+		}
+
+		return rtn;
+	}
+
+	/**
+	 * broccoli-html-editorのカスタムフィールドオプションを生成する (backend)
+	 */
+	this.mkBroccoliCustomFieldOptionBackend = function(){
 		var rtn = {
 			'href': require('./../common/broccoli/broccoli-field-href/server.js'),
 			// 'psd': require('broccoli-field-psd'),
@@ -707,6 +743,28 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				'php': px.nodePhpBinOptions
 			})
 		};
+
+		var confCustomFields = {};
+		try {
+			confCustomFields = this.getConfig().plugins.px2dt.customFields;
+			for( var fieldName in confCustomFields ){
+				try {
+					if( confCustomFields[fieldName].backend.require ){
+						rtn[fieldName] = require( require('path').resolve(this.get_realpath_controot(), confCustomFields[fieldName].backend.require) );
+					}else{
+						console.error( 'FAILED to load custom field: ' + fieldName + ' (backend);' );
+						console.error( 'unknown type' );
+					}
+				} catch (e) {
+					console.error( 'FAILED to load custom field: ' + fieldName + ' (backend);' );
+					console.error(e);
+				}
+			}
+		} catch (e) {
+			console.error( 'FAILED to load custom field config: $conf->plugins->px2dt->customFields (backend);' );
+			console.error(e);
+		}
+
 		return rtn;
 	}
 

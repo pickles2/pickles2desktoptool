@@ -2,6 +2,7 @@ window.px = window.parent.px;
 window.contApp = new (function( px ){
 	var _this = this;
 	var it79 = require('iterate79');
+	var utils79 = require('utils79');
 	var php = require('phpjs');
 	var _pj = px.getCurrentProject();
 	var pickles2ContentsEditor = new Pickles2ContentsEditor();
@@ -49,11 +50,7 @@ window.contApp = new (function( px ){
 							'preview':{ // プレビュー用サーバーの情報を設定します。
 								'origin': elmA.origin
 							},
-							'customFields': {
-								'href': window.BroccoliFieldHref,
-								// 'psd': window.BroccoliFieldPSD,
-								'table': window.BroccoliFieldTable
-							},
+							'customFields': _pj.mkBroccoliCustomFieldOptionFrontend(window, false),
 							'gpiBridge': function(input, callback){
 								// GPI(General Purpose Interface) Bridge
 								// broccoliは、バックグラウンドで様々なデータ通信を行います。

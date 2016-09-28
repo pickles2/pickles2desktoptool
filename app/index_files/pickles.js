@@ -896,8 +896,8 @@ new (function($, window){
 			;
 		}else{
 			$('.theme_px2logo').css({
-				"width": 50,
-				"height": 50
+				"width": 45,
+				"height": 45
 			});
 			// $('.theme_id')
 			// 	.html('')

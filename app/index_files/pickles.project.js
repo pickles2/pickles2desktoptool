@@ -391,15 +391,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		rtn = rtn.replace( /^\/*/, '/', rtn );
 		rtn = rtn.replace( /\/*$/, '', rtn )+'/';
 		return rtn;
-
-		// var rtn = contentPath;
-		// rtn = px.utils.trim_extension( rtn );
-		// if( this.isContentDoubleExtension(contentPath) ){
-		// 	rtn = px.utils.trim_extension( rtn );
-		// }
-		// rtn += '_files/';
-		// return rtn;
-	}
+	} // getContentFilesByPageContent
 
 	/**
 	 * コンテンツの種類(編集モード)を変更する
@@ -640,13 +632,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 							'pathHtml': page_path,
 							'pathResourceDir': pathResourceDir,
 							'realpathDataDir': realpathDataDir,
-							'customFields': {
-								'href': require('./../common/broccoli/broccoli-field-href/server.js'),
-								// 'psd': require('broccoli-field-psd'),
-								'table': require('broccoli-field-table').get({
-									'php': px.nodePhpBinOptions
-								})
-							} ,
+							'customFields': _pj.mkBroccoliCustomFieldOptionBackend() ,
 							'bindTemplate': function(htmls, callback){
 								var fin = '';
 								for( var bowlId in htmls ){
@@ -697,13 +683,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				'page_path': page_path,
 				'appMode': 'desktop', // 'web' or 'desktop'. default to 'web'
 				'entryScript': require('path').resolve( _pj.get('path'), _pj.get('entry_script') ),
-				'customFields': {
-					'href': require('./../common/broccoli/broccoli-field-href/server.js'),
-					// 'psd': require('broccoli-field-psd'),
-					'table': require('broccoli-field-table').get({
-						'php': px.nodePhpBinOptions
-					})
-				} ,
+				'customFields': _pj.mkBroccoliCustomFieldOptionBackend() ,
 				'log': function(msg){
 					px.log(msg);
 				}
@@ -714,6 +694,78 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		);
 
 		return this;
+	}
+
+	/**
+	 * broccoli-html-editorのカスタムフィールドオプションを生成する (frontend)
+	 */
+	this.mkBroccoliCustomFieldOptionFrontend = function(window, isLoadProjectCustomField){
+		var rtn = {
+			'href': window.BroccoliFieldHref,
+			// 'psd': window.BroccoliFieldPSD,
+			'table': window.BroccoliFieldTable
+		};
+
+		if( !isLoadProjectCustomField ){
+			// プロジェクトカスタムフィールドをロードしない場合
+			return rtn;
+		}
+
+		var confCustomFields = {};
+		try {
+			confCustomFields = this.getConfig().plugins.px2dt.guieditor.customFields;
+			for( var fieldName in confCustomFields ){
+				try {
+					if( confCustomFields[fieldName].frontend.file && confCustomFields[fieldName].frontend.function ){
+						// console.log(eval( confCustomFields[fieldName].frontend.function ));
+						rtn[fieldName] = eval( confCustomFields[fieldName].frontend.function );
+					}else{
+						console.error( 'FAILED to load custom field: ' + fieldName + ' (frontend);' );
+						console.error( 'unknown type' );
+					}
+				} catch (e) {
+					console.error( 'FAILED to load custom field: ' + fieldName + ' (frontend);' );
+					console.error(e);
+				}
+			}
+		} catch (e) {
+		}
+
+		return rtn;
+	}
+
+	/**
+	 * broccoli-html-editorのカスタムフィールドオプションを生成する (backend)
+	 */
+	this.mkBroccoliCustomFieldOptionBackend = function(){
+		var rtn = {
+			'href': require('./../common/broccoli/broccoli-field-href/server.js'),
+			// 'psd': require('broccoli-field-psd'),
+			'table': require('broccoli-field-table').get({
+				'php': px.nodePhpBinOptions
+			})
+		};
+
+		var confCustomFields = {};
+		try {
+			confCustomFields = this.getConfig().plugins.px2dt.guieditor.customFields;
+			for( var fieldName in confCustomFields ){
+				try {
+					if( confCustomFields[fieldName].backend.require ){
+						rtn[fieldName] = require( require('path').resolve(this.get_realpath_controot(), confCustomFields[fieldName].backend.require) );
+					}else{
+						console.error( 'FAILED to load custom field: ' + fieldName + ' (backend);' );
+						console.error( 'unknown type' );
+					}
+				} catch (e) {
+					console.error( 'FAILED to load custom field: ' + fieldName + ' (backend);' );
+					console.error(e);
+				}
+			}
+		} catch (e) {
+		}
+
+		return rtn;
 	}
 
 	/**

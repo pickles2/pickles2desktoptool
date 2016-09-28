@@ -53,10 +53,14 @@ var nw = new NwBuilder({
 				case '.bin':
 				case 'node-sass':
 				case 'gulp':
+				case 'gulp-plumber':
+				case 'gulp-rename':
+				case 'gulp-sass':
 				case 'nw':
 				case 'nw-builder':
 				case 'mocha':
 				case 'spawn-sync':
+				case 'px2style':
 					// ↑これらは除外するパッケージ
 					break;
 				case 'broccoli-html-editor':

@@ -350,32 +350,6 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	}
 
 	/**
-	 * ページパスからコンテンツの種類(編集モード)を取得する (同期)
-	 *
-	 * ※このメソッドは古い実装のため、新規の使用は避けてください。
-	 * ※このメソッドは getPageContentEditorMode() に置き換えられます。
-	 */
-	this.getPageContentProcType = function( pagePath ){
-		console.error('pj.getPageContentProcType() - このメソッドは古い実装のため、新規の使用は避けてください。このメソッドは getPageContentEditorMode() に置き換えられます。');
-		var rtn = '.unknown';
-		var pathContRoot = this.get_realpath_controot();
-		var pageContent = this.findPageContent( pagePath );
-		if( !px.utils.isFile( pathContRoot+pageContent ) ){
-			return '.not_exists';
-		}
-		var filesDir = this.getContentFilesByPageContent( pageContent );
-		if( this.isContentDoubleExtension( pageContent ) ){
-			rtn = px.utils.getExtension( pageContent );
-		}else if( px.utils.isDirectory( pathContRoot+filesDir ) && px.utils.isFile( pathContRoot+filesDir+'/guieditor.ignore/data.json' ) ){
-			rtn = 'html.gui';
-		}else{
-			rtn = px.utils.getExtension( pageContent );
-			// if(rtn == 'htm'){rtn = 'html';}
-		}
-		return rtn;
-	}
-
-	/**
 	 * ページパスからコンテンツの種類(編集モード)を取得する (非同期)
 	 */
 	this.getPageContentEditorMode = function( pagePath, callback ){

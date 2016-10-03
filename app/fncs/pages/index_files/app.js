@@ -438,7 +438,11 @@ window.contApp = new (function( px ){
 														.text('OK')
 														.click(function(){
 															var val = $body.find('input[name=proc_type]:checked').val();
-															_pj.changeContentProcType( $this.attr('data-path'), val, function(){
+															_pj.changeContentEditorMode( $this.attr('data-path'), val, function(result){
+																if( !result[0] ){
+																	alert('編集モードの変更に失敗しました。'+result[1]);
+																	return;
+																}
 																_this.loadPreview( _lastPreviewPath, function(){
 																	px.closeDialog();
 																}, {"force":true} );

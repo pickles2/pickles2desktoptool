@@ -417,93 +417,22 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	} // getContentFilesByPageContent
 
 	/**
-	 * コンテンツの種類(編集モード)を変更する
+	 * コンテンツの種類(編集モード)を変更する (非同期)
 	 */
-	this.changeContentProcType = function( pagePath, procTypeTo, cb ){
-		cb = cb || function(){};
-
-		var pageInfo = this.site.getPageInfo( pagePath );
-		var pageInfoLocalpath = pageInfo.content;
-		var pathContent = this.findPageContent( pagePath );
-		var procTypeBefore = this.getPageContentProcType( pagePath );
-		var resourcPath = this.getContentFilesByPageContent( pathContent );
-		var contRoot = this.get_realpath_controot();
-		var codeBefore = px.fs.readFileSync( contRoot+pathContent ).toString();
-
-		if( procTypeBefore == procTypeTo ){ cb(); return; }
-
-		function mkGuiData( contRoot, resourcPath, codeBefore, procTypeBefore ){
-			if( !px.utils.isDirectory( contRoot + resourcPath ) ){
-				px.fs.mkdirSync( contRoot + resourcPath );
-			}
-			if( !px.utils.isDirectory( contRoot + resourcPath+'guieditor.ignore/' ) ){
-				px.fs.mkdirSync( contRoot + resourcPath+'guieditor.ignore/' );
-			}
-			px.fs.writeFileSync( contRoot + resourcPath+'guieditor.ignore/data.json', JSON.stringify( {
-				"bowl": {
-					"main": {
-						"modId": "_sys/root" ,
-						"fields": {
-							"main": [
-								{
-									"modId": "_sys/html" ,
-									"fields": {
-										"main": codeBefore
-									}
-								}
-							]
-						}
-					}
-				}
-			}, null, 1 ) );
-		}
-
-		if( procTypeBefore == 'html.gui' ){
-			if( (procTypeTo == 'html'||procTypeTo == 'htm') && pageInfo.content.match( new RegExp('\\.'+procTypeTo+'$', 'i') ) ){
-				px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content );
-			}else{
-				px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content + '.' + procTypeTo );
-			}
-			try {
-				px.utils.rmdir_r( contRoot + resourcPath+'guieditor.ignore/' );
-			}catch(e){
-			}
-
-		}else if( procTypeBefore == 'html'||procTypeBefore == 'htm' ){
-			if( procTypeTo == 'html.gui' ){
-				px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content );
-				mkGuiData( contRoot, resourcPath, codeBefore, procTypeBefore );
-			}else{
-				px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content + '.' + procTypeTo );
-			}
-
-		}else{
-			if( procTypeTo == 'html.gui' || procTypeTo == 'html' || procTypeTo == 'htm' ){
-				if( pageInfo.content.match( new RegExp('\\.html?$', 'i') ) ){
-					px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content );
-				}else{
-					px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content + '.'+(procTypeTo=='html.gui' ? 'html.gui' : procTypeTo) );
-				}
-				if( procTypeTo == 'html.gui' ){
-					mkGuiData( contRoot, resourcPath, codeBefore, procTypeBefore );
-				}else{
-					try {
-						px.utils.rmdir_r( contRoot + resourcPath+'guieditor.ignore/' );
-					}catch(e){
-					}
-				}
-			}else{
-				px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content + '.' + procTypeTo );
-				try {
-					px.utils.rmdir_r( contRoot + resourcPath+'guieditor.ignore/' );
-				}catch(e){
+	this.changeContentEditorMode = function( pagePath, editorModeTo, callback ){
+		callback = callback || function(){};
+		_px2proj.query(
+			pagePath+'?PX=px2dthelper.change_content_editor_mode&editor_mode='+editorModeTo, {
+				"output": "json",
+				"complete": function(data, code){
+					// console.log(data, code);
+					var rtn = JSON.parse(data);
+					callback(rtn);
+					return;
 				}
 			}
-
-		}
-
-		cb();
-		return true;
+		);
+		return;
 	}
 
 	/**

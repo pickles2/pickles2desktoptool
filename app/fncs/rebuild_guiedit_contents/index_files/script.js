@@ -58,18 +58,19 @@ window.contApp = new (function(px){
 							}
 						} ,
 						function(it2, arg2){
-							var procType = pj.getPageContentProcType( arg2.pageInfo.path );
-							$pre.text( $pre.text() + ' -> ' + procType );
-							switch( procType ){
-								case 'html.gui':
-									it2.next(arg2);
-									break;
-								default:
-									$pre.text( $pre.text() + ' -> SKIP' );
-									$pre.text( $pre.text() + "\n" );
-									it1.next();
-									break;
-							}
+							pj.getPageContentEditorMode( arg2.pageInfo.path, function(procType){
+								$pre.text( $pre.text() + ' -> ' + procType );
+								switch( procType ){
+									case 'html.gui':
+										it2.next(arg2);
+										break;
+									default:
+										$pre.text( $pre.text() + ' -> SKIP' );
+										$pre.text( $pre.text() + "\n" );
+										it1.next();
+										break;
+								}
+							} );
 						} ,
 						function(it2, arg2){
 							pj.buildGuiEditContent( arg2.pageInfo.path, function(result){

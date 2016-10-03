@@ -350,9 +350,13 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	}
 
 	/**
-	 * ページパスからコンテンツの種類(編集モード)を取得する
+	 * ページパスからコンテンツの種類(編集モード)を取得する (同期)
+	 *
+	 * ※このメソッドは古い実装のため、新規の使用は避けてください。
+	 * ※このメソッドは getPageContentEditorMode() に置き換えられます。
 	 */
 	this.getPageContentProcType = function( pagePath ){
+		console.error('pj.getPageContentProcType() - このメソッドは古い実装のため、新規の使用は避けてください。このメソッドは getPageContentEditorMode() に置き換えられます。');
 		var rtn = '.unknown';
 		var pathContRoot = this.get_realpath_controot();
 		var pageContent = this.findPageContent( pagePath );
@@ -370,6 +374,25 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		}
 		return rtn;
 	}// getPageContentProcType()
+
+	/**
+	 * ページパスからコンテンツの種類(編集モード)を取得する (非同期)
+	 */
+	this.getPageContentEditorMode = function( pagePath, callback ){
+		callback = callback || function(){};
+		_px2proj.query(
+			pagePath+'?PX=px2dthelper.check_editor_mode', {
+				"output": "json",
+				"complete": function(data, code){
+					// console.log(data, code);
+					var rtn = JSON.parse(data);
+					callback(rtn);
+					return;
+				}
+			}
+		);
+		return;
+	}// getPageContentEditorMode()
 
 	/**
 	 * コンテンツパスから専有リソースディレクトリパスを探す
@@ -517,27 +540,30 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	 */
 	this.buildGuiEditContent = function( pagePath, callback ){
 		callback = callback||function(){};
-		if( this.getPageContentProcType(pagePath) != 'html.gui' ){
-			callback(false);
-			return this;
-		}
+		var pj = this;
+		this.getPageContentEditorMode(pagePath, function(editorMode){
+			if( editorMode != 'html.gui' ){
+				callback(false);
+				return;
+			}
 
-		if(this.getGuiEngineName() == 'broccoli-html-editor'){
-			// broccoli-html-editor
-			this.createBroccoliServer(pagePath, function(broccoli){
-				broccoli.updateContents(
-					function(result){
-						callback(result);
-					}
-				);
-			});
-		}else{
-			// 旧GUI編集
-			window.px2dtGuiEditor.build(pagePath, function(result){
-				callback(result);
-			});
-		}
+			if(pj.getGuiEngineName() == 'broccoli-html-editor'){
+				// broccoli-html-editor
+				pj.createBroccoliServer(pagePath, function(broccoli){
+					broccoli.updateContents(
+						function(result){
+							callback(result);
+						}
+					);
+				});
+			}else{
+				// 旧GUI編集
+				window.px2dtGuiEditor.build(pagePath, function(result){
+					callback(result);
+				});
+			}
 
+		});
 		return this;
 	}// buildGuiEditContent()
 

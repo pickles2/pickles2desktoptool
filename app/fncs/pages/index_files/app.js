@@ -44,6 +44,7 @@ window.contApp = new (function( px ){
 		;
 		$previewIframe
 			.bind('load', function(){
+				var contProcType;
 
 				px.utils.iterateFnc([
 					function(it, prop){
@@ -78,8 +79,14 @@ window.contApp = new (function( px ){
 
 					} ,
 					function(it, prop){
+						// console.log(prop);
+						_this.pj.getPageContentEditorMode( prop.pageInfo.path, function(editorMode){
+							contProcType = editorMode;
+							it.next(prop);
+						} );
+					} ,
+					function(it, prop){
 
-						var contProcType = _this.pj.getPageContentProcType( prop.pageInfo.path );
 						var $bs3btn = $($('#template-bootstrap3-btn-dropdown-toggle').html());
 						var $html = $('<div>')
 							.append( $('<div class="cont_page_info-prop">')

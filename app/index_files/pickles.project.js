@@ -107,7 +107,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
-				console.log('project "' + _this.projectInfo.name + '" (projectId: ' + _this.projectId + ') initialized.');
+				// console.log('project "' + _this.projectInfo.name + '" (projectId: ' + _this.projectId + ') initialized.');
 				cbStandby();
 				rlv();
 				return;
@@ -195,6 +195,33 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
+				status.px2dthelper = {
+					"version": false,
+					"is_sitemap_loaded": false
+				};
+				_px2proj.query(
+					'/?PX=px2dthelper.check_status',
+					{
+						"output": "json",
+						"complete": function(data, code){
+							// console.log(data, code);
+							if( code == 0 ){
+								try {
+									var rtn = JSON.parse(data);
+									status.px2dthelper = rtn;
+								} catch (e) {
+								}
+							}
+							rlv();
+							return;
+						}
+					}
+				);
+				rlv();
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// console.log(status);
 				callback(status);
 				return;
 			}); })

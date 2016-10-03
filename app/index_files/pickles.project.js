@@ -373,7 +373,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			// if(rtn == 'htm'){rtn = 'html';}
 		}
 		return rtn;
-	}// getPageContentProcType()
+	}
 
 	/**
 	 * ページパスからコンテンツの種類(編集モード)を取得する (非同期)
@@ -726,96 +726,20 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	/**
 	 * コンテンツをコピーする
 	 */
-	this.copyContentsData = function( pathFrom, pathTo, cb ){
-		cb = cb || function(){};
-		var _this = this;
-
-		var contRoot = this.get_realpath_controot();
-
-		var from = [];
-		from.pathContent = this.findPageContent( pathFrom );
-		from.pathFiles = this.getContentFilesByPageContent(from.pathContent);
-		from.procType = this.getPageContentProcType( pathFrom );
-
-		var to = [];
-		to.pathContent = this.findPageContent( pathTo );
-		to.pathFiles = this.getContentFilesByPageContent(to.pathContent);
-		to.procType = this.getPageContentProcType( pathTo );
-
-
-		px.utils.iterateFnc([
-			function(it, prop){
-				// 一旦削除する
-				if( px.utils.isFile( contRoot+'/'+to.pathContent ) ){
-					px.utils.rm( contRoot+'/'+to.pathContent );
-				}
-				if( px.utils.isDirectory( contRoot+'/'+to.pathFiles ) ){
-					px.utils.rmdir_r( contRoot+'/'+to.pathFiles );
-				}
-				it.next(prop);
-			} ,
-			function(it, prop){
-				// 格納ディレクトリを作る
-				if( px.utils.isDirectory( contRoot+'/'+to.pathFiles ) ){
-					it.next(prop);
+	this.copyContentsData = function( pathFrom, pathTo, callback ){
+		callback = callback || function(){};
+		_px2proj.query(
+			pathTo+'?PX=px2dthelper.copy_content&from='+pathFrom+'&to='+pathTo, {
+				"output": "json",
+				"complete": function(data, code){
+					// console.log(data, code);
+					var rtn = JSON.parse(data);
+					callback(rtn);
 					return;
 				}
-				// 再帰的に作る mkdirAll()
-				if( !px.utils.mkdirAll( contRoot+'/'+to.pathFiles ) ){
-					it.next(prop);
-					return;
-				}
-				it.next(prop);
-			} ,
-			function(it, prop){
-				// 複製する
-				if( px.utils.isFile( contRoot+'/'+from.pathContent ) ){
-					px.utils.copy( contRoot+'/'+from.pathContent, contRoot+'/'+to.pathContent );
-				}
-				if( px.utils.isDirectory( contRoot+'/'+from.pathFiles ) ){
-					px.utils.copy_r( contRoot+'/'+from.pathFiles, contRoot+'/'+to.pathFiles );
-				}
-				it.next(prop);
-			} ,
-			function(it, prop){
-
-				// コンテンツのprocTypeが異なる場合
-				if( from.procType !== to.procType ){
-					// 拡張子を合わせる作業
-					var toPageInfo = _this.site.getPageInfo( pathTo );
-
-					switch( from.procType ){
-						case 'html':
-						case 'html.gui':
-							var toPathContent = toPageInfo.content;
-							if( !toPageInfo.content.match( new RegExp('\\.html$', 'i') ) ){
-								toPathContent = toPageInfo.content + '.html';
-							}
-							px.fs.renameSync(
-								contRoot+'/'+to.pathContent,
-								contRoot+'/'+toPathContent
-							);
-							break;
-						default:
-							px.fs.renameSync(
-								contRoot+'/'+to.pathContent,
-								contRoot+'/'+toPageInfo.content + '.' + from.procType
-							);
-							break;
-					}
-
-				}
-
-				it.next(prop);
-			} ,
-			function(it, prop){
-				cb();
-				return;
-				it.next(prop);
 			}
-		]).start({});
-
-		return true;
+		);
+		return;
 	}
 
 	/**

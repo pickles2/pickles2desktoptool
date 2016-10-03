@@ -372,7 +372,11 @@ window.contApp = new (function( px ){
 														_this.pj.copyContentsData(
 															pageinfo.path,
 															$this.attr('data-path'),
-															function(){
+															function(result){
+																if( !result[0] ){
+																	alert('コンテンツの複製に失敗しました。'+result[1]);
+																	return;
+																}
 																_this.loadPreview( _lastPreviewPath, function(){
 																	px.closeDialog();
 																}, {"force":true} );

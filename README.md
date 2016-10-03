@@ -53,7 +53,9 @@ $ npm run build
 ### Pickles 2 Desktop Tool 2.0.0-beta.15 (2016年??月??日)
 
 - ハンバーガーメニューに「コマンドラインで開く」を追加。
-- GUI編集で、プロジェクト固有のカスタムフィールドを追加できる機能を追加。
+- GUI編集で、プロジェクト固有のカスタムフィールドを追加できる機能 `custom_fields` を追加。
+- GUI編集の `pathResourceDir` を `path_resource_dir` に、 `realpathDataDir` を `path_data_dir` に変更。
+- GUI編集のAPIのいくつかを、 `pickles2/px2-px2dthelper` 依存に変更。
 - その他いくつかの細かい修正。
 
 ### Pickles 2 Desktop Tool 2.0.0-beta.14 (2016年9月8日)

@@ -15,6 +15,7 @@
   "dependencies": {
     "broccoli-field-table": "file:submodules/broccoli-field-table",
     "broccoli-html-editor": "file:submodules/broccoli-html-editor",
+    "ejs": "^2.5.2",
     "execsyncs": "^0.1.1",
     "express": "^4.13.0",
     "express-pickles2": "file:submodules/node-express-pickles2",

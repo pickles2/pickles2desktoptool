@@ -37,8 +37,12 @@ new (function($, window){
 	this.path = _path;
 	// var _git = require('nodegit');
 	// this.git = _git;
+
 	var _twig = require('twig');
 	this.twig = _twig;
+	var _ejs = require('ejs');
+	this.ejs = _ejs;
+
 	var _utils79 = require('utils79');
 	this.utils79 = _utils79;
 

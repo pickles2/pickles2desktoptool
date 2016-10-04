@@ -26,43 +26,9 @@ window.contApp = new (function(){
 				it.next(arg);
 			} ,
 			function(it, arg){
-				px.utils.iterate(
-					_.keys( status ) ,
-					function(it2, data, idx){
-						$('.tpl_status_table').append($('<tr>')
-							.append($('<th>').text(data))
-							.append($('<td>')
-								.html( (function(key, row){
-									var rtn = '';
-									if( key == 'px2dthelper' ){
-										rtn += '<ul>';
-										rtn += '<li>version: '+(row.version || '(none)')+'</li>';
-										rtn += '<li>sitemap loaded: '+(row.is_sitemap_loaded ? 'true' : 'false')+'</li>';
-										rtn += '</ul>';
-										return rtn;
-									}
-									return (status[data]?'true':'false');
-								})(data, status[data]) )
-							)
-						);
-						it2.next();
-					} ,
-					function(){
-						// $('.tpl_status_table').append($('<tr>')
-						// 	.append($('<th>').text('composer.json'))
-						// 	.append($('<td>')
-						// 		.text(pj.get_realpath_composer_root())
-						// 	)
-						// );
-						// $('.tpl_status_table').append($('<tr>')
-						// 	.append($('<th>').text('.git'))
-						// 	.append($('<td>')
-						// 		.text(pj.get_realpath_git_root())
-						// 	)
-						// );
-						it.next(arg);
-					}
-				);
+				var statusTable = px.utils.bindEjs( $('#template-status-table').html(), {'status': status} );
+				$('.tpl_status_table').html( statusTable );
+				it.next(arg);
 			} ,
 			function(it, arg){
 				var $mainTaskUi = $('.cont_maintask_ui');

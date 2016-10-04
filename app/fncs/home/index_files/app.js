@@ -36,7 +36,7 @@ window.contApp = new (function(){
 									var rtn = '';
 									if( key == 'px2dthelper' ){
 										rtn += '<ul>';
-										rtn += '<li>version: '+row.version+'</li>';
+										rtn += '<li>version: '+(row.version || '(none)')+'</li>';
 										rtn += '<li>sitemap loaded: '+(row.is_sitemap_loaded ? 'true' : 'false')+'</li>';
 										rtn += '</ul>';
 										return rtn;

@@ -162,6 +162,16 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	this.updateProjectStatus = function( callback ){
 		callback = callback || function(){};
 		var status = {};
+		status.api = {
+			"available": false,
+			"version": false,
+			"is_sitemap_loaded": false
+		};
+		status.px2dthelper = {
+			"available": false,
+			"version": false,
+			"is_sitemap_loaded": false
+		};
 		new Promise(function(rlv){rlv();})
 			.then(function(){ return new Promise(function(rlv, rjt){
 				status.pathExists = px.utils.isDirectory( _this.get('path') );
@@ -195,10 +205,59 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
-				status.px2dthelper = {
-					"version": false,
-					"is_sitemap_loaded": false
-				};
+				// Pickles Framework のバージョンを確認
+				// かつ、 PX=api が利用できるか確認
+				_px2proj.query(
+					'/?PX=api.get.version',
+					{
+						"output": "json",
+						"complete": function(data, code){
+							// console.log(data, code);
+							if( code == 0 ){
+								try {
+									var version = JSON.parse(data);
+									status.api.version = (typeof('') == typeof(version) ? version : false);
+									status.api.available = (status.api.version ? true : false);
+								} catch (e) {
+								}
+							}
+							rlv();
+							return;
+						}
+					}
+				);
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// PX=api からサイトマップを利用できるか確認
+				if( status.api.version === false ){
+					// version を取得できていなければ sitemap も無効のはず
+					status.api.is_sitemap_loaded = false;
+					rlv();
+					return;
+				}
+				_px2proj.query(
+					'/?PX=api.get.bros',
+					{
+						"output": "json",
+						"complete": function(data, code){
+							// console.log(data, code);
+							if( code == 0 ){
+								try {
+									var bros = JSON.parse(data);
+									// console.log(bros);
+									status.api.is_sitemap_loaded = ( bros !== false ? true : false);
+								} catch (e) {
+								}
+							}
+							rlv();
+							return;
+						}
+					}
+				);
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
 				_px2proj.query(
 					'/?PX=px2dthelper.check_status',
 					{
@@ -208,7 +267,9 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 							if( code == 0 ){
 								try {
 									var rtn = JSON.parse(data);
-									status.px2dthelper = rtn;
+									status.px2dthelper.version = (rtn.version || false);
+									status.px2dthelper.is_sitemap_loaded = (rtn.is_sitemap_loaded || false);
+									status.px2dthelper.available = (status.px2dthelper.version ? true : false);
 								} catch (e) {
 								}
 							}
@@ -217,7 +278,6 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 						}
 					}
 				);
-				rlv();
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){

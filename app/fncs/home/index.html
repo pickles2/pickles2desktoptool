@@ -210,6 +210,23 @@
 				</form>
 			</div>
 		</script>
+		<script type="text/template" id="template-status-table">
+			<% for (var key in status) { %>
+				<% if(key == 'api' || key == 'px2dthelper'){ %>
+					<% for (var key2 in status[key]) { %>
+						<tr>
+							<th><%= key %>.<%= key2 %></th>
+							<td><%= status[key][key2] %></td>
+						</tr>
+					<% } %>
+				<% }else{ %>
+					<tr>
+						<th><%= key %></th>
+						<td><%= status[key] %></td>
+					</tr>
+				<% } %>
+			<% } %>
+		</script>
 	</head>
 	<body>
 		<div class="container">
@@ -225,8 +242,9 @@
 
 
 						<div class="unit">
-							<h2>Project Information</h2>
+							<h2>README</h2>
 							<div class="cont_readme_content selectable"></div>
+							<h2>Project Information</h2>
 							<table class="def" style="width:100%; table-layout: fixed;">
 								<colgroup><col width="30%" /><col width="70%" /></colgroup>
 								<tr>

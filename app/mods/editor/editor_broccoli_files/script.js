@@ -68,7 +68,7 @@ window.contApp = new (function( px ){
 				// カスタムフィールドのフロントJSを読み込む
 				// 本来は pickles2.project.js の _pj.mkBroccoliCustomFieldOptionFrontend() 内に収めたい処理だが、
 				// frameをまたいでいるのでwindowが一致せず、ロードしたfunctionを認識できないため、ここに実装する。
-				var confCustomFields = _pj.getConfig().plugins.px2dt.customFields;
+				var confCustomFields = _pj.getConfig().plugins.px2dt.guieditor.custom_fields;
 				for( var fieldName in confCustomFields ){
 					try {
 						if( confCustomFields[fieldName].frontend.file && confCustomFields[fieldName].frontend.function ){

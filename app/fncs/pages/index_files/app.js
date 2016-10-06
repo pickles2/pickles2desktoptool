@@ -44,6 +44,7 @@ window.contApp = new (function( px ){
 		;
 		$previewIframe
 			.bind('load', function(){
+				var contProcType;
 
 				px.utils.iterateFnc([
 					function(it, prop){
@@ -78,8 +79,14 @@ window.contApp = new (function( px ){
 
 					} ,
 					function(it, prop){
+						// console.log(prop);
+						_this.pj.getPageContentEditorMode( prop.pageInfo.path, function(editorMode){
+							contProcType = editorMode;
+							it.next(prop);
+						} );
+					} ,
+					function(it, prop){
 
-						var contProcType = _this.pj.getPageContentProcType( prop.pageInfo.path );
 						var $bs3btn = $($('#template-bootstrap3-btn-dropdown-toggle').html());
 						var $html = $('<div>')
 							.append( $('<div class="cont_page_info-prop">')
@@ -365,7 +372,11 @@ window.contApp = new (function( px ){
 														_this.pj.copyContentsData(
 															pageinfo.path,
 															$this.attr('data-path'),
-															function(){
+															function(result){
+																if( !result[0] ){
+																	alert('コンテンツの複製に失敗しました。'+result[1]);
+																	return;
+																}
 																_this.loadPreview( _lastPreviewPath, function(){
 																	px.closeDialog();
 																}, {"force":true} );
@@ -431,7 +442,11 @@ window.contApp = new (function( px ){
 														.text('OK')
 														.click(function(){
 															var val = $body.find('input[name=proc_type]:checked').val();
-															_pj.changeContentProcType( $this.attr('data-path'), val, function(){
+															_pj.changeContentEditorMode( $this.attr('data-path'), val, function(result){
+																if( !result[0] ){
+																	alert('編集モードの変更に失敗しました。'+result[1]);
+																	return;
+																}
 																_this.loadPreview( _lastPreviewPath, function(){
 																	px.closeDialog();
 																}, {"force":true} );

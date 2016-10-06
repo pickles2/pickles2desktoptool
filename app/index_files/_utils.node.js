@@ -6,6 +6,7 @@
 	var _path = require('path'); // see: http://nodejs.jp/nodejs.org_ja/docs/v0.4/api/path.html
 	var _crypto = require('crypto');
 	var _pathCurrentDir = process.cwd();
+	var _ejs = require('ejs');
 	var DIRECTORY_SEPARATOR = '/';
 	var _platform = (function(){
 		var platform = 'unknown';
@@ -665,6 +666,23 @@
 		// var markdown = require( "markdown" ).markdown;
 		// var rtn = markdown.toHTML( src );
 		// return rtn;
+	}
+
+	/**
+	 * ejs テンプレートにデータをバインドする
+	 */
+	exports.bindEjs = function( tpl, data, options ){
+		var rtn = '';
+		try {
+			var template = _ejs.compile(tpl.toString(), options);
+			rtn = template(data);
+		} catch (e) {
+			var errorMessage = 'TemplateEngine "EJS" Rendering ERROR.';
+			console.log( errorMessage );
+			rtn = errorMessage;
+		}
+
+		return rtn;
 	}
 
 	/**

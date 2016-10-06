@@ -10,99 +10,111 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	var _px2proj = null;
 	var _path = require('path');
 	var _pjError = [];
+	var _projectStatus = null;
 
 
 	/**
 	 * projectオブジェクトを初期化
 	 */
 	function init(pj){
-		var tmpStatus;
 
-		setTimeout(function(){
-			px.utils.iterateFnc([
-				function(itPj, pj){
-					tmpStatus = pj.status();
-					if( !tmpStatus.pathExists || !tmpStatus.entryScriptExists || !tmpStatus.vendorDirExists || !tmpStatus.composerJsonExists ){
-						_px2proj = false;
-						pj.px2proj = _px2proj;
-						itPj.next(pj);
-						return;
-					}
+		new Promise(function(rlv){rlv();})
+			.then(function(){ return new Promise(function(rlv, rjt){
 
-					// px2agent から プロジェクト情報を生成
-					var px2agentOption = {
-						'bin': px.nodePhpBin.getPath(),
-						'ini': px.nodePhpBin.getIniPath(),
-						'extension_dir': px.nodePhpBin.getExtensionDir()
-					};
-					// console.log(px2agentOption);
-					_px2proj = px.px2agent.createProject(
-						_path.resolve( pj.get('path') + '/' + pj.get('entry_script') ) ,
-						px2agentOption
-					);
+				// px2agent から プロジェクト情報を生成
+				var px2agentOption = {
+					'bin': px.nodePhpBin.getPath(),
+					'ini': px.nodePhpBin.getIniPath(),
+					'extension_dir': px.nodePhpBin.getExtensionDir()
+				};
+				// console.log(px2agentOption);
+				_px2proj = px.px2agent.createProject(
+					_path.resolve( pj.get('path') + '/' + pj.get('entry_script') ) ,
+					px2agentOption
+				);
+				pj.px2proj = _px2proj;
+
+				rlv();
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				pj.updateProjectStatus(function( tmpStatus ){
+					_projectStatus = tmpStatus;
+					rlv();
+				});
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				if( !_projectStatus.pathExists || !_projectStatus.entryScriptExists || !_projectStatus.vendorDirExists || !_projectStatus.composerJsonExists ){
+					_px2proj = false;
 					pj.px2proj = _px2proj;
-
-					itPj.next(pj);
+					rlv();
 					return;
-				},
-				function(itPj, pj){
-					if( !tmpStatus.pathExists || !tmpStatus.entryScriptExists || !tmpStatus.vendorDirExists || !tmpStatus.composerJsonExists ){
-						_config = false;
-						itPj.next(pj);
-						return;
-					}
-
-					// コンフィグをロード
-					pj.updateConfig(function(){
-						itPj.next(pj);
-					});
-					return;
-				} ,
-				function(itPj, pj){
-					if( !tmpStatus.pathExists || !tmpStatus.entryScriptExists || !tmpStatus.vendorDirExists || !tmpStatus.composerJsonExists ){
-						_px2DTConfig = false;
-						itPj.next(pj);
-						return;
-					}
-
-					// Px2DTコンフィグをロード
-					pj.updatePx2DTConfig(function(){
-						itPj.next(pj);
-					});
-					return;
-				} ,
-				function(itPj, pj){
-					if( !tmpStatus.entryScriptExists || !tmpStatus.vendorDirExists || !tmpStatus.composerJsonExists ){
-						itPj.next(pj);return;
-					}
-					if( _config === false ){
-						itPj.next(pj);return;
-					}
-
-					/**
-					 * px.site
-					 */
-					pj.site = new (require('./pickles.project.site.js'))(px, pj, function(){
-						itPj.next(pj);
-					});
-					return;
-				} ,
-				function(itPj, pj){
-					// composer パッケージの更新をチェックする。
-					px.composerUpdateChecker.check(pj, function(checked){
-						// console.log('composerUpdateChecker.check() done.', checked.status);
-					});
-					itPj.next(pj);return;
-					return;
-				} ,
-				function(itPj, pj){
-					cbStandby();
-					itPj.next(pj);
 				}
-			]).start(pj);
-		}, 0);
+				rlv();
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				if( !_projectStatus.pathExists || !_projectStatus.entryScriptExists || !_projectStatus.vendorDirExists || !_projectStatus.composerJsonExists ){
+					_config = false;
+					rlv();
+					return;
+				}
+
+				// コンフィグをロード
+				pj.updateConfig(function(){
+					rlv();
+				});
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				if( !_projectStatus.pathExists || !_projectStatus.entryScriptExists || !_projectStatus.vendorDirExists || !_projectStatus.composerJsonExists ){
+					_px2DTConfig = false;
+					rlv();
+					return;
+				}
+
+				// Px2DTコンフィグをロード
+				pj.updatePx2DTConfig(function(){
+					rlv();
+				});
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				if( !_projectStatus.entryScriptExists || !_projectStatus.vendorDirExists || !_projectStatus.composerJsonExists ){
+					rlv();
+					return;
+				}
+				if( _config === false ){
+					rlv();
+					return;
+				}
+
+				/**
+				 * px.site
+				 */
+				pj.site = new (require('./pickles.project.site.js'))(px, pj, function(){
+					rlv();
+				});
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// composer パッケージの更新をチェックする。
+				px.composerUpdateChecker.check(pj, function(checked){
+					// console.log('composerUpdateChecker.check() done.', checked.status);
+				});
+				rlv();
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// console.log('project "' + _this.projectInfo.name + '" (projectId: ' + _this.projectId + ') initialized.');
+				cbStandby();
+				rlv();
+				return;
+			}); })
+		;
 		return;
-	}
+	} // init()
 
 
 	/**
@@ -139,35 +151,143 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	 * プロジェクトのステータスを調べる
 	 */
 	this.status = function(){
-		var status = {};
-		status.pathExists = px.utils.isDirectory( this.get('path') );
-		status.entryScriptExists = (status.pathExists && px.utils.isFile( this.get('path')+'/'+this.get('entry_script') ) ? true : false);
-		var homeDir = this.get('path')+'/'+this.get('home_dir');
-		status.homeDirExists = (status.pathExists && px.utils.isDirectory( homeDir ) ? true : false);
-		// status.confFileExists = (status.homeDirExists && (px.utils.isFile( homeDir+'/config.php' )||px.utils.isFile( homeDir+'/config.json' ) ) ? true : false);
-		status.confFileExists = false;
-		if(typeof(_config) === typeof({})){ status.confFileExists = true; }
-		// status.px2DTConfFileExists = (status.homeDirExists && px.utils.isFile( homeDir+'/px2dtconfig.json' ) ? true : false);
-		status.px2DTConfFileExists = false;
-		if(typeof(_px2DTConfig) === typeof({})){ status.px2DTConfFileExists = true; }
-		status.composerJsonExists = (status.pathExists && px.utils.isFile( this.get_realpath_composer_root()+'/composer.json' ) ? true : false);
-		status.vendorDirExists = (status.pathExists && px.utils.isDirectory( this.get_realpath_composer_root()+'/vendor/' ) ? true : false);
-		status.isPxStandby = ( status.pathExists && status.entryScriptExists && status.homeDirExists && status.confFileExists && status.composerJsonExists && status.vendorDirExists ? true : false );
-		status.gitDirExists = (function(path){
-			function checkParentDir(path){
-				if( status.pathExists && px.utils.isDirectory( path+'/.git/' ) ){
-					return true;
-				}
-				var nextPath = px.utils.dirname( path );
-				if( nextPath == path ){
-					return false;
-				}
-				return checkParentDir( nextPath );
-			}
-			return checkParentDir(path);
-		})( this.get('path') );
-		return status;
+		return _projectStatus;
 	}
+
+	/**
+	 * プロジェクトステータスを更新する
+	 * @param  {Function} callback callback function
+	 * @return {Void} Return nothing.
+	 */
+	this.updateProjectStatus = function( callback ){
+		callback = callback || function(){};
+		var status = {};
+		status.api = {
+			"available": false,
+			"version": false,
+			"is_sitemap_loaded": false
+		};
+		status.px2dthelper = {
+			"available": false,
+			"version": false,
+			"is_sitemap_loaded": false
+		};
+		new Promise(function(rlv){rlv();})
+			.then(function(){ return new Promise(function(rlv, rjt){
+				status.pathExists = px.utils.isDirectory( _this.get('path') );
+				status.entryScriptExists = (status.pathExists && px.utils.isFile( _this.get('path')+'/'+_this.get('entry_script') ) ? true : false);
+				var homeDir = _this.get('path')+'/'+_this.get('home_dir');
+				status.homeDirExists = (status.pathExists && px.utils.isDirectory( homeDir ) ? true : false);
+				// status.confFileExists = (status.homeDirExists && (px.utils.isFile( homeDir+'/config.php' )||px.utils.isFile( homeDir+'/config.json' ) ) ? true : false);
+				status.confFileExists = false;
+				if(typeof(_config) === typeof({})){ status.confFileExists = true; }
+				// status.px2DTConfFileExists = (status.homeDirExists && px.utils.isFile( homeDir+'/px2dtconfig.json' ) ? true : false);
+				status.px2DTConfFileExists = false;
+				if(typeof(_px2DTConfig) === typeof({})){ status.px2DTConfFileExists = true; }
+				status.composerJsonExists = (status.pathExists && px.utils.isFile( _this.get_realpath_composer_root()+'/composer.json' ) ? true : false);
+				status.vendorDirExists = (status.pathExists && px.utils.isDirectory( _this.get_realpath_composer_root()+'/vendor/' ) ? true : false);
+				status.isPxStandby = ( status.pathExists && status.entryScriptExists && status.homeDirExists && status.confFileExists && status.composerJsonExists && status.vendorDirExists ? true : false );
+				status.gitDirExists = (function(path){
+					function checkParentDir(path){
+						if( status.pathExists && px.utils.isDirectory( path+'/.git/' ) ){
+							return true;
+						}
+						var nextPath = px.utils.dirname( path );
+						if( nextPath == path ){
+							return false;
+						}
+						return checkParentDir( nextPath );
+					}
+					return checkParentDir(path);
+				})( _this.get('path') );
+
+				rlv();
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// Pickles Framework のバージョンを確認
+				// かつ、 PX=api が利用できるか確認
+				_px2proj.query(
+					'/?PX=api.get.version',
+					{
+						"output": "json",
+						"complete": function(data, code){
+							// console.log(data, code);
+							if( code == 0 ){
+								try {
+									var version = JSON.parse(data);
+									status.api.version = (typeof('') == typeof(version) ? version : false);
+									status.api.available = (status.api.version ? true : false);
+								} catch (e) {
+								}
+							}
+							rlv();
+							return;
+						}
+					}
+				);
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// PX=api からサイトマップを利用できるか確認
+				if( status.api.version === false ){
+					// version を取得できていなければ sitemap も無効のはず
+					status.api.is_sitemap_loaded = false;
+					rlv();
+					return;
+				}
+				_px2proj.query(
+					'/?PX=api.get.bros',
+					{
+						"output": "json",
+						"complete": function(data, code){
+							// console.log(data, code);
+							if( code == 0 ){
+								try {
+									var bros = JSON.parse(data);
+									// console.log(bros);
+									status.api.is_sitemap_loaded = ( bros !== false ? true : false);
+								} catch (e) {
+								}
+							}
+							rlv();
+							return;
+						}
+					}
+				);
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				_px2proj.query(
+					'/?PX=px2dthelper.check_status',
+					{
+						"output": "json",
+						"complete": function(data, code){
+							// console.log(data, code);
+							if( code == 0 ){
+								try {
+									var rtn = JSON.parse(data);
+									status.px2dthelper.version = (rtn.version || false);
+									status.px2dthelper.is_sitemap_loaded = (rtn.is_sitemap_loaded || false);
+									status.px2dthelper.available = (status.px2dthelper.version ? true : false);
+								} catch (e) {
+								}
+							}
+							rlv();
+							return;
+						}
+					}
+				);
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// console.log(status);
+				callback(status);
+				return;
+			}); })
+		;
+		return;
+	} // updateProjectStatus()
 
 	/** プロジェクト情報を取得する */
 	this.get = function(key){
@@ -350,26 +470,23 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	}
 
 	/**
-	 * ページパスからコンテンツの種類(編集モード)を取得する
+	 * ページパスからコンテンツの種類(編集モード)を取得する (非同期)
 	 */
-	this.getPageContentProcType = function( pagePath ){
-		var rtn = '.unknown';
-		var pathContRoot = this.get_realpath_controot();
-		var pageContent = this.findPageContent( pagePath );
-		if( !px.utils.isFile( pathContRoot+pageContent ) ){
-			return '.not_exists';
-		}
-		var filesDir = this.getContentFilesByPageContent( pageContent );
-		if( this.isContentDoubleExtension( pageContent ) ){
-			rtn = px.utils.getExtension( pageContent );
-		}else if( px.utils.isDirectory( pathContRoot+filesDir ) && px.utils.isFile( pathContRoot+filesDir+'/guieditor.ignore/data.json' ) ){
-			rtn = 'html.gui';
-		}else{
-			rtn = px.utils.getExtension( pageContent );
-			// if(rtn == 'htm'){rtn = 'html';}
-		}
-		return rtn;
-	}// getPageContentProcType()
+	this.getPageContentEditorMode = function( pagePath, callback ){
+		callback = callback || function(){};
+		_px2proj.query(
+			pagePath+'?PX=px2dthelper.check_editor_mode', {
+				"output": "json",
+				"complete": function(data, code){
+					// console.log(data, code);
+					var rtn = JSON.parse(data);
+					callback(rtn);
+					return;
+				}
+			}
+		);
+		return;
+	}// getPageContentEditorMode()
 
 	/**
 	 * コンテンツパスから専有リソースディレクトリパスを探す
@@ -394,93 +511,22 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	} // getContentFilesByPageContent
 
 	/**
-	 * コンテンツの種類(編集モード)を変更する
+	 * コンテンツの種類(編集モード)を変更する (非同期)
 	 */
-	this.changeContentProcType = function( pagePath, procTypeTo, cb ){
-		cb = cb || function(){};
-
-		var pageInfo = this.site.getPageInfo( pagePath );
-		var pageInfoLocalpath = pageInfo.content;
-		var pathContent = this.findPageContent( pagePath );
-		var procTypeBefore = this.getPageContentProcType( pagePath );
-		var resourcPath = this.getContentFilesByPageContent( pathContent );
-		var contRoot = this.get_realpath_controot();
-		var codeBefore = px.fs.readFileSync( contRoot+pathContent ).toString();
-
-		if( procTypeBefore == procTypeTo ){ cb(); return; }
-
-		function mkGuiData( contRoot, resourcPath, codeBefore, procTypeBefore ){
-			if( !px.utils.isDirectory( contRoot + resourcPath ) ){
-				px.fs.mkdirSync( contRoot + resourcPath );
-			}
-			if( !px.utils.isDirectory( contRoot + resourcPath+'guieditor.ignore/' ) ){
-				px.fs.mkdirSync( contRoot + resourcPath+'guieditor.ignore/' );
-			}
-			px.fs.writeFileSync( contRoot + resourcPath+'guieditor.ignore/data.json', JSON.stringify( {
-				"bowl": {
-					"main": {
-						"modId": "_sys/root" ,
-						"fields": {
-							"main": [
-								{
-									"modId": "_sys/html" ,
-									"fields": {
-										"main": codeBefore
-									}
-								}
-							]
-						}
-					}
-				}
-			}, null, 1 ) );
-		}
-
-		if( procTypeBefore == 'html.gui' ){
-			if( (procTypeTo == 'html'||procTypeTo == 'htm') && pageInfo.content.match( new RegExp('\\.'+procTypeTo+'$', 'i') ) ){
-				px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content );
-			}else{
-				px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content + '.' + procTypeTo );
-			}
-			try {
-				px.utils.rmdir_r( contRoot + resourcPath+'guieditor.ignore/' );
-			}catch(e){
-			}
-
-		}else if( procTypeBefore == 'html'||procTypeBefore == 'htm' ){
-			if( procTypeTo == 'html.gui' ){
-				px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content );
-				mkGuiData( contRoot, resourcPath, codeBefore, procTypeBefore );
-			}else{
-				px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content + '.' + procTypeTo );
-			}
-
-		}else{
-			if( procTypeTo == 'html.gui' || procTypeTo == 'html' || procTypeTo == 'htm' ){
-				if( pageInfo.content.match( new RegExp('\\.html?$', 'i') ) ){
-					px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content );
-				}else{
-					px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content + '.'+(procTypeTo=='html.gui' ? 'html.gui' : procTypeTo) );
-				}
-				if( procTypeTo == 'html.gui' ){
-					mkGuiData( contRoot, resourcPath, codeBefore, procTypeBefore );
-				}else{
-					try {
-						px.utils.rmdir_r( contRoot + resourcPath+'guieditor.ignore/' );
-					}catch(e){
-					}
-				}
-			}else{
-				px.fs.renameSync( contRoot + pathContent, contRoot + pageInfo.content + '.' + procTypeTo );
-				try {
-					px.utils.rmdir_r( contRoot + resourcPath+'guieditor.ignore/' );
-				}catch(e){
+	this.changeContentEditorMode = function( pagePath, editorModeTo, callback ){
+		callback = callback || function(){};
+		_px2proj.query(
+			pagePath+'?PX=px2dthelper.change_content_editor_mode&editor_mode='+editorModeTo, {
+				"output": "json",
+				"complete": function(data, code){
+					// console.log(data, code);
+					var rtn = JSON.parse(data);
+					callback(rtn);
+					return;
 				}
 			}
-
-		}
-
-		cb();
-		return true;
+		);
+		return;
 	}
 
 	/**
@@ -517,27 +563,30 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	 */
 	this.buildGuiEditContent = function( pagePath, callback ){
 		callback = callback||function(){};
-		if( this.getPageContentProcType(pagePath) != 'html.gui' ){
-			callback(false);
-			return this;
-		}
+		var pj = this;
+		this.getPageContentEditorMode(pagePath, function(editorMode){
+			if( editorMode != 'html.gui' ){
+				callback(false);
+				return;
+			}
 
-		if(this.getGuiEngineName() == 'broccoli-html-editor'){
-			// broccoli-html-editor
-			this.createBroccoliServer(pagePath, function(broccoli){
-				broccoli.updateContents(
-					function(result){
-						callback(result);
-					}
-				);
-			});
-		}else{
-			// 旧GUI編集
-			window.px2dtGuiEditor.build(pagePath, function(result){
-				callback(result);
-			});
-		}
+			if(pj.getGuiEngineName() == 'broccoli-html-editor'){
+				// broccoli-html-editor
+				pj.createBroccoliServer(pagePath, function(broccoli){
+					broccoli.updateContents(
+						function(result){
+							callback(result);
+						}
+					);
+				});
+			}else{
+				// 旧GUI編集
+				window.px2dtGuiEditor.build(pagePath, function(result){
+					callback(result);
+				});
+			}
 
+		});
 		return this;
 	}// buildGuiEditContent()
 
@@ -581,8 +630,8 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			}
 
 			try {
-				if( px2conf.plugins.px2dt.guieditor.pathResourceDir ){
-					pathResourceDir = bind( px2conf.plugins.px2dt.guieditor.pathResourceDir );
+				if( px2conf.plugins.px2dt.guieditor.path_resource_dir ){
+					pathResourceDir = bind( px2conf.plugins.px2dt.guieditor.path_resource_dir );
 					pathResourceDir = require('path').resolve('/' + px2conf.path_controot + '/' + pathResourceDir)+'/';
 					// console.log(pathResourceDir);
 				}
@@ -590,8 +639,8 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			}
 
 			try {
-				if( px2conf.plugins.px2dt.guieditor.realpathDataDir ){
-					realpathDataDir = bind( px2conf.plugins.px2dt.guieditor.realpathDataDir );
+				if( px2conf.plugins.px2dt.guieditor.path_data_dir ){
+					realpathDataDir = bind( px2conf.plugins.px2dt.guieditor.path_data_dir );
 					realpathDataDir = require('path').resolve('/', documentRoot+'/'+px2conf.path_controot, realpathDataDir)+'/';
 					// console.log(realpathDataDir);
 				}
@@ -713,7 +762,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 
 		var confCustomFields = {};
 		try {
-			confCustomFields = this.getConfig().plugins.px2dt.guieditor.customFields;
+			confCustomFields = this.getConfig().plugins.px2dt.guieditor.custom_fields;
 			for( var fieldName in confCustomFields ){
 				try {
 					if( confCustomFields[fieldName].frontend.file && confCustomFields[fieldName].frontend.function ){
@@ -748,7 +797,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 
 		var confCustomFields = {};
 		try {
-			confCustomFields = this.getConfig().plugins.px2dt.guieditor.customFields;
+			confCustomFields = this.getConfig().plugins.px2dt.guieditor.custom_fields;
 			for( var fieldName in confCustomFields ){
 				try {
 					if( confCustomFields[fieldName].backend.require ){
@@ -771,96 +820,20 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	/**
 	 * コンテンツをコピーする
 	 */
-	this.copyContentsData = function( pathFrom, pathTo, cb ){
-		cb = cb || function(){};
-		var _this = this;
-
-		var contRoot = this.get_realpath_controot();
-
-		var from = [];
-		from.pathContent = this.findPageContent( pathFrom );
-		from.pathFiles = this.getContentFilesByPageContent(from.pathContent);
-		from.procType = this.getPageContentProcType( pathFrom );
-
-		var to = [];
-		to.pathContent = this.findPageContent( pathTo );
-		to.pathFiles = this.getContentFilesByPageContent(to.pathContent);
-		to.procType = this.getPageContentProcType( pathTo );
-
-
-		px.utils.iterateFnc([
-			function(it, prop){
-				// 一旦削除する
-				if( px.utils.isFile( contRoot+'/'+to.pathContent ) ){
-					px.utils.rm( contRoot+'/'+to.pathContent );
-				}
-				if( px.utils.isDirectory( contRoot+'/'+to.pathFiles ) ){
-					px.utils.rmdir_r( contRoot+'/'+to.pathFiles );
-				}
-				it.next(prop);
-			} ,
-			function(it, prop){
-				// 格納ディレクトリを作る
-				if( px.utils.isDirectory( contRoot+'/'+to.pathFiles ) ){
-					it.next(prop);
+	this.copyContentsData = function( pathFrom, pathTo, callback ){
+		callback = callback || function(){};
+		_px2proj.query(
+			pathTo+'?PX=px2dthelper.copy_content&from='+pathFrom+'&to='+pathTo, {
+				"output": "json",
+				"complete": function(data, code){
+					// console.log(data, code);
+					var rtn = JSON.parse(data);
+					callback(rtn);
 					return;
 				}
-				// 再帰的に作る mkdirAll()
-				if( !px.utils.mkdirAll( contRoot+'/'+to.pathFiles ) ){
-					it.next(prop);
-					return;
-				}
-				it.next(prop);
-			} ,
-			function(it, prop){
-				// 複製する
-				if( px.utils.isFile( contRoot+'/'+from.pathContent ) ){
-					px.utils.copy( contRoot+'/'+from.pathContent, contRoot+'/'+to.pathContent );
-				}
-				if( px.utils.isDirectory( contRoot+'/'+from.pathFiles ) ){
-					px.utils.copy_r( contRoot+'/'+from.pathFiles, contRoot+'/'+to.pathFiles );
-				}
-				it.next(prop);
-			} ,
-			function(it, prop){
-
-				// コンテンツのprocTypeが異なる場合
-				if( from.procType !== to.procType ){
-					// 拡張子を合わせる作業
-					var toPageInfo = _this.site.getPageInfo( pathTo );
-
-					switch( from.procType ){
-						case 'html':
-						case 'html.gui':
-							var toPathContent = toPageInfo.content;
-							if( !toPageInfo.content.match( new RegExp('\\.html$', 'i') ) ){
-								toPathContent = toPageInfo.content + '.html';
-							}
-							px.fs.renameSync(
-								contRoot+'/'+to.pathContent,
-								contRoot+'/'+toPathContent
-							);
-							break;
-						default:
-							px.fs.renameSync(
-								contRoot+'/'+to.pathContent,
-								contRoot+'/'+toPageInfo.content + '.' + from.procType
-							);
-							break;
-					}
-
-				}
-
-				it.next(prop);
-			} ,
-			function(it, prop){
-				cb();
-				return;
-				it.next(prop);
 			}
-		]).start({});
-
-		return true;
+		);
+		return;
 	}
 
 	/**

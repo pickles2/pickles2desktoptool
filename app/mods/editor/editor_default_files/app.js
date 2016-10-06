@@ -17,7 +17,7 @@ window.contApp = new (function( px ){
 	}
 
 	var _cont_path = _pj.findPageContent( _param.page_path );
-	var _cont_procType = _pj.getPageContentProcType( _param.page_path );
+	var _cont_procType;
 	// var _cont_realpath = _pj.get('path')+'/'+_cont_path;
 	var _cont_realpath = px.php.realpath( px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+'/'+_cont_path );
 
@@ -35,7 +35,7 @@ window.contApp = new (function( px ){
 	var strLoaderCSS = '<?php ob_start(); ?><link rel="stylesheet" href="./' + px.php.basename( _pathFiles ) + '/style.css" /><?php $px->bowl()->send( ob_get_clean(), \'head\' );?>'+"\n";
 	var strLoaderJS = '<?php ob_start(); ?><script src="./' + px.php.basename( _pathFiles ) + '/script.js"></script><?php $px->bowl()->send( ob_get_clean(), \'foot\' );?>'+"\n";
 
-	var $preview, $iframe;
+	var $html, $preview, $iframe;
 	var $textareas = {'html':null, 'css': null, 'js': null};
 	var $editor_header;
 
@@ -141,137 +141,163 @@ window.contApp = new (function( px ){
 	 * 初期化
 	 */
 	function init(){
-		var $html = $( $('#cont_tpl_editor').html() );
 
-		$preview = $html.find('.cont_preview');
-		$iframe = $preview.find('iframe');
+		new Promise(function(rlv){rlv();})
+			.then(function(){ return new Promise(function(rlv, rjt){
+				_pj.getPageContentEditorMode( _param.page_path, function(editorMode){
+					_cont_procType = editorMode;
+					rlv();
+				} );
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				$html = $( $('#cont_tpl_editor').html() );
 
-		$editor_header = $html.find('.cont_editor_header');
+				$preview = $html.find('.cont_preview');
+				$iframe = $preview.find('iframe');
 
-		$textareas['html'] = $html.find('.editor_frame-html textarea');
-		$textareas['css'] = $html.find('.editor_frame-css textarea');
-		$textareas['js'] = $html.find('.editor_frame-js textarea');
+				$editor_header = $html.find('.cont_editor_header');
 
-		$html.find('.switch_tab button').click(function(e){
-			$(this).addClass('btn').addClass('btn-default');
-			var switchTo = $(this).attr('data-switch');
-			_this.selectTab( switchTo );
-		});
+				$textareas['html'] = $html.find('.editor_frame-html textarea');
+				$textareas['css'] = $html.find('.editor_frame-css textarea');
+				$textareas['js'] = $html.find('.editor_frame-js textarea');
 
-		var htmlSrc = px.fs.readFileSync(_contentsPath);
-		$textareas['html'].val( htmlSrc );
-		htmlSrc = $textareas['html'].val();
-		htmlSrc = htmlSrc.replace( strLoaderCSS, '' );
-		htmlSrc = htmlSrc.replace( strLoaderJS, '' );
-		$textareas['html'].val( htmlSrc );
+				$html.find('.switch_tab button').click(function(e){
+					$(this).addClass('btn').addClass('btn-default');
+					var switchTo = $(this).attr('data-switch');
+					_this.selectTab( switchTo );
+				});
 
-		if( px.utils.isFile( px.php.dirname(_contentsPath) + '/' + px.php.basename( _pathFiles ) + '/style.css.scss' ) ){
-			$textareas['css'].val( px.fs.readFileSync( px.php.dirname(_contentsPath) + '/' + px.php.basename( _pathFiles ) + '/style.css.scss' ) );
-		}
-		if( px.utils.isFile( px.php.dirname(_contentsPath) + '/' + px.php.basename( _pathFiles ) + '/script.js' ) ){
-			$textareas['js'].val( px.fs.readFileSync( px.php.dirname(_contentsPath) + '/' + px.php.basename( _pathFiles ) + '/script.js' ) );
-		}
+				var htmlSrc = px.fs.readFileSync(_contentsPath);
+				$textareas['html'].val( htmlSrc );
+				htmlSrc = $textareas['html'].val();
+				htmlSrc = htmlSrc.replace( strLoaderCSS, '' );
+				htmlSrc = htmlSrc.replace( strLoaderJS, '' );
+				$textareas['html'].val( htmlSrc );
 
-		setTimeout(function(){
-			$textareas['html'].scrollTop(0);
-		}, 10);
-		$html
-			.find('button.cont_btn_resources')
-				.click(function(){
-					_this.openResourcesDirectory();
-				})
-		;
-		$html
-			.find('button.cont_btn_save')
-				.click(function(){
-					save(function(result){
-						if(!result){
-							px.message( 'ページの保存に失敗しました。' );
-						}else{
-							px.message( 'ページを保存しました。' );
-						}
-						preview();
-						$textareas['html'].focus();
-					});
-				})
-		;
-		$html
-			.find('button.cont_btn_close')
-				.click(function(){
-					window.parent.contApp.closeEditor();
-				})
-		;
-		$html
-			.find('button.cont_btn_save_and_close')
-				.click(function(){
-					save(function(result){
-						if(!result){
-							px.message( 'ページの保存に失敗しました。' );
-						}else{
-							px.message( 'ページを保存しました。' );
-						}
-						window.parent.contApp.closeEditor();
-					});
-				})
-		;
-		$html
-			.find('button.cont_btn_save_and_preview_in_browser')
-				.click(function(){
-					save(function(result){
-						if(!result){
-							px.message( 'ページの保存に失敗しました。' );
-						}else{
-							px.message( 'ページを保存しました。' );
-							px.preview.serverStandby(function(){
-								px.utils.openURL( px.preview.getUrl( _param.page_path ) );
+				if( px.utils.isFile( px.php.dirname(_contentsPath) + '/' + px.php.basename( _pathFiles ) + '/style.css.scss' ) ){
+					$textareas['css'].val( px.fs.readFileSync( px.php.dirname(_contentsPath) + '/' + px.php.basename( _pathFiles ) + '/style.css.scss' ) );
+				}
+				if( px.utils.isFile( px.php.dirname(_contentsPath) + '/' + px.php.basename( _pathFiles ) + '/script.js' ) ){
+					$textareas['js'].val( px.fs.readFileSync( px.php.dirname(_contentsPath) + '/' + px.php.basename( _pathFiles ) + '/script.js' ) );
+				}
+
+				setTimeout(function(){
+					$textareas['html'].scrollTop(0);
+				}, 10);
+				$html
+					.find('button.cont_btn_resources')
+						.click(function(){
+							_this.openResourcesDirectory();
+						})
+				;
+				$html
+					.find('button.cont_btn_save')
+						.click(function(){
+							save(function(result){
+								if(!result){
+									px.message( 'ページの保存に失敗しました。' );
+								}else{
+									px.message( 'ページを保存しました。' );
+								}
+								preview();
+								$textareas['html'].focus();
 							});
+						})
+				;
+				$html
+					.find('button.cont_btn_close')
+						.click(function(){
+							window.parent.contApp.closeEditor();
+						})
+				;
+				$html
+					.find('button.cont_btn_save_and_close')
+						.click(function(){
+							save(function(result){
+								if(!result){
+									px.message( 'ページの保存に失敗しました。' );
+								}else{
+									px.message( 'ページを保存しました。' );
+								}
+								window.parent.contApp.closeEditor();
+							});
+						})
+				;
+				$html
+					.find('button.cont_btn_save_and_preview_in_browser')
+						.click(function(){
+							save(function(result){
+								if(!result){
+									px.message( 'ページの保存に失敗しました。' );
+								}else{
+									px.message( 'ページを保存しました。' );
+									px.preview.serverStandby(function(){
+										px.utils.openURL( px.preview.getUrl( _param.page_path ) );
+									});
+								}
+							});
+						})
+				;
+				$preview
+					.css({
+						'width':'100%'
+					})
+				;
+				$iframe
+					.bind('load', function(){
+						px.cancelDrop( $iframe.get(0).contentWindow );
+
+						// ↓ これで、現在のURLがとれる。
+						var loc = $iframe.get(0).contentWindow.location;
+						switch( loc.href ){
+							case 'blank':
+							case 'about:blank':
+								return;
 						}
-					});
-				})
-		;
-		$preview
-			.css({
-				'width':'100%'
-			})
-		;
-		$iframe
-			.bind('load', function(){
-				px.cancelDrop( $iframe.get(0).contentWindow );
+						var to = loc.pathname;
+						var pathControot = _pj.getConfig().path_controot;
+						to = to.replace( new RegExp( '^'+px.utils.escapeRegExp( pathControot ) ), '' );
+						to = to.replace( new RegExp( '^\\/*' ), '/' );
 
-				// ↓ これで、現在のURLがとれる。
-				var loc = $iframe.get(0).contentWindow.location;
-				switch( loc.href ){
-					case 'blank':
-					case 'about:blank':
-						return;
-				}
-				var to = loc.pathname;
-				var pathControot = _pj.getConfig().path_controot;
-				to = to.replace( new RegExp( '^'+px.utils.escapeRegExp( pathControot ) ), '' );
-				to = to.replace( new RegExp( '^\\/*' ), '/' );
+						if( to != _param.page_path ){
+							// if(confirm( 'realy to go to "'+to+'"?' )){
+							window.parent.contApp.openEditor( to );
+							// window.location.href = './index.html?page_path='+encodeURIComponent( to );
+							// }
+						}
+					})
+				;
+				$('body')
+					.html( '' )
+					.append($html)
+				;
+				_this.selectTab('html');
 
-				if( to != _param.page_path ){
-					// if(confirm( 'realy to go to "'+to+'"?' )){
-					window.parent.contApp.openEditor( to );
-					// window.location.href = './index.html?page_path='+encodeURIComponent( to );
-					// }
-				}
-			})
+				px.cancelDrop( window );
+				preview();
+				windowResize();
+				$(window).resize(function(){
+					windowResize();
+				});
+
+				px.progress.close();
+				rlv();
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				rlv();
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				rlv();
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				rlv();
+				return;
+			}); })
 		;
-		$('body')
-			.html( '' )
-			.append($html)
-		;
-		_this.selectTab('html');
 
-		px.cancelDrop( window );
-		preview();
-		windowResize();
-		$(window).resize(function(){
-			windowResize();
-		});
-
-		px.progress.close();
 	}
 
 

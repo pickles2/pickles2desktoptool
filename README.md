@@ -56,6 +56,7 @@ $ npm run build
 - GUI編集で、プロジェクト固有のカスタムフィールドを追加できる機能 `custom_fields` を追加。
 - GUI編集の `pathResourceDir` を `path_resource_dir` に、 `realpathDataDir` を `path_data_dir` に変更。
 - GUI編集のAPIのいくつかを、 `pickles2/px2-px2dthelper` 依存に変更。
+- Windows版ビルドの起動にかかる時間を改善した。
 - その他いくつかの細かい修正。
 
 ### Pickles 2 Desktop Tool 2.0.0-beta.14 (2016年9月8日)

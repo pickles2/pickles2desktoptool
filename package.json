@@ -34,6 +34,7 @@
     "pickles2-contents-editor": "file:submodules/node-pickles2-contents-editor",
     "px2agent": "^2.0.4",
     "px2dt-localdata-access": "file:submodules/node-px2dt-localdata-access",
+    "semver": "^5.3.0",
     "socket.io": "^1.3.5",
     "twig": "^0.8.2",
     "url-parse": "^1.1.1",

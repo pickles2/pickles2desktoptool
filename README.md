@@ -56,6 +56,7 @@ $ npm run build
 - GUI編集で、プロジェクト固有のカスタムフィールドを追加できる機能 `custom_fields` を追加。
 - GUI編集の `pathResourceDir` を `path_resource_dir` に、 `realpathDataDir` を `path_data_dir` に変更。
 - GUI編集のAPIのいくつかを、 `pickles2/px2-px2dthelper` 依存に変更。
+- GUI編集のtableフィールドで、最後の行が結合されている場合に、列幅指定が欠落する不具合を修正。
 - Windows版ビルドの起動にかかる時間を改善した。
 - その他いくつかの細かい修正。
 

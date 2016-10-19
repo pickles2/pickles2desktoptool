@@ -77,9 +77,13 @@
 		$('body')
 			.append($dialog)
 		;
-		$('body .theme_wrap')
-			// .addClass('filter')
-			// .addClass('filter-blur')//描画がおかしくなるから一旦やめ。
+		$('body *')
+			.attr({
+				'tabindex': '-1'
+			})
+		;
+		$dialog.find('*')
+			.removeAttr('tabindex')
 		;
 		return $dialog;
 	}//dialog()
@@ -90,8 +94,8 @@
 	px.closeDialog = function(){
 		if( $dialog ){
 			$dialog.remove();
-			$('body .theme_wrap')
-				.removeClass('filter-blur')
+			$('*')
+				.removeAttr('tabindex')
 			;
 		}
 		return $dialog;

@@ -880,6 +880,7 @@ window.contApp = new (function( px ){
 		$('body')
 			.css({'overflow':'auto'})
 		;
+		_this.loadPreview( _currentPreviewPath, function(){}, {'force':true} );
 		return this;
 	}
 

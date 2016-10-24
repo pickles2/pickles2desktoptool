@@ -205,6 +205,13 @@ new (function($, window){
 					return;
 				},
 				function(it1, data){
+					// file watcher
+					var FileWatcher = require('./index_files/pickles.watcher.js');
+					px.watcher = new FileWatcher( px );
+					it1.next();
+					return;
+				},
+				function(it1, data){
 
 					px.load(function(){
 						it1.next();
@@ -385,7 +392,7 @@ new (function($, window){
 
 	/**
 	 * プラットフォーム名を得る。
-	 * Pickles2 Desktop Tool が動作しているPCのOS名。
+	 * Pickles 2 Desktop Tool が動作しているPCのOS名。
 	 */
 	this.getPlatform = function(){
 		return _platform;
@@ -501,6 +508,9 @@ new (function($, window){
 			return false;
 		}
 
+		// ファイル監視の停止
+		px.watcher.stop();
+
 		// alert(num);
 		_pj = new (require('./index_files/pickles.project.js')).classProject(
 			window,
@@ -508,6 +518,9 @@ new (function($, window){
 			_db.projects[_selectedProject],
 			_selectedProject,
 			function(){
+				// ファイル監視を開始
+				px.watcher.start(_pj);
+
 				console.log( 'project "' + _pj.get('name') + '" is reloaded.' );
 				callback();
 			}
@@ -611,19 +624,6 @@ new (function($, window){
 	this.openHelp = function(){
 		px.utils.openURL( 'http://pickles2.pxt.jp/manual/' );
 		return;
-
-		// var port = 8081;
-		// if( _packageJson && _packageJson.pickles2 && _packageJson.pickles2.network && _packageJson.pickles2.network.appserver && _packageJson.pickles2.network.appserver.port ){
-		// 	port = _packageJson.pickles2.network.appserver.port;
-		// }
-		// if( _db.network && _db.network.appserver && _db.network.appserver.port ){
-		// 	port = _db.network.appserver.port;
-		// }
-		//
-		// _appServer.serverStandby( this, port, './app/server_root/', function(){
-		// 	px.utils.openURL( _appServer.getUrl() );
-		// } );
-		// return;
 	}
 
 	/**

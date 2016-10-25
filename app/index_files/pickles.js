@@ -532,6 +532,7 @@ new (function($, window){
 	 * プロジェクトの選択を解除する
 	 */
 	this.deselectProject = function(){
+		px.watcher.stop(); // ファイル監視の停止
 		_selectedProject = null;
 		_pj = null;
 		return true;

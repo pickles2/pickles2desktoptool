@@ -557,8 +557,11 @@ window.contApp = new (function( px ){
 				});
 			},
 			function( errors ){
-				alert('API の設定が十分ではありません');
-				alert(errors);
+				var html = px.utils.bindEjs(
+					document.getElementById('template-not-enough-api-version').innerHTML,
+					{errors: errors}
+				);
+				$('.contents').html( html );
 			}
 		);
 

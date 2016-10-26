@@ -540,14 +540,31 @@ window.contApp = new (function( px ){
 			})
 		;
 
-		_this.pj.site.updateSitemap(function(){
-			_config = _this.pj.getConfig();
-			_sitemap = _this.pj.site.getSitemap();
-			_this.redraw();
-			_this.loadPreview( _param.page_path, function(){
-				$(window).resize();
-			} );
-		});
+		_this.pj.checkPxCmdVersion(
+			{
+				apiVersion: '>=2.0.26',
+				px2dthelperVersion: '>=2.0.1'
+			},
+			function(){
+				// API設定OK
+				_this.pj.site.updateSitemap(function(){
+					_config = _this.pj.getConfig();
+					_sitemap = _this.pj.site.getSitemap();
+					_this.redraw();
+					_this.loadPreview( _param.page_path, function(){
+						$(window).resize();
+					} );
+				});
+			},
+			function( errors ){
+				var html = px.utils.bindEjs(
+					document.getElementById('template-not-enough-api-version').innerHTML,
+					{errors: errors}
+				);
+				$('.contents').html( html );
+			}
+		);
+
 	}// init()
 
 	/**
@@ -880,6 +897,7 @@ window.contApp = new (function( px ){
 		$('body')
 			.css({'overflow':'auto'})
 		;
+		_this.loadPreview( _currentPreviewPath, function(){}, {'force':true} );
 		return this;
 	}
 

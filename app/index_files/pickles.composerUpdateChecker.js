@@ -54,6 +54,12 @@ module.exports = function( px, callback ) {
 		// console.log(composerRootDir);
 		// console.log(_this.checkStatus);
 
+		if( !status.isPxStandby ){
+			// プロジェクトの準備が不十分なら、チェックしないで返す。
+			callback(_this.checkStatus[composerRootDir]);
+			return;
+		}
+
 		var now = Date.now();
 		// console.log(now);
 		var interval = 1*60*60*1000; // 1時間以内にチェックしてたら再チェックしない
@@ -83,6 +89,7 @@ module.exports = function( px, callback ) {
 		};
 
 		setTimeout(function(){
+			// console.info('Checking composer update --dry-run');
 			px.execComposer(
 				['update', '--dry-run'],
 				{

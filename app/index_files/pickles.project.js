@@ -289,6 +289,55 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		return;
 	} // updateProjectStatus()
 
+	/** PXコマンドのバージョンが適合するか調べる */
+	this.checkPxCmdVersion = function( cond, callbackOk, callbackNg ){
+		cond = cond||{};
+		callbackOk = callbackOk || function(){};
+		callbackNg = callbackNg || function(){};
+		var pjStatus = this.status();
+		var errors = [];
+		var semver = px.semver;
+
+		function versionClean(version){
+			if(typeof(version) != typeof('')){return false;}
+			version = semver.clean(version);
+			version = version.replace( /^([0-9]+\.[0-9]+\.[0-9]+)[\s\S]*$/, '$1' );
+			return version;
+		}
+
+		if( (cond.apiVersion) ){
+			if( !pjStatus.api.available ){
+				errors.push( 'PX=api が利用できません。' );
+			}
+			if( !pjStatus.api.is_sitemap_loaded ){
+				errors.push( 'PX=api がサイトマップ情報をロードできません。' );
+			}
+			var apiVersion = versionClean(pjStatus.api.version);
+			if( !semver.valid(apiVersion) || !semver.satisfies(apiVersion, cond.apiVersion) ){
+				errors.push( 'pickles2/px-fw-2.x のバージョンを '+cond.apiVersion+' に更新してください。 (ロードされたバージョン: '+pjStatus.api.version+')' );
+			}
+		}
+
+		if( (cond.px2dthelperVersion) ){
+			if( !pjStatus.px2dthelper.available ){
+				errors.push( 'PX=px2dthelper が利用できません。' );
+			}
+			if( !pjStatus.px2dthelper.is_sitemap_loaded ){
+				errors.push( 'PX=px2dthelper がサイトマップ情報をロードできません。' );
+			}
+			var px2dthelperVersion = versionClean(pjStatus.px2dthelper.version);
+			if( !semver.valid(px2dthelperVersion) || !semver.satisfies(px2dthelperVersion, cond.px2dthelperVersion) ){
+				errors.push( 'pickles2/px2-px2dthelper のバージョンを '+cond.px2dthelperVersion+' に更新してください。 (ロードされたバージョン: '+pjStatus.px2dthelper.version+')' );
+			}
+		}
+
+		if( errors.length ){
+			callbackNg( errors ); return;
+		}
+		callbackOk();
+		return;
+	}
+
 	/** プロジェクト情報を取得する */
 	this.get = function(key){
 		return this.projectInfo[key];

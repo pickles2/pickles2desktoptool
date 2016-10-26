@@ -61,6 +61,33 @@
 			<p>コピー元のページパスを入力してください。</p>
 			<p><input type="text" value="" class="form-control" style="width: 100%;" /></p>
 		</script>
+		<script id="template-not-enough-api-version" type="text/template">
+			<div class="container">
+				<div class="alert alert-danger" role="alert">
+					<p>API の設定が十分ではありません。</p>
+					<ul>
+						<% for( key in errors ){ %>
+							<li><%= errors[key] %></li>
+						<% } %>
+					</ul>
+				</div>
+				<p>この問題を改善するには、次の点を確認してください。</p>
+				<ul>
+					<li><code>composer.json</code> を<a href="javascript: window.px.subapp('./fncs/composer/index.html');">更新</a>してください。
+						<ul>
+							<li><code>composer.json</code> に記述されたパッケージのバージョン番号が、要件を満たしていることを確認してください。</li>
+							<li><code>$ composer update</code> を実行して、パッケージを更新してください。</li>
+						</ul>
+					</li>
+					<li><code>config.php</code> を<a href="javascript: window.px.subapp('./fncs/config/index.html');">編集</a>し、プラグインパッケージを適切に設定してください。
+						<ul>
+							<li><code>$conf->funcs->before_sitemap</code> に、<code>picklesFramework2\commands\clearcache::register</code>、 <code>picklesFramework2\commands\config::register</code>、 <code>tomk79\pickles2\sitemap_excel\pickles_sitemap_excel::exec</code> を設定します。</li>
+							<li><code>$conf->funcs->before_content</code> に、<code>picklesFramework2\commands\api::register</code>、 <code>picklesFramework2\commands\publish::register</code>、 <code>tomk79\pickles2\px2dthelper\main::register</code> を設定します。</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+		</script>
 	</head>
 	<body>
 		<div class="container">

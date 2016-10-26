@@ -19,6 +19,7 @@ window.contApp = new (function( px ){
 		_currentPreviewPath,
 		_workspaceFilterKeywords='',
 		_workspaceFilterListLabel='title';
+	var it79 = px.it79;
 
 	this.git = _pj.git();
 	this.gitUi = new px2dtGitUi(px, _pj);
@@ -133,19 +134,26 @@ window.contApp = new (function( px ){
 						;
 
 						// Filter
+						var fileterTimer;
 						$workspaceFilter.find('input[type=text]')
 							.val(_workspaceFilterKeywords)
-							.bind('keyup', function(){
+							.bind('keyup', function(e){
 								_workspaceFilterKeywords = $workspaceFilter.find('input[type=text]').val();
 								// console.log(_workspaceFilterKeywords);
-								_this.redraw();
+								clearTimeout(fileterTimer);
+								fileterTimer = setTimeout(function(){
+									_this.redraw();
+								}, (e.keyCode==13 ? 0 : 1000)); // EnterKey(=13)なら、即座に再描画を開始
 							})
 						;
 						$workspaceFilter.find('input[type=radio][name=list-label]')
 							.bind('change', function(){
 								_workspaceFilterListLabel = $workspaceFilter.find('input[type=radio][name=list-label]:checked').val();
 								// console.log(_workspaceFilterListLabel);
-								_this.redraw();
+								clearTimeout(fileterTimer);
+								fileterTimer = setTimeout(function(){
+									_this.redraw();
+								}, 1000);
 							})
 						;
 
@@ -727,72 +735,92 @@ window.contApp = new (function( px ){
 		var $ul = $('<ul class="listview">');
 		// $childList.text( JSON.stringify(_sitemap) );
 
-		current = (typeof(current)==typeof('')?current:'');
+		new Promise(function(rlv){rlv();})
+			.then(function(){ return new Promise(function(rlv, rjt){
+				current = (typeof(current)==typeof('')?current:'');
 
-		$childList.html('').append($ul);
+				$childList.html('').append($ul);
 
-		function isMatchKeywords(target){
-			if( typeof(target) != typeof('') ){
-				return false;
-			}
-			if( target.match(_workspaceFilterKeywords) ){
-				return true;
-			}
-			return false;
-		}
-		for( var idx in _sitemap ){
-			// console.log(_sitemap[idx].title);
-			if( _workspaceFilterKeywords.length ){
-				if(
-					!isMatchKeywords(_sitemap[idx].id) &&
-					!isMatchKeywords(_sitemap[idx].path) &&
-					!isMatchKeywords(_sitemap[idx].content) &&
-					!isMatchKeywords(_sitemap[idx].title) &&
-					!isMatchKeywords(_sitemap[idx].title_breadcrumb) &&
-					!isMatchKeywords(_sitemap[idx].title_h1) &&
-					!isMatchKeywords(_sitemap[idx].title_label) &&
-					!isMatchKeywords(_sitemap[idx].title_full)
-				){
-					// console.log('=> skiped.');
-					continue;
+				function isMatchKeywords(target){
+					if( typeof(target) != typeof('') ){
+						return false;
+					}
+					if( target.match(_workspaceFilterKeywords) ){
+						return true;
+					}
+					return false;
 				}
-			}
-			$ul.append( $('<li>')
-				.append( $('<a>')
-					.text( function(){
-						return _sitemap[idx][_workspaceFilterListLabel];
-					} )
-					.attr( 'href', 'javascript:;' )
-					.attr( 'data-id', _sitemap[idx].id )
-					.attr( 'data-path', _sitemap[idx].path )
-					.attr( 'data-content', _sitemap[idx].content )
-					.css({
-						// ↓暫定だけど、階層の段をつけた。
-						'padding-left': (function(pageInfo){
-							if( _workspaceFilterListLabel != 'title' ){ return '1em'; }
-							if( !_sitemap[idx].id.length ){ return '1em'; }
-							if( !_sitemap[idx].logical_path.length ){ return '2em' }
-							var rtn = ( (_sitemap[idx].logical_path.split('>').length + 1) * 1.3)+'em';
-							return rtn;
-						})(_sitemap[idx]),
-						'font-size': '12px'
-					})
-					.click( function(){
-						_this.loadPreview( $(this).attr('data-path'), function(){}, {"force":true} );
-						// _this.openEditor( $(this).attr('data-path') );
-					} )
-				)
-			);
-		}
+				it79.ary(
+					_sitemap,
+					function( it1, row, idx ){
+						new Promise(function(rlv){rlv();})
+							.then(function(){ return new Promise(function(rlv, rjt){
+								// console.log(_sitemap[idx].title);
+								if( _workspaceFilterKeywords.length ){
+									if(
+										!isMatchKeywords(_sitemap[idx].id) &&
+										!isMatchKeywords(_sitemap[idx].path) &&
+										!isMatchKeywords(_sitemap[idx].content) &&
+										!isMatchKeywords(_sitemap[idx].title) &&
+										!isMatchKeywords(_sitemap[idx].title_breadcrumb) &&
+										!isMatchKeywords(_sitemap[idx].title_h1) &&
+										!isMatchKeywords(_sitemap[idx].title_label) &&
+										!isMatchKeywords(_sitemap[idx].title_full)
+									){
+										// console.log('=> skiped.');
+										it1.next();
+										return;
+									}
+								}
+								$ul.append( $('<li>')
+									.append( $('<a>')
+										.text( function(){
+											return _sitemap[idx][_workspaceFilterListLabel];
+										} )
+										.attr( 'href', 'javascript:;' )
+										.attr( 'data-id', _sitemap[idx].id )
+										.attr( 'data-path', _sitemap[idx].path )
+										.attr( 'data-content', _sitemap[idx].content )
+										.css({
+											// ↓暫定だけど、階層の段をつけた。
+											'padding-left': (function(pageInfo){
+												if( _workspaceFilterListLabel != 'title' ){ return '1em'; }
+												if( !_sitemap[idx].id.length ){ return '1em'; }
+												if( !_sitemap[idx].logical_path.length ){ return '2em' }
+												var rtn = ( (_sitemap[idx].logical_path.split('>').length + 1) * 1.3)+'em';
+												return rtn;
+											})(_sitemap[idx]),
+											'font-size': '12px'
+										})
+										.click( function(){
+											_this.loadPreview( $(this).attr('data-path'), function(){}, {"force":true} );
+											// _this.openEditor( $(this).attr('data-path') );
+										} )
+									)
+								);
+								it1.next();
+							}); })
+						;
+					},
+					function(){
+						rlv();
+					}
+				);
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
 
-		_this.pj.px2proj.get_page_info(_currentPreviewPath, function(pageInfo){
-			$childList.find('a').removeClass('current');
-			if( pageInfo !== null ){
-				$childList.find('a[data-path="'+pageInfo.path+'"]').addClass('current');
-			}
-		});
-		// $ul.listview();
-	};
+				_this.pj.px2proj.get_page_info(_currentPreviewPath, function(pageInfo){
+					$childList.find('a').removeClass('current');
+					if( pageInfo !== null ){
+						$childList.find('a[data-path="'+pageInfo.path+'"]').addClass('current');
+					}
+					rlv();
+				});
+				// $ul.listview();
+			}); })
+		;
+		return;
+	} // redraw()
 
 	/**
 	 * エディター画面を開く
@@ -886,7 +914,7 @@ window.contApp = new (function( px ){
 		;
 
 		return this;
-	}
+	} // openEditor()
 
 	/**
 	 * エディター画面を閉じる

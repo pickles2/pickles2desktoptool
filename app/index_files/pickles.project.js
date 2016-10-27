@@ -784,6 +784,9 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				'customFields': _pj.mkBroccoliCustomFieldOptionBackend() ,
 				'log': function(msg){
 					px.log(msg);
+				},
+				'commands':{
+					'php': px.nodePhpBinOptions
 				}
 			},
 			function(){

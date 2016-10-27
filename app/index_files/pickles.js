@@ -897,26 +897,12 @@ new (function($, window){
 			});
 			$('.theme_id')
 				.css({"opacity":0})
-				// .append( $('<strong>')
-				// 	.text( _appName )
-				// )
 			;
 		}else{
 			$('.theme_px2logo').css({
 				"width": 45,
 				"height": 45
 			});
-			// $('.theme_id')
-			// 	.html('')
-			// 	.append( $('<a>')
-			// 		.attr('href', 'javascript:;')
-			// 		.text( _appName )
-			// 		.click(function(){
-			// 			px.deselectProject(); px.subapp();
-			// 			return false;
-			// 		})
-			// 	)
-			// ;
 			$('.theme_id')
 				.html('')
 				.append( $('<div>')
@@ -943,26 +929,26 @@ new (function($, window){
 				'padding':'0 0 0 0' ,
 				'position':'fixed' ,
 				'left':0 ,
-				'top': $header.height()+0 ,
+				'top': $header.outerHeight()+0 ,
 				'right': 0 ,
-				'height': $(document).height() - $header.height() - $footer.height() - 0
+				'height': $(window).height() - $header.outerHeight() - $footer.outerHeight() - 0
 			})
 		;
 		$contents.find('>iframe')
 			.css({
-				'height': $contents.height() - 10
+				'height': $contents.innerHeight() - 7
 			})
 		;
 
 		var $ul = $shoulderMenu.find('ul');
 		$shoulderMenu.find('button')
 			.css({
-				'height': $header.height()
+				'height': $header.outerHeight()
 			})
 		;
 		$ul.css({
 			top: $header.height() ,
-			height: $(window).height()-$header.height()
+			height: $(window).height()-$header.outerHeight()
 		});
 		if( $ul.css('display') == 'block' ){
 			$shoulderMenu.css({
@@ -972,7 +958,7 @@ new (function($, window){
 		}else{
 			$shoulderMenu
 				.css({
-					'height': $header.height()
+					'height': $header.outerHeight()
 				})
 			;
 		}

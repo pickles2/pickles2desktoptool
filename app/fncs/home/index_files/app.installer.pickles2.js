@@ -37,7 +37,7 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 				'--no-interaction',
 				'pickles2/pickles2',
 				'./',
-				'dev-master'
+				'2.0.*'
 			],
 			{
 				cd: path,

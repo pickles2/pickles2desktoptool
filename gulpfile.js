@@ -7,6 +7,8 @@ var packageJson = require(__dirname+'/package.json');
 var _tasks = [
 	'provisional',
 	'client-libs',
+	'.html',
+	'.js',
 	'.css',
 	'.css.scss'
 ];
@@ -30,6 +32,22 @@ gulp.task("client-libs", function() {
 	;
 });
 
+
+// src 中の *.html を処理
+gulp.task('.html', function(){
+	gulp.src(["src/**/*.html","!src/**/*.ignore*","!src/**/*.ignore*/*"])
+		.pipe(plumber())
+		.pipe(gulp.dest( './app/' ))
+	;
+});
+
+// src 中の *.js を処理
+gulp.task('.js', function(){
+	gulp.src(["src/**/*.js","!src/**/*.ignore*","!src/**/*.ignore*/*"])
+		.pipe(plumber())
+		.pipe(gulp.dest( './app/' ))
+	;
+});
 
 // src 中の *.css.scss を処理
 gulp.task('.css.scss', function(){

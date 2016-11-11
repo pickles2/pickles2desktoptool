@@ -44,7 +44,7 @@ $ npm run build
 
 ### node and npm version
 
-- node@0.10.29
+- node@6.9.1
 - npm@3.6.0
 
 

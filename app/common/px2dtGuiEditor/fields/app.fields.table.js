@@ -260,7 +260,7 @@ window.px2dtGuiEditor.fieldDefinitions.table = _.defaults( new (function( px, px
 		cmd += '&cell_renderer=' + px.php.urlencode( data.cell_renderer );
 		cmd += '&renderer=' + px.php.urlencode( data.renderer );
 		cmd += '"';
-		data.output = px.execSync( cmd );
+		data.output = px.execSync( cmd ); // ← node@6.9.1 では動かない模様。
 		try {
 			data.output = JSON.parse(data.output+'');
 		} catch (e) {

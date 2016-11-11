@@ -178,7 +178,7 @@ window.contApp = new (function(px, $){
 							ary_paths_ignore = [ary_paths_ignore];
 						}
 
-						var is_keep_cache = ( $body.find('input[name=keep_cache]:checked').val() ? 1 : 0 );
+						var keep_cache = ( $body.find('input[name=keep_cache]:checked').val() ? 1 : 0 );
 
 						px.closeDialog();
 
@@ -189,7 +189,7 @@ window.contApp = new (function(px, $){
 								"path_region": path_region,
 								"paths_region": ary_paths_region,
 								"paths_ignore": ary_paths_ignore,
-								"is_keep_cache": is_keep_cache,
+								"keep_cache": keep_cache,
 								"complete": function(){
 									px.message( 'パブリッシュを完了しました。' );
 									init();

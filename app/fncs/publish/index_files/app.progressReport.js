@@ -24,13 +24,13 @@ window.contApp.progressReport = new (function(px, $){
 
 		var phase;
 
-		console.log(opts);
+		// console.log(opts);
 
 		_pj.px2proj.publish({
 			"path_region": opts.path_region,
 			"paths_region": opts.paths_region,
 			"paths_ignore": opts.paths_ignore,
-			"is_keep_cache": opts.is_keep_cache,
+			"keep_cache": opts.keep_cache,
 			"success": function(data){
 				// console.log(data);
 				try {

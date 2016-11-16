@@ -782,6 +782,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				'appMode': 'desktop', // 'web' or 'desktop'. default to 'web'
 				'entryScript': require('path').resolve( _pj.get('path'), _pj.get('entry_script') ),
 				'customFields': _pj.mkBroccoliCustomFieldOptionBackend() ,
+				'customFieldsIncludePath': _pj.mkBroccoliCustomFieldIncludePathOptionBackend() ,
 				'log': function(msg){
 					px.log(msg);
 				},
@@ -865,6 +866,29 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			}
 		} catch (e) {
 		}
+
+		return rtn;
+	}
+	/**
+	 * px2cdのカスタムフィールドインプルードパスオプションを生成する (backend)
+	 */
+	this.mkBroccoliCustomFieldIncludePathOptionBackend = function(){
+		var rtn = [];
+		var entryScript = _path.resolve( this.get('path') + '/' + this.get('entry_script') );
+
+		var confCustomFields = [];
+		try {
+			var confCustomFields = this.getConfig().plugins.px2dt.guieditor.custom_fields;
+			for(var fieldName in confCustomFields){
+				if( confCustomFields[fieldName].frontend.file && confCustomFields[fieldName].frontend.function ){
+					var pathJs = _path.resolve(entryScript, '..', confCustomFields[fieldName].frontend.file);
+					rtn.push( 'file://'+pathJs );
+				}
+			}
+
+		} catch (e) {
+		}
+		console.log(rtn);
 
 		return rtn;
 	}

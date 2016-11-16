@@ -16542,8 +16542,10 @@ module.exports = function(px2ce){
 					{
 						'api': 'loadCustomFieldsClientSideLibs'
 					},
-					function(binJs){
-						$('body').append(binJs);
+					function(scripts){
+						for(var i in scripts){
+							$('body').append(scripts[i]);
+						}
 						rlv();
 					}
 				);

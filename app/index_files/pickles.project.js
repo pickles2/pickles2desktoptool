@@ -888,7 +888,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 
 		} catch (e) {
 		}
-		console.log(rtn);
+		// console.log(rtn);
 
 		return rtn;
 	}

@@ -94,10 +94,6 @@ new (function($, window){
 	var _it79 = require('iterate79');
 	this.it79 = _it79;
 
-	// var _execSync = require('exec-sync');
-	var _execSync = require('execsyncs')
-	this.execSync = _execSync;
-
 	var _nw_gui = require('nw.gui');
 	var _appName = _packageJson.window.title;
 	window.document.title = _appName;

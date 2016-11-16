@@ -162,15 +162,9 @@ window.contApp = new (function(px, $){
 							alert('パブリッシュ対象が指定されていません。1件以上指定してください。');
 							return true;
 						}
-						var region = ary_paths_region.shift();
-						if( typeof(ary_paths_region) == typeof([]) ){
-							for( var i in ary_paths_region ){
-								str_paths_region += '&paths_region[]='+px.php.urlencode(ary_paths_region[i]);
-							}
-						}
+						var path_region = ary_paths_region.shift();
 
 						var str_paths_ignore_val = $body.find('textarea[name=paths_ignore]').val();
-						// alert(str_paths_ignore_val);
 						var str_paths_ignore = '';
 						var ary_paths_ignore = str_paths_ignore_val.split(new RegExp('\r\n|\r|\n','g'));
 						for( var i in ary_paths_ignore ){
@@ -180,34 +174,22 @@ window.contApp = new (function(px, $){
 								delete(ary_paths_ignore[i]);
 							}
 						}
-						// console.log(ary_paths_ignore);
 						if( typeof(ary_paths_ignore) == typeof('') ){
 							ary_paths_ignore = [ary_paths_ignore];
 						}
-						if( typeof(ary_paths_ignore) == typeof([]) ){
-							for( var i in ary_paths_ignore ){
-								str_paths_ignore += '&paths_ignore[]='+px.php.urlencode(ary_paths_ignore[i]);
-							}
-						}
-						// alert(str_paths_ignore);
 
-						var is_keep_cache = $body.find('input[name=keep_cache]:checked').val();
-						// console.log(is_keep_cache);
-						str_keep_cache = (is_keep_cache ? '&keep_cache=1' : '')
-
+						var keep_cache = ( $body.find('input[name=keep_cache]:checked').val() ? 1 : 0 );
 
 						px.closeDialog();
 
-						console.log('/?PX=publish.run&path_region=' + px.php.urlencode(region) + str_paths_region + str_paths_ignore);
 						_this.progressReport.init(
 							_this,
 							$cont,
 							{
-								"spawnCmdOpts": [
-									_pj.get('path')+'/'+_pj.get('entry_script') ,
-									'/?PX=publish.run&path_region=' + px.php.urlencode(region) + str_paths_region + str_paths_ignore + str_keep_cache
-								] ,
-								"cmdCd": _pj.get('path'),
+								"path_region": path_region,
+								"paths_region": ary_paths_region,
+								"paths_ignore": ary_paths_ignore,
+								"keep_cache": keep_cache,
 								"complete": function(){
 									px.message( 'パブリッシュを完了しました。' );
 									init();

@@ -109,6 +109,7 @@ var nw = new NwBuilder({
 		return rtn;
 	})(packageJson) , // use the glob format
 	version: 'v0.12.3',// <- version number of node-webkit
+	flavor: 'sdk',
 	macIcns: './app/common/images/px2-osx.icns',
 	winIco: './app/common/images/px2-win.ico',
 	zip: false,

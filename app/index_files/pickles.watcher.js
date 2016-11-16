@@ -31,6 +31,12 @@ module.exports = function( px ){
 		_pathHomedir = px.path.resolve(pj.get('path')+'/'+pj.get('home_dir'));
 		this.stop();
 
+		if( !px.utils.isDirectory( _targetPath ) ){
+			// ディレクトリが存在しないなら、監視は行わない。
+			console.log('対象ディレクトリが存在しないため、 fs.watch を起動しません。', _targetPath);
+			return;
+		}
+
 		// console.log(pj.get('path'));
 		_watcher = px.fs.watch(
 			_targetPath,

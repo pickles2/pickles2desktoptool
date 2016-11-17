@@ -237,28 +237,33 @@ window.contApp = new (function(){
 			title: 'プロジェクト情報を編集',
 			body: $form ,
 			buttons: [
-				$('<button>').text('OK').click( function(){
-					pj
-						.set('name', $form.find('[name=pj_name]').val())
-						.set('home_dir', $form.find('[name=pj_home_dir]').val())
-						.set('entry_script', $form.find('[name=pj_entry_script]').val())
-						.set('vcs', $form.find('[name=pj_vcs]').val())
-					;
-					if( $form.find('[name=pj_path]').val().length ){
+				$('<button>')
+					.text('OK')
+					.addClass('px2-btn--primary')
+					.click( function(){
 						pj
-							.set('path', $form.find('[name=pj_path]').val())
+							.set('name', $form.find('[name=pj_name]').val())
+							.set('home_dir', $form.find('[name=pj_home_dir]').val())
+							.set('entry_script', $form.find('[name=pj_entry_script]').val())
+							.set('vcs', $form.find('[name=pj_vcs]').val())
 						;
+						if( $form.find('[name=pj_path]').val().length ){
+							pj
+								.set('path', $form.find('[name=pj_path]').val())
+							;
 
-					}
-					px.save( function(){
+						}
+						px.save( function(){
+							px.closeDialog();
+							px.message('プロジェクト情報を更新しました。');
+							px.subapp();
+						} );
+					} ) ,
+				$('<button>')
+					.text('Cancel')
+					.click( function(){
 						px.closeDialog();
-						px.message('プロジェクト情報を更新しました。');
-						px.subapp();
-					} );
-				} ) ,
-				$('<button>').text('Cancel').click( function(){
-					px.closeDialog();
-				} )
+					} )
 			]
 		} );
 	}

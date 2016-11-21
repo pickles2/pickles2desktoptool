@@ -50,7 +50,7 @@ $ npm run build
 
 ## 更新履歴 - Change log
 
-### Pickles 2 Desktop Tool 2.0.0-beta.15 (2016年??月??日)
+### Pickles 2 Desktop Tool 2.0.0-beta.15 (2016年11月21日)
 
 - ハンバーガーメニューに「コマンドラインで開く」を追加。
 - GUI編集で、プロジェクト固有のカスタムフィールドを追加できる機能 `custom_fields` を追加。

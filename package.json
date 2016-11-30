@@ -21,7 +21,7 @@
     "file-stream-rotator": "0.0.7",
     "fs-extra": "^0.24.0",
     "glob": "^5.0.10",
-    "iterate79": "0.0.1",
+    "iterate79": "^1.0.0",
     "jquery": "^2.1.4",
     "langbank": "0.0.2",
     "marked": "0.3.*",

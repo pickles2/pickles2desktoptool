@@ -19,3 +19,6 @@
 [submodule "submodules/node-px2agent"]
 	path = submodules/node-px2agent
 	url = https://github.com/pickles2/node-px2agent.git
+[submodule "submodules/node-broccoli-processor"]
+	path = submodules/node-broccoli-processor
+	url = https://github.com/pickles2/node-broccoli-processor.git

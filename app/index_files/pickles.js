@@ -285,6 +285,7 @@ new (function($, window){
 						{"label":px.lb.get('menu.preview'),           "cond":"pxStandby",          "area":"shoulder", "app":"fncs/preview/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 						{"label":px.lb.get('menu.moveContents'), "cond":"pxStandby",          "area":"shoulder", "app":"fncs/movecontents/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 						{"label":px.lb.get('menu.search'),               "cond":"pxStandby",          "area":"shoulder", "app":"fncs/search/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+						{"label":px.lb.get('menu.contentsProcessor'),"cond":"pxStandby",          "area":"shoulder", "app":"fncs/contents_processor/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 						{"label":px.lb.get('menu.updateGuiContents'),"cond":"pxStandby",          "area":"shoulder", "app":"fncs/rebuild_guiedit_contents/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 						{"label":px.lb.get('menu.clearcache'),     "cond":"pxStandby",          "area":"shoulder", "app":"fncs/clearcache/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 						// {"label":"Reload(dev)",          "cond":"always", "cb": function(){window.location.href='index.html?';}} ,

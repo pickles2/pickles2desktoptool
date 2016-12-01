@@ -33,6 +33,30 @@
 		<link rel="stylesheet" href="./index_files/style.css" type="text/css" />
 		<script src="./index_files/script.js"></script>
 
+		<script id="template-main-form" type="text/template">
+			<p>この処理は、たくさんのファイルに一度に変更を加えます。</p>
+			<p>すべてのファイルを 実行の前に状態をコミットし、実行後にもコミットすることを強くお勧めします。</p>
+			<p><code>console.log()</code> に送った情報は、 デベロッパーツール 上で確認することができます。</p>
+			<form action="javascript:;" method="get">
+				<h2>ソース加工スクリプト</h2>
+				<p>srcProcessor = function( html, next ){</p>
+				<textarea name="script_source_processor" class="form-control">console.log(html);
+next();</textarea>
+				<p>}</p>
+				<h2>インスタンス加工スクリプト</h2>
+				<p>function( editor ){</p>
+				<textarea name="script_instance_processor" class="form-control">var data = editor.getInstance();
+editor.log(data);
+editor.setInstance(data);
+editor.done();</textarea>
+				<p>}</p>
+				<p><button class="px2-btn px2-btn--block">すべてのコンテンツを一括加工する</button></p>
+			</form>
+			<div>
+				<pre class="cont_console"></pre>
+			</div>
+		</script>
+
 	</head>
 	<body>
 		<div class="container">

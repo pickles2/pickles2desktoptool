@@ -16,7 +16,7 @@ window.contApp = new (function(px){
 		$cont
 			.append( $btn
 				.click( function(){ rebuild(this); } )
-				.text('すべてのGUI編集コンテンツを一括再構成する')
+				.text('すべてのコンテンツを一括加工する')
 			)
 			.append( $pre
 				.addClass( 'cont_console' )
@@ -43,6 +43,7 @@ window.contApp = new (function(px){
 
 					px.utils.iterateFnc([
 						function(it2, arg2){
+							// HTMLコンテンツのみ抽出
 							var procType = pj.get_path_proc_type( arg2.pageInfo.path );
 							$pre.text( $pre.text() + ' -> ' + procType );
 							switch( procType ){
@@ -58,6 +59,7 @@ window.contApp = new (function(px){
 							}
 						} ,
 						function(it2, arg2){
+							// そのうち、GUI編集コンテンツのみ抽出
 							pj.getPageContentEditorMode( arg2.pageInfo.path, function(procType){
 								$pre.text( $pre.text() + ' -> ' + procType );
 								switch( procType ){
@@ -73,6 +75,14 @@ window.contApp = new (function(px){
 							} );
 						} ,
 						function(it2, arg2){
+							// broccoli-processor オブジェクトを生成する
+							pj.createBroccoliProcessor( arg2.pageInfo.path, function(broccoliProcessor){
+								console.log(broccoliProcessor);
+								it2.next(arg2);
+							} );
+						} ,
+						function(it2, arg2){
+							// broccoli コンテンツを再生成する
 							pj.buildGuiEditContent( arg2.pageInfo.path, function(result){
 								if(result){
 									$pre.text( $pre.text() + ' -> done' );

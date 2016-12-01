@@ -39,16 +39,18 @@
 			<p><code>console.log()</code> に送った情報は、 デベロッパーツール 上で確認することができます。</p>
 			<form action="javascript:;" method="get">
 				<h2>ソース加工スクリプト</h2>
-				<p>srcProcessor = function( html, next ){</p>
-				<textarea name="script_source_processor" class="form-control">console.log(html);
-next();</textarea>
+				<p>srcProcessor = function( src, type, next ){</p>
+				<textarea name="script_source_processor" class="form-control">console.log(type, src);
+next(src);</textarea>
 				<p>}</p>
 				<h2>インスタンス加工スクリプト</h2>
 				<p>function( editor ){</p>
 				<textarea name="script_instance_processor" class="form-control">var data = editor.getInstance();
 editor.log(data);
-editor.setInstance(data);
-editor.done();</textarea>
+srcProcessor(data, 'html', function(afterData){
+	editor.setInstance(data);
+	editor.done();
+});</textarea>
 				<p>}</p>
 				<p><button class="px2-btn px2-btn--block">すべてのコンテンツを一括加工する</button></p>
 			</form>

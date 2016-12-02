@@ -34,24 +34,45 @@
 		<script src="./index_files/script.js"></script>
 
 		<script id="template-main-form" type="text/template">
-			<p>この処理は、たくさんのファイルに一度に変更を加えます。</p>
-			<p>すべてのファイルを 実行の前に状態をコミットし、実行後にもコミットすることを強くお勧めします。</p>
-			<p><code>console.log()</code> に送った情報は、 デベロッパーツール 上で確認することができます。</p>
+			<ul>
+				<li>この処理は、たくさんのファイルに一度に変更を加えます。</li>
+				<li>すべてのファイルを 実行の前に状態をコミットし、実行後にもコミットすることを強くお勧めします。</li>
+				<li><code>console.log()</code> に送った情報は、 デベロッパーツール 上で確認することができます。</li>
+			<ul>
 			<form action="javascript:;" method="get">
 				<h2>ソース加工スクリプト</h2>
-				<p>srcProcessor = function( src, type, next ){</p>
-				<textarea name="script_source_processor" class="form-control">console.log(type, src);
-next(src);</textarea>
-				<p>}</p>
+				<pre><code>function srcProcessor( src, type, next ){
+	var supply = {
+		// supplying libs
+		'cheerio': require('cheerio')
+	};
+<textarea name="script_source_processor" class="form-control">/** source processor */
+console.log(type, src);
+
+// ここに加工するコードを書く
+var $ = supply.cheerio.load(src, {decodeEntities: false});
+$('.dom-selector')
+	.css({
+		'border': '1px solid #000'
+	})
+;
+src = $.html();
+
+next(src);</textarea>}</code></pre>
 				<h2>インスタンス加工スクリプト</h2>
-				<p>function( editor ){</p>
-				<textarea name="script_instance_processor" class="form-control">var data = editor.getInstance();
-editor.log(data);
-srcProcessor(data, 'html', function(afterData){
-	editor.setInstance(data);
+				<pre><code>function( editor ){
+<textarea name="script_instance_processor" class="form-control">/** instance processor */
+var data = editor.getInstance();
+if( typeof(data.fields.main) != typeof('') ){
 	editor.done();
-});</textarea>
-				<p>}</p>
+}else{
+	editor.log(data);
+	srcProcessor(data.fields.main, 'html', function(afterData){
+		data.fields.main = afterData;
+		editor.setInstance(data);
+		editor.done();
+	});
+}</textarea>}</code></pre>
 				<p><button class="px2-btn px2-btn--block">すべてのコンテンツを一括加工する</button></p>
 			</form>
 			<div>

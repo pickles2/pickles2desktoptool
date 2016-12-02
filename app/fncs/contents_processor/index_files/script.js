@@ -128,13 +128,34 @@ window.contApp = new (function(px){
 									case 'html':
 									case 'md':
 									default:
-										srcProcessor( 'src', procType, function(after){
-											$pre.text( $pre.text() + ' -> done' );
-											$pre.text( $pre.text() + "\n" );
-											it2.next(arg2);
-										} );
-										break;
+										pj.px2proj.get_path_content(arg2.pageInfo.path, function(contPath){
+											if( !contPath ){
+												console.log( 'content path of ' + arg2.pageInfo.path + ' is ' + contPath );
+												$pre.text( $pre.text() + ' -> ERROR' );
+												$pre.text( $pre.text() + "\n" );
+												it2.next(arg2);
+												return;
+											}
 
+											pj.px2proj.get_path_controot(function(contRoot){
+												pj.px2proj.get_path_docroot(function(docRoot){
+													var _contentsPath = px.path.resolve(docRoot + contRoot + contPath);
+													var src = px.fs.readFileSync( _contentsPath ).toString();
+													srcProcessor( src, procType, function(after){
+														px.fs.writeFile( _contentsPath, after, {}, function(err){
+															if(err){
+																console.error( err );
+															}
+															$pre.text( $pre.text() + ' -> done' );
+															$pre.text( $pre.text() + "\n" );
+
+															it2.next(arg2);
+														} );
+													} );
+												});
+											});
+										});
+										break;
 								}
 							} );
 						} ,

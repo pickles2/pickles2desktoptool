@@ -62,6 +62,9 @@ new (function($, window){
 	var _px2agent = require('px2agent');
 	this.px2agent = _px2agent;
 
+	var _cheerio = require('cheerio');
+	this.cheerio = _cheerio;
+
 	var _Keypress = {};
 	this.Keypress = _Keypress;
 

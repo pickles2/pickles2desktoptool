@@ -14,7 +14,7 @@ window.contApp = new (function(px){
 		var html = $('#template-main-form').html();
 		$cont.html(html);
 		$btn = $cont.find('button');
-		$pre = $cont.find('pre');
+		$pre = $cont.find('pre.cont_console');
 
 		$btn
 			.click( function(){
@@ -49,6 +49,10 @@ window.contApp = new (function(px){
 		// console.log(script_source_processor, script_instance_processor);
 
 		function srcProcessor( src, type, next ){
+			var supply = {
+				// supplying libs
+				'cheerio': px.cheerio
+			};
 			try {
 				eval(script_source_processor.toString());
 			} catch (e) {

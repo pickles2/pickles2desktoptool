@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>コンテンツを一括加工 - Pickles 2 Desktop Tool</title>
+
+		<meta name="viewport" content="width=device-width" />
+		<meta name="keywords" content="" />
+		<meta name="description" content="" />
+
+		<!-- jQuery -->
+		<script src="../../common/scripts/jquery-1.11.1.min.js" type="text/javascript"></script>
+
+		<!-- common funcs -->
+		<script src="../../common/scripts/common_funcs.js" type="text/javascript"></script>
+
+		<!-- jQuery UI -->
+		<link rel="stylesheet" href="../../common/jquery-ui/jquery-ui.min.css">
+		<script src="../../common/jquery-ui/jquery-ui.min.js"></script>
+
+		<!-- Bootstrap -->
+		<link rel="stylesheet" href="../../common/bootstrap/css/bootstrap.min.css">
+		<script src="../../common/bootstrap/js/bootstrap.min.js"></script>
+
+		<!-- Pickles 2 Style -->
+		<link rel="stylesheet" href="../../common/px2style/dist/styles.css" charset="utf-8" />
+		<script src="../../common/px2style/dist/scripts.js" charset="utf-8"></script>
+
+		<!-- normalize & FESS -->
+		<link rel="stylesheet" href="../../common/styles/contents.css" type="text/css" />
+
+		<!-- Local Resources -->
+		<link rel="stylesheet" href="./index_files/style.css" type="text/css" />
+		<script src="./index_files/script.js"></script>
+
+		<script id="template-main-form" type="text/template">
+			<ul>
+				<li>この処理は、たくさんのファイルに一度に変更を加えます。</li>
+				<li>すべてのファイルを 実行の前に状態をコミットし、実行後にもコミットすることを強くお勧めします。</li>
+				<li><code>console.log()</code> に送った情報は、 デベロッパーツール 上で確認することができます。</li>
+			</ul>
+			<form action="javascript:;" method="get">
+				<h2>ソース加工スクリプト</h2>
+				<pre><code>function srcProcessor( src, type, next ){
+	var supply = {
+		// supplying libs
+		'cheerio': require('cheerio')
+	};
+<textarea name="script_source_processor" class="form-control">/** source processor */
+console.log(type, src);
+
+// ここに加工するコードを書く
+var $ = supply.cheerio.load(src, {decodeEntities: false});
+$('.dom-selector')
+	.css({
+		'border': '1px solid #000'
+	})
+;
+src = $.html();
+
+next(src);</textarea>}</code></pre>
+				<h2>インスタンス加工スクリプト</h2>
+				<pre><code>function( editor ){
+<textarea name="script_instance_processor" class="form-control">/** instance processor */
+var data = editor.getInstance();
+if( typeof(data.fields.main) != typeof('') ){
+	editor.done();
+}else{
+	editor.log(data);
+	srcProcessor(data.fields.main, 'html', function(afterData){
+		data.fields.main = afterData;
+		editor.setInstance(data);
+		editor.done();
+	});
+}</textarea>}</code></pre>
+				<p><button class="px2-btn px2-btn--block">すべてのコンテンツを一括加工する</button></p>
+			</form>
+			<div>
+				<pre class="cont_console"></pre>
+			</div>
+		</script>
+
+	</head>
+	<body>
+		<div class="container">
+			<h1>コンテンツを一括加工</h1>
+		</div>
+		<div class="container">
+			<div class="contents">
+				<p>...</p>
+			</div>
+		</div>
+	</body>
+</html>

@@ -870,7 +870,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		return rtn;
 	}
 	/**
-	 * px2cdのカスタムフィールドインプルードパスオプションを生成する (backend)
+	 * px2cdのカスタムフィールドインクルードパスオプションを生成する (backend)
 	 */
 	this.mkBroccoliCustomFieldIncludePathOptionBackend = function(){
 		var rtn = [];
@@ -891,6 +891,24 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		// console.log(rtn);
 
 		return rtn;
+	}
+
+	/**
+	 * broccoli-processor オブジェクトを生成する
+	 * @param  {Function} callback [description]
+	 * @return {Void}            [description]
+	 */
+	this.createBroccoliProcessor = function( page_path, callback ){
+		callback = callback || function(){};
+		var BroccoliProcessor = require('broccoli-processor');
+
+		this.createPickles2ContentsEditorServer( page_path, function(px2ce){
+			px2ce.createBroccoli(function(broccoli){
+				var broccoliProcessor = new BroccoliProcessor(broccoli, {});
+				callback( broccoliProcessor );
+			});
+		} );
+		return;
 	}
 
 	/**

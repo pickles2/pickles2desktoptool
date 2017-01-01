@@ -20,6 +20,7 @@ window.contApp = new (function(px){
 			.click( function(){
 				var btn = this;
 				var $form = $cont.find('form');
+				var target_path = $form.find('input[name=target_path]').val();
 				var script_source_processor = $form.find('textarea[name=script_source_processor]').val();
 				var script_instance_processor = $form.find('textarea[name=script_instance_processor]').val();
 				$pre.text('');
@@ -27,6 +28,7 @@ window.contApp = new (function(px){
 				$form.find('textarea[name=script_source_processor]').attr('disabled', 'disabled');
 				$form.find('textarea[name=script_instance_processor]').attr('disabled', 'disabled');
 				processor(
+					target_path,
 					script_source_processor,
 					script_instance_processor,
 					function(){
@@ -45,7 +47,7 @@ window.contApp = new (function(px){
 	}
 
 
-	var processor = function(script_source_processor, script_instance_processor, callback){
+	var processor = function(target_path, script_source_processor, script_instance_processor, callback){
 		// console.log(script_source_processor, script_instance_processor);
 
 		function srcProcessor( src, type, next ){
@@ -72,6 +74,28 @@ window.contApp = new (function(px){
 				px.it79.fnc(
 					{"pageInfo": sitemapRow},
 					[
+						function(it2, arg2){
+							// 対象外のパスだったらここまで
+							// console.log(arg2.pageInfo.content);
+							var regx = px.utils79.regexp_quote(target_path);
+							regx = regx.split('\\*').join('([\\s\\S]*)');
+							regx = '^'+regx+'$';
+							// console.log(regx);
+							try {
+								if( arg2.pageInfo.content.match(new RegExp(regx)) ){
+									it2.next(arg2);
+									return;
+								}else if( arg2.pageInfo.path.match(new RegExp(regx)) ){
+									it2.next(arg2);
+									return;
+								}
+							} catch (e) {
+							}
+							$pre.text( $pre.text() + ' -> SKIP' );
+							$pre.text( $pre.text() + "\n" );
+							it1.next();
+							// it2.next(arg2);
+						} ,
 						function(it2, arg2){
 							// HTML拡張子のみ抽出
 							var procType = pj.get_path_proc_type( arg2.pageInfo.path );

@@ -49,7 +49,8 @@
 				<pre><code>function srcProcessor( src, type, next ){
 	var supply = {
 		// supplying libs
-		'cheerio': require('cheerio')
+		'cheerio': require('cheerio'),
+		'iterate79': require('iterate79')
 	};
 <textarea name="script_source_processor" class="form-control" rows="12">/** source processor */
 next(src);</textarea>}</code></pre>
@@ -93,21 +94,71 @@ next(src);
 /** source processor */
 editor.done();
 		</script>
-		<script class="snippet-instance-processor" title="フィールド main の値をテキスト置換する" type="text/template">
+		<script class="snippet-instance-processor" title="フィールドの値をテキスト置換する" type="text/template">
 /** instance processor */
-var data = editor.getInstance();
-if( typeof(data.fields.main) != typeof('') ){
-	editor.done();
-}else{
-	editor.log(data);
+var it79 = editor.supply.iterate79;
+var broccoli = editor.getBroccoli();
+var instance = editor.getInstance();
+// console.log(instance.modId, instance.subModName);
 
-	// テキスト置換
-	srcProcessor(data.fields.main, 'html', function(afterData){
-		data.fields.main = afterData;
-		editor.setInstance(data);
-		editor.done();
-	});
-}
+broccoli.getModule(instance.modId, instance.subModName, function(mod){
+	// console.log(mod);
+
+	it79.ary(
+		mod.fields,
+		function(it1, row, fieldName){
+			// console.log(fieldName);
+			// console.log(row);
+			if( row.fieldType == 'input' ){
+				switch(row.type){
+					case 'html':
+						srcProcessor(instance.fields[fieldName], 'html', function(afterData){
+							instance.fields[fieldName] = afterData;
+							it1.next();
+						});
+						break;
+					case 'markdown':
+						srcProcessor(instance.fields[fieldName], 'md', function(afterData){
+							instance.fields[fieldName] = afterData;
+							it1.next();
+						});
+						break;
+					case 'text':
+						srcProcessor(instance.fields[fieldName], 'txt', function(afterData){
+							instance.fields[fieldName] = afterData;
+							it1.next();
+						});
+						break;
+					case 'multitext':
+						var ext = (instance.fields[fieldName].editor=='markdown'?'md':instance.fields[fieldName].editor);
+						srcProcessor(instance.fields[fieldName].src, ext, function(afterData){
+							instance.fields[fieldName].src = afterData;
+							it1.next();
+						});
+						break;
+					default:
+						it1.next();
+						return;
+				}
+				return;
+			}else if( row.fieldType == 'module' ){
+				it1.next();
+				return;
+			}else if( row.fieldType == 'loop' ){
+				it1.next();
+				return;
+			}
+
+			it1.next();
+			return;
+		},
+		function(){
+			editor.setInstance(instance);
+			editor.done();
+		}
+	);
+
+});
 		</script>
 
 	</head>

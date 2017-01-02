@@ -89,7 +89,8 @@ window.contApp = new (function(px){
 		function srcProcessor( src, type, next ){
 			var supply = {
 				// supplying libs
-				'cheerio': px.cheerio
+				'cheerio': px.cheerio,
+				'iterate79': px.it79
 			};
 			try {
 				eval(script_source_processor.toString());

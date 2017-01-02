@@ -43,6 +43,9 @@
 				<h2>パス</h2>
 				<p><input type="text" name="target_path" value="/*" class="form-control" /></p>
 				<h2>ソース加工スクリプト</h2>
+				<p><select name="sample_code_for_script_source_processor" class="form-control">
+					<option value="">サンプルコードを選択してください (注意! - 現在のコードは消去されます)</option>
+				</select></p>
 				<pre><code>function srcProcessor( src, type, next ){
 	var supply = {
 		// supplying libs
@@ -62,6 +65,9 @@ src = $.html();
 
 next(src);</textarea>}</code></pre>
 				<h2>インスタンス加工スクリプト</h2>
+				<p><select name="sample_code_for_script_instance_processor" class="form-control">
+					<option value="">サンプルコードを選択してください (注意! - 現在のコードは消去されます)</option>
+				</select></p>
 				<pre><code>function( editor ){
 <textarea name="script_instance_processor" class="form-control" rows="12">/** instance processor */
 var data = editor.getInstance();
@@ -75,7 +81,7 @@ if( typeof(data.fields.main) != typeof('') ){
 		editor.done();
 	});
 }</textarea>}</code></pre>
-				<p><button class="px2-btn px2-btn--block">すべてのコンテンツを一括加工する</button></p>
+				<p><button class="px2-btn px2-btn--primary px2-btn--block">すべてのコンテンツを一括加工する</button></p>
 			</form>
 			<div>
 				<pre class="cont_console"></pre>

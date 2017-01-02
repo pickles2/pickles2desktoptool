@@ -5,6 +5,9 @@ window.contApp = new (function(px){
 	this.pj = pj;
 	var $cont, $btn, $pre;
 
+	var $sample_code_for_script_source_processor;
+	var $sample_code_for_script_instance_processor;
+
 	/**
 	 * initialize
 	 */
@@ -15,6 +18,29 @@ window.contApp = new (function(px){
 		$cont.html(html);
 		$btn = $cont.find('button');
 		$pre = $cont.find('pre.cont_console');
+
+		$sample_code_for_script_source_processor = $('select[name=sample_code_for_script_source_processor]')
+			.on('change', function(){
+				var val = $(this).val();
+				$(this).val('');
+				$cont.find('form').find('textarea[name=script_source_processor]').val(val);
+			})
+		;
+		$sample_code_for_script_instance_processor = $('select[name=sample_code_for_script_instance_processor]')
+			.on('change', function(){
+				var val = $(this).val();
+				$(this).val('');
+				$cont.find('form').find('textarea[name=script_instance_processor]').val(val);
+			})
+		;
+		$sample_code_for_script_source_processor.append( $('<option>')
+			.attr({'value': '//test1'})
+			.text('test1')
+		);
+		$sample_code_for_script_instance_processor.append( $('<option>')
+			.attr({'value': '//test2'})
+			.text('test2')
+		);
 
 		$btn
 			.click( function(){
@@ -38,12 +64,14 @@ window.contApp = new (function(px){
 						$form.find('textarea[name=script_instance_processor]').removeAttr('disabled');
 					}
 				);
-			} );
+			} )
+		;
 		$pre
 			.css({
 				'max-height': 360,
 				'height': 360
-			});
+			})
+		;
 	}
 
 

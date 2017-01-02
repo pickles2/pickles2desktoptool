@@ -5,8 +5,8 @@ window.contApp = new (function(px){
 	this.pj = pj;
 	var $cont, $btn, $pre;
 
-	var $sample_code_for_script_source_processor;
-	var $sample_code_for_script_instance_processor;
+	var $snippet_for_script_source_processor;
+	var $snippet_for_script_instance_processor;
 
 	/**
 	 * initialize
@@ -19,28 +19,36 @@ window.contApp = new (function(px){
 		$btn = $cont.find('button');
 		$pre = $cont.find('pre.cont_console');
 
-		$sample_code_for_script_source_processor = $('select[name=sample_code_for_script_source_processor]')
+		$snippet_for_script_source_processor = $('select[name=snippet_for_script_source_processor]')
 			.on('change', function(){
 				var val = $(this).val();
 				$(this).val('');
 				$cont.find('form').find('textarea[name=script_source_processor]').val(val);
 			})
 		;
-		$sample_code_for_script_instance_processor = $('select[name=sample_code_for_script_instance_processor]')
+		$snippet_for_script_instance_processor = $('select[name=snippet_for_script_instance_processor]')
 			.on('change', function(){
 				var val = $(this).val();
 				$(this).val('');
 				$cont.find('form').find('textarea[name=script_instance_processor]').val(val);
 			})
 		;
-		$sample_code_for_script_source_processor.append( $('<option>')
-			.attr({'value': '//test1'})
-			.text('test1')
-		);
-		$sample_code_for_script_instance_processor.append( $('<option>')
-			.attr({'value': '//test2'})
-			.text('test2')
-		);
+
+		$('.snippet-source-processor').each(function(e){
+			var $this = $(this);
+			$snippet_for_script_source_processor.append( $('<option>')
+				.attr({'value': px.utils79.trim($this.html())})
+				.text($this.attr('title'))
+			);
+		});
+
+		$('.snippet-instance-processor').each(function(e){
+			var $this = $(this);
+			$snippet_for_script_instance_processor.append( $('<option>')
+				.attr({'value': px.utils79.trim($this.html())})
+				.text($this.attr('title'))
+			);
+		});
 
 		$btn
 			.click( function(){
@@ -170,8 +178,8 @@ window.contApp = new (function(px){
 													}
 												)
 												.run(function(logs){
-													console.log(arg2.pageInfo.path, logs);
-													console.log('replace done!');
+													// console.log(arg2.pageInfo.path, logs);
+													// console.log('replace done!');
 													$pre.text( $pre.text() + ' -> done' );
 													$pre.text( $pre.text() + "\n" );
 													it2.next(arg2);
@@ -186,7 +194,7 @@ window.contApp = new (function(px){
 									default:
 										pj.px2proj.get_path_content(arg2.pageInfo.path, function(contPath){
 											if( !contPath ){
-												console.log( 'content path of ' + arg2.pageInfo.path + ' is ' + contPath );
+												// console.log( 'content path of ' + arg2.pageInfo.path + ' is ' + contPath );
 												$pre.text( $pre.text() + ' -> ERROR' );
 												$pre.text( $pre.text() + "\n" );
 												it2.next(arg2);

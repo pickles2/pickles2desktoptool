@@ -59,6 +59,7 @@ window.contApp = new (function(px){
 				var script_instance_processor = $form.find('textarea[name=script_instance_processor]').val();
 				$pre.text('');
 				$(btn).attr('disabled', 'disabled');
+				$form.find('input,select,textarea').attr('disabled', 'disabled');
 				$form.find('textarea[name=script_source_processor]').attr('disabled', 'disabled');
 				$form.find('textarea[name=script_instance_processor]').attr('disabled', 'disabled');
 				processor(
@@ -68,6 +69,7 @@ window.contApp = new (function(px){
 					function(){
 						$pre.text( $pre.text() + 'completed!' );
 						$(btn).removeAttr('disabled').focus();
+						$form.find('input,select,textarea').removeAttr('disabled', 'disabled');
 						$form.find('textarea[name=script_source_processor]').removeAttr('disabled');
 						$form.find('textarea[name=script_instance_processor]').removeAttr('disabled');
 					}

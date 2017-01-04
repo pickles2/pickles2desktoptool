@@ -34,6 +34,14 @@
 		<link rel="stylesheet" href="./index_files/style.css" type="text/css" />
 		<script src="./index_files/app.js"></script>
 
+		<script type="text/template" id="template-module-list-package">
+<ul class="cont_list">
+<% for( var packageName in modules ){ %>
+<li><a href="javascript:;"><%= packageName %><br /><%= modules[packageName] %></a></li>
+<% } %>
+</ul>
+		</script>
+
 	</head>
 	<body>
 		<div class="container">

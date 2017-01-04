@@ -52,15 +52,13 @@
 		'cheerio': require('cheerio'),
 		'iterate79': require('iterate79')
 	};
-<textarea name="script_source_processor" class="form-control" rows="12">/** source processor */
-next(src);</textarea>}</code></pre>
+<textarea name="script_source_processor" class="form-control" rows="12">next(src);</textarea>}</code></pre>
 				<h2>インスタンス加工スクリプト</h2>
 				<p><select name="snippet_for_script_instance_processor" class="form-control">
 					<option value="">サンプルコードを選択してください (注意! - 現在のコードは消去されます)</option>
 				</select></p>
 				<pre><code>function( editor ){
-<textarea name="script_instance_processor" class="form-control" rows="12">/** source processor */
-editor.done();</textarea>}</code></pre>
+<textarea name="script_instance_processor" class="form-control" rows="12">editor.done();</textarea>}</code></pre>
 				<p><button class="px2-btn px2-btn--primary px2-btn--block">すべてのコンテンツを一括加工する</button></p>
 			</form>
 			<div>
@@ -70,11 +68,24 @@ editor.done();</textarea>}</code></pre>
 
 		<!-- ************************** snippets for source processor ************************** -->
 		<script class="snippet-source-processor" title="なにもしない" type="text/template">
-/** source processor */
+next(src);
+		</script>
+		<script class="snippet-source-processor" title="文字列の単純置換" type="text/template">
+var before = 'mojimoji';
+var after = 'mohimohi';
+
+var tmpAry = src.split(before);
+src = tmpAry.join(after);
+next(src);
+		</script>
+		<script class="snippet-source-processor" title="文字列の正規表現による置換" type="text/template">
+var before = /(mo)ji(mo)ji/g;
+var after = '$1hi$2hi';
+
+src = src.replace(before, after);
 next(src);
 		</script>
 		<script class="snippet-source-processor" title="テキストをDOM置換する" type="text/template">
-/** source processor */
 console.log(type, src);
 
 // ここに加工するコードを書く
@@ -91,11 +102,9 @@ next(src);
 
 		<!-- ************************** snippets for instance processor ************************** -->
 		<script class="snippet-instance-processor" title="なにもしない" type="text/template">
-/** source processor */
 editor.done();
 		</script>
 		<script class="snippet-instance-processor" title="フィールドの値をテキスト置換する" type="text/template">
-/** instance processor */
 var it79 = editor.supply.iterate79;
 var broccoli = editor.getBroccoli();
 var instance = editor.getInstance();

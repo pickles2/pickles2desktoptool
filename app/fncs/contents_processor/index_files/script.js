@@ -7,6 +7,7 @@ window.contApp = new (function(px){
 
 	var $snippet_for_script_source_processor;
 	var $snippet_for_script_instance_processor;
+	var CodeMirrorInstans = {};
 
 	/**
 	 * initialize
@@ -24,6 +25,7 @@ window.contApp = new (function(px){
 				var val = $(this).val();
 				$(this).val('');
 				$cont.find('form').find('textarea[name=script_source_processor]').val(val);
+				CodeMirrorInstans['source_processor'].setValue(val);
 			})
 		;
 		$snippet_for_script_instance_processor = $('select[name=snippet_for_script_instance_processor]')
@@ -31,8 +33,25 @@ window.contApp = new (function(px){
 				var val = $(this).val();
 				$(this).val('');
 				$cont.find('form').find('textarea[name=script_instance_processor]').val(val);
+				CodeMirrorInstans['instance_processor'].setValue(val);
 			})
 		;
+
+		CodeMirrorInstans['source_processor'] = window.textEditor.attachTextEditor(
+			$cont.find('form').find('textarea[name=script_source_processor]').get(0),
+			'js',
+			{
+				save: function(){}
+			}
+		);
+		CodeMirrorInstans['instance_processor'] = window.textEditor.attachTextEditor(
+			$cont.find('form').find('textarea[name=script_instance_processor]').get(0),
+			'js',
+			{
+				save: function(){}
+			}
+		);
+
 
 		$('.snippet-source-processor').each(function(e){
 			var $this = $(this);
@@ -59,9 +78,9 @@ window.contApp = new (function(px){
 				var script_instance_processor = $form.find('textarea[name=script_instance_processor]').val();
 				$pre.text('');
 				$(btn).attr('disabled', 'disabled');
+				CodeMirrorInstans['source_processor'].setOption("readonly", "nocursor");
+				CodeMirrorInstans['instance_processor'].setOption("readonly", "nocursor");
 				$form.find('input,select,textarea').attr('disabled', 'disabled');
-				$form.find('textarea[name=script_source_processor]').attr('disabled', 'disabled');
-				$form.find('textarea[name=script_instance_processor]').attr('disabled', 'disabled');
 				processor(
 					target_path,
 					script_source_processor,
@@ -69,9 +88,9 @@ window.contApp = new (function(px){
 					function(){
 						$pre.text( $pre.text() + 'completed!' );
 						$(btn).removeAttr('disabled').focus();
+						CodeMirrorInstans['source_processor'].setOption("readonly", false);
+						CodeMirrorInstans['instance_processor'].setOption("readonly", false);
 						$form.find('input,select,textarea').removeAttr('disabled', 'disabled');
-						$form.find('textarea[name=script_source_processor]').removeAttr('disabled');
-						$form.find('textarea[name=script_instance_processor]').removeAttr('disabled');
 					}
 				);
 			} )

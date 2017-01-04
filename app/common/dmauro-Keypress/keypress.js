@@ -18,7 +18,7 @@ limitations under the License.
 Keypress is a robust keyboard input capturing Javascript utility
 focused on input for games.
 
-version 2.1.0
+version 2.1.3
  */
 
 
@@ -91,6 +91,12 @@ Combo options available and their defaults:
   keypress.Listener = (function() {
     function Listener(element, defaults) {
       var attach_handler, property, value;
+      if ((typeof jQuery !== "undefined" && jQuery !== null) && element instanceof jQuery) {
+        if (element.length !== 1) {
+          _log_error("Warning: your jQuery selector should have exactly one object.");
+        }
+        element = element[0];
+      }
       this.should_suppress_event_defaults = false;
       this.should_force_event_defaults = false;
       this.sequence_delay = 800;
@@ -156,8 +162,8 @@ Combo options available and their defaults:
     };
 
     Listener.prototype._bug_catcher = function(e) {
-      var _ref;
-      if (_metakey === "cmd" && __indexOf.call(this._keys_down, "cmd") >= 0 && ((_ref = _convert_key_to_readable(e.keyCode)) !== "cmd" && _ref !== "shift" && _ref !== "alt" && _ref !== "caps" && _ref !== "tab")) {
+      var _ref, _ref1;
+      if (_metakey === "cmd" && __indexOf.call(this._keys_down, "cmd") >= 0 && ((_ref = _convert_key_to_readable((_ref1 = e.keyCode) != null ? _ref1 : e.key)) !== "cmd" && _ref !== "shift" && _ref !== "alt" && _ref !== "caps" && _ref !== "tab")) {
         return this._receive_input(e, false);
       }
     };
@@ -389,6 +395,9 @@ Combo options available and their defaults:
           }
         }
         if (match) {
+          if (combo.is_exclusive) {
+            this._sequence = [];
+          }
           return combo;
         }
       }
@@ -396,14 +405,14 @@ Combo options available and their defaults:
     };
 
     Listener.prototype._receive_input = function(e, is_keydown) {
-      var key;
+      var key, _ref;
       if (this._prevent_capture) {
         if (this._keys_down.length) {
           this._keys_down = [];
         }
         return;
       }
-      key = _convert_key_to_readable(e.keyCode);
+      key = _convert_key_to_readable((_ref = e.keyCode) != null ? _ref : e.key);
       if (!is_keydown && !this._keys_down.length && (key === "alt" || key === _metakey)) {
         return;
       }
@@ -650,7 +659,8 @@ Combo options available and their defaults:
       return this.register_combo({
         keys: keys,
         on_keydown: callback,
-        is_sequence: true
+        is_sequence: true,
+        is_exclusive: true
       });
     };
 
@@ -1107,8 +1117,8 @@ Combo options available and their defaults:
     57392: "ctrl",
     63289: "num",
     59: ";",
-    61: "-",
-    173: "="
+    61: "=",
+    173: "-"
   };
 
   keypress._keycode_dictionary = _keycode_dictionary;

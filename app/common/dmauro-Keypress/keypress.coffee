@@ -16,7 +16,7 @@ limitations under the License.
 Keypress is a robust keyboard input capturing Javascript utility
 focused on input for games.
 
-version 2.1.0
+version 2.1.3
 ###
 
 ###
@@ -81,6 +81,12 @@ class Combo
 
 class keypress.Listener
     constructor:(element, defaults) ->
+        # jQuery proofing
+        if jQuery? and element instanceof jQuery
+            if element.length != 1
+                _log_error "Warning: your jQuery selector should have exactly one object."
+            element = element[0]
+
         # Public properties
         @should_suppress_event_defaults = false
         @should_force_event_defaults = false
@@ -140,7 +146,7 @@ class keypress.Listener
     _bug_catcher: (e) ->
         # This seems to be Mac specific weirdness, so we'll target "cmd" as metaKey
         # Force a keyup for non-modifier keys when command is held because they don't fire
-        if _metakey is "cmd" and "cmd" in @_keys_down and _convert_key_to_readable(e.keyCode) not in ["cmd", "shift", "alt", "caps", "tab"]
+        if _metakey is "cmd" and "cmd" in @_keys_down and _convert_key_to_readable(e.keyCode ? e.key) not in ["cmd", "shift", "alt", "caps", "tab"]
             @_receive_input e, false
         # Note: we're currently ignoring the fact that this doesn't catch the bug that a keyup
         # will not fire if you keydown a combo, then press and hold cmd, then keyup the combo.
@@ -316,7 +322,10 @@ class keypress.Listener
                     else
                         match = false
                         break
-            return combo if match
+            if match
+                if combo.is_exclusive
+                    @_sequence = []
+                return combo
         return false
 
     # Catching Combos
@@ -327,7 +336,7 @@ class keypress.Listener
         if @_prevent_capture
             @_keys_down = [] if @_keys_down.length
             return
-        key = _convert_key_to_readable e.keyCode
+        key = _convert_key_to_readable (e.keyCode ? e.key)
         # Catch tabbing out of a non-capturing state
         if !is_keydown and !@_keys_down.length and key in ["alt", _metakey]
             return
@@ -537,6 +546,7 @@ class keypress.Listener
             keys            : keys
             on_keydown      : callback
             is_sequence     : true
+            is_exclusive    : true
         )
 
     register_combo: (combo_dictionary) ->
@@ -897,8 +907,8 @@ _keycode_dictionary =
     63289   : "num"
     # Firefox weirdness
     59 : ";"
-    61 : "-"
-    173 : "="
+    61 : "="
+    173 : "-"
 
 # For testing only:
 keypress._keycode_dictionary = _keycode_dictionary

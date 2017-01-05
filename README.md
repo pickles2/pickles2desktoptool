@@ -50,11 +50,12 @@ $ npm run build
 
 ## 更新履歴 - Change log
 
-### Pickles 2 Desktop Tool 2.0.0-beta.16 (2016年??月??日)
+### Pickles 2 Desktop Tool 2.0.0-beta.16 (2017年??月??日)
 
 - コンテンツ編集機能に多言語対応を追加。
 - 中文の言語コードを修正。
 - コンテンツを一括加工 機能追加。
+- GUI編集で、モジュールの `info.json` や `clip.json` がキャッシュされ、更新が反映されない場合がある問題を修正。
 
 ### Pickles 2 Desktop Tool 2.0.0-beta.15 (2016年11月21日)
 

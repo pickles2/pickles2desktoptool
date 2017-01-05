@@ -5,6 +5,10 @@ window.contApp = new (function(px){
 	this.pj = pj;
 	var $cont, $btn, $pre;
 
+	var $snippet_for_script_source_processor;
+	var $snippet_for_script_instance_processor;
+	var CodeMirrorInstans = {};
+
 	/**
 	 * initialize
 	 */
@@ -16,42 +20,98 @@ window.contApp = new (function(px){
 		$btn = $cont.find('button');
 		$pre = $cont.find('pre.cont_console');
 
+		$snippet_for_script_source_processor = $('select[name=snippet_for_script_source_processor]')
+			.on('change', function(){
+				var val = $(this).val();
+				$(this).val('');
+				$cont.find('form').find('textarea[name=script_source_processor]').val(val);
+				CodeMirrorInstans['source_processor'].setValue(val);
+			})
+		;
+		$snippet_for_script_instance_processor = $('select[name=snippet_for_script_instance_processor]')
+			.on('change', function(){
+				var val = $(this).val();
+				$(this).val('');
+				$cont.find('form').find('textarea[name=script_instance_processor]').val(val);
+				CodeMirrorInstans['instance_processor'].setValue(val);
+			})
+		;
+
+		CodeMirrorInstans['source_processor'] = window.textEditor.attachTextEditor(
+			$cont.find('form').find('textarea[name=script_source_processor]').get(0),
+			'js',
+			{
+				save: function(){}
+			}
+		);
+		CodeMirrorInstans['instance_processor'] = window.textEditor.attachTextEditor(
+			$cont.find('form').find('textarea[name=script_instance_processor]').get(0),
+			'js',
+			{
+				save: function(){}
+			}
+		);
+
+
+		$('.snippet-source-processor').each(function(e){
+			var $this = $(this);
+			$snippet_for_script_source_processor.append( $('<option>')
+				.attr({'value': px.utils79.trim($this.html())})
+				.text($this.attr('title'))
+			);
+		});
+
+		$('.snippet-instance-processor').each(function(e){
+			var $this = $(this);
+			$snippet_for_script_instance_processor.append( $('<option>')
+				.attr({'value': px.utils79.trim($this.html())})
+				.text($this.attr('title'))
+			);
+		});
+
 		$btn
 			.click( function(){
 				var btn = this;
 				var $form = $cont.find('form');
+				var target_path = $form.find('input[name=target_path]').val();
 				var script_source_processor = $form.find('textarea[name=script_source_processor]').val();
 				var script_instance_processor = $form.find('textarea[name=script_instance_processor]').val();
 				$pre.text('');
 				$(btn).attr('disabled', 'disabled');
-				$form.find('textarea[name=script_source_processor]').attr('disabled', 'disabled');
-				$form.find('textarea[name=script_instance_processor]').attr('disabled', 'disabled');
+				CodeMirrorInstans['source_processor'].setOption("readonly", "nocursor");
+				CodeMirrorInstans['instance_processor'].setOption("readonly", "nocursor");
+				$form.find('input,select,textarea').attr('disabled', 'disabled');
 				processor(
+					target_path,
 					script_source_processor,
 					script_instance_processor,
 					function(){
 						$pre.text( $pre.text() + 'completed!' );
 						$(btn).removeAttr('disabled').focus();
-						$form.find('textarea[name=script_source_processor]').removeAttr('disabled');
-						$form.find('textarea[name=script_instance_processor]').removeAttr('disabled');
+						CodeMirrorInstans['source_processor'].setOption("readonly", false);
+						CodeMirrorInstans['instance_processor'].setOption("readonly", false);
+						$form.find('input,select,textarea').removeAttr('disabled', 'disabled');
 					}
 				);
-			} );
+			} )
+		;
 		$pre
 			.css({
 				'max-height': 360,
 				'height': 360
-			});
+			})
+		;
 	}
 
 
-	var processor = function(script_source_processor, script_instance_processor, callback){
+	var processor = function(target_path, script_source_processor, script_instance_processor, callback){
 		// console.log(script_source_processor, script_instance_processor);
 
 		function srcProcessor( src, type, next ){
 			var supply = {
 				// supplying libs
-				'cheerio': px.cheerio
+				'cheerio': px.cheerio,
+				'iterate79': px.it79
 			};
 			try {
 				eval(script_source_processor.toString());
@@ -72,6 +132,28 @@ window.contApp = new (function(px){
 				px.it79.fnc(
 					{"pageInfo": sitemapRow},
 					[
+						function(it2, arg2){
+							// 対象外のパスだったらここまで
+							// console.log(arg2.pageInfo.content);
+							var regx = px.utils79.regexp_quote(target_path);
+							regx = regx.split('\\*').join('([\\s\\S]*)');
+							regx = '^'+regx+'$';
+							// console.log(regx);
+							try {
+								if( arg2.pageInfo.content.match(new RegExp(regx)) ){
+									it2.next(arg2);
+									return;
+								}else if( arg2.pageInfo.path.match(new RegExp(regx)) ){
+									it2.next(arg2);
+									return;
+								}
+							} catch (e) {
+							}
+							$pre.text( $pre.text() + ' -> SKIP' );
+							$pre.text( $pre.text() + "\n" );
+							it1.next();
+							// it2.next(arg2);
+						} ,
 						function(it2, arg2){
 							// HTML拡張子のみ抽出
 							var procType = pj.get_path_proc_type( arg2.pageInfo.path );
@@ -118,8 +200,8 @@ window.contApp = new (function(px){
 													}
 												)
 												.run(function(logs){
-													console.log(arg2.pageInfo.path, logs);
-													console.log('replace done!');
+													// console.log(arg2.pageInfo.path, logs);
+													// console.log('replace done!');
 													$pre.text( $pre.text() + ' -> done' );
 													$pre.text( $pre.text() + "\n" );
 													it2.next(arg2);
@@ -134,7 +216,7 @@ window.contApp = new (function(px){
 									default:
 										pj.px2proj.get_path_content(arg2.pageInfo.path, function(contPath){
 											if( !contPath ){
-												console.log( 'content path of ' + arg2.pageInfo.path + ' is ' + contPath );
+												// console.log( 'content path of ' + arg2.pageInfo.path + ' is ' + contPath );
 												$pre.text( $pre.text() + ' -> ERROR' );
 												$pre.text( $pre.text() + "\n" );
 												it2.next(arg2);

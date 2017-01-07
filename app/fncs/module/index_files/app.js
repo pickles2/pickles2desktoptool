@@ -6,10 +6,10 @@ window.contApp = new (function( px ){
 	var it79 = px.it79;
 
 	var pxConf,
-		path_controot,
-		modules={};
+		path_controot;
 
 	var $content;
+	var broccoli;
 
 	/**
 	 * 初期化
@@ -21,17 +21,17 @@ window.contApp = new (function( px ){
 					$content = $('.contents');
 					pxConf = pj.getConfig();
 					path_controot = pj.get_realpath_controot();
-					// console.log(pxConf);
-					modules = {};
-					try {
-						modules = pxConf.plugins.px2dt.paths_module_template;
-						for(var i in modules){
-							modules[i] = px.path.resolve(path_controot, modules[i])+'/';
-							modules[i] = px.utils79.normalize_path(modules[i]);
-						}
-					} catch (e) {
-					}
 					it1.next(arg);
+				},
+				function(it1, arg){
+					// broccoliオブジェクトを生成
+					pj.createPickles2ContentsEditorServer(pxConf.path_top||'/', function(px2ce){
+						px2ce.createBroccoli(function(_broccoli){
+							broccoli = _broccoli;
+							// console.log(broccoli);
+							it1.next(arg);
+						});
+					});
 				},
 				function(it1, arg){
 					// モジュールパッケージの一覧を表示する。
@@ -54,14 +54,19 @@ window.contApp = new (function( px ){
 	this.page_modulePackageList = function(callback){
 		callback = callback || function(){};
 
-		var tpl = document.getElementById('template-module-list-package').innerHTML;
-		var html = px.utils.bindEjs(
-			tpl,
-			{'modules': modules}
-		);
-		$content.html('').append(html);
+		broccoli.getPackageList(function(packageList){
+			console.log('getPackageList', packageList);
 
-		callback();
+			var tpl = document.getElementById('template-module-list-package').innerHTML;
+			var html = px.utils.bindEjs(
+				tpl,
+				{'packageList': packageList}
+			);
+			$content.html('').append(html);
+
+			callback();
+		});
+
 		return;
 	}
 

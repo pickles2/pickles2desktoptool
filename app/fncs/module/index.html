@@ -36,8 +36,8 @@
 
 		<script type="text/template" id="template-module-list-package">
 <ul class="cont_list">
-<% for( var packageName in modules ){ %>
-<li><a href="javascript:;"><%= packageName %><br /><%= modules[packageName] %></a></li>
+<% for( var packageId in packageList ){ %>
+<li><a href="javascript:;"><%= packageList[packageId].packageName %> (<%= packageList[packageId].packageId %>)<br /><%= packageList[packageId].realpath %></a></li>
 <% } %>
 </ul>
 		</script>

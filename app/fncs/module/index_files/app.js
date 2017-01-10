@@ -24,21 +24,37 @@ window.contApp = new (function( px ){
 					it1.next(arg);
 				},
 				function(it1, arg){
-					// broccoliオブジェクトを生成
-					pj.createPickles2ContentsEditorServer(pxConf.path_top||'/', function(px2ce){
-						px2ce.createBroccoli(function(_broccoli){
-							broccoli = _broccoli;
-							// console.log(broccoli);
+					var pickles2ModuleEditor = new Pickles2ModuleEditor();
+					pickles2ModuleEditor.init(
+						{
+							'elmCanvas': $content.get(0), // <- 編集画面を描画するための器となる要素
+							'preview':{ // プレビュー用サーバーの情報を設定します。
+								'origin': 'http://127.0.0.1:8081'
+							},
+							'gpiBridge': function(input, callback){
+								// GPI(General Purpose Interface) Bridge
+								// broccoliは、バックグラウンドで様々なデータ通信を行います。
+								// GPIは、これらのデータ通信を行うための汎用的なAPIです。
+								pj.createPickles2ModuleEditorServer(function(px2me){
+									px2me.gpi(input, function(res){
+										callback(res);
+									});
+								});
+								return;
+							},
+							'complete': function(){
+								alert('完了しました。');
+							},
+							'onMessage': function( message ){
+								// ユーザーへ知らせるメッセージを表示する
+								console.info('message: '+message);
+							}
+						},
+						function(){
+							// スタンバイ完了したら呼び出されるコールバックメソッドです。
 							it1.next(arg);
-						});
-					});
-				},
-				function(it1, arg){
-					// モジュールパッケージの一覧を表示する。
-					// console.log(modules);
-					_this.page_modulePackageList(function(){
-						it1.next(arg);
-					});
+						}
+					);
 				},
 				function(it1, arg){
 					console.info('standby OK.');
@@ -47,28 +63,6 @@ window.contApp = new (function( px ){
 			]
 		);
 	}// init()
-
-	/**
-	 * モジュールパッケージ一覧画面を表示する
-	 */
-	this.page_modulePackageList = function(callback){
-		callback = callback || function(){};
-
-		broccoli.getPackageList(function(packageList){
-			console.log('getPackageList', packageList);
-
-			var tpl = document.getElementById('template-module-list-package').innerHTML;
-			var html = px.utils.bindEjs(
-				tpl,
-				{'packageList': packageList}
-			);
-			$content.html('').append(html);
-
-			callback();
-		});
-
-		return;
-	}
 
 	/**
 	 * ウィンドウリサイズイベントハンドラ

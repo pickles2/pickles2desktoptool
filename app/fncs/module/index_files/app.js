@@ -21,6 +21,7 @@ window.contApp = new (function( px ){
 					$content = $('.contents');
 					pxConf = pj.getConfig();
 					path_controot = pj.get_realpath_controot();
+					onWindowResize();
 					it1.next(arg);
 				},
 				function(it1, arg){
@@ -68,6 +69,9 @@ window.contApp = new (function( px ){
 	 * ウィンドウリサイズイベントハンドラ
 	 */
 	function onWindowResize(){
+		$content.css({
+			'height': $(window).height() - $('.container').eq(0).height() - 10
+		});
 	}
 
 	$(function(){

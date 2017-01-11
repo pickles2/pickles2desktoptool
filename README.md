@@ -56,6 +56,7 @@ $ npm run build
 - 中文の言語コードを修正。
 - コンテンツを一括加工 機能追加。
 - GUI編集で、モジュールの `info.json` や `clip.json` がキャッシュされ、更新が反映されない場合がある問題を修正。
+- GUI編集で、モジュールの package, category にも `deprecated` フラグを追加。
 
 ### Pickles 2 Desktop Tool 2.0.0-beta.15 (2016年11月21日)
 

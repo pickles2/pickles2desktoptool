@@ -2,13 +2,12 @@ window.contAppPx2CEServer = function(px, page_path, callback){
 	callback = callback||function(){};
 
 	var _this = this;
-	var php = require('phpjs');
 	var data = {};
 	var param = {};
 
-	var path = require('path');
 	var it79 = require('iterate79');
 	var px2ce;
+	var _pj;
 
 
 	it79.fnc(data, [

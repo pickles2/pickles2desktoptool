@@ -6,10 +6,10 @@ window.contApp = new (function( px ){
 	var it79 = px.it79;
 
 	var pxConf,
-		path_controot,
-		modules={};
+		path_controot;
 
 	var $content;
+	var broccoli;
 
 	/**
 	 * 初期化
@@ -21,24 +21,40 @@ window.contApp = new (function( px ){
 					$content = $('.contents');
 					pxConf = pj.getConfig();
 					path_controot = pj.get_realpath_controot();
-					// console.log(pxConf);
-					modules = {};
-					try {
-						modules = pxConf.plugins.px2dt.paths_module_template;
-						for(var i in modules){
-							modules[i] = px.path.resolve(path_controot, modules[i])+'/';
-							modules[i] = px.utils79.normalize_path(modules[i]);
-						}
-					} catch (e) {
-					}
 					it1.next(arg);
 				},
 				function(it1, arg){
-					// モジュールパッケージの一覧を表示する。
-					// console.log(modules);
-					_this.page_modulePackageList(function(){
-						it1.next(arg);
-					});
+					var pickles2ModuleEditor = new Pickles2ModuleEditor();
+					pickles2ModuleEditor.init(
+						{
+							'elmCanvas': $content.get(0), // <- 編集画面を描画するための器となる要素
+							'preview':{ // プレビュー用サーバーの情報を設定します。
+								'origin': 'http://127.0.0.1:8081'
+							},
+							'gpiBridge': function(input, callback){
+								// GPI(General Purpose Interface) Bridge
+								// broccoliは、バックグラウンドで様々なデータ通信を行います。
+								// GPIは、これらのデータ通信を行うための汎用的なAPIです。
+								pj.createPickles2ModuleEditorServer(function(px2me){
+									px2me.gpi(input, function(res){
+										callback(res);
+									});
+								});
+								return;
+							},
+							'complete': function(){
+								alert('完了しました。');
+							},
+							'onMessage': function( message ){
+								// ユーザーへ知らせるメッセージを表示する
+								console.info('message: '+message);
+							}
+						},
+						function(){
+							// スタンバイ完了したら呼び出されるコールバックメソッドです。
+							it1.next(arg);
+						}
+					);
 				},
 				function(it1, arg){
 					console.info('standby OK.');
@@ -47,23 +63,6 @@ window.contApp = new (function( px ){
 			]
 		);
 	}// init()
-
-	/**
-	 * モジュールパッケージ一覧画面を表示する
-	 */
-	this.page_modulePackageList = function(callback){
-		callback = callback || function(){};
-
-		var tpl = document.getElementById('template-module-list-package').innerHTML;
-		var html = px.utils.bindEjs(
-			tpl,
-			{'modules': modules}
-		);
-		$content.html('').append(html);
-
-		callback();
-		return;
-	}
 
 	/**
 	 * ウィンドウリサイズイベントハンドラ

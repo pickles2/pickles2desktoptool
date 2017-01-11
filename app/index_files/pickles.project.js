@@ -894,6 +894,36 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	}
 
 	/**
+	 * pickles2-module-editor(サーバーサイド)を生成する
+	 */
+	this.createPickles2ModuleEditorServer = function(callback){
+		callback = callback || function(){};
+		var Px2ME = require('pickles2-module-editor');
+		var _pj = this;
+
+		// pickles2-module-editor setup.
+		var px2me = new Px2ME();
+
+		px2me.init(
+			{
+				'appMode': 'desktop', // 'web' or 'desktop'. default to 'web'
+				'entryScript': require('path').resolve( _pj.get('path'), _pj.get('entry_script') ),
+				'log': function(msg){
+					px.log(msg);
+				},
+				'commands':{
+					'php': px.nodePhpBinOptions
+				}
+			},
+			function(){
+				callback(px2me);
+			}
+		);
+
+		return this;
+	}
+
+	/**
 	 * broccoli-processor オブジェクトを生成する
 	 * @param  {Function} callback [description]
 	 * @return {Void}            [description]

@@ -16199,7 +16199,11 @@ module.exports = exports['default'];
 			templates;
 		var pages = {
 			'list': require('./pages/list/index.js'),
-			'editModule': require('./pages/editModule/index.js')
+			'editModule': require('./pages/editModule/index.js'),
+			'editCategory': require('./pages/editCategory/index.js'),
+			'editPackage': require('./pages/editPackage/index.js'),
+			'addNewCategory': require('./pages/addNewCategory/index.js'),
+			'addNewModule': require('./pages/addNewModule/index.js')
 		};
 
 		/**
@@ -16246,6 +16250,7 @@ module.exports = exports['default'];
 							'api':'getTemplates'
 						},
 						function(tpls){
+							// console.log(tpls);
 							templates = tpls;
 							rlv();
 						}
@@ -16400,6 +16405,112 @@ module.exports = exports['default'];
 		}
 
 		/**
+		 * broccoli モジュールカテゴリのコードをすべて取得する
+		 */
+		this.getCategoryCode = function(categoryId, callback){
+			callback = callback || function(){};
+			this.gpiBridge(
+				{
+					'api':'getCategoryCode',
+					'categoryId': categoryId
+				},
+				function(categoryCode){
+					callback(categoryCode);
+				}
+			);
+			return;
+		}
+
+		/**
+		 * broccoli モジュールカテゴリのコードの変更をすべて保存する
+		 */
+		this.saveCategoryCode = function(categoryId, data, callback){
+			callback = callback || function(){};
+			this.gpiBridge(
+				{
+					'api':'saveCategoryCode',
+					'categoryId': categoryId,
+					'data': data
+				},
+				function(result){
+					callback(result);
+				}
+			);
+			return;
+		}
+
+		/**
+		 * broccoli パッケージのコードをすべて取得する
+		 */
+		this.getPackageCode = function(packageId, callback){
+			callback = callback || function(){};
+			this.gpiBridge(
+				{
+					'api':'getPackageCode',
+					'packageId': packageId
+				},
+				function(packageCode){
+					callback(packageCode);
+				}
+			);
+			return;
+		}
+
+		/**
+		 * broccoli モジュールパッケージのコードの変更をすべて保存する
+		 */
+		this.savePackageCode = function(packageId, data, callback){
+			callback = callback || function(){};
+			this.gpiBridge(
+				{
+					'api':'savePackageCode',
+					'packageId': packageId,
+					'data': data
+				},
+				function(result){
+					callback(result);
+				}
+			);
+			return;
+		}
+
+		/**
+		 * broccoli モジュールカテゴリを新規追加
+		 */
+		this.addNewCategory = function(packageId, data, callback){
+			callback = callback || function(){};
+			this.gpiBridge(
+				{
+					'api':'addNewCategory',
+					'packageId': packageId,
+					'data': data
+				},
+				function(result){
+					callback(result);
+				}
+			);
+			return;
+		}
+
+		/**
+		 * broccoli モジュールを新規追加する
+		 */
+		this.addNewModule = function(categoryId, data, callback){
+			callback = callback || function(){};
+			this.gpiBridge(
+				{
+					'api':'addNewModule',
+					'categoryId': categoryId,
+					'data': data
+				},
+				function(result){
+					callback(result);
+				}
+			);
+			return;
+		}
+
+		/**
 		 * プログレスを表示する
 		 */
 		this.progress = function( callback ){
@@ -16469,6 +16580,27 @@ module.exports = exports['default'];
 		}
 
 		/**
+		 * ファイルをダウンロードする
+		 */
+		this.download = function(content, filename){
+			var blob = new Blob([ content ], { "type" : "application/octet-stream" });
+
+			if (window.navigator.msSaveBlob) {
+				window.navigator.msSaveBlob(blob, filename);
+
+				// msSaveOrOpenBlobの場合はファイルを保存せずに開ける
+				window.navigator.msSaveOrOpenBlob(blob, filename);
+			} else {
+				var $a = $('<a>');
+				$a.attr({
+					'href': window.URL.createObjectURL(blob),
+					'download': filename
+				}).get(0).click();
+			}
+			return;
+		}
+
+		/**
 		* gpiBridgeを呼び出す
 		*/
 		this.gpiBridge = function(data, callback){
@@ -16493,7 +16625,246 @@ module.exports = exports['default'];
 	}
 })();
 
-},{"./pages/editModule/index.js":78,"./pages/list/index.js":79,"ejs":4,"es6-promise":7,"jquery":9}],78:[function(require,module,exports){
+},{"./pages/addNewCategory/index.js":78,"./pages/addNewModule/index.js":79,"./pages/editCategory/index.js":80,"./pages/editModule/index.js":81,"./pages/editPackage/index.js":82,"./pages/list/index.js":83,"ejs":4,"es6-promise":7,"jquery":9}],78:[function(require,module,exports){
+/**
+ * pages/addNewCategory/index.js
+ */
+module.exports = function(px2me, $canvasContent, options, callback){
+	callback = callback||function(){};
+	var $ = require('jquery');
+	var utils79 = require('utils79');
+	var Promise = require('es6-promise').Promise;
+
+	new Promise(function(rlv){rlv();})
+		.then(function(){ return new Promise(function(rlv, rjt){
+			console.log('loading addNewCategory page...');
+			px2me.progress( function(){
+				rlv();
+			} );
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			// 編集画面を描画
+			// console.log(options);
+			px2me.getPackageCode( options.packageId, function(packageCode){
+				// console.log(packageCode);
+
+				if( !packageCode.editable ){
+					alert('このモジュールは編集許可されていないパスにあります。');
+					rjt();
+					return;
+				}
+
+				var html = px2me.bindEjs(
+					px2me.getTemplates('addNewCategory'),
+					{
+						'packageId': options.packageId,
+						'packageCode': packageCode
+					}
+				);
+				$canvasContent.html('').append(html);
+
+				$canvasContent.find('[name=categoryId]').val( '' );
+				$canvasContent.find('[name=categoryName]').val( '' );
+				rlv();
+			} );
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			// イベントをセット
+			$canvasContent.find('button.pickles2-module-editor__save').on('click', function(e){
+				var data = {};
+				data.categoryId = $canvasContent.find('[name=categoryId]').val();
+				data.categoryName = $canvasContent.find('[name=categoryName]').val();
+
+				px2me.addNewCategory(options.packageId, data, function(result){
+					px2me.closeModal(function(){
+						px2me.loadPage('list', {}, function(){});
+					});
+				})
+			});
+			rlv();
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			px2me.closeProgress(function(){
+				rlv();
+			});
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			callback();
+			rlv();
+		}); })
+		.catch(function(){
+			px2me.closeProgress(function(){
+				px2me.closeModal(function(){
+					px2me.loadPage('list', {}, function(){
+						callback();
+					});
+				});
+			});
+		})
+	;
+
+}
+
+},{"es6-promise":7,"jquery":9,"utils79":12}],79:[function(require,module,exports){
+/**
+ * pages/addNewModule/index.js
+ */
+module.exports = function(px2me, $canvasContent, options, callback){
+	callback = callback||function(){};
+	var $ = require('jquery');
+	var utils79 = require('utils79');
+	var Promise = require('es6-promise').Promise;
+
+	new Promise(function(rlv){rlv();})
+		.then(function(){ return new Promise(function(rlv, rjt){
+			console.log('loading addNewModule page...');
+			px2me.progress( function(){
+				rlv();
+			} );
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			// 編集画面を描画
+			// console.log(options);
+			px2me.getCategoryCode( options.categoryId, function(categoryCode){
+				// console.log(categoryCode);
+
+				if( !categoryCode.editable ){
+					alert('このモジュールは編集許可されていないパスにあります。');
+					rjt();
+					return;
+				}
+
+				var html = px2me.bindEjs(
+					px2me.getTemplates('addNewModule'),
+					{
+						'categoryId': options.categoryId,
+						'categoryCode': categoryCode
+					}
+				);
+				$canvasContent.html('').append(html);
+
+				$canvasContent.find('[name=moduleId]').val( '' );
+				$canvasContent.find('[name=moduleName]').val( '' );
+				rlv();
+			} );
+
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			// イベントをセット
+			$canvasContent.find('button.pickles2-module-editor__save').on('click', function(e){
+				var data = {};
+				data.moduleId = $canvasContent.find('[name=moduleId]').val();
+				data.moduleName = $canvasContent.find('[name=moduleName]').val();
+
+				px2me.addNewModule(options.categoryId, data, function(result){
+					px2me.closeModal(function(){
+						px2me.loadPage('list', {}, function(){});
+					});
+				})
+			});
+			rlv();
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			px2me.closeProgress(function(){
+				rlv();
+			});
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			callback();
+			rlv();
+		}); })
+		.catch(function(){
+			px2me.closeProgress(function(){
+				px2me.closeModal(function(){
+					px2me.loadPage('list', {}, function(){
+						callback();
+					});
+				});
+			});
+		})
+	;
+
+}
+
+},{"es6-promise":7,"jquery":9,"utils79":12}],80:[function(require,module,exports){
+/**
+ * pages/editCategory/index.js
+ */
+module.exports = function(px2me, $canvasContent, options, callback){
+	callback = callback||function(){};
+	var $ = require('jquery');
+	var utils79 = require('utils79');
+	var Promise = require('es6-promise').Promise;
+
+	new Promise(function(rlv){rlv();})
+		.then(function(){ return new Promise(function(rlv, rjt){
+			console.log('loading editCategory page...');
+			px2me.progress( function(){
+				rlv();
+			} );
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			// 編集画面を描画
+			// console.log(options);
+			px2me.getCategoryCode( options.categoryId, function(categoryCode){
+				// console.log(categoryCode);
+
+				if( !categoryCode.editable ){
+					alert('このモジュールは編集許可されていないパスにあります。');
+					rjt();
+					return;
+				}
+
+				var html = px2me.bindEjs(
+					px2me.getTemplates('editCategory'),
+					{
+						'categoryId': options.categoryId,
+						'categoryCode': categoryCode
+					}
+				);
+				$canvasContent.html('').append(html);
+
+				$canvasContent.find('[name=infoJson]').val( categoryCode.infoJson );
+				rlv();
+			} );
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			// イベントをセット
+			$canvasContent.find('button.pickles2-module-editor__save').on('click', function(e){
+				var data = {};
+				data.infoJson = $canvasContent.find('[name=infoJson]').val();
+
+				px2me.saveCategoryCode(options.categoryId, data, function(result){
+					px2me.closeModal(function(){
+						px2me.loadPage('list', {}, function(){});
+					});
+				})
+			});
+			rlv();
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			px2me.closeProgress(function(){
+				rlv();
+			});
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			callback();
+			rlv();
+		}); })
+		.catch(function(){
+			px2me.closeProgress(function(){
+				px2me.closeModal(function(){
+					px2me.loadPage('list', {}, function(){
+						callback();
+					});
+				});
+			});
+		})
+	;
+
+}
+
+},{"es6-promise":7,"jquery":9,"utils79":12}],81:[function(require,module,exports){
 /**
  * pages/editModule/index.js
  */
@@ -16513,10 +16884,10 @@ module.exports = function(px2me, $canvasContent, options, callback){
 		.then(function(){ return new Promise(function(rlv, rjt){
 			// 編集画面を描画
 			// console.log(options);
-			px2me.getModuleCode( options.moduleId, function(getModuleCode){
-				// console.log(getModuleCode);
+			px2me.getModuleCode( options.moduleId, function(moduleCode){
+				// console.log(moduleCode);
 
-				if( !getModuleCode.editable ){
+				if( !moduleCode.editable ){
 					alert('このモジュールは編集許可されていないパスにあります。');
 					rjt();
 					return;
@@ -16526,18 +16897,18 @@ module.exports = function(px2me, $canvasContent, options, callback){
 					px2me.getTemplates('editModule'),
 					{
 						'moduleId': options.moduleId,
-						'getModuleCode': getModuleCode
+						'moduleCode': moduleCode
 					}
 				);
 				$canvasContent.html('').append(html);
 
-				$canvasContent.find('[name=infoJson]').val( getModuleCode.infoJson );
-				$canvasContent.find('[name=template]').val( getModuleCode.template );
-				$canvasContent.find('[name=templateExt]').val( getModuleCode.templateExt );
-				$canvasContent.find('[name=css]').val( getModuleCode.css );
-				$canvasContent.find('[name=cssExt]').val( getModuleCode.cssExt );
-				$canvasContent.find('[name=js]').val( getModuleCode.js );
-				$canvasContent.find('[name=jsExt]').val( getModuleCode.jsExt );
+				$canvasContent.find('[name=infoJson]').val( moduleCode.infoJson );
+				$canvasContent.find('[name=template]').val( moduleCode.template );
+				$canvasContent.find('[name=templateExt]').val( moduleCode.templateExt );
+				$canvasContent.find('[name=css]').val( moduleCode.css );
+				$canvasContent.find('[name=cssExt]').val( moduleCode.cssExt );
+				$canvasContent.find('[name=js]').val( moduleCode.js );
+				$canvasContent.find('[name=jsExt]').val( moduleCode.jsExt );
 				rlv();
 			} );
 		}); })
@@ -16584,7 +16955,85 @@ module.exports = function(px2me, $canvasContent, options, callback){
 
 }
 
-},{"es6-promise":7,"jquery":9,"utils79":12}],79:[function(require,module,exports){
+},{"es6-promise":7,"jquery":9,"utils79":12}],82:[function(require,module,exports){
+/**
+ * pages/editPackage/index.js
+ */
+module.exports = function(px2me, $canvasContent, options, callback){
+	callback = callback||function(){};
+	var $ = require('jquery');
+	var utils79 = require('utils79');
+	var Promise = require('es6-promise').Promise;
+
+	new Promise(function(rlv){rlv();})
+		.then(function(){ return new Promise(function(rlv, rjt){
+			console.log('loading editPackage page...');
+			px2me.progress( function(){
+				rlv();
+			} );
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			// 編集画面を描画
+			// console.log(options);
+			px2me.getPackageCode( options.packageId, function(packageCode){
+				// console.log(packageCode);
+
+				if( !packageCode.editable ){
+					alert('このモジュールは編集許可されていないパスにあります。');
+					rjt();
+					return;
+				}
+
+				var html = px2me.bindEjs(
+					px2me.getTemplates('editPackage'),
+					{
+						'packageId': options.packageId,
+						'packageCode': packageCode
+					}
+				);
+				$canvasContent.html('').append(html);
+
+				$canvasContent.find('[name=infoJson]').val( packageCode.infoJson );
+				rlv();
+			} );
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			// イベントをセット
+			$canvasContent.find('button.pickles2-module-editor__save').on('click', function(e){
+				var data = {};
+				data.infoJson = $canvasContent.find('[name=infoJson]').val();
+
+				px2me.savePackageCode(options.packageId, data, function(result){
+					px2me.closeModal(function(){
+						px2me.loadPage('list', {}, function(){});
+					});
+				})
+			});
+			rlv();
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			px2me.closeProgress(function(){
+				rlv();
+			});
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			callback();
+			rlv();
+		}); })
+		.catch(function(){
+			px2me.closeProgress(function(){
+				px2me.closeModal(function(){
+					px2me.loadPage('list', {}, function(){
+						callback();
+					});
+				});
+			});
+		})
+	;
+
+}
+
+},{"es6-promise":7,"jquery":9,"utils79":12}],83:[function(require,module,exports){
 /**
  * pages/list/index.js
  */
@@ -16620,24 +17069,33 @@ module.exports = function(px2me, $canvasContent, options, callback){
 				var $this = $(this);
 				var act = $this.attr('data-pickles2-module-editor--action');
 				var target = $this.attr('data-pickles2-module-editor--target');
-				console.log(this);
+				// console.log(this);
 				switch(act){
+					case 'download':
+						px2me.gpiBridge(
+							{
+								'api':'download',
+								'target': target
+							},
+							function(bin){
+								px2me.download(bin, 'content.'+target);
+							}
+						);
+						break;
 					case 'editPackage':
-						alert(act+' (開発中です)');
+						px2me.loadPage('editPackage', {'packageId': target}, function(){});
 						break;
 					case 'editCategory':
-						alert(act+' (開発中です)');
+						px2me.loadPage('editCategory', {'categoryId': target}, function(){});
 						break;
 					case 'addNewCategory':
-						alert(act+' (開発中です)');
+						px2me.loadPage('addNewCategory', {'packageId': target}, function(){});
 						break;
 					case 'editModule':
-						px2me.loadPage('editModule', {'moduleId': target}, function(){
-							// alert(act);
-						});
+						px2me.loadPage('editModule', {'moduleId': target}, function(){});
 						break;
 					case 'addNewModule':
-						alert(act+' (開発中です)');
+						px2me.loadPage('addNewModule', {'categoryId': target}, function(){});
 						break;
 					default:
 						alert('ERROR: unknown action. - '+act);

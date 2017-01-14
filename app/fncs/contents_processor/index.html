@@ -62,6 +62,7 @@
 				</select></p>
 				<pre><code>function( editor ){
 <textarea name="script_instance_processor" class="form-control" rows="12">editor.done();</textarea>}</code></pre>
+				<p><label><input type="checkbox" checked="checked" name="is_dryrun" value="dryrun" /> Dry Run</label></p>
 				<p><button class="px2-btn px2-btn--primary px2-btn--block">すべてのコンテンツを一括加工する</button></p>
 			</form>
 			<div>
@@ -171,6 +172,21 @@ broccoli.getModule(instance.modId, instance.subModName, function(mod){
 	);
 
 });
+		</script>
+		<script class="snippet-instance-processor" title="リソースの値を加工する" type="text/template">
+var resourceDb = editor.resourceMgr.getResourceDb();
+//console.log( resourceDb );
+
+for(var resKey in resourceDb){
+	var resInfo = editor.resourceMgr.getResourceInfo(resKey);
+
+	// ここでリソース情報 (resInfo) を加工する
+	console.log( resInfo );
+
+	editor.resourceMgr.setResourceInfo(resKey, resInfo);
+}
+
+editor.done();
 		</script>
 
 	</head>

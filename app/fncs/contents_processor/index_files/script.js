@@ -76,6 +76,8 @@ window.contApp = new (function(px){
 				var target_path = $form.find('input[name=target_path]').val();
 				var script_source_processor = $form.find('textarea[name=script_source_processor]').val();
 				var script_instance_processor = $form.find('textarea[name=script_instance_processor]').val();
+				var is_dryrun = ( $form.find('input[name=is_dryrun]:checked').val()=='dryrun' ? true : false );
+
 				$pre.text('');
 				$(btn).attr('disabled', 'disabled');
 				CodeMirrorInstans['source_processor'].setOption("readonly", "nocursor");
@@ -85,6 +87,7 @@ window.contApp = new (function(px){
 					target_path,
 					script_source_processor,
 					script_instance_processor,
+					is_dryrun,
 					function(){
 						$pre.text( $pre.text() + 'completed!' );
 						$(btn).removeAttr('disabled').focus();
@@ -104,7 +107,7 @@ window.contApp = new (function(px){
 	}
 
 
-	var processor = function(target_path, script_source_processor, script_instance_processor, callback){
+	var processor = function(target_path, script_source_processor, script_instance_processor, is_dryrun, callback){
 		// console.log(script_source_processor, script_instance_processor);
 
 		function srcProcessor( src, type, next ){
@@ -199,7 +202,7 @@ window.contApp = new (function(px){
 														}
 													}
 												)
-												.run(function(logs){
+												[(is_dryrun ? 'dryrun' : 'run')](function(logs){
 													// console.log(arg2.pageInfo.path, logs);
 													// console.log('replace done!');
 													$pre.text( $pre.text() + ' -> done' );
@@ -228,6 +231,12 @@ window.contApp = new (function(px){
 													var _contentsPath = px.path.resolve(docRoot + contRoot + contPath);
 													var src = px.fs.readFileSync( _contentsPath ).toString();
 													srcProcessor( src, procType, function(after){
+														if( is_dryrun ){
+															// dryrun で実行されていたら、加工結果を保存しない
+															it2.next(arg2);
+															return;
+														}
+
 														px.fs.writeFile( _contentsPath, after, {}, function(err){
 															if(err){
 																console.error( err );

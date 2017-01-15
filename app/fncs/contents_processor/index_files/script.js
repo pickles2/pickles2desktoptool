@@ -18,7 +18,7 @@ window.contApp = new (function(px){
 		var html = $('#template-main-form').html();
 		$cont.html(html);
 		$btn = $cont.find('button');
-		$pre = $cont.find('pre.cont_console');
+		$pre = $('<pre>');
 
 		$snippet_for_script_source_processor = $('select[name=snippet_for_script_source_processor]')
 			.on('change', function(){
@@ -83,6 +83,26 @@ window.contApp = new (function(px){
 				CodeMirrorInstans['source_processor'].setOption("readonly", "nocursor");
 				CodeMirrorInstans['instance_processor'].setOption("readonly", "nocursor");
 				$form.find('input,select,textarea').attr('disabled', 'disabled');
+				var $dialogBody = $(document.getElementById('template-modal-content').innerHTML);
+				$pre = $dialogBody.find('pre');
+				$pre.css({'height': '300px'});
+
+				var $btnOk = $('<button class="px2-btn px2-btn--primary">').text('OK').click(function(){
+					px.closeDialog();
+					$(btn).removeAttr('disabled').focus();
+					CodeMirrorInstans['source_processor'].setOption("readonly", false);
+					CodeMirrorInstans['instance_processor'].setOption("readonly", false);
+					$form.find('input,select,textarea').removeAttr('disabled', 'disabled');
+				}).attr({'disabled':'disabled'});
+
+				px.dialog({
+					"title": "一括加工",
+					"body": $dialogBody,
+					"buttons": [
+						$btnOk
+					]
+				});
+
 				processor(
 					target_path,
 					script_source_processor,
@@ -90,10 +110,7 @@ window.contApp = new (function(px){
 					is_dryrun,
 					function(){
 						$pre.text( $pre.text() + 'completed!' );
-						$(btn).removeAttr('disabled').focus();
-						CodeMirrorInstans['source_processor'].setOption("readonly", false);
-						CodeMirrorInstans['instance_processor'].setOption("readonly", false);
-						$form.find('input,select,textarea').removeAttr('disabled', 'disabled');
+						$btnOk.removeAttr('disabled').focus();
 					}
 				);
 			} )
@@ -233,6 +250,8 @@ window.contApp = new (function(px){
 													srcProcessor( src, procType, function(after){
 														if( is_dryrun ){
 															// dryrun で実行されていたら、加工結果を保存しない
+															$pre.text( $pre.text() + ' -> done' );
+															$pre.text( $pre.text() + "\n" );
 															it2.next(arg2);
 															return;
 														}

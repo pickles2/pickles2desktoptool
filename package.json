@@ -7,7 +7,7 @@
   "scripts": {
     "preinstall": "git submodule update --init --recursive --force",
     "start": "nw",
-    "submodules-update": "rm -rfv node_modules/broccoli-html-editor; rm -rfv node_modules/broccoli-field-table; rm -rfv node_modules/broccoli-processor; rm -rfv node_modules/node-px2dt-localdata-access; rm -rfv node_modules/express-pickles2; rm -rfv node_modules/pickles2-contents-editor; rm -rfv node_modules/pickles2-module-editor; rm -rfv node_modules/px2agent; rm -rfv node_modules/px2style; npm install; gulp;",
+    "submodules-update": "rm -rfv node_modules/broccoli-html-editor; rm -rfv node_modules/broccoli-field-table; rm -rfv node_modules/broccoli-processor; rm -rfv node_modules/node-px2dt-localdata-access; rm -rfv node_modules/express-pickles2; rm -rfv node_modules/pickles2-contents-editor; rm -rfv node_modules/pickles2-module-editor; rm -rfv node_modules/px2agent; rm -rfv node_modules/px2style; rm -rfv node_modules/utils79; npm install; gulp;",
     "build": "node ./build.js"
   },
   "author": "Tomoya Koyanagi",
@@ -40,7 +40,7 @@
     "socket.io": "^1.3.5",
     "twig": "^0.8.2",
     "url-parse": "^1.1.1",
-    "utils79": "^0.0.1",
+    "utils79": "file:submodules/node-utils79",
     "zip-folder": "^1.0.0"
   },
   "devDependencies": {

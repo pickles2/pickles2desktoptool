@@ -90,7 +90,7 @@ window.contApp = new (function(px){
 				var $dialogBody = $(document.getElementById('template-modal-content').innerHTML);
 				$pre = $dialogBody.find('pre');
 				$pre.css({'height': '300px'});
-				$progress = $dialogBody.find('.cont_progress-bar');
+				$progress = $dialogBody.find('.cont_progress-bar .progress-bar');
 				$progress.html('');
 				$progressMessage = $dialogBody.find('.cont_message');
 				$progressMessage.html('準備中...');
@@ -118,6 +118,7 @@ window.contApp = new (function(px){
 					is_dryrun,
 					function(){
 						$progressMessage.html('completed!');
+						$progress.css({"width": '100%'}).removeClass('progress-bar-striped');
 						$pre.text( $pre.text() + 'completed!' );
 						$btnOk.removeAttr('disabled').focus();
 					}
@@ -165,7 +166,7 @@ window.contApp = new (function(px){
 				$progressMessage.text(idx1);
 				$progress
 					.text(counter+'/'+px.utils79.count(pageList))
-					.css({"width": Number(counter/px.utils79.count(pageList))+'%'})
+					.css({"width": Number(counter/px.utils79.count(pageList)*100)+'%'})
 				;
 				$pre.text( $pre.text() + sitemapRow.path );
 

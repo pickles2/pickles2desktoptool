@@ -3,7 +3,11 @@ window.contApp = new (function(px){
 	var _this = this;
 	var pj = px.getCurrentProject();
 	this.pj = pj;
-	var $cont, $btn, $pre;
+	var $cont,
+		$btn,
+		$pre,
+		$progress,
+		$progressMessage;
 
 	var $snippet_for_script_source_processor;
 	var $snippet_for_script_instance_processor;
@@ -86,6 +90,10 @@ window.contApp = new (function(px){
 				var $dialogBody = $(document.getElementById('template-modal-content').innerHTML);
 				$pre = $dialogBody.find('pre');
 				$pre.css({'height': '300px'});
+				$progress = $dialogBody.find('.cont_progress-bar');
+				$progress.html('');
+				$progressMessage = $dialogBody.find('.cont_message');
+				$progressMessage.html('準備中...');
 
 				var $btnOk = $('<button class="px2-btn px2-btn--primary">').text('OK').click(function(){
 					px.closeDialog();
@@ -109,6 +117,7 @@ window.contApp = new (function(px){
 					script_instance_processor,
 					is_dryrun,
 					function(){
+						$progressMessage.html('completed!');
 						$pre.text( $pre.text() + 'completed!' );
 						$btnOk.removeAttr('disabled').focus();
 					}
@@ -127,6 +136,9 @@ window.contApp = new (function(px){
 	var processor = function(target_path, script_source_processor, script_instance_processor, is_dryrun, callback){
 		// console.log(script_source_processor, script_instance_processor);
 
+		$progressMessage.html('実行中...');
+		$progress.html('計算中...');
+
 		function srcProcessor( src, type, next ){
 			var supply = {
 				// supplying libs
@@ -142,11 +154,19 @@ window.contApp = new (function(px){
 		}
 
 		var pageList = pj.site.getSitemap();
+		var counter = 0;
+		$progress.html(counter+'/'+px.utils79.count(pageList));
 
 		px.utils.iterate(
 			pageList ,
 			function( it1, sitemapRow, idx1 ){
 				// console.log(sitemapRow);
+				counter ++;
+				$progressMessage.text(idx1);
+				$progress
+					.text(counter+'/'+px.utils79.count(pageList))
+					.css({"width": Number(counter/px.utils79.count(pageList))+'%'})
+				;
 				$pre.text( $pre.text() + sitemapRow.path );
 
 				px.it79.fnc(

@@ -93,6 +93,8 @@ var nw = new NwBuilder({
 					rtn.push( './node_modules/'+modName+'/dist/**' );
 					rtn.push( './node_modules/'+modName+'/libs/**' );
 					rtn.push( './node_modules/'+modName+'/vendor/**' );
+					rtn.push( './node_modules/'+modName+'/data/**' );
+					rtn.push( './node_modules/'+modName+'/config/**' );
 					break;
 				case 'pickles2-module-editor':
 					// 必要なファイルだけ丁寧に抜き出す

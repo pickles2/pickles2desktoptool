@@ -14,6 +14,8 @@ window.contApp = new (function(px){
 	var CodeMirrorInstans = {};
 	var pathHomeDir, pathLogFile;
 
+	var cancelRequest = false;
+
 	/**
 	 * initialize
 	 */
@@ -94,6 +96,8 @@ window.contApp = new (function(px){
 							var script_instance_processor = $form.find('textarea[name=script_instance_processor]').val();
 							var is_dryrun = ( $form.find('input[name=is_dryrun]:checked').val()=='dryrun' ? true : false );
 
+							cancelRequest = false;
+
 							$pre.text('');
 							$(btn).attr('disabled', 'disabled');
 							CodeMirrorInstans['source_processor'].setOption("readonly", "nocursor");
@@ -115,11 +119,16 @@ window.contApp = new (function(px){
 								$form.find('input,select,textarea').removeAttr('disabled', 'disabled');
 							}).attr({'disabled':'disabled'});
 
+							var $btnCancel = $('<button class="px2-btn">').text('中断').click(function(){
+								cancelRequest = true;
+							});
+
 							px.dialog({
 								"title": "一括加工",
 								"body": $dialogBody,
 								"buttons": [
-									$btnOk
+									$btnOk,
+									$btnCancel
 								]
 							});
 
@@ -133,6 +142,7 @@ window.contApp = new (function(px){
 									$progress.css({"width": '100%'}).removeClass('progress-bar-striped');
 									$pre.text( $pre.text() + 'completed!' );
 									$btnOk.removeAttr('disabled').focus();
+									$btnCancel.attr({'disabled':'disabled'});
 								}
 							);
 						} )
@@ -164,7 +174,8 @@ window.contApp = new (function(px){
 
 		var pageList = pj.site.getSitemap();
 		var fileProgressCounter = 0;
-		$progress.html(fileProgressCounter+'/'+px.utils79.count(pageList));
+		var pageListFullCount = px.utils79.count(pageList);
+		$progress.html(fileProgressCounter+'/'+pageListFullCount);
 
 		var counter = {};
 		var fileCounter = {};
@@ -251,19 +262,29 @@ window.contApp = new (function(px){
 		log('-----------------------------------');
 		log('## Log by pages');
 
-		px.utils.iterate(
+		px.it79.ary(
 			pageList ,
 			function( it1, sitemapRow, pagePath ){
+				if( cancelRequest ){
+					// キャンセルボタンが押されていたら、すべてスキップ
+					log("\n\n\n\n");
+					log('+++++++++++++++++++++++');
+					log('++++ User Canceled ++++');
+					log('+++++++++++++++++++++++');
+					log("\n\n\n\n");
+					it1.break();
+					return;
+				}
 				// console.log(sitemapRow);
 				fileProgressCounter ++;
 				$progressMessage.text(pagePath);
 				$progress
-					.text(fileProgressCounter+'/'+px.utils79.count(pageList))
-					.css({"width": Number(fileProgressCounter/px.utils79.count(pageList)*100)+'%'})
+					.text(fileProgressCounter+'/'+pageListFullCount)
+					.css({"width": Number(fileProgressCounter/pageListFullCount*100)+'%'})
 				;
 				$pre.text( $pre.text() + sitemapRow.path );
 
-				log("\n"+'---- page: '+pagePath); // コンテンツの加工処理開始 (を、ログファイルに記録)
+				log("\n"+'---- page('+fileProgressCounter+'/'+pageListFullCount+'): '+pagePath); // コンテンツの加工処理開始 (を、ログファイルに記録)
 
 				px.it79.fnc(
 					{"pageInfo": sitemapRow},

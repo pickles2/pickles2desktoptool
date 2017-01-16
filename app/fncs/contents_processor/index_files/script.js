@@ -140,6 +140,15 @@ window.contApp = new (function(px){
 		$progressMessage.html('実行中...');
 		$progress.html('計算中...');
 
+		var pageList = pj.site.getSitemap();
+		var fileProgressCounter = 0;
+		$progress.html(fileProgressCounter+'/'+px.utils79.count(pageList));
+
+		var counter = {};
+		var fileCounter = {};
+		var pathCurrentContent = null;
+
+		// HTMLソース加工
 		function srcProcessor( src, type, next ){
 			var supply = {
 				// supplying libs
@@ -154,19 +163,29 @@ window.contApp = new (function(px){
 			}
 		}
 
-		var pageList = pj.site.getSitemap();
-		var counter = 0;
-		$progress.html(counter+'/'+px.utils79.count(pageList));
+		// 任意の項目を数える
+		function count( key ){
+			counter[key] = counter[key]||0;
+			counter[key] ++;
+			return counter[key];
+		}
+
+		// ファイルを数える
+		function countFile(){
+			fileCounter[pathCurrentContent] = fileCounter[pathCurrentContent]||0;
+			fileCounter[pathCurrentContent] ++;
+			return fileCounter[pathCurrentContent];
+		}
 
 		px.utils.iterate(
 			pageList ,
-			function( it1, sitemapRow, idx1 ){
+			function( it1, sitemapRow, pagePath ){
 				// console.log(sitemapRow);
-				counter ++;
-				$progressMessage.text(idx1);
+				fileProgressCounter ++;
+				$progressMessage.text(pagePath);
 				$progress
-					.text(counter+'/'+px.utils79.count(pageList))
-					.css({"width": Number(counter/px.utils79.count(pageList)*100)+'%'})
+					.text(fileProgressCounter+'/'+px.utils79.count(pageList))
+					.css({"width": Number(fileProgressCounter/px.utils79.count(pageList)*100)+'%'})
 				;
 				$pre.text( $pre.text() + sitemapRow.path );
 
@@ -194,6 +213,14 @@ window.contApp = new (function(px){
 							$pre.text( $pre.text() + "\n" );
 							it1.next();
 							// it2.next(arg2);
+						} ,
+						function(it2, arg2){
+							// コンテンツのパスを取得
+							pj.px2proj.get_path_content(arg2.pageInfo.path, function(contPath){
+								pathCurrentContent = contPath;
+								it2.next(arg2);
+							});
+							return;
 						} ,
 						function(it2, arg2){
 							// HTML拡張子のみ抽出
@@ -255,39 +282,36 @@ window.contApp = new (function(px){
 									case 'html':
 									case 'md':
 									default:
-										pj.px2proj.get_path_content(arg2.pageInfo.path, function(contPath){
-											if( !contPath ){
-												// console.log( 'content path of ' + arg2.pageInfo.path + ' is ' + contPath );
-												$pre.text( $pre.text() + ' -> ERROR' );
-												$pre.text( $pre.text() + "\n" );
-												it2.next(arg2);
-												return;
-											}
+										if( !pathCurrentContent ){
+											// console.log( 'content path of ' + arg2.pageInfo.path + ' is ' + pathCurrentContent );
+											$pre.text( $pre.text() + ' -> ERROR' );
+											$pre.text( $pre.text() + "\n" );
+											it2.next(arg2);
+											return;
+										}
+										pj.px2proj.get_path_controot(function(contRoot){
+											pj.px2proj.get_path_docroot(function(docRoot){
+												var _contentsPath = px.path.resolve(docRoot + contRoot + pathCurrentContent);
+												var src = px.fs.readFileSync( _contentsPath ).toString();
+												srcProcessor( src, procType, function(after){
+													if( is_dryrun ){
+														// dryrun で実行されていたら、加工結果を保存しない
+														$pre.text( $pre.text() + ' -> done' );
+														$pre.text( $pre.text() + "\n" );
+														it2.next(arg2);
+														return;
+													}
 
-											pj.px2proj.get_path_controot(function(contRoot){
-												pj.px2proj.get_path_docroot(function(docRoot){
-													var _contentsPath = px.path.resolve(docRoot + contRoot + contPath);
-													var src = px.fs.readFileSync( _contentsPath ).toString();
-													srcProcessor( src, procType, function(after){
-														if( is_dryrun ){
-															// dryrun で実行されていたら、加工結果を保存しない
-															$pre.text( $pre.text() + ' -> done' );
-															$pre.text( $pre.text() + "\n" );
-															it2.next(arg2);
-															return;
+													px.fs.writeFile( _contentsPath, after, {}, function(err){
+														if(err){
+															console.error( err );
 														}
+														$pre.text( $pre.text() + ' -> done' );
+														$pre.text( $pre.text() + "\n" );
 
-														px.fs.writeFile( _contentsPath, after, {}, function(err){
-															if(err){
-																console.error( err );
-															}
-															$pre.text( $pre.text() + ' -> done' );
-															$pre.text( $pre.text() + "\n" );
-
-															it2.next(arg2);
-														} );
+														it2.next(arg2);
 													} );
-												});
+												} );
 											});
 										});
 										break;
@@ -303,6 +327,9 @@ window.contApp = new (function(px){
 			} ,
 			function(){
 				px.message( '完了しました。' );
+				console.log('----------------------------------- completed -----------------------------------');
+				console.log('result: count()', counter);
+				console.log('result: countFile()', px.utils79.count(fileCounter), fileCounter);
 				callback();
 			}
 		);

@@ -117,6 +117,15 @@ src = $.html();
 
 next(src);
 		</script>
+		<script class="snippet-source-processor" title="文字列 a が含まれる箇所をカウントする" type="text/template">
+if( src.match('a') ){
+	count('a'); // キーワード 'a' でカウントする
+	countFile(); // ファイル単位でカウントする
+}
+
+// next() に加工後の src を渡して、次の処理へ進む。
+next(src);
+		</script>
 
 		<!-- ************************** snippets for instance processor ************************** -->
 		<script class="snippet-instance-processor" title="なにもしない" type="text/template">
@@ -181,7 +190,10 @@ broccoli.getModule(instance.modId, instance.subModName, function(mod){
 			return;
 		},
 		function(){
+			// 加工後のインスタンスデータで更新する
 			editor.setInstance(instance);
+
+			// editor.done() を呼び出して、次の処理へ進む。
 			editor.done();
 		}
 	);
@@ -201,6 +213,20 @@ for(var resKey in resourceDb){
 	editor.resourceMgr.setResourceInfo(resKey, resInfo);
 }
 
+// editor.done() を呼び出して、次の処理へ進む。
+editor.done();
+		</script>
+		<script class="snippet-instance-processor" title="指定モジュールが使われている数をカウントする" type="text/template">
+var targetModuleName = 'local:dev/mod';
+var instance = editor.getInstance();
+// console.log(instance.modId, instance.subModName);
+
+if( instance.modId == targetModuleName && !instance.subModName ){
+	count(targetModuleName); // キーワード targetModuleName でカウントする
+	countFile(); // ファイル単位でカウントする
+}
+
+// editor.done() を呼び出して、次の処理へ進む。
 editor.done();
 		</script>
 

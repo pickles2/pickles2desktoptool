@@ -12,7 +12,7 @@ window.contApp = new (function(px){
 	var $snippet_for_script_source_processor;
 	var $snippet_for_script_instance_processor;
 	var CodeMirrorInstans = {};
-	var pathHomeDir, pathLogFile;
+	var pathHomeDir, pathLogFileName;
 
 	var cancelRequest = false;
 
@@ -123,12 +123,17 @@ window.contApp = new (function(px){
 								cancelRequest = true;
 							});
 
+							var $btnOpenLogFile = $('<button class="px2-btn">').text('ログファイルを開く').click(function(){
+								px.openInTextEditor(pathHomeDir+'/logs/'+pathLogFileName);
+							});
+
 							px.dialog({
 								"title": "一括加工",
 								"body": $dialogBody,
 								"buttons": [
-									$btnOk,
-									$btnCancel
+									$btnCancel,
+									$btnOpenLogFile,
+									$btnOk
 								]
 							});
 
@@ -210,7 +215,7 @@ window.contApp = new (function(px){
 			return fileCounter[pathCurrentContent];
 		}
 
-		pathLogFile = (function(){
+		pathLogFileName = (function(){
 			var date = new Date;
 			var filename = '';
 			filename += 'contents_processor_log-';
@@ -239,7 +244,7 @@ window.contApp = new (function(px){
 			try {
 				px.fs.mkdirSync(pathHomeDir+'/logs/');
 			} catch (e) {}
-			px.fs.appendFileSync( pathHomeDir+'/logs/'+pathLogFile, msg+"\n", 'utf-8');
+			px.fs.appendFileSync( pathHomeDir+'/logs/'+pathLogFileName, msg+"\n", 'utf-8');
 			return true;
 		}
 

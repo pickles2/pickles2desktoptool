@@ -12,125 +12,147 @@ window.contApp = new (function(px){
 	var $snippet_for_script_source_processor;
 	var $snippet_for_script_instance_processor;
 	var CodeMirrorInstans = {};
+	var pathHomeDir, pathLogFile;
 
 	/**
 	 * initialize
 	 */
 	function init(){
-		$cont = $('.contents').html('');
+		px.it79.fnc(
+			{},
+			[
+				function(it1, data){
+					pj.px2proj.get_path_homedir(function(path){
+						pathHomeDir = path;
+						it1.next(data);
+					});
+				},
+				function(it1, data){
 
-		var html = $('#template-main-form').html();
-		$cont.html(html);
-		$btn = $cont.find('button');
-		$pre = $('<pre>');
+					$cont = $('.contents').html('');
 
-		$snippet_for_script_source_processor = $('select[name=snippet_for_script_source_processor]')
-			.on('change', function(){
-				var val = $(this).val();
-				$(this).val('');
-				$cont.find('form').find('textarea[name=script_source_processor]').val(val);
-				CodeMirrorInstans['source_processor'].setValue(val);
-			})
-		;
-		$snippet_for_script_instance_processor = $('select[name=snippet_for_script_instance_processor]')
-			.on('change', function(){
-				var val = $(this).val();
-				$(this).val('');
-				$cont.find('form').find('textarea[name=script_instance_processor]').val(val);
-				CodeMirrorInstans['instance_processor'].setValue(val);
-			})
-		;
+					var html = $('#template-main-form').html();
+					$cont.html(html);
+					$btn = $cont.find('button');
+					$pre = $('<pre>');
 
-		CodeMirrorInstans['source_processor'] = window.textEditor.attachTextEditor(
-			$cont.find('form').find('textarea[name=script_source_processor]').get(0),
-			'js',
-			{
-				save: function(){}
-			}
+					$snippet_for_script_source_processor = $('select[name=snippet_for_script_source_processor]')
+						.on('change', function(){
+							var val = $(this).val();
+							$(this).val('');
+							$cont.find('form').find('textarea[name=script_source_processor]').val(val);
+							CodeMirrorInstans['source_processor'].setValue(val);
+						})
+					;
+					$snippet_for_script_instance_processor = $('select[name=snippet_for_script_instance_processor]')
+						.on('change', function(){
+							var val = $(this).val();
+							$(this).val('');
+							$cont.find('form').find('textarea[name=script_instance_processor]').val(val);
+							CodeMirrorInstans['instance_processor'].setValue(val);
+						})
+					;
+
+					CodeMirrorInstans['source_processor'] = window.textEditor.attachTextEditor(
+						$cont.find('form').find('textarea[name=script_source_processor]').get(0),
+						'js',
+						{
+							save: function(){}
+						}
+					);
+					CodeMirrorInstans['instance_processor'] = window.textEditor.attachTextEditor(
+						$cont.find('form').find('textarea[name=script_instance_processor]').get(0),
+						'js',
+						{
+							save: function(){}
+						}
+					);
+
+
+					$('.snippet-source-processor').each(function(e){
+						var $this = $(this);
+						$snippet_for_script_source_processor.append( $('<option>')
+							.attr({'value': px.utils79.trim($this.html())})
+							.text($this.attr('title'))
+						);
+					});
+
+					$('.snippet-instance-processor').each(function(e){
+						var $this = $(this);
+						$snippet_for_script_instance_processor.append( $('<option>')
+							.attr({'value': px.utils79.trim($this.html())})
+							.text($this.attr('title'))
+						);
+					});
+
+					$btn
+						.click( function(){
+							var btn = this;
+							var $form = $cont.find('form');
+							var target_path = $form.find('input[name=target_path]').val();
+							var script_source_processor = $form.find('textarea[name=script_source_processor]').val();
+							var script_instance_processor = $form.find('textarea[name=script_instance_processor]').val();
+							var is_dryrun = ( $form.find('input[name=is_dryrun]:checked').val()=='dryrun' ? true : false );
+
+							$pre.text('');
+							$(btn).attr('disabled', 'disabled');
+							CodeMirrorInstans['source_processor'].setOption("readonly", "nocursor");
+							CodeMirrorInstans['instance_processor'].setOption("readonly", "nocursor");
+							$form.find('input,select,textarea').attr('disabled', 'disabled');
+							var $dialogBody = $(document.getElementById('template-modal-content').innerHTML);
+							$pre = $dialogBody.find('pre');
+							$pre.css({'height': '300px'});
+							$progress = $dialogBody.find('.cont_progress-bar .progress-bar');
+							$progress.html('');
+							$progressMessage = $dialogBody.find('.cont_message');
+							$progressMessage.html('準備中...');
+
+							var $btnOk = $('<button class="px2-btn px2-btn--primary">').text('OK').click(function(){
+								px.closeDialog();
+								$(btn).removeAttr('disabled').focus();
+								CodeMirrorInstans['source_processor'].setOption("readonly", false);
+								CodeMirrorInstans['instance_processor'].setOption("readonly", false);
+								$form.find('input,select,textarea').removeAttr('disabled', 'disabled');
+							}).attr({'disabled':'disabled'});
+
+							px.dialog({
+								"title": "一括加工",
+								"body": $dialogBody,
+								"buttons": [
+									$btnOk
+								]
+							});
+
+							processor(
+								target_path,
+								script_source_processor,
+								script_instance_processor,
+								is_dryrun,
+								function(){
+									$progressMessage.html('completed!');
+									$progress.css({"width": '100%'}).removeClass('progress-bar-striped');
+									$pre.text( $pre.text() + 'completed!' );
+									$btnOk.removeAttr('disabled').focus();
+								}
+							);
+						} )
+					;
+					$pre
+						.css({
+							'max-height': 360,
+							'height': 360
+						})
+					;
+
+					it1.next(data);
+				},
+				function(it1, data){
+					$(window).scrollTop(0);
+					$('form input[name=target_path]').focus();
+					it1.next(data);
+				}
+			]
 		);
-		CodeMirrorInstans['instance_processor'] = window.textEditor.attachTextEditor(
-			$cont.find('form').find('textarea[name=script_instance_processor]').get(0),
-			'js',
-			{
-				save: function(){}
-			}
-		);
-
-
-		$('.snippet-source-processor').each(function(e){
-			var $this = $(this);
-			$snippet_for_script_source_processor.append( $('<option>')
-				.attr({'value': px.utils79.trim($this.html())})
-				.text($this.attr('title'))
-			);
-		});
-
-		$('.snippet-instance-processor').each(function(e){
-			var $this = $(this);
-			$snippet_for_script_instance_processor.append( $('<option>')
-				.attr({'value': px.utils79.trim($this.html())})
-				.text($this.attr('title'))
-			);
-		});
-
-		$btn
-			.click( function(){
-				var btn = this;
-				var $form = $cont.find('form');
-				var target_path = $form.find('input[name=target_path]').val();
-				var script_source_processor = $form.find('textarea[name=script_source_processor]').val();
-				var script_instance_processor = $form.find('textarea[name=script_instance_processor]').val();
-				var is_dryrun = ( $form.find('input[name=is_dryrun]:checked').val()=='dryrun' ? true : false );
-
-				$pre.text('');
-				$(btn).attr('disabled', 'disabled');
-				CodeMirrorInstans['source_processor'].setOption("readonly", "nocursor");
-				CodeMirrorInstans['instance_processor'].setOption("readonly", "nocursor");
-				$form.find('input,select,textarea').attr('disabled', 'disabled');
-				var $dialogBody = $(document.getElementById('template-modal-content').innerHTML);
-				$pre = $dialogBody.find('pre');
-				$pre.css({'height': '300px'});
-				$progress = $dialogBody.find('.cont_progress-bar .progress-bar');
-				$progress.html('');
-				$progressMessage = $dialogBody.find('.cont_message');
-				$progressMessage.html('準備中...');
-
-				var $btnOk = $('<button class="px2-btn px2-btn--primary">').text('OK').click(function(){
-					px.closeDialog();
-					$(btn).removeAttr('disabled').focus();
-					CodeMirrorInstans['source_processor'].setOption("readonly", false);
-					CodeMirrorInstans['instance_processor'].setOption("readonly", false);
-					$form.find('input,select,textarea').removeAttr('disabled', 'disabled');
-				}).attr({'disabled':'disabled'});
-
-				px.dialog({
-					"title": "一括加工",
-					"body": $dialogBody,
-					"buttons": [
-						$btnOk
-					]
-				});
-
-				processor(
-					target_path,
-					script_source_processor,
-					script_instance_processor,
-					is_dryrun,
-					function(){
-						$progressMessage.html('completed!');
-						$progress.css({"width": '100%'}).removeClass('progress-bar-striped');
-						$pre.text( $pre.text() + 'completed!' );
-						$btnOk.removeAttr('disabled').focus();
-					}
-				);
-			} )
-		;
-		$pre
-			.css({
-				'max-height': 360,
-				'height': 360
-			})
-		;
 	}
 
 
@@ -177,6 +199,58 @@ window.contApp = new (function(px){
 			return fileCounter[pathCurrentContent];
 		}
 
+		pathLogFile = (function(){
+			var date = new Date;
+			var filename = '';
+			filename += 'contents_processor_log-';
+			filename += px.php.str_pad(date.getFullYear(), 4, '0', 'STR_PAD_LEFT');
+			filename += px.php.str_pad((date.getMonth()+1), 2, '0', 'STR_PAD_LEFT');
+			filename += px.php.str_pad(date.getDate(), 2, '0', 'STR_PAD_LEFT');
+			filename += '-';
+			filename += px.php.str_pad(date.getHours(), 2, '0', 'STR_PAD_LEFT');
+			filename += px.php.str_pad(date.getMinutes(), 2, '0', 'STR_PAD_LEFT');
+			filename += px.php.str_pad(date.getSeconds(), 2, '0', 'STR_PAD_LEFT');
+			filename2 = '';
+			var i = 0;
+			while( !px.utils79.is_file(pathHomeDir+'/'+filename+filename2+'.log') ){
+				if( px.utils79.is_file(pathHomeDir+'/'+filename+filename2+'.log') ){
+					i ++;
+					filename2 = '('+i+')';
+					continue;
+				}
+				break;
+			}
+			return filename+filename2+'.log';
+		})();
+
+		// 実行ログをファイル出力する
+		function log(msg){
+			try {
+				px.fs.mkdirSync(pathHomeDir+'/logs/');
+			} catch (e) {}
+			px.fs.appendFileSync( pathHomeDir+'/logs/'+pathLogFile, msg+"\n", 'utf-8');
+			return true;
+		}
+
+		log('-----------------------------------');
+		log('---- start contents processor; ----');
+		log(new Date());
+		log('');
+		log('## Target path');
+		log('`'+target_path+'`');
+		log('');
+		log('## Source Processor Eval Code');
+		log('```'+"\n"+script_source_processor.toString()+"\n"+'```');
+		log('');
+		log('## Instance Processor Eval Code');
+		log('```'+"\n"+script_instance_processor.toString()+"\n"+'```');
+		log('');
+		log('## Is Dry Run');
+		log('`'+JSON.stringify(is_dryrun)+'`');
+		log('');
+		log('-----------------------------------');
+		log('## Log by pages');
+
 		px.utils.iterate(
 			pageList ,
 			function( it1, sitemapRow, pagePath ){
@@ -188,6 +262,8 @@ window.contApp = new (function(px){
 					.css({"width": Number(fileProgressCounter/px.utils79.count(pageList)*100)+'%'})
 				;
 				$pre.text( $pre.text() + sitemapRow.path );
+
+				log("\n"+'---- page: '+pagePath); // コンテンツの加工処理開始 (を、ログファイルに記録)
 
 				px.it79.fnc(
 					{"pageInfo": sitemapRow},
@@ -210,6 +286,7 @@ window.contApp = new (function(px){
 							} catch (e) {
 							}
 							$pre.text( $pre.text() + ' -> SKIP' );
+							log('-> SKIP');
 							$pre.text( $pre.text() + "\n" );
 							it1.next();
 							// it2.next(arg2);
@@ -224,9 +301,10 @@ window.contApp = new (function(px){
 						} ,
 						function(it2, arg2){
 							// HTML拡張子のみ抽出
-							var procType = pj.get_path_proc_type( arg2.pageInfo.path );
-							$pre.text( $pre.text() + ' -> ' + procType );
-							switch( procType ){
+							var Extension = pj.get_path_proc_type( arg2.pageInfo.path );
+							$pre.text( $pre.text() + ' -> ' + Extension );
+							log('Extension: '+Extension);
+							switch( Extension ){
 								case 'html':
 								case 'htm':
 									it2.next(arg2);
@@ -234,17 +312,20 @@ window.contApp = new (function(px){
 								default:
 									$pre.text( $pre.text() + ' -> SKIP' );
 									$pre.text( $pre.text() + "\n" );
+									log('-> SKIP');
 									it1.next();
 									break;
 							}
 						} ,
 						function(it2, arg2){
 							pj.getPageContentEditorMode( arg2.pageInfo.path, function(procType){
+								log('EditorMode: '+procType);
 								$pre.text( $pre.text() + ' -> ' + procType );
 								switch( procType ){
 									case '.not_exists':
 										$pre.text( $pre.text() + ' -> SKIP' );
 										$pre.text( $pre.text() + "\n" );
+										log('-> SKIP');
 										it1.next();
 										break;
 
@@ -263,6 +344,7 @@ window.contApp = new (function(px){
 															eval(script_instance_processor.toString());
 														} catch (e) {
 															console.log('eval ERROR', e);
+															log('eval ERROR');
 															editor.done();
 														}
 													}
@@ -272,6 +354,10 @@ window.contApp = new (function(px){
 													// console.log('replace done!');
 													$pre.text( $pre.text() + ' -> done' );
 													$pre.text( $pre.text() + "\n" );
+													if(px.utils79.count(logs)){
+														log(JSON.stringify(logs,null,4));
+													}
+													log('-> done');
 													it2.next(arg2);
 												})
 											;
@@ -286,6 +372,7 @@ window.contApp = new (function(px){
 											// console.log( 'content path of ' + arg2.pageInfo.path + ' is ' + pathCurrentContent );
 											$pre.text( $pre.text() + ' -> ERROR' );
 											$pre.text( $pre.text() + "\n" );
+											log('-> ERROR');
 											it2.next(arg2);
 											return;
 										}
@@ -298,6 +385,7 @@ window.contApp = new (function(px){
 														// dryrun で実行されていたら、加工結果を保存しない
 														$pre.text( $pre.text() + ' -> done' );
 														$pre.text( $pre.text() + "\n" );
+														log('-> done');
 														it2.next(arg2);
 														return;
 													}
@@ -308,7 +396,7 @@ window.contApp = new (function(px){
 														}
 														$pre.text( $pre.text() + ' -> done' );
 														$pre.text( $pre.text() + "\n" );
-
+														log('-> done');
 														it2.next(arg2);
 													} );
 												} );
@@ -330,6 +418,11 @@ window.contApp = new (function(px){
 				console.log('----------------------------------- completed -----------------------------------');
 				console.log('result: count()', counter);
 				console.log('result: countFile()', px.utils79.count(fileCounter), fileCounter);
+				log('');
+				log('----------------------------------- completed -----------------------------------');
+				log(new Date());
+				log('result: count() - '+JSON.stringify(counter,null,4));
+				log('result: countFile() - '+px.utils79.count(fileCounter)+' - '+JSON.stringify(fileCounter,null,4));
 				callback();
 			}
 		);

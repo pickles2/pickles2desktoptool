@@ -13680,7 +13680,7 @@ process.chdir = function (dir) {
 (function(exports){
 
 	/**
-	 * 文字列にキャストして得る
+	 * 文字列型に置き換える
 	 */
 	exports.toStr = function(val){
 		if( typeof(val) == typeof('') ){
@@ -13701,6 +13701,33 @@ process.chdir = function (dir) {
 			return rtn;
 		}
 		return ''+val;
+	}
+
+	/**
+	 * 文字列の前後から空白文字列を削除する
+	 */
+	exports.trim = function(str){
+		str = str.replace(/[\s]*$/, '');
+		str = str.replace(/^[\s]*/, '');
+		return str;
+	}
+
+	/**
+	 * 配列(または連想配列)のキーの配列を取得する
+	 */
+	exports.array_keys = function(ary){
+		var rtn = [];
+		for(var key in ary){
+			rtn.push(key);
+		}
+		return rtn;
+	}
+
+	/**
+	 * 配列(または連想配列)の要素数を数える
+	 */
+	exports.count = function(ary){
+		return this.array_keys(ary).length;
 	}
 
 	/**
@@ -13758,6 +13785,36 @@ process.chdir = function (dir) {
 	}
 
 	/**
+	 * パスを正規化する。
+	 *
+	 * 受け取ったパスを、スラッシュ区切りの表現に正規化します。
+	 * Windowsのボリュームラベルが付いている場合は削除します。
+	 * URIスキーム(http, https, ftp など) で始まる場合、2つのスラッシュで始まる場合(`//www.example.com/abc/` など)、これを残して正規化します。
+	 *
+	 *  - 例： `\a\b\c.html` → `/a/b/c.html` バックスラッシュはスラッシュに置き換えられます。
+	 *  - 例： `/a/b////c.html` → `/a/b/c.html` 余計なスラッシュはまとめられます。
+	 *  - 例： `C:\a\b\c.html` → `/a/b/c.html` ボリュームラベルは削除されます。
+	 *  - 例： `http://a/b/c.html` → `http://a/b/c.html` URIスキームは残されます。
+	 *  - 例： `//a/b/c.html` → `//a/b/c.html` ドメイン名は残されます。
+	 *
+	 * @param string $path 正規化するパス
+	 * @return string 正規化されたパス
+	 */
+	exports.normalize_path = function($path){
+		$path = this.trim($path);
+		// $path = $this->convert_encoding( $path );//文字コードを揃える
+		$path = $path.replace( /\/|\\/g, '/' );//バックスラッシュをスラッシュに置き換える。
+		$path = $path.replace( /^[A-Za-z]\:\//g, '/' );//Windowsのボリュームラベルを削除
+		var $prefix = '';
+		if( $path.match( /^((?:[a-zA-Z0-9]+\:)?\/)(\/[\s\S]*)$/, $path ) ){
+			$prefix = RegExp.$1;
+			$path = RegExp.$2;
+		}
+		$path = $path.replace( /\/+/g, '/' );//重複するスラッシュを1つにまとめる
+		return $prefix+$path;
+	}
+
+	/**
 	 * 正規表現で使えるようにエスケープ処理を施す
 	 */
 	exports.regexp_quote = function(str) {
@@ -13811,6 +13868,23 @@ process.chdir = function (dir) {
 		callback(err);
 	}
 
+	/**
+	 * 文字列をn文字ずつ分割する
+	 */
+	exports.divide = function(str, n){
+		if(typeof(str) !== typeof('')){
+			str = str.toString();
+		}
+		if(typeof(n) !== typeof(0)){return false;}
+		if(n <= 0){return false;}
+		if(n !== Math.floor(n)){return false;}
+		var rtn = [];
+		for(var i = 0; i < str.length; i = i+n ){
+			var sbstr = str.substring(i,i+n); // i文字目からn文字ずつとりだす
+			rtn.push(sbstr);
+		}
+		return rtn;
+	}
 
 })(exports);
 

@@ -57,6 +57,8 @@ $ npm run build
 - コンテンツを一括加工 機能追加。
 - GUI編集で、モジュールの `info.json` や `clip.json` がキャッシュされ、更新が反映されない場合がある問題を修正。
 - GUI編集で、モジュールの package, category にも `deprecated` フラグを追加。
+- GUI編集で、moduleフィールド、 loopフィールド でも `hidden`, ifフィールドでの分岐, echoフィールドからの出力 ができるようになった。
+- GUI編集で、既に使用されたモジュールに、後から selectフィールドを追加した場合に、 `default` が適用されない不具合を修正。
 
 ### Pickles 2 Desktop Tool 2.0.0-beta.15 (2016年11月21日)
 

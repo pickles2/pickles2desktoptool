@@ -69,6 +69,8 @@ var nw = new NwBuilder({
 					rtn.push( './node_modules/'+modName+'/composer.json' );
 					rtn.push( './node_modules/'+modName+'/client/dist/**' );
 					rtn.push( './node_modules/'+modName+'/libs/**' );
+					rtn.push( './node_modules/'+modName+'/fields/**' );
+					rtn.push( './node_modules/'+modName+'/data/**' );
 					break;
 				case 'broccoli-field-table':
 					// 必要なファイルだけ丁寧に抜き出す

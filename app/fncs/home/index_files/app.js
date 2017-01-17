@@ -189,9 +189,8 @@ window.contApp = new (function(){
 			alert(msg);
 			return false;
 		}
-		px.save(function(){
-			px.subapp();
-		});
+		px.save();
+		px.subapp();
 		return true;
 	}
 
@@ -253,11 +252,11 @@ window.contApp = new (function(){
 							;
 
 						}
-						px.save( function(){
-							px.closeDialog();
-							px.message('プロジェクト情報を更新しました。');
-							px.subapp();
-						} );
+						px.save();
+
+						px.closeDialog();
+						px.message('プロジェクト情報を更新しました。');
+						px.subapp();
 					} ) ,
 				$('<button>')
 					.text('Cancel')

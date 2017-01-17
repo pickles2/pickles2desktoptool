@@ -375,11 +375,18 @@ new (function($, window){
 	/**
 	 * DBを保存する
 	 */
-	this.save = function( callback ){
-		callback = callback || function(){};
+	this.save = function(){
+		console.log( 'px.save() called.' );
 		var data = JSON.stringify( _db, null, 1 );
-		_fs.writeFileSync( _path_db, data, {"encoding":"utf8","mode":436,"flag":"w"} );
-		callback();
+		try {
+			var result = _fs.writeFileSync( _path_db+'.tmp', data, {"encoding":"utf8","mode":436,"flag":"w"} );
+			console.log( 'px.save() result:', (result===undefined ? true : result) );
+			result = _fs.renameSync(_path_db+'.tmp', _path_db);
+			console.log( 'px.save() rename result:', (result===undefined ? true : result) );
+		} catch (e) {
+			console.error( 'FAILED to save _db' );
+			return false;
+		}
 		return true;
 	}
 
@@ -387,6 +394,7 @@ new (function($, window){
 	 * アプリケーションを終了する
 	 */
 	this.exit = function(){
+		console.log( 'px.exit() called.' );
 		// if(!confirm('exit?')){return;}
 		process.exit();
 	}
@@ -474,9 +482,8 @@ new (function($, window){
 		callback = callback || function(){};
 		_db.projects.splice( projectId, 1 );
 		this.deselectProject();
-		this.save(function(){
-			callback();
-		});
+		this.save();
+		callback();
 		return true;
 	}
 
@@ -999,8 +1006,10 @@ new (function($, window){
 	});
 	process.on( 'uncaughtException', function(e){
 		// alert('ERROR: Uncaught Exception');
-		// console.log(e);
-		// console.log('ERROR: Uncaught Exception');
+		console.error('ERROR: Uncaught Exception');
+		console.error(e);
+		px.log( 'ERROR: Uncaught Exception' );
+		px.log( e );
 	} );
 	$(window).on( 'resize', function(e){
 		layoutReset();

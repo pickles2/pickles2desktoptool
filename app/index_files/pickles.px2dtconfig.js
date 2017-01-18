@@ -71,9 +71,8 @@
 						px.getDb().apps.texteditor = $tpl.find('[name=apps_texteditor]').val();
 						px.getDb().apps.texteditorForDir = $tpl.find('[name=apps_texteditor_for_dir]').val();
 						px.getDb().language = $tpl.find('[name=language]').val();
-						px.save(function(){
-							px.closeDialog();
-						});
+						px.save();
+						px.closeDialog();
 					}
 				) ,
 				$('<button>')

@@ -18903,7 +18903,7 @@ function hasOwnProperty(obj, prop) {
 (function(exports){
 
 	/**
-	 * 文字列にキャストして得る
+	 * 文字列型に置き換える
 	 */
 	exports.toStr = function(val){
 		if( typeof(val) == typeof('') ){
@@ -19073,6 +19073,23 @@ function hasOwnProperty(obj, prop) {
 		callback(err);
 	}
 
+	/**
+	 * 文字列をn文字ずつ分割する
+	 */
+	exports.divide = function(str, n){
+		if(typeof(str) !== typeof('')){
+			str = str.toString();
+		}
+		if(typeof(n) !== typeof(0)){return false;}
+		if(n <= 0){return false;}
+		if(n !== Math.floor(n)){return false;}
+		var rtn = [];
+		for(var i = 0; i < str.length; i = i+n ){
+			var sbstr = str.substring(i,i+n); // i文字目からn文字ずつとりだす
+			rtn.push(sbstr);
+		}
+		return rtn;
+	}
 
 })(exports);
 

@@ -36,41 +36,56 @@
 		<link rel="stylesheet" href="./index_files/style.css" type="text/css" />
 		<script src="./index_files/script.js"></script>
 
+		<!-- ************************** app templates ************************** -->
 		<script id="template-main-form" type="text/template">
-			<ul>
-				<li>この処理は、たくさんのファイルに一度に変更を加えます。</li>
-				<li>すべてのファイルを 実行の前に状態をコミットし、実行後にもコミットすることを強くお勧めします。</li>
-				<li><code>console.log()</code> に送った情報は、 デベロッパーツール 上で確認することができます。</li>
-			</ul>
-			<form action="javascript:;" method="get">
-				<h2>パス</h2>
-				<p><input type="text" name="target_path" value="/*" class="form-control" /></p>
-				<h2>ソース加工スクリプト</h2>
-				<p><select name="snippet_for_script_source_processor" class="form-control">
-					<option value="">サンプルコードを選択してください (注意! - 現在のコードは消去されます)</option>
-				</select></p>
-				<pre><code>function srcProcessor( src, type, next ){
+			<div class="cont_wrap">
+				<ul>
+					<li>この処理は、たくさんのファイルに一度に変更を加えます。</li>
+					<li>すべてのファイルを 実行の前に状態をコミットし、実行後にもコミットすることを強くお勧めします。</li>
+					<li><code>console.log()</code> に送った情報は、 デベロッパーツール 上で確認することができます。</li>
+				</ul>
+				<form action="javascript:;" method="get">
+					<h2>パス</h2>
+					<p><input type="text" name="target_path" value="/*" class="form-control" /></p>
+					<h2>ソース加工スクリプト</h2>
+					<p><select name="snippet_for_script_source_processor" class="form-control">
+						<option value="">サンプルコードを選択してください (注意! - 現在のコードは消去されます)</option>
+					</select></p>
+					<pre><code>function srcProcessor( src, type, next ){
 	var supply = {
 		// supplying libs
 		'cheerio': require('cheerio'),
 		'iterate79': require('iterate79')
 	};
-<textarea name="script_source_processor" class="form-control" rows="12">next(src);</textarea>}</code></pre>
-				<h2>インスタンス加工スクリプト</h2>
-				<p><select name="snippet_for_script_instance_processor" class="form-control">
-					<option value="">サンプルコードを選択してください (注意! - 現在のコードは消去されます)</option>
-				</select></p>
-				<pre><code>function( editor ){
-<textarea name="script_instance_processor" class="form-control" rows="12">editor.done();</textarea>}</code></pre>
-				<p><button class="px2-btn px2-btn--primary px2-btn--block">すべてのコンテンツを一括加工する</button></p>
-			</form>
+<textarea name="script_source_processor" class="form-control" rows="12">// next() に加工後の src を渡して、次の処理へ進む。
+next(src);</textarea>}</code></pre>
+					<h2>インスタンス加工スクリプト</h2>
+					<p><select name="snippet_for_script_instance_processor" class="form-control">
+						<option value="">サンプルコードを選択してください (注意! - 現在のコードは消去されます)</option>
+					</select></p>
+					<pre><code>function( editor ){
+<textarea name="script_instance_processor" class="form-control" rows="12">// editor.done() を呼び出して、次の処理へ進む。
+editor.done();</textarea>}</code></pre>
+					<div class="cont_start-btn">
+						<div class="container">
+							<p><label><input type="checkbox" checked="checked" name="is_dryrun" value="dryrun" /> Dry Run</label></p>
+							<p><button class="px2-btn px2-btn--primary px2-btn--block">すべてのコンテンツを一括加工する</button></p>
+						</div>
+					</div>
+				</form>
+			</div>
+		</script>
+		<script id="template-modal-content" type="text/template">
 			<div>
+				<div class="cont_message"></div>
+				<div class="cont_progress-bar progress"><div class="progress-bar progress-bar-striped active" style="width: 0px;"></div></div>
 				<pre class="cont_console"></pre>
 			</div>
 		</script>
 
 		<!-- ************************** snippets for source processor ************************** -->
 		<script class="snippet-source-processor" title="なにもしない" type="text/template">
+// next() に加工後の src を渡して、次の処理へ進む。
 next(src);
 		</script>
 		<script class="snippet-source-processor" title="文字列の単純置換" type="text/template">
@@ -102,9 +117,19 @@ src = $.html();
 
 next(src);
 		</script>
+		<script class="snippet-source-processor" title="文字列 a が含まれる箇所をカウントする" type="text/template">
+if( src.match('a') ){
+	count('文字列 a が含まれる回数'); // 文字列 a が含まれる回数 をカウントする
+	countFile(); // ファイル単位でカウントする
+}
+
+// next() に加工後の src を渡して、次の処理へ進む。
+next(src);
+		</script>
 
 		<!-- ************************** snippets for instance processor ************************** -->
 		<script class="snippet-instance-processor" title="なにもしない" type="text/template">
+// editor.done() を呼び出して、次の処理へ進む。
 editor.done();
 		</script>
 		<script class="snippet-instance-processor" title="フィールドの値をテキスト置換する" type="text/template">
@@ -165,12 +190,44 @@ broccoli.getModule(instance.modId, instance.subModName, function(mod){
 			return;
 		},
 		function(){
+			// 加工後のインスタンスデータで更新する
 			editor.setInstance(instance);
+
+			// editor.done() を呼び出して、次の処理へ進む。
 			editor.done();
 		}
 	);
 
 });
+		</script>
+		<script class="snippet-instance-processor" title="リソースの値を加工する" type="text/template">
+var resourceDb = editor.resourceMgr.getResourceDb();
+//console.log( resourceDb );
+
+for(var resKey in resourceDb){
+	var resInfo = editor.resourceMgr.getResourceInfo(resKey);
+
+	// ここでリソース情報 (resInfo) を加工する
+	console.log( resInfo );
+
+	editor.resourceMgr.setResourceInfo(resKey, resInfo);
+}
+
+// editor.done() を呼び出して、次の処理へ進む。
+editor.done();
+		</script>
+		<script class="snippet-instance-processor" title="指定モジュールが使われている数をカウントする" type="text/template">
+var targetModuleName = 'local:dev/mod';
+var instance = editor.getInstance();
+// console.log(instance.modId, instance.subModName);
+
+if( instance.modId == targetModuleName && !instance.subModName ){
+	count('モジュール '+targetModuleName+' が使われている件数'); // targetModuleName に指定したモジュールが使われている件数 をカウントする
+	countFile(); // ファイル単位でカウントする
+}
+
+// editor.done() を呼び出して、次の処理へ進む。
+editor.done();
 		</script>
 
 	</head>

@@ -119,7 +119,7 @@ next(src);
 		</script>
 		<script class="snippet-source-processor" title="文字列 a が含まれる箇所をカウントする" type="text/template">
 if( src.match('a') ){
-	count('a'); // キーワード 'a' でカウントする
+	count('文字列 a が含まれる回数'); // 文字列 a が含まれる回数 をカウントする
 	countFile(); // ファイル単位でカウントする
 }
 
@@ -222,7 +222,7 @@ var instance = editor.getInstance();
 // console.log(instance.modId, instance.subModName);
 
 if( instance.modId == targetModuleName && !instance.subModName ){
-	count(targetModuleName); // キーワード targetModuleName でカウントする
+	count('モジュール '+targetModuleName+' が使われている件数'); // targetModuleName に指定したモジュールが使われている件数 をカウントする
 	countFile(); // ファイル単位でカウントする
 }
 

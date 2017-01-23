@@ -18936,6 +18936,24 @@ function hasOwnProperty(obj, prop) {
 	}
 
 	/**
+	 * 配列(または連想配列)のキーの配列を取得する
+	 */
+	exports.array_keys = function(ary){
+		var rtn = [];
+		for(var key in ary){
+			rtn.push(key);
+		}
+		return rtn;
+	}
+
+	/**
+	 * 配列(または連想配列)の要素数を数える
+	 */
+	exports.count = function(ary){
+		return this.array_keys(ary).length;
+	}
+
+	/**
 	 * base64エンコードする
 	 */
 	exports.base64_encode = function( bin ){

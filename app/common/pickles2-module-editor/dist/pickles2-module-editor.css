@@ -75,6 +75,14 @@
     border: 1px solid #eee;
     border-radius: 3px;
     color: #333; }
+  .pickles2-module-editor__module-edit__preview {
+    height: 400px;
+    display: flex; }
+    .pickles2-module-editor__module-edit__preview > div {
+      height: 100%;
+      width: 30%; }
+      .pickles2-module-editor__module-edit__preview > div:first-child {
+        width: 70%; }
   .pickles2-module-editor--progress {
     position: fixed;
     top: 0;

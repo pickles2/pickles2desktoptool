@@ -16255,9 +16255,9 @@ module.exports = exports['default'];
 	document.write('<script src="'+__dirname+'/libs/px2style/dist/scripts.js"></script>');
 	document.write('<link rel="stylesheet" href="'+__dirname+'/libs/px2style/dist/styles.css" />');
 
-	// broccoli-html-editor をロード
-	document.write('<link rel="stylesheet" href="'+__dirname+'/libs/broccoli-html-editor/client/dist/broccoli.css" />');
-	document.write('<script src="'+__dirname+'/libs/broccoli-html-editor/client/dist/broccoli.js"></script>');
+	// pickles2-contents-editor をロード
+	document.write('<link rel="stylesheet" href="'+__dirname+'/libs/pickles2-contents-editor/dist/pickles2-contents-editor.css" />');
+	document.write('<script src="'+__dirname+'/libs/pickles2-contents-editor/dist/pickles2-contents-editor.js"></script>');
 
 	window.Pickles2ModuleEditor = function(){
 		var $ = require('jquery');
@@ -16269,6 +16269,7 @@ module.exports = exports['default'];
 		var _this = this;
 		this.__dirname = __dirname;
 		this.options = {};
+		this.moduleId;
 
 		var px2meConf,
 			templates;
@@ -16280,6 +16281,7 @@ module.exports = exports['default'];
 			'addNewCategory': require('./pages/addNewCategory/index.js'),
 			'addNewModule': require('./pages/addNewModule/index.js')
 		};
+		var px2ce;
 
 		/**
 		* initialize
@@ -16305,12 +16307,55 @@ module.exports = exports['default'];
 				.append($canvasModal.hide())
 			;
 
-
 			new Promise(function(rlv){rlv();})
 				.then(function(){ return new Promise(function(rlv, rjt){
 					_this.progress( function(){
 						rlv();
 					} );
+				}); })
+				.then(function(){ return new Promise(function(rlv, rjt){
+					px2ce = new window.Pickles2ContentsEditor();
+					px2ce.init(
+						{
+							'page_path': '/px2me-dummy.html' , // <- 編集対象ページのパス
+							'elmCanvas': document.createElement('div'), // <- 編集画面を描画するための器となる要素
+							'preview':{ // プレビュー用サーバーの情報を設定します。
+								'origin': window.location.origin
+							},
+							'customFields': {},
+							'gpiBridge': function(input, callback){
+								// GPI(General Purpose Interface) Bridge
+								// broccoliは、バックグラウンドで様々なデータ通信を行います。
+								// GPIは、これらのデータ通信を行うための汎用的なAPIです。
+								_this.gpiBridge(
+									{
+										'api':'px2ceBridge',
+										'forPx2CE': input
+									},
+									function(result){
+										callback(result);
+									}
+								);
+								return;
+							},
+							'complete': function(){
+								alert('完了しました。');
+							},
+							'onClickContentsLink': function( uri, data ){
+								alert('編集: ' + uri);
+							},
+							'onMessage': function( message ){
+								// ユーザーへ知らせるメッセージを表示する
+								console.info('message: '+message);
+							}
+						},
+						function(){
+							// スタンバイ完了したら呼び出されるコールバックメソッドです。
+							console.info('pickles2-contents-editor standby!!');
+							rlv();
+						}
+					);
+
 				}); })
 				.then(function(){ return new Promise(function(rlv, rjt){
 					_this.getConfig( function(conf){
@@ -16584,6 +16629,49 @@ module.exports = exports['default'];
 		}
 
 		/**
+		 * broccoli インスタンスを生成する
+		 */
+		this.createBroccoli = function(options, callback){
+			options = options||{};
+			callback = callback||function(){};
+			var broccoli = new Broccoli();
+			px2ce.createBroccoliInitOptions(function(broccoliInitOptions){
+				for(var key in options){
+					broccoliInitOptions[key] = options[key];
+				}
+				broccoliInitOptions.gpiBridge = function(api, options, callback){
+					// GPI(General Purpose Interface) Bridge
+					// broccoliは、バックグラウンドで様々なデータ通信を行います。
+					// GPIは、これらのデータ通信を行うための汎用的なAPIです。
+					// console.log(api, options);
+					_this.gpiBridge(
+						{
+							'api': 'broccoliBridge',
+							'forBroccoli':{
+								'api': JSON.stringify(api) ,
+								'options': JSON.stringify(options)
+							}
+						},
+						function(rtn){
+							// console.log(rtn);
+							callback(rtn);
+						}
+					);
+					return;
+				}
+				// console.log(broccoliInitOptions);
+				broccoli.init(
+					broccoliInitOptions ,
+					function(){
+						// console.log(broccoli);
+						callback( broccoli );
+					}
+				);
+			});
+			return;
+		}
+
+		/**
 		 * プログレスを表示する
 		 */
 		this.progress = function( callback ){
@@ -16672,6 +16760,7 @@ module.exports = exports['default'];
 		* gpiBridgeを呼び出す
 		*/
 		this.gpiBridge = function(data, callback){
+			data.moduleId = this.moduleId;
 			return this.options.gpiBridge(data, callback);
 		}
 
@@ -16959,9 +17048,11 @@ module.exports = function(px2me, $canvasContent, options, callback){
 	var $ = require('jquery');
 	var utils79 = require('utils79');
 	var Promise = require('es6-promise').Promise;
-	var $preview,
-		$previewEditor;
+	var $previewWin,
+		$previewEditorWin;
+	var broccoli;
 
+	px2me.moduleId = options.moduleId;
 
 	new Promise(function(rlv){rlv();})
 		.then(function(){ return new Promise(function(rlv, rjt){
@@ -16973,6 +17064,7 @@ module.exports = function(px2me, $canvasContent, options, callback){
 		.then(function(){ return new Promise(function(rlv, rjt){
 			// 編集画面を描画
 			// console.log(options);
+			console.log('module ID:', options.moduleId);
 			px2me.getModuleCode( options.moduleId, function(moduleCode){
 				// console.log(moduleCode);
 
@@ -17009,39 +17101,36 @@ module.exports = function(px2me, $canvasContent, options, callback){
 				"body": $canvasContent,
 				"buttons": [
 					$('<button class="px2-btn px2-btn--primary">').text('OK').click(function(){
-						var data = {};
-						data.infoJson = $canvasContent.find('[name=infoJson]').val();
-						data.template = $canvasContent.find('[name=template]').val();
-						data.templateExt = $canvasContent.find('[name=templateExt]').val();
-						data.css = $canvasContent.find('[name=css]').val();
-						data.cssExt = $canvasContent.find('[name=cssExt]').val();
-						data.js = $canvasContent.find('[name=js]').val();
-						data.jsExt = $canvasContent.find('[name=jsExt]').val();
-						// console.log('data =',data);
-
-						px2me.saveModuleCode(options.moduleId, data, function(result){
-							px2me.loadPage('list', {}, function(){
-								px2me.closeModal();
+						save(function(result){
+							broccoli.saveContents(function(result){
+								$(window).off('resize.editModule');
+								px2me.loadPage('list', {}, function(){
+									px2me.closeModal();
+								});
 							});
-						})
-
+						});
 					})
 				]
 			});
+			$canvasContent.find('button')
+				.on('click', function(){
+					save(function(result){
+						loadBroccoli(function(){
+						});
+					});
+				})
+			;
 			rlv();
 		}); })
 		.then(function(){ return new Promise(function(rlv, rjt){
-			// プレビューiframeの準備
-			$preview = $canvasContent.find('.pickles2-module-editor__module-edit__preview');
-			$previewIframe = $('<iframe>').attr({'src': px2me.__dirname+'/html/preview.html'});
-			$preview.html('').append($previewIframe);
-
-			$previewEditor = $canvasContent.find('.pickles2-module-editor__module-edit__preview-editor');
-			$previewEditorIframe = $('<iframe>').attr({'src': px2me.__dirname+'/html/preview_editor.html'});
-			$previewEditor.html('').append($previewEditorIframe);
-			// console.log($previewEditorIframe.get(0).contentWindow.location);
-
-			rlv();
+			// broccoli-html-editor インスタンスを生成
+			loadBroccoli(function(){
+				$(window).on('resize.editModule', function(){
+					console.log('--- window resized.');
+					broccoli.redraw();
+				});
+				rlv();
+			});
 		}); })
 		.then(function(){ return new Promise(function(rlv, rjt){
 			px2me.closeProgress(function(){
@@ -17062,6 +17151,68 @@ module.exports = function(px2me, $canvasContent, options, callback){
 			});
 		})
 	;
+
+	function save(callback){
+		callback = callback || function(){};
+		var data = {};
+		data.infoJson = $canvasContent.find('[name=infoJson]').val();
+		data.template = $canvasContent.find('[name=template]').val();
+		data.templateExt = $canvasContent.find('[name=templateExt]').val();
+		data.css = $canvasContent.find('[name=css]').val();
+		data.cssExt = $canvasContent.find('[name=cssExt]').val();
+		data.js = $canvasContent.find('[name=js]').val();
+		data.jsExt = $canvasContent.find('[name=jsExt]').val();
+		// console.log('data =',data);
+
+		px2me.saveModuleCode(options.moduleId, data, function(result){
+			callback(result);
+		});
+		return;
+	}
+	function loadBroccoli(callback){
+		callback = callback || function(){};
+
+		px2me.gpiBridge(
+			{
+				'api':'download',
+				'target': 'css'
+			},
+			function(cssBin){
+				px2me.gpiBridge(
+					{
+						'api':'download',
+						'target': 'js'
+					},
+					function(jsBin){
+						var $frame = $canvasContent
+							.find('.pickles2-module-editor__module-edit__preview')
+						;
+						var $canvas = $('<div>');
+						var $palette = $('<div>');
+						$frame.html('').append($canvas).append($palette);
+						$canvas.attr({
+							"data-broccoli-preview": px2me.__dirname+'/html/preview.html'
+								+'?css='+encodeURIComponent(utils79.base64_encode(cssBin))
+								+'&js='+encodeURIComponent(utils79.base64_encode(jsBin))
+						});
+
+						px2me.createBroccoli(
+							{
+								'elmCanvas': $canvas.get(0),
+								'elmModulePalette': $palette.get(0)
+							},
+							function(b){
+								broccoli = b;
+								callback();
+							}
+						);
+					}
+				);
+			}
+		);
+
+		return;
+	}
 
 }
 

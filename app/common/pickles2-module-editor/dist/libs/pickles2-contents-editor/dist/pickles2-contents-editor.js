@@ -21729,10 +21729,10 @@ module.exports = function(px2ce){
 				// broccoli-html-editor オブジェクトを生成
 				broccoli = new Broccoli();
 				px2ce.createBroccoliInitOptions(function( broccoliInitOptions ){
-					broccoliInitOptions.elmCanvas = $elmCanvas.get(0),
-					broccoliInitOptions.elmModulePalette = $elmModulePalette.get(0),
-					broccoliInitOptions.elmInstanceTreeView = $elmInstanceTreeView.get(0),
-					broccoliInitOptions.elmInstancePathView = $elmInstancePathView.get(0),
+					broccoliInitOptions.elmCanvas = $elmCanvas.get(0);
+					broccoliInitOptions.elmModulePalette = $elmModulePalette.get(0);
+					broccoliInitOptions.elmInstanceTreeView = $elmInstanceTreeView.get(0);
+					broccoliInitOptions.elmInstancePathView = $elmInstancePathView.get(0);
 					broccoli.init(
 						broccoliInitOptions ,
 						function(){
@@ -22662,7 +22662,11 @@ module.exports = function(px2ce){
 						},
 						function(scripts){
 							for(var i in scripts){
-								$('body').append(scripts[i]);
+								try {
+									$('body').append(scripts[i]);
+								} catch (e) {
+									console.error( 'Module Script Error:', scripts[i] );
+								}
 							}
 							rlv();
 						}

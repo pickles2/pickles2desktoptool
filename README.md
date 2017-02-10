@@ -58,6 +58,7 @@ $ npm run build
 - GUI編集で、モジュールの `info.json` や `clip.json` がキャッシュされ、更新が反映されない場合がある問題を修正。
 - GUI編集で、モジュールの package, category にも `deprecated` フラグを追加。
 - GUI編集で、moduleフィールド、 loopフィールド でも `hidden`, ifフィールドでの分岐, echoフィールドからの出力 ができるようになった。
+- GUI編集のimageフィールドに、クリップボード上の画像をペーストできる機能を追加。
 - GUI編集で、既に使用されたモジュールに、後から selectフィールドを追加した場合に、 `default` が適用されない不具合を修正。
 - プレビューサーバーが、Pickles 2 のコンテンツルートに設置された `.htaccess` を簡易的に解析し、 Pickles 2 に渡すべき 拡張子の一覧を取得して制御するようになった。
 

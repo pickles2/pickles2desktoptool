@@ -21801,30 +21801,6 @@ module.exports = function(px2ce){
 			broccoli.unselectInstance();
 			return true;
 		});
-		_Keypress.simple_combo(px2ce.getCmdKeyName()+" c", function(e) {
-			switch(e.target.tagName.toLowerCase()){
-				case 'input': case 'textarea':
-				return true; break;
-			}
-			// e.preventDefault();
-			broccoli.copy(function(result){
-				if(result){
-					console.log('copy instance done.');
-				}
-			});
-			return true;
-		});
-		_Keypress.simple_combo(px2ce.getCmdKeyName()+" v", function(e) {
-			switch(e.target.tagName.toLowerCase()){
-				case 'input': case 'textarea':
-				return true; break;
-			}
-			e.preventDefault();
-			broccoli.paste(function(){
-				console.log('paste instance done.');
-			});
-			return true;
-		});
 		_Keypress.simple_combo(px2ce.getCmdKeyName()+" z", function(e) {
 			switch(e.target.tagName.toLowerCase()){
 				case 'input': case 'textarea':

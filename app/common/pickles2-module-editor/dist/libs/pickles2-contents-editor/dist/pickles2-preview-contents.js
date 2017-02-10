@@ -9828,6 +9828,16 @@ return jQuery;
 	// クリックイベントを登録
 	$iframeWindow.bind('click', function(){
 	});
+	// dropイベントをキャンセル
+	$iframeWindow.on('dragover', function(e){
+		e.stopPropagation();
+		e.preventDefault();
+		return;
+	}).on('drop', function(e){
+		e.stopPropagation();
+		e.preventDefault();
+		return;
+	});
 
 	// console.log(window.location);
 

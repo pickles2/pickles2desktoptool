@@ -22045,7 +22045,7 @@ module.exports = function(px2ce){
 
 					$elmTabs = $canvas.find('.pickles2-contents-editor--default-switch-tab [data-pickles2-contents-editor-switch]');
 					$elmTabs
-						.click(function(){
+						.on('click', function(){
 							var $this = $(this);
 							$elmTabs.removeAttr('disabled');
 							$this.attr({'disabled': 'disabled'});
@@ -22062,7 +22062,7 @@ module.exports = function(px2ce){
 					$iframe = $('<iframe>');
 					$elmCanvas.html('').append($iframe);
 					$iframe
-						.bind('load', function(){
+						.on('load', function(){
 							console.log('pickles2-contents-editor: preview loaded');
 							// alert('pickles2-contents-editor: preview loaded');
 							onPreviewLoad( callback );
@@ -22469,6 +22469,18 @@ module.exports = function(px2ce){
 
 			$canvas = $(options.elmCanvas);
 			$canvas.addClass('pickles2-contents-editor');
+			$canvas
+				.on('dragover', function(e){
+					e.stopPropagation();
+					e.preventDefault();
+					return;
+				})
+				.on('drop', function(e){
+					e.stopPropagation();
+					e.preventDefault();
+					return;
+				})
+			;
 
 			it79.fnc(
 				{},

@@ -12,6 +12,7 @@
 		var platform = 'unknown';
 		if(process.env.LOCALAPPDATA)return 'win';
 		if(process.env.HOME)return 'mac';
+		if(process.platform == 'linux')return 'linux';
 		return platform;
 	})();
 
@@ -66,6 +67,9 @@
 			}else if( _fs.existsSync(url) ){
 				url = _fs.realpathSync(url);
 			}
+		}
+		if(_platform=='linux'){
+			cmd = 'xdg-open';
 		}
 		return this.spawn( cmd, [url], {} );
 	}

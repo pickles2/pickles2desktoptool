@@ -83,10 +83,14 @@ new (function($, window){
 
 	var _platform = (function(){
 		var platform = 'unknown';
+		console.log('platform:', process.platform);
 		if(process.env.LOCALAPPDATA)return 'win';
-		if(process.env.HOME)return 'mac';
+		if(process.platform == 'darwin')return 'mac';
+		if(process.platform == 'linux')return 'linux';
+		console.log('unknown platform:', process.platform);
 		return platform;
 	})();
+	console.log('platform: '+_platform);
 	var _current_app = null;
 	var _selectedProject = null;
 	var _pj = null;
@@ -566,6 +570,9 @@ new (function($, window){
 		if( cmd == 'open' ){
 			if(_platform=='win'){
 				return 'explorer';
+			}
+			if(_platform=='linux'){
+				return 'xdg-open';
 			}
 		}
 		if( _db.commands && _db.commands[cmd] ){

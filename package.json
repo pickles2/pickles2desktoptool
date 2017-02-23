@@ -91,6 +91,11 @@
       "window": {
         "toolbar": false
       }
+    },
+    "linux": {
+      "window": {
+        "toolbar": false
+      }
     }
   }
 }

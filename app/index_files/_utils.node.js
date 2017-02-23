@@ -8,13 +8,7 @@
 	var _pathCurrentDir = process.cwd();
 	var _ejs = require('ejs');
 	var DIRECTORY_SEPARATOR = '/';
-	var _platform = (function(){
-		var platform = 'unknown';
-		if(process.env.LOCALAPPDATA)return 'win';
-		if(process.env.HOME)return 'mac';
-		if(process.platform == 'linux')return 'linux';
-		return platform;
-	})();
+	var _platform = process.platform;
 
 	/**
 	 * システムコマンドを実行する(exec)
@@ -60,7 +54,7 @@
 	 */
 	exports.openURL = function( url ){
 		var cmd = 'open';
-		if(_platform=='win'){
+		if(_platform=='win32'){
 			cmd = 'explorer';
 			if( url.match(new RegExp('^(?:https?|data)\\:','i')) ){
 				// OS依存しないのでスルー

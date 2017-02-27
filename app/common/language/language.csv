@@ -17,6 +17,7 @@ menu.preview,Preview,プレビュー,预览,預覽
 menu.moveContents,Move Contents,コンテンツを移動する,移动内容,移動內容
 menu.search,Search,検索,搜索,搜尋
 menu.module,Modules,モジュール,,
+menu.styleguideGenerator,"Style Guide Generator",スタイルガイド生成,,
 menu.contentsProcessor,Contents Processor,コンテンツーを一括加工,,
 menu.updateGuiContents,Update all GUI Edited Contents,GUI編集コンテンツーを一括再構成,更新全部GUI编辑内容,更新全部GUI編輯內容
 menu.clearcache,Clear Cache,キャッシュを消去,清除缓存,清除緩存

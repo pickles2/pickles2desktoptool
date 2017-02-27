@@ -62,6 +62,9 @@ new (function($, window){
 	var _px2agent = require('px2agent');
 	this.px2agent = _px2agent;
 
+	var _BroccoliStuleGuideGen = require('broccoli-styleguide-generator');
+	this.BroccoliStuleGuideGen = _BroccoliStuleGuideGen;
+
 	var _cheerio = require('cheerio');
 	this.cheerio = _cheerio;
 
@@ -293,6 +296,7 @@ new (function($, window){
 						{"label":px.lb.get('menu.moveContents'), "cond":"pxStandby",          "area":"shoulder", "app":"fncs/movecontents/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 						{"label":px.lb.get('menu.search'),               "cond":"pxStandby",          "area":"shoulder", "app":"fncs/search/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 						{"label":px.lb.get('menu.module'),               "cond":"pxStandby",          "area":"shoulder", "app":"fncs/module/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
+						{"label":px.lb.get('menu.styleguideGenerator'),  "cond":"pxStandby",          "area":"shoulder", "app":"fncs/styleguide_generator/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 						{"label":px.lb.get('menu.contentsProcessor'),"cond":"pxStandby",          "area":"shoulder", "app":"fncs/contents_processor/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 						{"label":px.lb.get('menu.updateGuiContents'),"cond":"pxStandby",          "area":"shoulder", "app":"fncs/rebuild_guiedit_contents/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
 						{"label":px.lb.get('menu.clearcache'),     "cond":"pxStandby",          "area":"shoulder", "app":"fncs/clearcache/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,

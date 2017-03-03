@@ -14,19 +14,7 @@
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.7);
-    opacity: 1; }
-    .pickles2-module-editor__modal__inner {
-      position: absolute;
-      left: 20px;
-      top: 20px;
-      width: calc(100% - 40px);
-      height: auto;
-      padding: 20px;
-      overflow: auto;
-      background-color: #fff;
-      opacity: 1; }
+    overflow: auto; }
   .pickles2-module-editor__title {
     display: block;
     margin: 0;
@@ -87,6 +75,14 @@
     border: 1px solid #eee;
     border-radius: 3px;
     color: #333; }
+  .pickles2-module-editor__module-edit__preview {
+    height: 400px;
+    display: flex; }
+    .pickles2-module-editor__module-edit__preview > div {
+      height: 100%;
+      width: 30%; }
+      .pickles2-module-editor__module-edit__preview > div:first-child {
+        width: 70%; }
   .pickles2-module-editor--progress {
     position: fixed;
     top: 0;

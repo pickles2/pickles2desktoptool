@@ -126,6 +126,10 @@
 			} );
 		})();
 
+		// Content-type が認識されなくなることがある問題の対応として、
+		// etagを出力しないように変更。
+		_server.set('etag', false);
+
 
 		// setup Pickles 2
 		_server.use('/*', expressPickles2(

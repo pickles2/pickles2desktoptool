@@ -28,3 +28,6 @@
 [submodule "submodules/node-utils79"]
 	path = submodules/node-utils79
 	url = https://github.com/tomk79/node-utils79.git
+[submodule "submodules/node-broccoli-styleguide-generator"]
+	path = submodules/node-broccoli-styleguide-generator
+	url = https://github.com/pickles2/node-broccoli-styleguide-generator.git

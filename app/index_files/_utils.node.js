@@ -8,12 +8,7 @@
 	var _pathCurrentDir = process.cwd();
 	var _ejs = require('ejs');
 	var DIRECTORY_SEPARATOR = '/';
-	var _platform = (function(){
-		var platform = 'unknown';
-		if(process.env.LOCALAPPDATA)return 'win';
-		if(process.env.HOME)return 'mac';
-		return platform;
-	})();
+	var _platform = process.platform;
 
 	/**
 	 * システムコマンドを実行する(exec)
@@ -59,13 +54,16 @@
 	 */
 	exports.openURL = function( url ){
 		var cmd = 'open';
-		if(_platform=='win'){
+		if(_platform=='win32'){
 			cmd = 'explorer';
 			if( url.match(new RegExp('^(?:https?|data)\\:','i')) ){
 				// OS依存しないのでスルー
 			}else if( _fs.existsSync(url) ){
 				url = _fs.realpathSync(url);
 			}
+		}
+		if(_platform=='linux'){
+			cmd = 'xdg-open';
 		}
 		return this.spawn( cmd, [url], {} );
 	}

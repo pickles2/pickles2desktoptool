@@ -6,10 +6,12 @@ window.contApp = new (function( px ){
 	var it79 = px.it79;
 
 	var pxConf,
-		path_controot;
+		path_controot,
+		path_homedir;
 
 	var $content;
-	var broccoli;
+	var broccoli,
+		broccoliStyleGuideGen;
 
 	/**
 	 * 初期化
@@ -20,42 +22,65 @@ window.contApp = new (function( px ){
 				function(it1, arg){
 					$content = $('.contents');
 					pxConf = pj.getConfig();
-					path_controot = pj.get_realpath_controot();
-					onWindowResize();
+					console.log(pxConf);
+					pj.px2proj.get_path_homedir(function(_homedir){
+						console.log(_homedir);
+						path_homedir = _homedir;
+						path_controot = pj.get_realpath_controot();
+						onWindowResize();
+						it1.next(arg);
+					});
+				},
+				function(it1, arg){
+					// broccoli を生成
+					pj.createBroccoliServer('/index.html', function(b){
+						broccoli = b;
+						console.log(broccoli);
+						it1.next(arg);
+					});
+				},
+				function(it1, arg){
+					// broccoliStyleGuideGen
+					broccoliStyleGuideGen = new px.BroccoliStuleGuideGen(broccoli);
+					// console.log(broccoliStyleGuideGen);
 					it1.next(arg);
 				},
 				function(it1, arg){
-					var pickles2ModuleEditor = new Pickles2ModuleEditor();
-					pickles2ModuleEditor.init(
-						{
-							'elmCanvas': $content.get(0), // <- 編集画面を描画するための器となる要素
-							'preview':{ // プレビュー用サーバーの情報を設定します。
-								'origin': 'http://127.0.0.1:8081'
-							},
-							'gpiBridge': function(input, callback){
-								// GPI(General Purpose Interface) Bridge
-								// broccoliは、バックグラウンドで様々なデータ通信を行います。
-								// GPIは、これらのデータ通信を行うための汎用的なAPIです。
-								pj.createPickles2ModuleEditorServer(function(px2me){
-									px2me.gpi(input, function(res){
-										callback(res);
+					$('.contents').append( $('<div>')
+						.append( $('<button class="px2-btn px2-btn--primary">')
+							.text('スタイルガイドを生成する')
+							.on('click', function(e){
+								console.log('start generating styleguide...');
+								try {
+									px.fs.mkdirSync( path_homedir+'styleguide/' );
+								} catch (e) {
+								}
+								try {
+									broccoliStyleGuideGen.generate(path_homedir+'styleguide/', {}, function(result){
+										// ↓broccoliStyleGuideGen では、SASSとnodeのバージョンが合わず
+										// SASSのコンパイルで異常終了する。
+										// そのための代替手段として、 px2dthelper にCSSのビルドを委託する。
+										pj.px2proj.query('/?PX=px2dthelper.document_modules.build_css', {
+											"output": "json",
+											"userAgent": "Mozilla/5.0",
+											"success": function(row){
+												// console.log(row);
+											},
+											"complete": function(bin, code){
+												// console.log(bin, code);
+												px.fs.writeFileSync( path_homedir+'styleguide/index_files/styles.css', bin );
+												alert('done.');
+											}
+										});
 									});
-								});
-								return;
-							},
-							'complete': function(){
-								alert('完了しました。');
-							},
-							'onMessage': function( message ){
-								// ユーザーへ知らせるメッセージを表示する
-								console.info('message: '+message);
-							}
-						},
-						function(){
-							// スタンバイ完了したら呼び出されるコールバックメソッドです。
-							it1.next(arg);
-						}
+								} catch (e) {
+									console.error('ERROR: Failed to generate styleguide.', e);
+								}
+							})
+						)
 					);
+					it1.next(arg);
+
 				},
 				function(it1, arg){
 					console.info('standby OK.');

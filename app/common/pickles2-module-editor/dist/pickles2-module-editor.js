@@ -17751,6 +17751,8 @@ module.exports = function(px2me, $canvasContent, options, callback){
 				$canvasContent.find('[name=cssExt]').val( moduleCode.cssExt );
 				$canvasContent.find('[name=js]').val( moduleCode.js );
 				$canvasContent.find('[name=jsExt]').val( moduleCode.jsExt );
+				$canvasContent.find('[name=finalizeJs]').val( moduleCode.finalizeJs );
+				$canvasContent.find('[name=clipJson]').val( moduleCode.clipJson );
 
 				rlv();
 			} );
@@ -17823,6 +17825,8 @@ module.exports = function(px2me, $canvasContent, options, callback){
 		data.cssExt = $canvasContent.find('[name=cssExt]').val();
 		data.js = $canvasContent.find('[name=js]').val();
 		data.jsExt = $canvasContent.find('[name=jsExt]').val();
+		data.finalizeJs = $canvasContent.find('[name=finalizeJs]').val();
+		data.clipJson = $canvasContent.find('[name=clipJson]').val();
 		// console.log('data =',data);
 
 		px2me.saveModuleCode(options.moduleId, data, function(result){

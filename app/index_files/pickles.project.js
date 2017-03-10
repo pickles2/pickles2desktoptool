@@ -208,68 +208,22 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				// Pickles Framework のバージョンを確認
 				// かつ、 PX=api が利用できるか確認
 				_px2proj.query(
-					'/?PX=api.get.version',
+					'/?PX=px2dthelper.get.all',
 					{
 						"output": "json",
 						"complete": function(data, code){
 							// console.log(data, code);
 							if( code == 0 ){
 								try {
-									var version = JSON.parse(data);
-									status.api.version = (typeof('') == typeof(version) ? version : false);
-									status.api.available = (status.api.version ? true : false);
-								} catch (e) {
-								}
-							}
-							rlv();
-							return;
-						}
-					}
-				);
-				return;
-			}); })
-			.then(function(){ return new Promise(function(rlv, rjt){
-				// PX=api からサイトマップを利用できるか確認
-				if( status.api.version === false ){
-					// version を取得できていなければ sitemap も無効のはず
-					status.api.is_sitemap_loaded = false;
-					rlv();
-					return;
-				}
-				_px2proj.query(
-					'/?PX=api.get.bros',
-					{
-						"output": "json",
-						"complete": function(data, code){
-							// console.log(data, code);
-							if( code == 0 ){
-								try {
-									var bros = JSON.parse(data);
-									// console.log(bros);
-									status.api.is_sitemap_loaded = ( bros !== false ? true : false);
-								} catch (e) {
-								}
-							}
-							rlv();
-							return;
-						}
-					}
-				);
-				return;
-			}); })
-			.then(function(){ return new Promise(function(rlv, rjt){
-				_px2proj.query(
-					'/?PX=px2dthelper.check_status',
-					{
-						"output": "json",
-						"complete": function(data, code){
-							// console.log(data, code);
-							if( code == 0 ){
-								try {
-									var rtn = JSON.parse(data);
-									status.px2dthelper.version = (rtn.version || false);
-									status.px2dthelper.is_sitemap_loaded = (rtn.is_sitemap_loaded || false);
-									status.px2dthelper.available = (status.px2dthelper.version ? true : false);
+									var pjInfo = JSON.parse(data);
+									console.log(pjInfo);
+									status.api.version = pjInfo.check_status.pxfw_api.version;
+									status.api.available = (pjInfo.check_status.pxfw_api.version ? true : false);
+									status.api.is_sitemap_loaded = pjInfo.check_status.pxfw_api.is_sitemap_loaded;
+
+									status.px2dthelper.version = pjInfo.check_status.px2dthelper.version;
+									status.px2dthelper.available = (pjInfo.check_status.px2dthelper.version ? true : false);
+									status.px2dthelper.is_sitemap_loaded = pjInfo.check_status.px2dthelper.is_sitemap_loaded;
 								} catch (e) {
 								}
 							}

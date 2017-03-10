@@ -1036,7 +1036,7 @@ new (function($, window){
 	 * アプリケーションを初期化
 	 */
 	$(function(){
-		px.utils.iterateFnc([
+		_it79.fnc({}, [
 			function(it, arg){
 				// init
 				init(function(){
@@ -1075,7 +1075,7 @@ new (function($, window){
 						'width': 50,
 						'height': $header.height()
 					})
-					.click(function(){
+					.on('click', function(){
 						if( $ul.css('display') == 'block' ){
 							$ul.hide();
 							$shoulderMenu
@@ -1146,7 +1146,7 @@ new (function($, window){
 
 				it.next(arg);
 			}
-		]).start({});
+		]);
 
 		window.focus();
 	});

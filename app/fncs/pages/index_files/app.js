@@ -47,7 +47,7 @@ window.contApp = new (function( px ){
 			.bind('load', function(){
 				var contProcType;
 
-				px.utils.iterateFnc([
+				it79.fnc({}, [
 					function(it, prop){
 						px.cancelDrop( $previewIframe.get(0).contentWindow );
 
@@ -127,7 +127,7 @@ window.contApp = new (function( px ){
 						$commentView
 							.html('...')
 							.attr({'data-path': prop.pageInfo.path})
-							.dblclick(function(){
+							.on('dblclick', function(){
 								_this.openCommentFile( $(this).attr('data-path') );
 								return false;
 							})
@@ -137,7 +137,7 @@ window.contApp = new (function( px ){
 						var fileterTimer;
 						$workspaceFilter.find('input[type=text]')
 							.val(_workspaceFilterKeywords)
-							.bind('keyup', function(e){
+							.on('keyup', function(e){
 								_workspaceFilterKeywords = $workspaceFilter.find('input[type=text]').val();
 								// console.log(_workspaceFilterKeywords);
 								clearTimeout(fileterTimer);
@@ -147,7 +147,7 @@ window.contApp = new (function( px ){
 							})
 						;
 						$workspaceFilter.find('input[type=radio][name=list-label]')
-							.bind('change', function(){
+							.on('change', function(){
 								_workspaceFilterListLabel = $workspaceFilter.find('input[type=radio][name=list-label]:checked').val();
 								// console.log(_workspaceFilterListLabel);
 								clearTimeout(fileterTimer);
@@ -170,7 +170,7 @@ window.contApp = new (function( px ){
 							px.fs.readFile(realpath_comment_file, {'encoding':'utf8'}, function(err, data){
 								var html = px.utils.markdown( data );
 								var $html = $('<div>').html(html);
-								$html.find('a[href]').click(function(){
+								$html.find('a[href]').on('click', function(){
 									px.utils.openURL(this.href);
 									return false;
 								});
@@ -186,7 +186,7 @@ window.contApp = new (function( px ){
 								'padding-left': '5em',
 								'padding-right': '5em'
 							})
-							.click(function(){
+							.on('click', function(){
 								_this.openEditor( $(this).attr('data-path') );
 								return false;
 							})
@@ -194,7 +194,7 @@ window.contApp = new (function( px ){
 						$bs3btn.find('button.btn--resources').eq(0)
 							.attr({'data-path': prop.pageInfo.path})
 							// .text('リソース')
-							.click(function(){
+							.on('click', function(){
 								_this.openResourcesDirectory( $(this).attr('data-path') );
 								return false;
 							})
@@ -203,7 +203,7 @@ window.contApp = new (function( px ){
 						$bs3btn.find('button.btn--materials').eq(0)
 							.attr({'data-path': prop.pageInfo.path})
 							// .text('素材(--)')
-							.click(function(){
+							.on('click', function(){
 								_this.openMaterialsDirectory( $(this).attr('data-path') );
 								return false;
 							})
@@ -246,7 +246,7 @@ window.contApp = new (function( px ){
 											'data-content': prop.pageInfo.content ,
 											'href':'javascript:;'
 										})
-										.click(function(){
+										.on('click', function(){
 											$bs3btn.find('.dropdown-toggle').click();
 											px.utils.openURL( px.utils.dirname( _pj.get_realpath_controot()+$(this).attr('data-content') ) );
 											return false;
@@ -264,7 +264,7 @@ window.contApp = new (function( px ){
 											'data-path': prop.pageInfo.path ,
 											'href':'javascript:;'
 										})
-										.click(function(){
+										.on('click', function(){
 											$bs3btn.find('.dropdown-toggle').click();
 											var pathCont = _pj.findPageContent( $(this).attr('data-path') );
 											px.openInTextEditor( _pj.get_realpath_controot()+pathCont );
@@ -283,7 +283,7 @@ window.contApp = new (function( px ){
 										'data-path': prop.pageInfo.path ,
 										'href':'javascript:;'
 									})
-									.click(function(){
+									.on('click', function(){
 										$bs3btn.find('.dropdown-toggle').click();
 										var $this = $(this);
 										px.preview.serverStandby(function(){
@@ -300,7 +300,7 @@ window.contApp = new (function( px ){
 										'data-path': prop.pageInfo.path ,
 										'href':'javascript:;'
 									})
-									.click(function(){
+									.on('click', function(){
 										$bs3btn.find('.dropdown-toggle').click();
 										var pathCont = _pj.findPageContent( $(this).attr('data-path') );
 										var src = px.fs.readFileSync( _pj.get_realpath_controot()+pathCont );
@@ -334,7 +334,7 @@ window.contApp = new (function( px ){
 										'data-path': prop.pageInfo.path ,
 										'href':'javascript:;'
 									})
-									.click(function(){
+									.on('click', function(){
 										$bs3btn.find('.dropdown-toggle').click();
 										var $this = $(this);
 										var bookmarklet = "javascript:(function(){var b=document.body;elm=document.createElement('script');elm.setAttribute('type','text/javascript');elm.src='http://tomk79.github.io/DEC/dec_show.js';b.appendChild(elm);b.removeChild(elm);return;})();";
@@ -354,7 +354,7 @@ window.contApp = new (function( px ){
 										'data-proc_type': contProcType ,
 										'href':'javascript:;'
 									})
-									.click(function(){
+									.on('click', function(){
 										$bs3btn.find('.dropdown-toggle').click();
 										if( !confirm('現状のコンテンツを破棄し、他のページを複製して取り込みます。よろしいですか？') ){
 											return false;
@@ -370,7 +370,7 @@ window.contApp = new (function( px ){
 												$('<button>')
 													.text('OK')
 													.addClass('px2-btn--primary')
-													.click(function(){
+													.on('click', function(){
 														var val = $body.find('input').val();
 														var pageinfo = _this.pj.site.getPageInfo(val);
 														if( !pageinfo ){
@@ -393,7 +393,7 @@ window.contApp = new (function( px ){
 													}),
 												$('<button>')
 													.text('Cancel')
-													.click(function(){
+													.on('click', function(){
 														px.closeDialog();
 													})
 											]
@@ -413,7 +413,7 @@ window.contApp = new (function( px ){
 											'data-path': prop.pageInfo.path ,
 											'href':'javascript:;'
 										})
-										.click(function(){
+										.on('click', function(){
 											$bs3btn.find('.dropdown-toggle').click();
 											var pagePath = $(this).attr('data-path');
 											_pj.buildGuiEditContent( pagePath, function(result){
@@ -435,7 +435,7 @@ window.contApp = new (function( px ){
 											'data-proc_type': contProcType ,
 											'href':'javascript:;'
 										})
-										.click(function(){
+										.on('click', function(){
 											$bs3btn.find('.dropdown-toggle').click();
 											var $this = $(this);
 											var $body = $('<div>')
@@ -448,7 +448,7 @@ window.contApp = new (function( px ){
 												'buttons':[
 													$('<button class="px2-btn px2-btn--primary">')
 														.text('OK')
-														.click(function(){
+														.on('click', function(){
 															var val = $body.find('input[name=proc_type]:checked').val();
 															_pj.changeContentEditorMode( $this.attr('data-path'), val, function(result){
 																if( !result[0] ){
@@ -462,7 +462,7 @@ window.contApp = new (function( px ){
 														}),
 													$('<button class="px2-btn">')
 														.text('キャンセル')
-														.click(function(){
+														.on('click', function(){
 															px.closeDialog();
 														})
 												]
@@ -481,7 +481,7 @@ window.contApp = new (function( px ){
 										'data-path': prop.pageInfo.path ,
 										'href':'javascript:;'
 									})
-									.click(function(){
+									.on('click', function(){
 										_this.commitContents( $(this).attr('data-path') );
 										$bs3btn.find('.dropdown-toggle').click();
 										return false;
@@ -497,7 +497,7 @@ window.contApp = new (function( px ){
 										'data-path': prop.pageInfo.path ,
 										'href':'javascript:;'
 									})
-									.click(function(){
+									.on('click', function(){
 										_this.logContents( $(this).attr('data-path') );
 										$bs3btn.find('.dropdown-toggle').click();
 										return false;
@@ -513,7 +513,7 @@ window.contApp = new (function( px ){
 										'data-path': prop.pageInfo.path ,
 										'href':'javascript:;'
 									})
-									.click(function(){
+									.on('click', function(){
 										$bs3btn.find('.dropdown-toggle').click();
 										var pagePath = $(this).attr('data-path');
 										_this.loadPreview( pagePath, function(){}, {'force':true} );
@@ -543,7 +543,7 @@ window.contApp = new (function( px ){
 					function(it, prop){
 						it.next(prop);
 					}
-				]).start({});
+				]);
 
 			})
 		;

@@ -550,8 +550,8 @@ window.contApp = new (function( px ){
 
 		_this.pj.checkPxCmdVersion(
 			{
-				apiVersion: '>=2.0.26',
-				px2dthelperVersion: '>=2.0.1'
+				apiVersion: '>=2.0.29',
+				px2dthelperVersion: '>=2.0.3'
 			},
 			function(){
 				// API設定OK

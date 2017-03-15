@@ -47,6 +47,12 @@ window.contApp = new (function( px ){
 				},
 				function(it1, arg){
 					$('.contents').append( $('<div>')
+						.append( $('<p>')
+							.text('この操作は、 登録されているモジュールのリストからスタイルガイドを生成します。')
+						)
+						.append( $('<p>')
+							.text('ホームディレクトリに styleguide フォルダを生成します。')
+						)
 						.append( $('<button class="px2-btn px2-btn--primary">')
 							.text('スタイルガイドを生成する')
 							.on('click', function(e){
@@ -76,6 +82,16 @@ window.contApp = new (function( px ){
 								} catch (e) {
 									console.error('ERROR: Failed to generate styleguide.', e);
 								}
+							})
+						)
+						.append( $('<button class="px2-btn">')
+							.text('出力先を開く')
+							.on('click', function(e){
+								if( !px.utils79.is_dir(path_homedir+'styleguide/') ){
+									alert('スタイルガイドが生成されていません。');
+									return false;
+								}
+								px.utils.openURL( path_homedir+'styleguide/' );
 							})
 						)
 					);

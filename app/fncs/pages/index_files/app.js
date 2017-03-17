@@ -22,6 +22,9 @@ window.contApp = new (function( px ){
 		_workspaceFilterListLabel='title';
 	var it79 = px.it79;
 
+	var ContentsComment = require('./libs.ignore/contentsComment.js'),
+		contentsComment = new ContentsComment(_this, px, _pj);
+
 	this.git = _pj.git();
 	this.gitUi = new px2dtGitUi(px, _pj);
 
@@ -127,35 +130,7 @@ window.contApp = new (function( px ){
 
 						// --------------------------------------
 						// コンテンツコメント機能
-						$commentView
-							.html('...')
-							.attr({'data-path': prop.pageInfo.path})
-							.on('dblclick', function(){
-								_this.openCommentFile( $(this).attr('data-path') );
-								return false;
-							})
-						;
-						setTimeout(function(){
-							var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( prop.pageInfo.path ) );
-							var realpathFiles = _pj.get_realpath_controot()+pathFiles;
-							var realpath_matDir = realpathFiles + 'comments.ignore/';
-							var realpath_comment_file = realpath_matDir + 'comment.md';
-							if(!px.utils.isFile( realpath_comment_file )){
-								$commentView.text('no comment.');
-								return;
-							}
-							$commentView.text('コメントをロードしています...');
-							px.fs.readFile(realpath_comment_file, {'encoding':'utf8'}, function(err, data){
-								var html = px.utils.markdown( data );
-								var $html = $('<div>').html(html);
-								$html.find('a[href]').on('click', function(){
-									px.utils.openURL(this.href);
-									return false;
-								});
-								$commentView.html($html);
-							});
-							return;
-						}, 10);
+						contentsComment.init( prop.pageInfo, $commentView );
 
 						// --------------------------------------
 						// ページフィルター機能
@@ -245,52 +220,6 @@ window.contApp = new (function( px ){
 								)
 							;
 						}
-
-						$bs3btn.find('ul[role=menu]')
-							.append( $('<li>')
-								.append( $('<a>')
-									.text( '素材フォルダを開く (--)' )
-									.addClass('menu-materials')
-									.attr({
-										'data-path': prop.pageInfo.path ,
-										'href':'javascript:;'
-									})
-									.on('click', function(){
-										$bs3btn.find('.dropdown-toggle').click();
-										_this.openMaterialsDirectory( $(this).attr('data-path') );
-										return false;
-									})
-								)
-							)
-						;
-						setTimeout(function(){
-							var button = $bs3btn.find('a.menu-materials').eq(0);
-							var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( prop.pageInfo.path ) );
-							var realpathFiles = _pj.get_realpath_controot()+pathFiles;
-							var realpath_matDir = realpathFiles + 'materials.ignore/';
-							var matCount = 0;
-							button.text('素材フォルダを開く ('+matCount+')');
-							if( !px.utils.isDirectory(realpath_matDir) ){
-								return;
-							}
-
-							var countFile_r = function(path){
-								var list = px.utils.ls( path );
-								for( var idx in list ){
-									if( list[idx] == '.DS_Store' || list[idx] == 'Thumbs.db' ){
-										continue;
-									}
-									if( px.utils.isFile(path+'/'+list[idx]) ){
-										matCount ++;
-										button.text('素材フォルダを開く ('+matCount+')');
-									}else if( px.utils.isDirectory(path+'/'+list[idx]) ){
-										countFile_r( path+'/'+list[idx] );
-									}
-								}
-							}
-							countFile_r(realpath_matDir);
-
-						}, 10);
 
 						$bs3btn.find('ul[role=menu]')
 							.append( $('<li>')
@@ -403,6 +332,69 @@ window.contApp = new (function( px ){
 								)
 							)
 						;
+						$bs3btn.find('ul[role=menu]')
+							.append( $('<li>')
+								.append( $('<a>')
+									.text( '素材フォルダを開く (--)' )
+									.addClass('menu-materials')
+									.attr({
+										'data-path': prop.pageInfo.path ,
+										'href':'javascript:;'
+									})
+									.on('click', function(){
+										$bs3btn.find('.dropdown-toggle').click();
+										_this.openMaterialsDirectory( $(this).attr('data-path') );
+										return false;
+									})
+								)
+							)
+						;
+						setTimeout(function(){
+							var button = $bs3btn.find('a.menu-materials').eq(0);
+							var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( prop.pageInfo.path ) );
+							var realpathFiles = _pj.get_realpath_controot()+pathFiles;
+							var realpath_matDir = realpathFiles + 'materials.ignore/';
+							var matCount = 0;
+							button.text('素材フォルダを開く ('+matCount+')');
+							if( !px.utils.isDirectory(realpath_matDir) ){
+								return;
+							}
+
+							var countFile_r = function(path){
+								var list = px.utils.ls( path );
+								for( var idx in list ){
+									if( list[idx] == '.DS_Store' || list[idx] == 'Thumbs.db' ){
+										continue;
+									}
+									if( px.utils.isFile(path+'/'+list[idx]) ){
+										matCount ++;
+										button.text('素材フォルダを開く ('+matCount+')');
+									}else if( px.utils.isDirectory(path+'/'+list[idx]) ){
+										countFile_r( path+'/'+list[idx] );
+									}
+								}
+							}
+							countFile_r(realpath_matDir);
+
+						}, 10);
+
+						$bs3btn.find('ul[role=menu]')
+							.append( $('<li>')
+								.append( $('<a>')
+									.text( 'コンテンツコメントを編集' )
+									.attr({
+										'data-path': prop.pageInfo.path ,
+										'href':'javascript:;'
+									})
+									.on('click', function(){
+										$bs3btn.find('.dropdown-toggle').click();
+										contentsComment.editComment();
+										return false;
+									})
+								)
+							)
+						;
+
 						$bs3btn.find('ul[role=menu]')
 							.append( $('<li class="divider">') )
 							.append( $('<li>')
@@ -997,5 +989,151 @@ window.contApp = new (function( px ){
 
 
 })( window.parent.px );
+
+},{"./libs.ignore/contentsComment.js":2}],2:[function(require,module,exports){
+/**
+ * contentsComment.js
+ */
+module.exports = function(app, px, pj){
+	var _this = this;
+	var realpath_comment_file;
+	var pageInfo;
+	var $commentView;
+
+	/**
+	 * 初期化
+	 */
+	this.init = function( _pageInfo, _$commentView ){
+		pageInfo = _pageInfo;
+		$commentView = _$commentView;
+
+		var pathFiles = pj.getContentFilesByPageContent(
+			pj.findPageContent( pageInfo.path )
+		);
+		var realpathFiles = pj.get_realpath_controot()+pathFiles;
+		var realpath_matDir = realpathFiles + 'comments.ignore/';
+		realpath_comment_file = realpath_matDir + 'comment.md';
+
+		$commentView
+			.html('...')
+			.attr({'data-path': pageInfo.path})
+			.off('dblclick')
+			.on('dblclick', function(){
+				_this.editComment();
+				return false;
+			})
+		;
+
+
+		setTimeout(function(){
+			_this.updateComment();
+		}, 10);
+
+		return;
+	}
+
+	/**
+	 * コメントを編集する
+	 * @return {[type]} [description]
+	 */
+	this.editComment = function(){
+		var $body = $('<div>');
+		var $textarea = $('<textarea class="form-control">');
+		var $preview = $('<div>');
+		$body
+			.append( $('<div>')
+				.css({
+					'display': 'flex',
+					'height': '450px',
+					'margin': '1em 0'
+				})
+				.append($textarea.css({
+					'width': '50%',
+					'height': '100%',
+					'overflow': 'auto'
+				}))
+				.append($preview.css({
+					'width': '50%',
+					'height': '100%',
+					'overflow': 'auto',
+					'padding': '20px'
+				}))
+			)
+		;
+
+		function update(){
+			var src = $textarea.val();
+			var html = px.utils.markdown( src );
+			var $html = $('<div>').html(html);
+			$html.find('a[href]').on('click', function(){
+				px.utils.openURL(this.href);
+				return false;
+			});
+			$preview.html($html);
+		}
+		$textarea.on('change keyup', function(){
+			update();
+		});
+
+		px.fs.readFile(realpath_comment_file, {'encoding':'utf8'}, function(err, data){
+			$textarea.val(data);
+			update();
+
+			px.dialog({
+				'title': 'コンテンツコメントを編集',
+				'body': $body,
+				'buttons':[
+					$('<button>')
+						.text('OK')
+						.addClass('px2-btn--primary')
+						.on('click', function(){
+							var val = $body.find('textarea').val();
+							px.fs.writeFileSync( realpath_comment_file, val );
+
+							_this.updateComment(function(){
+								px.closeDialog();
+							});
+						}),
+					$('<button>')
+						.text('Cancel')
+						.on('click', function(){
+							px.closeDialog();
+						})
+				]
+			});
+
+		});
+		return;
+	}
+
+	/**
+	 * コメント表示欄を更新する
+	 * @return {[type]} [description]
+	 */
+	this.updateComment = function(callback){
+		callback = callback || function(){};
+		if(!px.utils.isFile( realpath_comment_file )){
+			$commentView.text('no comment.');
+
+			callback(true);
+			return;
+		}
+		$commentView.text('コメントをロードしています...');
+		px.fs.readFile(realpath_comment_file, {'encoding':'utf8'}, function(err, data){
+			var html = px.utils.markdown( data );
+			var $html = $('<div>').html(html);
+			$html.find('a[href]').on('click', function(){
+				px.utils.openURL(this.href);
+				return false;
+			});
+			$commentView.html($html);
+
+			callback(true);
+		});
+		return;
+	}
+
+	return;
+}
 
 },{}]},{},[1])

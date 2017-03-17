@@ -309,7 +309,7 @@ window.contApp = new (function( px ){
 											body: $('<div>')
 												.append( $('<p>').text('ソースの閲覧・確認ができます。ここで編集はできません。'))
 												.append( $('<p>').text('GUI編集されたコンテンツの場合は、編集後にビルドされたソースが表示されています。'))
-												.append( $('<textarea>')
+												.append( $('<textarea class="form-control">')
 													.val(src)
 													.attr({'readonly':true})
 													.css({
@@ -318,6 +318,48 @@ window.contApp = new (function( px ){
 														'font-size': 14,
 														'font-family': 'monospace'
 													})
+												)
+										});
+										return false;
+									})
+								)
+							)
+							.append( $('<li>')
+								.append( $('<a>')
+									.text( 'ページ情報を表示' )
+									.attr({
+										'data-path': prop.pageInfo.path ,
+										'data-page-info': JSON.stringify(prop.pageInfo),
+										'href':'javascript:;'
+									})
+									.on('click', function(){
+										$bs3btn.find('.dropdown-toggle').click();
+
+										var pagePath = $(this).attr('data-path');
+										var pageInfo = $(this).attr('data-page-info');
+										try {
+											pageInfo = JSON.parse(pageInfo);
+										} catch (e) {
+										}
+
+										var $tbl = $('<table class="def">')
+											.css({'width': '100%'})
+										;
+										for(var idx in pageInfo){
+											var $row = $('<tr>');
+											$row.append( $('<th>').text(idx) );
+											$row.append( $('<td>').text(pageInfo[idx]) );
+											// $row.append( $('<td>').text(typeof(pageInfo[idx])) );
+											$tbl.append($row);
+										}
+
+										px.dialog({
+											title: 'ページ情報を表示',
+											body: $('<div>')
+												.append( $('<p>').text('ページ「'+pagePath+'」の情報を確認できます。'))
+												.append( $('<div>')
+													.css({'margin': '1em 0'})
+													.append($tbl)
 												)
 										});
 										return false;

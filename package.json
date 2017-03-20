@@ -81,7 +81,7 @@
     "height": 520,
     "fullscreen": false,
     "icon": "app/common/images/icon.png",
-    "position": "mouse"
+    "position": "center"
   },
   "platformOverrides": {
     "win": {

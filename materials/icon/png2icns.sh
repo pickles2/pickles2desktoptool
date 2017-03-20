@@ -1,6 +1,6 @@
 #!/bin/sh
 
-filename="app"
+filename="appicon"
 rm -f "${filename}.icns"
 
 array=(16 32 128 256 512)
@@ -13,7 +13,7 @@ do
 done
 
 # <アイコン名>.iconset フォルダじゃないとダメらしいので
-target="${filename}.iconset"
+target="${filename}-osx.iconset"
 mv ".iconset" $target
 
 iconutil -c icns $target
@@ -33,7 +33,7 @@ do
 done
 
 # <アイコン名>.iconset フォルダじゃないとダメらしいので
-w_target="${filename}_for_Windows.iconset"
+w_target="${filename}-win.iconset"
 mv ".iconset" $w_target
 
 iconutil -c icns $w_target

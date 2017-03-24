@@ -1,5 +1,7 @@
 var fs = require('fs');
-var _utils = require('./app/index_files/_utils.node.js');
+var fsX = require('fs-extra');
+var utils79 = require('utils79');
+var it79 = require('iterate79');
 var NwBuilder = require('nw-builder');
 var zipFolder = require('zip-folder');
 var packageJson = require('./package.json');
@@ -7,17 +9,18 @@ var phpjs = require('phpjs');
 var date = new Date();
 var appName = packageJson.name;
 
+
 console.log('== build "'+appName+'" ==');
 
 console.log('Cleanup...');
 (function(base){
-	var ls = _utils.ls(base);
+	var ls = fs.readdirSync(base);
 	for(var idx in ls){
 		if( ls[idx] == '.gitkeep' ){continue;}
-		if( _utils.isDirectory(base+'/'+ls[idx]) ){
-			_utils.rmdir_r(base+'/'+ls[idx]);
-		}else if( _utils.isFile(base+'/'+ls[idx]) ){
-			_utils.rm(base+'/'+ls[idx]);
+		if( utils79.is_dir(base+'/'+ls[idx]) ){
+			fsX.removeSync(base+'/'+ls[idx]);
+		}else if( utils79.is_file(base+'/'+ls[idx]) ){
+			fsX.unlinkSync(base+'/'+ls[idx]);
 		}
 	}
 })( __dirname+'/build/' );
@@ -129,8 +132,8 @@ var nw = new NwBuilder({
 	})(packageJson) , // use the glob format
 	version: 'v0.12.3',// <- version number of node-webkit
 	flavor: 'sdk',
-	macIcns: './app/common/images/px2-osx.icns',
-	winIco: './app/common/images/px2-win.ico',
+	macIcns: './app/common/images/appicon-osx.icns',
+	winIco: './app/common/images/appicon-win.ico',
 	zip: false,
 	platforms: [
 		'linux64',
@@ -160,7 +163,7 @@ nw.build().then(function () {
 			versionSign += '-'+pad(date.getHours(),2)+pad(date.getMinutes(), 2);
 		}
 
-		_utils.iterateFnc([
+		it79.fnc({}, [
 			function(itPj, param){
 				writeLog('ZIP osx64...');
 				zipFolder(
@@ -172,7 +175,7 @@ nw.build().then(function () {
 						} else {
 							writeLog('success. - '+'./build/'+appName+'-'+versionSign+'-osx64.zip');
 						}
-						itPj.next();
+						itPj.next(param);
 					}
 				);
 			},
@@ -187,7 +190,7 @@ nw.build().then(function () {
 						} else {
 							writeLog('success. - '+'./build/'+appName+'-'+versionSign+'-win32.zip');
 						}
-						itPj.next();
+						itPj.next(param);
 					}
 				);
 			},
@@ -202,21 +205,21 @@ nw.build().then(function () {
 						} else {
 							writeLog('success. - '+'./build/'+appName+'-'+versionSign+'-linux64.zip');
 						}
-						itPj.next();
+						itPj.next(param);
 					}
 				);
 			},
 			function(itPj, param){
 				writeLog('cleanup...');
-				_utils.rmdir_r(__dirname+'/build/'+appName+'/');
-				itPj.next();
+				fsX.removeSync(__dirname+'/build/'+appName+'/');
+				itPj.next(param);
 			},
 			function(itPj, param){
 				writeLog( getTimeString() );
 				writeLog('all zip done!');
-				itPj.next();
+				itPj.next(param);
 			}
-		]).start({});
+		]);
 
 	})();
 

@@ -16956,6 +16956,7 @@ module.exports = exports['default'];
 			this.options.complete = this.options.complete || function(){ alert('finished.'); };
 			this.options.onMessage = this.options.onMessage || function(message){ alert('onMessage: '+message); };
 			this.options.preview = this.options.preview || {};
+			this.options.lang = this.options.lang || 'en';
 
 			$canvas = $(options.elmCanvas);
 			$canvas.addClass('pickles2-module-editor');
@@ -16978,6 +16979,7 @@ module.exports = exports['default'];
 						{
 							'page_path': '/px2me-dummy.html' , // <- 編集対象ページのパス
 							'elmCanvas': document.createElement('div'), // <- 編集画面を描画するための器となる要素
+							'lang': _this.options.lang, // language
 							'preview':{ // プレビュー用サーバーの情報を設定します。
 								'origin': window.location.origin
 							},

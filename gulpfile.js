@@ -3,6 +3,7 @@ var gulp = require('gulp');
 var sass = require('gulp-sass');//CSSコンパイラ
 var plumber = require("gulp-plumber");//コンパイルエラーが起きても watch を抜けないようになる
 var rename = require("gulp-rename");//ファイル名の置き換えを行う
+var browserify = require("gulp-browserify");//NodeJSのコードをブラウザ向けコードに変換
 var packageJson = require(__dirname+'/package.json');
 var _tasks = [
 	'provisional',
@@ -48,6 +49,7 @@ gulp.task('.html', function(){
 gulp.task('.js', function(){
 	gulp.src(["src/**/*.js","!src/**/*.ignore*","!src/**/*.ignore*/*"])
 		.pipe(plumber())
+		.pipe(browserify({}))
 		.pipe(gulp.dest( './app/' ))
 	;
 });

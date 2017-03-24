@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "gulp": "^3.9.0",
+    "gulp-browserify": "^0.5.1",
     "gulp-plumber": "^1.1.0",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^2.3.2",
@@ -80,7 +81,7 @@
     "height": 520,
     "fullscreen": false,
     "icon": "app/common/images/icon.png",
-    "position": "mouse"
+    "position": "center"
   },
   "platformOverrides": {
     "win": {

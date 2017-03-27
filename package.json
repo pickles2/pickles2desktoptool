@@ -1,6 +1,6 @@
 {
   "name": "Pickles2DesktopTool",
-  "version": "2.0.0-beta.16",
+  "version": "2.0.0-beta.17+nb",
   "description": "",
   "private": true,
   "main": "app/index.html",

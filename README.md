@@ -50,7 +50,7 @@ $ npm run build
 
 ## 更新履歴 - Change log
 
-### Pickles 2 Desktop Tool 2.0.0-beta.16 (2017年??月??日)
+### Pickles 2 Desktop Tool 2.0.0-beta.16 (2017年3月27日)
 
 - コンテンツ編集機能に多言語対応を追加。
 - 中文の言語コードを修正。

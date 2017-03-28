@@ -1,8 +1,28 @@
 new (function($, window){
+	// pickles
 	window.px = _this = this;
-	this.$ = $;
-	this._ = _;
+
+	// node.js
 	this.process = process;
+
+	// NW.js
+	this.nw = nw
+	this.nwWindow = nw.Window.get();
+
+	// jQuery
+	this.$ = $;
+
+	// Underscore
+	this._ = _;
+
+	// package.json
+	var _packageJson = require('../package.json');
+	this.packageJson = _packageJson;
+
+	// data
+	var _db = {};
+	var _path_data_dir = (process.env.HOME||process.env.LOCALAPPDATA) + '/'+_packageJson.pickles2.dataDirName+'/';
+	var _path_db = (process.env.HOME||process.env.LOCALAPPDATA) + '/'+_packageJson.pickles2.dataDirName+'/db.json';
 
 	/**
 	 * Pickles 2 Desktop Tool のバージョン情報を取得する。
@@ -24,11 +44,13 @@ new (function($, window){
 		return _packageJson.version;
 	}
 
-	var _packageJson = require('../package.json');
-	this.packageJson = _packageJson;
-
+	// utils
+	var _utils79 = require('utils79');
+	this.utils79 = _utils79;
 	var _utils = require('./index_files/_utils.node.js');
 	this.utils = _utils;
+
+	// filesystem
 	var _fs = require('fs');
 	this.fs = _fs;
 	var _fsEx = require('fs-extra');
@@ -37,46 +59,43 @@ new (function($, window){
 	this.path = _path;
 	// var _git = require('nodegit');
 	// this.git = _git;
+	var _mkdirp = require('mkdirp');
+	this.mkdirp = _mkdirp;
+	var _glob = require('glob');
+	this.glob = _glob;
+	var _SearchInDir = require('node-search-in-directory');
+	this.SearchInDir = _SearchInDir;
+
+	// versioning
 	var _semver = require('semver');
 	this.semver = _semver;
 
+	// template engines
 	var _twig = require('twig');
 	this.twig = _twig;
 	var _ejs = require('ejs');
 	this.ejs = _ejs;
 
-	var _utils79 = require('utils79');
-	this.utils79 = _utils79;
-
-	var _mkdirp = require('mkdirp');
-	this.mkdirp = _mkdirp;
-
-	var _glob = require('glob');
-	this.glob = _glob;
-
-	var _SearchInDir = require('node-search-in-directory');
-	this.SearchInDir = _SearchInDir;
-
 	var _appServer = require('./index_files/app_server.js');
 
+	// Pickles 2
 	var _px2agent = require('px2agent');
 	this.px2agent = _px2agent;
+	var _px2dtLDA = require('px2dt-localdata-access').create(_path_data_dir);
+	this.px2dtLDA = _px2dtLDA;
 
+	// broccoli-html-editor
 	var _BroccoliStuleGuideGen = require('broccoli-styleguide-generator');
 	this.BroccoliStuleGuideGen = _BroccoliStuleGuideGen;
 
+	// DOM Parser for NodeJS
 	var _cheerio = require('cheerio');
 	this.cheerio = _cheerio;
 
+	// Keyboard Util
 	var _Keypress = {};
 	this.Keypress = _Keypress;
 
-	var _db = {};
-	var _path_data_dir = (process.env.HOME||process.env.LOCALAPPDATA) + '/'+_packageJson.pickles2.dataDirName+'/';
-	var _path_db = (process.env.HOME||process.env.LOCALAPPDATA) + '/'+_packageJson.pickles2.dataDirName+'/db.json';
-
-	var _px2dtLDA = require('px2dt-localdata-access').create(_path_data_dir);
-	this.px2dtLDA = _px2dtLDA;
 
 	// var _OS = require("os");
 	// console.log(_OS.freemem());//<-free memory
@@ -306,8 +325,12 @@ new (function($, window){
 							body: $('<iframe>').attr('src', 'mods/systeminfo/index.html').css({'width':'100%','height':300})
 						});}} ,
 						{"label":_appName+" "+px.lb.get('menu.desktoptoolConfig'), "cond":"always",        "area":"shoulder", "app":null, "cb": function(){px.editPx2DTConfig();}} ,
-						{"label":px.lb.get('menu.help'),               "cond":"always",             "area":"shoulder", "app":null, "cb": function(){px.openHelp();} },
-						{"label":px.lb.get('menu.developerTool'),     "cond":"always",             "area":"shoulder", "app":null, "cb": function(){require('nw.gui').Window.get().showDevTools();} },
+						{"label":px.lb.get('menu.help'), "cond":"always", "area":"shoulder", "app":null, "cb": function(){px.openHelp();} },
+						{"label":px.lb.get('menu.developerTool'), "cond":"always", "area":"shoulder", "app":null, "cb": function(){
+							// ブラウザの DevTools を開く
+							nw.Window.get().showDevTools();
+							// TODO: nodeJs の DevTools は スクリプト上から開けない？
+						} },
 						{"label":px.lb.get('menu.exit'),                 "cond":"always",             "area":"shoulder", "app":null, "cb": function(){px.exit();}}
 					];
 

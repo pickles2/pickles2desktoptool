@@ -130,7 +130,7 @@ var nw = new NwBuilder({
 		}
 		return rtn;
 	})(packageJson) , // use the glob format
-	version: 'v0.12.3',// <- version number of node-webkit
+	version: 'v0.21.1',// <- version number of node-webkit
 	flavor: 'sdk',
 	macIcns: './app/common/images/appicon-osx.icns',
 	winIco: './app/common/images/appicon-win.ico',

@@ -25,7 +25,7 @@ new (function($, window){
 	var _path_db = (process.env.HOME||process.env.LOCALAPPDATA) + '/'+_packageJson.pickles2.dataDirName+'/db.json';
 
 	/**
-	 * Pickles 2 Desktop Tool のバージョン情報を取得する。
+	 * Pickles 2 のバージョン情報を取得する。
 	 *
 	 * バージョン番号発行の規則は、 Semantic Versioning 2.0.0 仕様に従います。
 	 * - [Semantic Versioning(英語原文)](http://semver.org/)
@@ -432,7 +432,7 @@ new (function($, window){
 
 	/**
 	 * プラットフォーム名を得る。
-	 * Pickles 2 Desktop Tool が動作しているPCのOS名。
+	 * Pickles 2 が動作しているPCのOS名。
 	 */
 	this.getPlatform = function(){
 		return _platform;

@@ -352,12 +352,12 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		return this;
 	}
 
-	/** Pickles 2 Desktop Tool 設定情報を取得する */
+	/** Pickles 2 設定情報を取得する */
 	this.getPx2DTConfig = function(){
 		return _px2DTConfig;
 	}
 
-	/** Pickles 2 Desktop Tool 設定情報を更新する (非同期) */
+	/** Pickles 2 設定情報を更新する (非同期) */
 	this.updatePx2DTConfig = function( callback ){
 		callback = callback||function(){};
 

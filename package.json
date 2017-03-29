@@ -1,5 +1,5 @@
 {
-  "name": "Pickles2DesktopTool",
+  "name": "Pickles2",
   "version": "2.0.0-beta.17+nb",
   "description": "",
   "private": true,
@@ -74,7 +74,7 @@
     "credit": "(C)Pickles 2 Project."
   },
   "window": {
-    "title": "Pickles 2 Desktop Tool",
+    "title": "Pickles 2",
     "toolbar": true,
     "frame": true,
     "width": 1024,

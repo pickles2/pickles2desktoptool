@@ -201,7 +201,7 @@ new (function($, window){
 						}
 
 						// ↓Macのメニューバーの右側に並ぶメニューのこと
-						// var tray = new _nw_gui.Tray({ icon: './common/images/icon.png' });
+						// var tray = new _nw_gui.Tray({ icon: './common/images/appicon.png' });
 						// tray.title = 'Love Tray';
 						// tray.tooltip = 'Love Tooltip';
 

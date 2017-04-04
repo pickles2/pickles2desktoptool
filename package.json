@@ -80,7 +80,7 @@
     "width": 1024,
     "height": 520,
     "fullscreen": false,
-    "icon": "app/common/images/icon.png",
+    "icon": "app/common/images/appicon.png",
     "position": "center"
   },
   "platformOverrides": {

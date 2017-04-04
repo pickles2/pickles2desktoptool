@@ -20,7 +20,6 @@ new (function($, window){
 	this.packageJson = _packageJson;
 
 	// data
-	var _db = {};
 	var _path_data_dir = (process.env.HOME||process.env.LOCALAPPDATA) + '/'+_packageJson.pickles2.dataDirName+'/';
 	var _path_db = (process.env.HOME||process.env.LOCALAPPDATA) + '/'+_packageJson.pickles2.dataDirName+'/db.json';
 
@@ -81,7 +80,7 @@ new (function($, window){
 	// Pickles 2
 	var _px2agent = require('px2agent');
 	this.px2agent = _px2agent;
-	var _px2dtLDA = require('px2dt-localdata-access').create(_path_data_dir);
+	var _px2dtLDA = new (require('px2dt-localdata-access'))(_path_data_dir);
 	this.px2dtLDA = _px2dtLDA;
 
 	// broccoli-html-editor
@@ -237,12 +236,11 @@ new (function($, window){
 					return;
 				},
 				function(it1, data){
-
+					// db.json の読み込み
 					px.load(function(){
 						it1.next();
 						return;
 					}); // px.load()
-
 					return;
 				},
 				function(it1, data){
@@ -266,19 +264,19 @@ new (function($, window){
 					return;
 				},
 				function(it1, data){
-					if(!_db){_db = {};}
-					if(!_db.commands){_db.commands = {};}
-					if(!_db.projects){_db.projects = [];}
-					if(!_db.network){_db.network = {};}
-					if(!_db.network.preview){_db.network.preview = {};}
-					if(!_db.network.appserver){_db.network.appserver = {};}
-					if(!_db.apps){_db.apps = {};}
-					if(!_db.apps.texteditor){_db.apps.texteditor = null;}
-					if(!_db.apps.texteditorForDir){_db.apps.texteditorForDir = null;}
-					if(!_db.language){_db.language = 'ja';}
+					if(!px.px2dtLDA.db){px.px2dtLDA.db = {};}
+					if(!px.px2dtLDA.db.commands){px.px2dtLDA.db.commands = {};}
+					if(!px.px2dtLDA.db.projects){px.px2dtLDA.db.projects = [];}
+					if(!px.px2dtLDA.db.network){px.px2dtLDA.db.network = {};}
+					if(!px.px2dtLDA.db.network.preview){px.px2dtLDA.db.network.preview = {};}
+					if(!px.px2dtLDA.db.network.appserver){px.px2dtLDA.db.network.appserver = {};}
+					if(!px.px2dtLDA.db.apps){px.px2dtLDA.db.apps = {};}
+					if(!px.px2dtLDA.db.apps.texteditor){px.px2dtLDA.db.apps.texteditor = null;}
+					if(!px.px2dtLDA.db.apps.texteditorForDir){px.px2dtLDA.db.apps.texteditorForDir = null;}
+					if(!px.px2dtLDA.db.language){px.px2dtLDA.db.language = 'ja';}
 
-					px.lb.setLang(_db.language);
-					px.hint.setLang(_db.language);
+					px.lb.setLang(px.px2dtLDA.db.language);
+					px.hint.setLang(px.px2dtLDA.db.language);
 
 					if( !_utils.isDirectory( _path_data_dir+'commands/' ) ){
 						_fs.mkdirSync( _path_data_dir+'commands/' );
@@ -289,9 +287,9 @@ new (function($, window){
 
 					px.NodePhpBin = require('node-php-bin');
 					px.nodePhpBinOptions = {};
-					if( _db.commands && _db.commands['php'] ){
+					if( px.px2dtLDA.db.commands && px.px2dtLDA.db.commands['php'] ){
 						px.nodePhpBinOptions = {
-							'bin': _db.commands['php'] ,
+							'bin': px.px2dtLDA.db.commands['php'] ,
 							'ini': null
 						};
 					}
@@ -349,10 +347,11 @@ new (function($, window){
 									it1.next(data);
 									return;
 								}
-								_db.commands.composer = pathComposerPhar.to;
-								px.save();
-								px.closeDialog();
-								it1.next(data);
+								px.px2dtLDA.db.commands.composer = pathComposerPhar.to;
+								px.save(function(){
+									px.closeDialog();
+									it1.next(data);
+								});
 								return;
 							});
 
@@ -383,42 +382,53 @@ new (function($, window){
 	 */
 	this.load = function(callback){
 		callback = callback || function(){};
-		if( !this.utils.isFile( _path_db ) ){
-			callback();
-			return false;
-		}
+		// if( !this.utils.isFile( _path_db ) ){
+		// 	callback();
+		// 	return;
+		// }
+		//
+		// px.px2dtLDA.db = require( _path_db );
+		// px.px2dtLDA.db.projects = px.px2dtLDA.db.projects||[];
+		// px.px2dtLDA.db.projects.sort( function(a, b){
+		// 	if (a.name < b.name){
+		// 		return -1;
+		// 	}
+		// 	if (a.name > b.name){
+		// 		return 1;
+		// 	}
+		// 	return 0;
+		// } );
 
-		_db = require( _path_db );
-		_db.projects = _db.projects||[];
-		_db.projects.sort( function(a, b){
-			if (a.name < b.name){
-				return -1;
-			}
-			if (a.name > b.name){
-				return 1;
-			}
-			return 0;
-		} );
-		callback();
-		return true;
+		// db.json の読み込み・初期化
+		px.px2dtLDA.load(function(){
+			callback();
+		})
+		return;
 	}
 
 	/**
 	 * DBを保存する
 	 */
-	this.save = function(){
-		console.log( 'px.save() called.' );
-		var data = JSON.stringify( _db, null, 1 );
-		try {
-			var result = _fs.writeFileSync( _path_db+'.tmp', data, {"encoding":"utf8","mode":436,"flag":"w"} );
-			console.log( 'px.save() result:', (result===undefined ? true : result) );
-			result = _fs.renameSync(_path_db+'.tmp', _path_db);
-			console.log( 'px.save() rename result:', (result===undefined ? true : result) );
-		} catch (e) {
-			console.error( 'FAILED to save _db' );
-			return false;
-		}
-		return true;
+	this.save = function(callback){
+		callback = callback || function(){};
+
+		// console.log( 'px.save() called.' );
+		// var data = JSON.stringify( px.px2dtLDA.db, null, 1 );
+		// try {
+		// 	var result = _fs.writeFileSync( _path_db+'.tmp', data, {"encoding":"utf8","mode":436,"flag":"w"} );
+		// 	console.log( 'px.save() result:', (result===undefined ? true : result) );
+		// 	result = _fs.renameSync(_path_db+'.tmp', _path_db);
+		// 	console.log( 'px.save() rename result:', (result===undefined ? true : result) );
+		// } catch (e) {
+		// 	console.error( 'FAILED to save _db' );
+		// 	return;
+		// }
+		// callback();
+
+		px.px2dtLDA.save(function(){
+			callback();
+		});
+		return;
 	}
 
 	/**
@@ -455,9 +465,13 @@ new (function($, window){
 	/**
 	 * プロジェクト一覧を取得する
 	 */
-	this.getProjectList = function(){
-		var rtn = _db.projects;
-		return rtn;
+	this.getProjectList = function(callback){
+		callback = callback || function(){};
+		this.px2dtLDA.getProjectAll(function(projects){
+			callback(projects);
+		});
+		// var rtn = px.px2dtLDA.db.projects;
+		return;
 	}
 
 	/**
@@ -477,7 +491,7 @@ new (function($, window){
 			projectInfo.entry_script = '.px_execute.php'
 		}
 
-		var pj = new (require('./index_files/pickles.project.js')).classProject( window, this, projectInfo, _db.projects.length );
+		var pj = new (require('./index_files/pickles.project.js')).classProject( window, this, projectInfo, px.px2dtLDA.db.projects.length );
 		var pjValidated = pj.validate();
 
 		if( pjValidated.isError ){
@@ -486,10 +500,12 @@ new (function($, window){
 			return false;
 		}
 
-		_db.projects.push( projectInfo );
-		this.save();
-		opt.success();
-		opt.complete();
+		px.px2dtLDA.addProject( projectInfo, function(result){
+			px.save(function(){
+				opt.success();
+				opt.complete();
+			});
+		} );
 
 		return true;
 	}
@@ -502,7 +518,7 @@ new (function($, window){
 			return false;
 		}
 		projectInfo = JSON.parse( JSON.stringify( projectInfo ) );
-		_db.projects[projectId] = projectInfo;
+		px.px2dtLDA.db.projects[projectId] = projectInfo;
 		return true;
 	}
 
@@ -511,10 +527,11 @@ new (function($, window){
 	 */
 	this.deleteProject = function(projectId, callback){
 		callback = callback || function(){};
-		_db.projects.splice( projectId, 1 );
+		px.px2dtLDA.db.projects.splice( projectId, 1 );
 		this.deselectProject();
-		this.save();
-		callback();
+		this.save(function(){
+			callback();
+		});
 		return true;
 	}
 
@@ -554,7 +571,7 @@ new (function($, window){
 		_pj = new (require('./index_files/pickles.project.js')).classProject(
 			window,
 			this,
-			_db.projects[_selectedProject],
+			px.px2dtLDA.db.projects[_selectedProject],
 			_selectedProject,
 			function(){
 				// ファイル監視を開始
@@ -602,8 +619,8 @@ new (function($, window){
 				return 'xdg-open';
 			}
 		}
-		if( _db.commands && _db.commands[cmd] ){
-			return _db.commands[cmd];
+		if( px.px2dtLDA.db.commands && px.px2dtLDA.db.commands[cmd] ){
+			return px.px2dtLDA.db.commands[cmd];
 		}
 		if( cmd == 'php' ){
 			return require('node-php-bin').get().getPath();
@@ -647,7 +664,7 @@ new (function($, window){
 	 * DBデータまるごと取得
 	 */
 	this.getDb = function(){
-		return _db;
+		return px.px2dtLDA.db;
 	}
 
 
@@ -800,42 +817,43 @@ new (function($, window){
 			$cont.html( $('script#template-selectProject-page').html() );
 			$cont.find('.cont_top_footer p').text( _packageJson.pickles2.credit );
 
-			var list = this.getProjectList();
-			if( list.length ){
-				var $ul = $('<div class="list-group">');
-				for( var i = 0; i < list.length; i++ ){
-					$ul.append(
-						$('<a class="list-group-item">')
-							.attr('href', 'javascript:;')
-							.data('path', list[i].path)
-							.data('num', i)
-							.click( function(){
-								var timer = setTimeout(function(){
-									px.progress.start({"showProgressBar":true, 'blindness':true});
-								}, 1000);
-								px.selectProject( $(this).data('num'), function(){
-									clearTimeout(timer);
-									px.progress.close();
-									px.subapp();
-								} );
-							} )
-							.text( list[i].name )
-					);
+			this.getProjectList(function(list){
+				if( list.length ){
+					var $ul = $('<div class="list-group">');
+					for( var i = 0; i < list.length; i++ ){
+						$ul.append(
+							$('<a class="list-group-item">')
+								.attr('href', 'javascript:;')
+								.data('path', list[i].path)
+								.data('num', i)
+								.click( function(){
+									var timer = setTimeout(function(){
+										px.progress.start({"showProgressBar":true, 'blindness':true});
+									}, 1000);
+									px.selectProject( $(this).data('num'), function(){
+										clearTimeout(timer);
+										px.progress.close();
+										px.subapp();
+									} );
+								} )
+								.text( list[i].name )
+						);
+					}
+
+					$('.cont_project_list', $cont)
+						.html('')
+						.append($ul)
+					;
+
+				}else{
+					$('.cont_project_list', $cont)
+						.html('<p>プロジェクトは登録されていません。</p>')
+					;
 				}
-
-				$('.cont_project_list', $cont)
-					.html('')
-					.append($ul)
-				;
-
-			}else{
-				$('.cont_project_list', $cont)
-					.html('<p>プロジェクトは登録されていません。</p>')
-				;
-			}
-			_current_app = appName;
-			layoutReset();
-			$contents.scrollTop(0);
+				_current_app = appName;
+				layoutReset();
+				$contents.scrollTop(0);
+			});
 			return;
 		}
 	}

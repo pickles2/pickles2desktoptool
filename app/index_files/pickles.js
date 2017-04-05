@@ -1029,24 +1029,7 @@ new (function($, window){
 	 * ログをファイルに出力
 	 */
 	this.log = function( msg ){
-		var path = _path_data_dir + 'common_log.log';
-		var row = ( (function(){
-			var d = new Date();
-			function pad(n){return n<10 ? '0'+n : n}
-			var rtn = '';
-			rtn +=
-				d.getUTCFullYear()+'-'
-				+ pad(d.getUTCMonth()+1)+'-'
-				+ pad(d.getUTCDate())+'T'
-				+ pad(d.getUTCHours())+':'
-				+ pad(d.getUTCMinutes())+':'
-				+ pad(d.getUTCSeconds())+'Z'
-			;
-			return rtn;
-		})() ) + '	' + process.pid + '	' + msg + "\n";
-		console.log(row);
-		this.fs.appendFileSync( path, row, {} );
-		return true;
+		return px.px2dtLDA.log(msg);
 	}
 
 	/**

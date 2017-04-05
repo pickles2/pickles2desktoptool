@@ -23308,14 +23308,25 @@ module.exports = function(px2ce){
 							'api': 'loadCustomFieldsClientSideLibs'
 						},
 						function(scripts){
-							for(var i in scripts){
-								try {
-									$('body').append(scripts[i]);
-								} catch (e) {
-									console.error( 'Module Script Error:', scripts[i] );
+							it79.ary(scripts,
+								function(itAry, scriptUrl, idx){
+									var scr = document.createElement('script');
+									scr.src = scriptUrl;
+									scr.onload = function(e){
+										// console.log('custom script loaded.', this, e);
+										itAry.next();
+									};
+									// console.log(scr);
+									scr.onerror = function(e){
+										console.error('custom script NOT loaded.', this, e);
+										itAry.next();
+									};
+									document.body.appendChild(scr);
+								},
+								function(){
+									rlv();
 								}
-							}
-							rlv();
+							);
 						}
 					);
 				}); })
@@ -23327,7 +23338,11 @@ module.exports = function(px2ce){
 
 					// 呼び出し元アプリが拡張するフィールド
 					for( var idx in px2ce.options.customFields ){
-						customFields[idx] = px2ce.options.customFields[idx];
+						if( typeof(px2ce.options.customFields[idx]) == typeof(function(){}) ){
+							customFields[idx] = px2ce.options.customFields[idx];
+						}else{
+							console.error( 'FAILED to load custom field: ' + idx + ' (frontend); Is NOT a Function.' );
+						}
 					}
 
 					// プロジェクトが拡張するフィールド
@@ -23338,14 +23353,17 @@ module.exports = function(px2ce){
 							try {
 								if( confCustomFields[fieldName].frontend.file && confCustomFields[fieldName].frontend.function ){
 									// console.log(eval( confCustomFields[fieldName].frontend.function ));
-									customFields[fieldName] = eval( confCustomFields[fieldName].frontend.function );
+									var tmpCustomFieldFunction = eval( confCustomFields[fieldName].frontend.function );
+									if( typeof(tmpCustomFieldFunction) == typeof(function(){}) ){
+										customFields[fieldName] = tmpCustomFieldFunction;
+									}else{
+										console.error( 'FAILED to load custom field: ' + fieldName + ' (frontend); Is NOT a Function.' );
+									}
 								}else{
-									console.error( 'FAILED to load custom field: ' + fieldName + ' (frontend);' );
-									console.error( 'unknown type' );
+									console.error( 'FAILED to load custom field: ' + fieldName + ' (frontend); unknown type.' );
 								}
 							} catch (e) {
-								console.error( 'FAILED to load custom field: ' + fieldName + ' (frontend);' );
-								console.error(e);
+								console.error( 'FAILED to load custom field: ' + fieldName + ' (frontend);', e );
 							}
 						}
 					} catch (e) {

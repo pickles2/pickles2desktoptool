@@ -1,6 +1,6 @@
-# Pickles 2 Desktop Tool
+# Pickles 2
 
-[Pickles2](http://pickles2.pxt.jp/) をベースに、ウェブサイトを編集するGUI編集環境を提供します。
+[Pickles 2](http://pickles2.pxt.jp/) のプロジェクトテンプレートをベースに、ウェブサイトを編集するGUI編集環境を提供します。
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/videoseries?list=PL5ZUBZrE-CkDSYUvVZNDCILrzGhRG2U8L" frameborder="0" allowfullscreen></iframe>
 
@@ -47,12 +47,19 @@ $ npm run build
 - node@6.9.1
 - npm@3.6.0
 
+Mac で Windows 版をビルドするにあたり、次の環境が必要です。
+
+- wine@2.0
+
 
 ## 更新履歴 - Change log
 
-### Pickles 2 Desktop Tool 2.0.0-beta.17 (2017年??月??日)
+### Pickles 2 2.0.0-beta.17 (2017年??月??日)
 
-- ????????????????????????????????????????
+- アプリケーションの名称を `Pickles 2 Desktop Tool` から `Pickles 2` に変更。
+- NW.js を 0.21.1 に更新。
+- Windows版で、バックグラウンドでの パブリッシュ中 と サイトマップキャッシュ生成中 に、画面左下に状態を表示するようになった。
+- その他いくつかの細かい修正。
 
 ### Pickles 2 Desktop Tool 2.0.0-beta.16 (2017年3月27日)
 

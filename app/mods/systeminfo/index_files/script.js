@@ -3,7 +3,7 @@
 	$(window).load( function(){
 		px.utils.iterate(
 			[
-				{"title":"Pickles 2 Desktop Tool version", "val": px.getVersion()},
+				{"title":"Pickles 2 application version", "val": px.getVersion()},
 				{"title":"Platform", "val": px.getPlatform()},
 				{"title":"PHP version", "cmd": px.cmd('php') + ' -v'},
 				{"title":"PHP path", "cmd": (px.cmd('php')=='php'?'which '+px.cmd('php'):'echo '+px.cmd('php'))},

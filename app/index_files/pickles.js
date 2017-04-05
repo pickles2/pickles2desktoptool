@@ -21,7 +21,6 @@ new (function($, window){
 
 	// data
 	var _path_data_dir = (process.env.HOME||process.env.LOCALAPPDATA) + '/'+_packageJson.pickles2.dataDirName+'/';
-	var _path_db = (process.env.HOME||process.env.LOCALAPPDATA) + '/'+_packageJson.pickles2.dataDirName+'/db.json';
 
 	/**
 	 * Pickles 2 のバージョン情報を取得する。
@@ -132,44 +131,6 @@ new (function($, window){
 
 	this.nodePhpBin = {};//init内で初期化される
 
-	if( !_utils.isDirectory( _path_data_dir ) ){
-		_fs.mkdirSync( _path_data_dir );
-		if( !_utils.isDirectory( _path_data_dir ) ){
-			alert( 'FAILED to make directory '+_path_data_dir );
-			process.exit();
-		}
-	}
-
-	if( !_fs.existsSync( _path_db ) ){
-		_fs.writeFileSync(
-			_path_db,
-			JSON.stringify(
-				{
-					"commands":{} ,
-					"apps":{
-						"texteditor": null,
-						"texteditorForDir": null
-					} ,
-					"projects":[] ,
-					"network":{
-						"preview":{
-							"port": _packageJson.pickles2.network.preview.port,
-							"accessRestriction": "loopback"
-						},
-						"appserver":{
-							"port": _packageJson.pickles2.network.appserver.port
-						}
-					}
-				}
-			) ,
-			{
-				"encoding":"utf8",
-				"mode":436,
-				"flag":"w"
-			}
-		);
-	}
-	_path_db = _fs.realpathSync( _path_db );
 	var $header, $footer, $main, $contents, $shoulderMenu;
 	var _menu = [];
 
@@ -177,9 +138,30 @@ new (function($, window){
 	 * アプリケーションの初期化
 	 */
 	function init(callback){
-		_it79.fnc(
-			{},
+		_it79.fnc({},
 			[
+				function(it1, data){
+					// データディレクトリを初期化
+					px.px2dtLDA.initDataDir(function(result){
+						if( !result ){
+							console.error('FAILED to Initialize data directory. - '+_path_data_dir);
+						}
+						px.px2dtLDA.db.commands.php = px.px2dtLDA.db.commands.php || '';
+						px.px2dtLDA.db.commands.git = px.px2dtLDA.db.commands.git || '';
+						px.px2dtLDA.db.language = px.px2dtLDA.db.language || 'ja';
+						px.px2dtLDA.db.apps.texteditor = px.px2dtLDA.db.apps.texteditor || '';
+						px.px2dtLDA.db.apps.texteditorForDir = px.px2dtLDA.db.apps.texteditorForDir || '';
+						px.px2dtLDA.db.network.preview = px.px2dtLDA.db.network.preview || {};
+						px.px2dtLDA.db.network.preview.port = px.px2dtLDA.db.network.preview.port || _packageJson.pickles2.network.preview.port;
+						px.px2dtLDA.db.network.preview.accessRestriction = px.px2dtLDA.db.network.preview.accessRestriction || "loopback";
+						px.px2dtLDA.db.network.appserver = px.px2dtLDA.db.network.appserver || {};
+						px.px2dtLDA.db.network.appserver.port = px.px2dtLDA.db.network.appserver.port || _packageJson.pickles2.network.appserver.port;
+
+						px.px2dtLDA.save(function(){
+							it1.next(data);
+						});
+					});
+				},
 				function(it1, data){
 					(function(){
 						// node-webkit の標準的なメニューを出す
@@ -214,7 +196,7 @@ new (function($, window){
 					// 各国語言語切替機能のロード
 					var LangBank = require('langbank');
 					px.lb = new LangBank( require('path').resolve('./app/common/language/language.csv'), function(){
-						px.lb.setLang('ja'); // default language
+						px.lb.setLang(px.px2dtLDA.db.language);
 						// console.log(px.lb.get('welcome'));
 						it1.next();
 					}); // new LangBank()
@@ -224,6 +206,7 @@ new (function($, window){
 					// ヒント機能のロード
 					var Px2Hint = require('./index_files/pickles.hint.js');
 					px.hint = new Px2Hint( px, require('path').resolve('./app/common/language/hint.csv'), function(){
+						px.hint.setLang(px.px2dtLDA.db.language);
 						it1.next();
 					}); // new LangBank()
 					return;
@@ -264,27 +247,7 @@ new (function($, window){
 					return;
 				},
 				function(it1, data){
-					if(!px.px2dtLDA.db){px.px2dtLDA.db = {};}
-					if(!px.px2dtLDA.db.commands){px.px2dtLDA.db.commands = {};}
-					if(!px.px2dtLDA.db.projects){px.px2dtLDA.db.projects = [];}
-					if(!px.px2dtLDA.db.network){px.px2dtLDA.db.network = {};}
-					if(!px.px2dtLDA.db.network.preview){px.px2dtLDA.db.network.preview = {};}
-					if(!px.px2dtLDA.db.network.appserver){px.px2dtLDA.db.network.appserver = {};}
-					if(!px.px2dtLDA.db.apps){px.px2dtLDA.db.apps = {};}
-					if(!px.px2dtLDA.db.apps.texteditor){px.px2dtLDA.db.apps.texteditor = null;}
-					if(!px.px2dtLDA.db.apps.texteditorForDir){px.px2dtLDA.db.apps.texteditorForDir = null;}
-					if(!px.px2dtLDA.db.language){px.px2dtLDA.db.language = 'ja';}
-
-					px.lb.setLang(px.px2dtLDA.db.language);
-					px.hint.setLang(px.px2dtLDA.db.language);
-
-					if( !_utils.isDirectory( _path_data_dir+'commands/' ) ){
-						_fs.mkdirSync( _path_data_dir+'commands/' );
-					}
-					if( !_utils.isDirectory( _path_data_dir+'commands/composer/' ) ){
-						_fs.mkdirSync( _path_data_dir+'commands/composer/' );
-					}
-
+					// setup "node-php-bin"
 					px.NodePhpBin = require('node-php-bin');
 					px.nodePhpBinOptions = {};
 					if( px.px2dtLDA.db.commands && px.px2dtLDA.db.commands['php'] ){
@@ -294,7 +257,11 @@ new (function($, window){
 						};
 					}
 					px.nodePhpBin = px.NodePhpBin.get(px.nodePhpBinOptions);
-
+					it1.next();
+					return;
+				},
+				function(it1, data){
+					// メニュー設定
 					_menu = [
 						{"label":px.lb.get('menu.home'),                 "cond":"projectSelected",    "area":"mainmenu", "app":"fncs/home/index.html", "cb": function(){px.subapp();}} ,
 						{"label":px.lb.get('menu.sitemap'),         "cond":"pxStandby",          "area":"mainmenu", "app":"fncs/sitemap/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
@@ -331,42 +298,7 @@ new (function($, window){
 						} },
 						{"label":px.lb.get('menu.exit'),                 "cond":"always",             "area":"shoulder", "app":null, "cb": function(){px.exit();}}
 					];
-
-					if( !_utils.isFile( _path_data_dir+'commands/composer/composer.phar' ) ){
-						(function(){
-							var pathComposerPhar = {
-								'from': require('path').resolve('./app/common/composer/composer.phar') ,
-								'to': require('path').resolve(_path_data_dir, './commands/composer/composer.phar')
-							};
-							_fsEx.copy(pathComposerPhar.from, pathComposerPhar.to, function(err){
-								if( err ){
-									console.error(err);
-									console.error('composer.phar のコピーに失敗しました。');
-									alert('composer.phar のコピーに失敗しました。');
-									px.closeDialog();
-									it1.next(data);
-									return;
-								}
-								px.px2dtLDA.db.commands.composer = pathComposerPhar.to;
-								px.save(function(){
-									px.closeDialog();
-									it1.next(data);
-								});
-								return;
-							});
-
-							var opt = {
-								'title': '初期設定中...',
-								'body': $('<p>'+_appName+' を初期設定しています。しばらくお待ちください。</p>') ,
-								'buttons': []
-							};
-
-							px.dialog(opt);
-						})();
-					}else{
-						it1.next(data);
-						return;
-					}
+					it1.next(data);
 				},
 				function(it1, data){
 					callback();
@@ -382,23 +314,6 @@ new (function($, window){
 	 */
 	this.load = function(callback){
 		callback = callback || function(){};
-		// if( !this.utils.isFile( _path_db ) ){
-		// 	callback();
-		// 	return;
-		// }
-		//
-		// px.px2dtLDA.db = require( _path_db );
-		// px.px2dtLDA.db.projects = px.px2dtLDA.db.projects||[];
-		// px.px2dtLDA.db.projects.sort( function(a, b){
-		// 	if (a.name < b.name){
-		// 		return -1;
-		// 	}
-		// 	if (a.name > b.name){
-		// 		return 1;
-		// 	}
-		// 	return 0;
-		// } );
-
 		// db.json の読み込み・初期化
 		px.px2dtLDA.load(function(){
 			callback();
@@ -411,20 +326,6 @@ new (function($, window){
 	 */
 	this.save = function(callback){
 		callback = callback || function(){};
-
-		// console.log( 'px.save() called.' );
-		// var data = JSON.stringify( px.px2dtLDA.db, null, 1 );
-		// try {
-		// 	var result = _fs.writeFileSync( _path_db+'.tmp', data, {"encoding":"utf8","mode":436,"flag":"w"} );
-		// 	console.log( 'px.save() result:', (result===undefined ? true : result) );
-		// 	result = _fs.renameSync(_path_db+'.tmp', _path_db);
-		// 	console.log( 'px.save() rename result:', (result===undefined ? true : result) );
-		// } catch (e) {
-		// 	console.error( 'FAILED to save _db' );
-		// 	return;
-		// }
-		// callback();
-
 		px.px2dtLDA.save(function(){
 			callback();
 		});

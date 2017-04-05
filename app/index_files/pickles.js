@@ -798,6 +798,22 @@ new (function($, window){
 
 		if( appName ){
 			this.loadProject(function(){ // プロジェクトオブジェクトをリロードする。
+				var projectStatus = _pj.status();
+				// console.log(projectStatus);
+				if( !projectStatus.isPxStandby ){
+					switch(appName){
+						case 'fncs/home/index.html':
+						case 'fncs/config/index.html':
+						case 'fncs/composer/index.html':
+						case 'fncs/git/index.html':
+							// プロジェクトの準備が整っていなかったら、
+							// これ以外の画面には行けない。
+							break;
+						default:
+							appName = 'fncs/home/index.html';
+							break;
+					}
+				}
 				$cont
 					.html('')
 					.append(

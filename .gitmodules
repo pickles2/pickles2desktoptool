@@ -1,9 +1,9 @@
 [submodule "submodules/broccoli-html-editor"]
 	path = submodules/broccoli-html-editor
-	url = https://github.com/pickles2/broccoli-html-editor.git
+	url = https://github.com/broccoli-html-editor/broccoli-html-editor.git
 [submodule "submodules/broccoli-field-table"]
 	path = submodules/broccoli-field-table
-	url = https://github.com/pickles2/broccoli-field-table.git
+	url = https://github.com/broccoli-html-editor/broccoli-field-table.git
 [submodule "submodules/node-px2dt-localdata-access"]
 	path = submodules/node-px2dt-localdata-access
 	url = https://github.com/pickles2/node-px2dt-localdata-access.git
@@ -21,7 +21,7 @@
 	url = https://github.com/pickles2/node-px2agent.git
 [submodule "submodules/node-broccoli-processor"]
 	path = submodules/node-broccoli-processor
-	url = https://github.com/pickles2/node-broccoli-processor.git
+	url = https://github.com/broccoli-html-editor/node-broccoli-processor.git
 [submodule "submodules/node-pickles2-module-editor"]
 	path = submodules/node-pickles2-module-editor
 	url = https://github.com/pickles2/node-pickles2-module-editor.git
@@ -30,4 +30,4 @@
 	url = https://github.com/tomk79/node-utils79.git
 [submodule "submodules/node-broccoli-styleguide-generator"]
 	path = submodules/node-broccoli-styleguide-generator
-	url = https://github.com/pickles2/node-broccoli-styleguide-generator.git
+	url = https://github.com/broccoli-html-editor/node-broccoli-styleguide-generator.git

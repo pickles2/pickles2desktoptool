@@ -30,22 +30,7 @@ window.contApp = new (function( px ){
 	 */
 	function openEditor(){
 		var filename_editor = 'editor_px2ce';
-		var parsedPath = px.utils.parsePath(_cont_path);
-		if( parsedPath.ext == 'html' || parsedPath.ext == 'htm' ){
-			var datajson = px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+_pj.getContentFilesByPageContent(_cont_path)+'/guieditor.ignore/data.json';
-			if( px.fs.existsSync( datajson ) ){
-				// console.log(_pj.getGuiEngineName());
-				if(_pj.getGuiEngineName() == 'broccoli-html-editor'){
-					// broccoli-html-editor
-					filename_editor = 'editor_px2ce';
-				}else{
-					// 旧GUI編集
-					filename_editor = 'editor_gui';
-				}
-			}
-		}
-
-		window.location.href = './'+filename_editor+'.html?page_path='+encodeURIComponent( _param.page_path );
+		window.location.href = './editor_px2ce.html?page_path='+encodeURIComponent( _param.page_path );
 		return true;
 	}
 

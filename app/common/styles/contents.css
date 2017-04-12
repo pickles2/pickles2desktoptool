@@ -204,11 +204,13 @@ ul.listview li a.current{
  * ※JSとセットです。
  */
 .preview_window_frame{
-	border-image:         url("../images/windowframe.png") 63 17 18 62 / 63px 17px 18px 62px repeat stretch;
-	-moz-border-image:    url("../images/windowframe.png") 63 17 18 62 / 63px 17px 18px 62px repeat stretch;
-	-webkit-border-image: url("../images/windowframe.png") 63 17 18 62 / 63px 17px 18px 62px repeat stretch;
-	-o-border-image:      url("../images/windowframe.png") 63 17 18 62 / 63px 17px 18px 62px repeat stretch;
-	-ms-border-image:     url("../images/windowframe.png") 63 17 18 62 / 63px 17px 18px 62px repeat stretch;
+	border-style: solid;
+	border-width: 63px 17px 18px 62px;
+	border-image:         url("../images/windowframe.png") 63 17 18 62 repeat stretch;
+	-moz-border-image:    url("../images/windowframe.png") 63 17 18 62 repeat stretch;
+	-webkit-border-image: url("../images/windowframe.png") 63 17 18 62 repeat stretch;
+	-o-border-image:      url("../images/windowframe.png") 63 17 18 62 repeat stretch;
+	-ms-border-image:     url("../images/windowframe.png") 63 17 18 62 repeat stretch;
 	box-sizing: border-box;
 	position: relative; left: 0; top: 0;
 	height: 300px;

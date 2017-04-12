@@ -208,6 +208,8 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 						"complete": function(data, code){
 							// console.log(data, code);
 							if( code == 0 ){
+								_config = false;
+								_px2DTConfig = false;
 								try {
 									var pjInfo = JSON.parse(data);
 									// console.log(pjInfo);
@@ -219,8 +221,6 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 									status.px2dthelper.available = (pjInfo.check_status.px2dthelper.version ? true : false);
 									status.px2dthelper.is_sitemap_loaded = pjInfo.check_status.px2dthelper.is_sitemap_loaded;
 
-									_config = false;
-									_px2DTConfig = false;
 									try{
 										_config = pjInfo.config;
 										if( _config.plugins && _config.plugins.px2dt ){
@@ -234,6 +234,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 										_px2DTConfig = false;
 									}
 								} catch (e) {
+									console.error('FAILED to getting data from "/?PX=px2dthelper.get.all"');
 								}
 							}
 							rlv();
@@ -241,6 +242,56 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 						}
 					}
 				);
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// console.log(_config);
+				if( typeof(_config) == typeof({}) && _config !== null ){
+					// コンフィグがロードできていればOK
+					rlv();
+					return;
+				}
+
+				// px2dthelper.get.all が利用できない場合、
+				// 旧来のAPIを使って地道にデータを集める。
+				new Promise(function(rlv){rlv();})
+					.then(function(){ return new Promise(function(rlv2, rjt2){
+						_px2proj.query(
+							'/?PX=api.get.config',
+							{
+								"output": "json",
+								"complete": function(data_json_string, code){
+									// console.log(data_json_string, code);
+									if( code == 0 ){
+										_config = false;
+										_px2DTConfig = false;
+										try{
+											var _config = JSON.parse(data_json_string);
+											if( _config.plugins && _config.plugins.px2dt ){
+												_px2DTConfig = _config.plugins.px2dt;
+											}
+										}catch(e){
+											console.error('FAILED to parse JSON "Pickles 2" config.');
+											console.error(data_json_string);
+											_this.error( 'FAILED to parse JSON "Pickles 2" config.'+"\n"+'------------'+"\n\n"+data_json_string );
+											_config = false;
+											_px2DTConfig = false;
+										}
+									}
+									rlv2();
+									return;
+								}
+							}
+						);
+						return;
+					}); })
+					.then(function(){ return new Promise(function(rlv2, rjt2){
+						// console.log('------------------ config loaded', _config);
+						rlv();
+						return;
+					}); })
+				;
+
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
@@ -352,12 +403,12 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		return this;
 	}
 
-	/** Pickles 2 Desktop Tool 設定情報を取得する */
+	/** Pickles 2 設定情報を取得する */
 	this.getPx2DTConfig = function(){
 		return _px2DTConfig;
 	}
 
-	/** Pickles 2 Desktop Tool 設定情報を更新する (非同期) */
+	/** Pickles 2 設定情報を更新する (非同期) */
 	this.updatePx2DTConfig = function( callback ){
 		callback = callback||function(){};
 
@@ -549,23 +600,24 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	 * Pickles2 の config.php に、plugins.px2dt.guiEngine を設定すると、
 	 * GUI編集エンジンを切り替えることができます。
 	 *
-	 * 設定できる値は、以下。
-	 * - legacy = 旧GUI編集
+	 * 設定できる値は、以下です。
+	 * - legacy = 旧GUI編集 (このオプションは 2.0.0-beta.17 で廃止されました)
 	 * - broccoli-html-editor = 新エンジン broccoli (default)
 	 */
 	this.getGuiEngineName = function(){
-		var conf = this.getConfig();
-		// console.log(conf);
-		// console.log(conf.plugins.px2dt);
-		// console.log(conf.plugins.px2dt.guiEngine);
-		if( conf && conf.plugins && conf.plugins.px2dt && conf.plugins.px2dt.guiEngine ){
-			switch(conf.plugins.px2dt.guiEngine){
-				case 'legacy':
-					return conf.plugins.px2dt.guiEngine;
-					break;
-				default:
-					break;
+		try {
+			var conf = this.getConfig();
+			if( conf && conf.plugins && conf.plugins.px2dt && conf.plugins.px2dt.guiEngine ){
+				switch(conf.plugins.px2dt.guiEngine){
+					case 'legacy': // Obsoleted Option
+						console.error('[Notice] guiEngine "legacy" is a obsoleted option. Selected "broccoli-html-editor" instead.');
+						// return conf.plugins.px2dt.guiEngine;
+						break;
+					default:
+						break;
+				}
 			}
+		} catch (e) {
 		}
 		return 'broccoli-html-editor';
 	}
@@ -582,21 +634,14 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				return;
 			}
 
-			if(pj.getGuiEngineName() == 'broccoli-html-editor'){
-				// broccoli-html-editor
-				pj.createBroccoliServer(pagePath, function(broccoli){
-					broccoli.updateContents(
-						function(result){
-							callback(result);
-						}
-					);
-				});
-			}else{
-				// 旧GUI編集
-				window.px2dtGuiEditor.build(pagePath, function(result){
-					callback(result);
-				});
-			}
+			// broccoli-html-editor
+			pj.createBroccoliServer(pagePath, function(broccoli){
+				broccoli.updateContents(
+					function(result){
+						callback(result);
+					}
+				);
+			});
 
 		});
 		return this;

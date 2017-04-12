@@ -8,6 +8,12 @@ var packageJson = require('./package.json');
 var phpjs = require('phpjs');
 var date = new Date();
 var appName = packageJson.name;
+var platforms = [
+	'osx64',
+	// 'win64',
+	'win32',
+	'linux64'
+];
 
 
 console.log('== build "'+appName+'" ==');
@@ -45,7 +51,7 @@ var nw = new NwBuilder({
 	files: (function(packageJson){
 		var rtn = [
 			'./package.json',
-			'./app/**',
+			'./app/**/*',
 			'./composer.json',
 			'./vendor/autoload.php'
 		];
@@ -110,7 +116,7 @@ var nw = new NwBuilder({
 					break;
 				default:
 					// まるっと登録するパッケージ
-					rtn.push( './node_modules/'+modName+'/**' );
+					rtn.push( './node_modules/'+modName+'/**/*' );
 					break;
 			}
 		}
@@ -124,22 +130,18 @@ var nw = new NwBuilder({
 					break;
 				default:
 					// まるっと登録するパッケージ
-					rtn.push( './vendor/'+modName+'/**' );
+					rtn.push( './vendor/'+modName+'/**/*' );
 					break;
 			}
 		}
 		return rtn;
 	})(packageJson) , // use the glob format
-	version: 'v0.12.3',// <- version number of node-webkit
+	version: '0.21.1',// <- version number of node-webkit
 	flavor: 'sdk',
 	macIcns: './app/common/images/appicon-osx.icns',
 	winIco: './app/common/images/appicon-win.ico',
 	zip: false,
-	platforms: [
-		'linux64',
-		'osx64',
-		'win32'
-	]
+	platforms: platforms
 });
 
 //Log stuff you want
@@ -165,46 +167,24 @@ nw.build().then(function () {
 
 		it79.fnc({}, [
 			function(itPj, param){
-				writeLog('ZIP osx64...');
-				zipFolder(
-					__dirname + '/build/'+appName+'/osx64/',
-					__dirname + '/build/'+appName+'-'+versionSign+'-osx64.zip',
-					function(err) {
-						if(err) {
-							writeLog('ERROR!', err);
-						} else {
-							writeLog('success. - '+'./build/'+appName+'-'+versionSign+'-osx64.zip');
-						}
-						itPj.next(param);
-					}
-				);
-			},
-			function(itPj, param){
-				writeLog('ZIP win32...');
-				zipFolder(
-					__dirname + '/build/'+appName+'/win32/',
-					__dirname + '/build/'+appName+'-'+versionSign+'-win32.zip',
-					function(err) {
-						if(err) {
-							writeLog('ERROR!', err);
-						} else {
-							writeLog('success. - '+'./build/'+appName+'-'+versionSign+'-win32.zip');
-						}
-						itPj.next(param);
-					}
-				);
-			},
-			function(itPj, param){
-				writeLog('ZIP linux64...');
-				zipFolder(
-					__dirname + '/build/'+appName+'/linux64/',
-					__dirname + '/build/'+appName+'-'+versionSign+'-linux64.zip',
-					function(err) {
-						if(err) {
-							writeLog('ERROR!', err);
-						} else {
-							writeLog('success. - '+'./build/'+appName+'-'+versionSign+'-linux64.zip');
-						}
+				it79.ary(
+					platforms,
+					function(it2, platformName, idx){
+						writeLog('[platform: '+platformName+'] Zipping...');
+						zipFolder(
+							__dirname + '/build/'+appName+'/'+platformName+'/',
+							__dirname + '/build/'+appName+'-'+versionSign+'-'+platformName+'.zip',
+							function(err) {
+								if(err) {
+									writeLog('ERROR!', err);
+								} else {
+									writeLog('success. - '+'./build/'+appName+'-'+versionSign+'-'+platformName+'.zip');
+								}
+								it2.next();
+							}
+						);
+					},
+					function(){
 						itPj.next(param);
 					}
 				);

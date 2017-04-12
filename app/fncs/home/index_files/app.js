@@ -43,13 +43,24 @@ window.contApp = new (function(){
 					return rtn;
 				})(status.pathExists, pj.get('path'));
 
+
 				if( !status.pathExists ){
-					// パスの選択しなおしbutton
+					// パスの選択しなおし
 					$mainTaskUi
 						.html( $('#template-reselectProject-path').html() )
 						.find('form')
-							.submit(function(){
+							.on('submit', function(){
 								_this.selectProjectPath( $(this).find('[name=pj_path]').val() );
+								return false;
+							})
+					;
+				}else if( !status.entryScriptExists ){
+					// EntryScript が存在しない。
+					$mainTaskUi
+						.html( $('#template-reselectProject-entryScript').html() )
+						.find('form')
+							.on('submit', function(){
+								_this.editProject();
 								return false;
 							})
 					;
@@ -58,7 +69,7 @@ window.contApp = new (function(){
 					$mainTaskUi
 						.html( $('#template-is-not-empty-dir').html() )
 						.find('form')
-							.submit(function(){
+							.on('submit', function(){
 								_this.selectProjectPath( $(this).find('[name=pj_path]').val() );
 								return false;
 							})
@@ -68,7 +79,7 @@ window.contApp = new (function(){
 					$mainTaskUi
 						.html( $('#template-install-pickles2').html() )
 						.find('form')
-							.submit(function(){
+							.on('submit', function(){
 								install(this);
 								return false;
 							})
@@ -78,7 +89,7 @@ window.contApp = new (function(){
 					$mainTaskUi
 						.html( $('#template-install-composer').html() )
 					;
-				}else if( status.pathExists && !status.confFileExists ){
+				}else if( !status.isPxStandby || !status.pathExists || !status.confFileExists ){
 					// 何らかのエラーがある可能性があります
 					$mainTaskUi
 						.html( $('#template-conf-not-exists').html() )
@@ -109,7 +120,7 @@ window.contApp = new (function(){
 				it.next(arg);
 			} ,
 			function(it, arg){
-				if( !status.pathExists || !status.composerJsonExists || !status.vendorDirExists || !status.confFileExists ){
+				if( !status.isPxStandby || !status.pathExists || !status.composerJsonExists || !status.vendorDirExists || !status.confFileExists ){
 					// セットアップが不十分な場合は、 composer update をチェックしない。
 					it.next(arg);
 					return;
@@ -189,8 +200,9 @@ window.contApp = new (function(){
 			alert(msg);
 			return false;
 		}
-		px.save();
-		px.subapp();
+		px.save(function(){
+			px.subapp();
+		});
 		return true;
 	}
 
@@ -239,7 +251,7 @@ window.contApp = new (function(){
 				$('<button>')
 					.text('OK')
 					.addClass('px2-btn--primary')
-					.click( function(){
+					.on('click', function(){
 						pj
 							.set('name', $form.find('[name=pj_name]').val())
 							.set('home_dir', $form.find('[name=pj_home_dir]').val())
@@ -252,15 +264,15 @@ window.contApp = new (function(){
 							;
 
 						}
-						px.save();
-
-						px.closeDialog();
-						px.message('プロジェクト情報を更新しました。');
-						px.subapp();
+						px.save(function(){
+							px.closeDialog();
+							px.message('プロジェクト情報を更新しました。');
+							px.subapp();
+						});
 					} ) ,
 				$('<button>')
 					.text('Cancel')
-					.click( function(){
+					.on('click', function(){
 						px.closeDialog();
 					} )
 			]

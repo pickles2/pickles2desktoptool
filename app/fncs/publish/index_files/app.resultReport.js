@@ -27,7 +27,7 @@ window.contApp.resultReport = new (function(px, $){
 				// 	it.next(arg);
 				// });
 
-				d3.csv( contApp.getRealpathPublishDir()+"publish_log.csv" )
+				d3.csv( 'file://'+contApp.getRealpathPublishDir()+"publish_log.csv" )
 					.row(function(d) {
 						var rtn = {};
 						rtn.datetime = d['datetime'];
@@ -50,7 +50,7 @@ window.contApp.resultReport = new (function(px, $){
 					it.next(arg);
 					return;
 				}
-				d3.csv( contApp.getRealpathPublishDir()+"alert_log.csv" )
+				d3.csv( 'file://'+contApp.getRealpathPublishDir()+"alert_log.csv" )
 					.row(function(d) {
 						var rtn = {};
 						rtn.datetime = d['datetime'];

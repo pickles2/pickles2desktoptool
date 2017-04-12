@@ -41,12 +41,12 @@ header.theme_header{
 
 // LOGO
 .theme_px2logo{
-	transition: width 0.1s ease 0 , height 0.1s ease 0;
+	transition: width 0.3s ease-out 0s , height 0.3s ease-out 0s;
 	position: fixed;
 	left: 10px; top: 0px;
 	z-index: 1000;
 	width: 45px; height: 45px;
-	padding: 3px;
+	padding: 6px;
 	box-sizing: border-box;
 	background-color: #fff;
 	a{

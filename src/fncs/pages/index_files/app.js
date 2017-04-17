@@ -6,13 +6,7 @@ window.contApp = new (function( px ){
 	var _this = this;
 	var _sitemap = null;
 	var _config = null;
-	var $parent, $current, $childList;
-	var $editor = $('<div>');
-	var $preview,
-		$previewIframe,
-		$pageinfo,
-		$commentView,
-		$workspaceFilter;
+	var $elms = {};
 
 	var _param = px.utils.parseUriParam( window.location.href );
 	var _pj = this.pj = px.getCurrentProject();
@@ -29,93 +23,119 @@ window.contApp = new (function( px ){
 	/**
 	 * 初期化
 	 */
-	function init(){
-		$childList = $('.cont_sitemap_childlist');
-		$preview = $('.cont_preview');
-		$previewIframe = $preview.find('iframe');
-		$pageinfo = $('.cont_page_info');
-		$commentView = $('.cont_comment_view');
-		$workspaceFilter = $('.cont_workspace_filter');
-
-		contentsComment = new (require('./libs.ignore/contentsComment.js'))(_this, px, _pj);
-		pageFilter = new (require('./libs.ignore/pageFilter.js'))(_this, px, _pj);
-
-		// bootstrap
-		$('*').tooltip();
-
-		$preview
-			.css({
-				height: 600
-			})
-		;
-		$previewIframe
-			.bind('load', function(){
-				// console.log('=-=-=-=-=-=-=-= iframe loaded.');
-				var contProcType;
-
-				it79.fnc({}, [
-					function(it, prop){
-						px.cancelDrop( $previewIframe.get(0).contentWindow );
-
-						var loc = $previewIframe.get(0).contentWindow.location;
-						switch( loc.href ){
-							case 'blank':
-							case 'about:blank':
-								return;
-						}
-						var to = loc.pathname;
-						var pathControot = _pj.getConfig().path_controot;
-						to = to.replace( new RegExp( '^'+px.utils.escapeRegExp( pathControot ) ), '' );
-						to = to.replace( new RegExp( '^\\/*' ), '/' );
-						_currentPreviewPath = to;
-
-						it.next(prop);
-					} ,
-					function(it, prop){
-						// console.log(prop);
-						pageLoader.load( _currentPreviewPath, {}, function(){
-							it.next(prop);
-						} );
-					} ,
-					function(it, prop){
-						it.next(prop);
-					} ,
-					function(it, prop){
+	function init(callback){
+		callback = callback || function(){};
+		it79.fnc({},[
+			function(it1, arg){
+				_this.pj.checkPxCmdVersion(
+					{
+						apiVersion: '>=2.0.29',
+						px2dthelperVersion: '>=2.0.3'
+					},
+					function(){
+						// API設定OK
+						it1.next(arg);
+					},
+					function( errors ){
+						// API設定が不十分な場合のエラー処理
+						var html = px.utils.bindEjs(
+							document.getElementById('template-not-enough-api-version').innerHTML,
+							{errors: errors}
+						);
+						$('.contents').html( html );
+						// エラーだったらここで離脱。
 						callback();
+						return;
 					}
-				]);
-
-			})
-		;
-
-		_this.pj.checkPxCmdVersion(
-			{
-				apiVersion: '>=2.0.29',
-				px2dthelperVersion: '>=2.0.3'
+				);
 			},
-			function(){
-				// API設定OK
+			function(it1, arg){
+				$elms.editor = $('<div>');
+				$elms.childList = $('.cont_sitemap_childlist');
+				$elms.preview = $('.cont_preview');
+				$elms.previewIframe = $elms.preview.find('iframe');
+				$elms.pageinfo = $('.cont_page_info');
+				$elms.commentView = $('.cont_comment_view');
+				$elms.workspaceFilter = $('.cont_workspace_filter');
+
+				// bootstrap
+				$('*').tooltip();
+
+				it1.next(arg);
+			},
+			function(it1, arg){
 				_this.pj.site.updateSitemap(function(){
 					_config = _this.pj.getConfig();
 					_sitemap = _this.pj.site.getSitemap();
-
-					pageLoader = new (require('./libs.ignore/pageLoader.js'))(_this, px, _pj, contentsComment, $commentView, $previewIframe, $pageinfo, $childList, $workspaceFilter, _sitemap);
-					pageLoader.load( _param.page_path||'/index.html', {}, function(){
-						$(window).resize();
-					} );
+					it1.next(arg);
 				});
 			},
-			function( errors ){
-				// API設定が不十分な場合のエラー処理
-				var html = px.utils.bindEjs(
-					document.getElementById('template-not-enough-api-version').innerHTML,
-					{errors: errors}
-				);
-				$('.contents').html( html );
-			}
-		);
+			function(it1, arg){
+				$elms.preview
+					.css({
+						'height': 600
+					})
+				;
+				$elms.previewIframe
+					.on('load', function(){
+						console.log('=-=-=-=-=-=-=-= iframe loaded.');
+						var contProcType;
 
-	}// init()
+						it79.fnc({}, [
+							function(it, prop){
+								px.cancelDrop( $elms.previewIframe.get(0).contentWindow );
+
+								var loc = $elms.previewIframe.get(0).contentWindow.location;
+								switch( loc.href ){
+									case 'blank':
+									case 'about:blank':
+										return;
+								}
+								var to = loc.pathname;
+								var pathControot = _pj.getConfig().path_controot;
+								to = to.replace( new RegExp( '^'+px.utils.escapeRegExp( pathControot ) ), '' );
+								to = to.replace( new RegExp( '^\\/*' ), '/' );
+								_currentPreviewPath = to;
+
+								it.next(prop);
+							} ,
+							function(it, prop){
+								// console.log(prop);
+								pageLoader.load( _currentPreviewPath, {}, function(){
+									it.next(prop);
+								} );
+							} ,
+							function(it, prop){
+								it.next(prop);
+							} ,
+							function(it, prop){
+								callback();
+							}
+						]);
+
+					})
+				;
+				it1.next(arg);
+			},
+			function(it1, arg){
+				contentsComment = new (require('./libs.ignore/contentsComment.js'))(_this, px, _pj);
+				pageLoader = new (require('./libs.ignore/pageLoader.js'))(_this, px, _pj, $elms, contentsComment, _sitemap);
+				pageFilter = new (require('./libs.ignore/pageFilter.js'))(_this, px, _pj, $elms);
+
+				pageLoader.load( _param.page_path||'/index.html', {}, function(){
+					it1.next(arg);
+				} );
+			},
+			function(it1, arg){
+				$(window).resize();
+				it1.next(arg);
+			},
+			function(it1, arg){
+				callback();
+			}
+		]);
+
+	} // init()
 
 	/**
 	 * 素材フォルダを開く
@@ -182,7 +202,7 @@ window.contApp = new (function( px ){
 	 * ウィンドウリサイズイベントハンドラ
 	 */
 	function onWindowResize(){
-		$editor
+		$elms.editor
 			.css({
 				'height': $(window).innerHeight() -0
 			})
@@ -190,13 +210,13 @@ window.contApp = new (function( px ){
 
 		$('.cont_workspace_container')
 			.css({
-				'height': $(window).innerHeight() - $('.container').outerHeight() - $commentView.outerHeight() - $workspaceFilter.outerHeight() -20,
+				'height': $(window).innerHeight() - $('.container').outerHeight() - $elms.commentView.outerHeight() - $elms.workspaceFilter.outerHeight() -20,
 				'margin-top': 10
 			})
 		;
-		$preview
+		$elms.preview
 			.css({
-				'height': $('.cont_workspace_container').parent().outerHeight() - $pageinfo.outerHeight() - 3
+				'height': $('.cont_workspace_container').parent().outerHeight() - $elms.pageinfo.outerHeight() - 3
 			})
 		;
 
@@ -225,11 +245,11 @@ window.contApp = new (function( px ){
 			callback();
 			return this;
 		}
-		// $pageinfo.html('<div style="text-align:center;">now loading ...</div>');
+		// $elms.pageinfo.html('<div style="text-align:center;">now loading ...</div>');
 
 		_lastPreviewPath = path;
 		px.preview.serverStandby( function(){
-			$previewIframe.attr( 'src', px.preview.getUrl(path) );
+			$elms.previewIframe.attr( 'src', px.preview.getUrl(path) );
 			callback();
 		} );
 		return this;
@@ -266,7 +286,7 @@ window.contApp = new (function( px ){
 			contRealpath = px.fs.realpathSync( contRealpath );
 		}
 
-		$editor = $('<div>')
+		$elms.editor = $('<div>')
 			.css({
 				'position':'fixed',
 				'top':0,
@@ -322,7 +342,7 @@ window.contApp = new (function( px ){
 			)
 		;
 		$('body')
-			.append($editor)
+			.append($elms.editor)
 			.css({'overflow':'hidden'})
 		;
 
@@ -334,7 +354,7 @@ window.contApp = new (function( px ){
 	 * 単に閉じるだけです。編集内容の保存などの処理は、editor.html 側に委ねます。
 	 */
 	this.closeEditor = function(){
-		$editor.remove();
+		$elms.editor.remove();
 		$('body')
 			.css({'overflow':'auto'})
 		;

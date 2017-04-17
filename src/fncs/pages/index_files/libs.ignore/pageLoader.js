@@ -1,7 +1,7 @@
 /**
  * pageLoader.js
  */
-module.exports = function(app, px, pj, contentsComment, $commentView, $previewIframe, $pageinfo, $childList, $workspaceFilter, _sitemap){
+module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 	var it79 = require('iterate79');
 	var _this = this;
 	var _last_page_path;
@@ -25,7 +25,7 @@ module.exports = function(app, px, pj, contentsComment, $commentView, $previewIf
 
 		it79.fnc({}, [
 			function(it, prop){
-				px.cancelDrop( $previewIframe.get(0).contentWindow );
+				px.cancelDrop( $elms.previewIframe.get(0).contentWindow );
 
 				pj.px2dthelperGetAll(page_path, {filter: false}, function(pjInfo){
 					// console.log(pjInfo);
@@ -97,16 +97,16 @@ module.exports = function(app, px, pj, contentsComment, $commentView, $previewIf
 
 				// --------------------------------------
 				// コンテンツコメント機能
-				contentsComment.init( prop.pageInfo, $commentView );
+				contentsComment.init( prop.pageInfo, $elms.commentView );
 
 				// --------------------------------------
 				// ページフィルター機能
 				var fileterTimer;
-				$workspaceFilter.find('input[type=text]')
+				$elms.workspaceFilter.find('input[type=text]')
 					.val(_workspaceFilterKeywords)
 					.off('keyup')
 					.on('keyup', function(e){
-						_workspaceFilterKeywords = $workspaceFilter.find('input[type=text]').val();
+						_workspaceFilterKeywords = $elms.workspaceFilter.find('input[type=text]').val();
 						// console.log(_workspaceFilterKeywords);
 						clearTimeout(fileterTimer);
 						fileterTimer = setTimeout(function(){
@@ -114,10 +114,10 @@ module.exports = function(app, px, pj, contentsComment, $commentView, $previewIf
 						}, (e.keyCode==13 ? 0 : 1000)); // EnterKey(=13)なら、即座に再描画を開始
 					})
 				;
-				$workspaceFilter.find('input[type=radio][name=list-label]')
+				$elms.workspaceFilter.find('input[type=radio][name=list-label]')
 					.off('change')
 					.on('change', function(){
-						_workspaceFilterListLabel = $workspaceFilter.find('input[type=radio][name=list-label]:checked').val();
+						_workspaceFilterListLabel = $elms.workspaceFilter.find('input[type=radio][name=list-label]:checked').val();
 						// console.log(_workspaceFilterListLabel);
 						clearTimeout(fileterTimer);
 						fileterTimer = setTimeout(function(){
@@ -296,7 +296,7 @@ module.exports = function(app, px, pj, contentsComment, $commentView, $previewIf
 								$bs3btn.find('.dropdown-toggle').click();
 								var $this = $(this);
 								var bookmarklet = "javascript:(function(){var b=document.body;elm=document.createElement('script');elm.setAttribute('type','text/javascript');elm.src='http://tomk79.github.io/DEC/dec_show.js';b.appendChild(elm);b.removeChild(elm);return;})();";
-								$previewIframe.get(0).contentWindow.location = bookmarklet;
+								$elms.previewIframe.get(0).contentWindow.location = bookmarklet;
 								return false;
 							})
 						)
@@ -547,7 +547,7 @@ module.exports = function(app, px, pj, contentsComment, $commentView, $previewIf
 					)
 				;
 
-				$pageinfo.html( $html );
+				$elms.pageinfo.html( $html );
 
 				$bs3btn.find('li').css(
 					{
@@ -557,8 +557,8 @@ module.exports = function(app, px, pj, contentsComment, $commentView, $previewIf
 				);
 
 				// ページ一覧の表示更新
-				$childList.find('a').removeClass('current');
-				$childList.find('a[data-path="'+prop.pageInfo.path+'"]').addClass('current');
+				$elms.childList.find('a').removeClass('current');
+				$elms.childList.find('a[data-path="'+prop.pageInfo.path+'"]').addClass('current');
 
 				$(window).resize();
 
@@ -572,13 +572,13 @@ module.exports = function(app, px, pj, contentsComment, $commentView, $previewIf
 					return;
 				}
 				var $ul = $('<ul class="listview">');
-				// $childList.text( JSON.stringify(_sitemap) );
+				// $elms.childList.text( JSON.stringify(_sitemap) );
 
 				new Promise(function(rlv){rlv();})
 					.then(function(){ return new Promise(function(rlv, rjt){
 						current = (typeof(current)==typeof('')?current:'');
 
-						$childList.html('').append($ul);
+						$elms.childList.html('').append($ul);
 
 						function isMatchKeywords(target){
 							if( typeof(target) != typeof('') ){
@@ -648,9 +648,9 @@ module.exports = function(app, px, pj, contentsComment, $commentView, $previewIf
 					.then(function(){ return new Promise(function(rlv, rjt){
 
 						pj.px2proj.get_page_info(page_path, function(pageInfo){
-							$childList.find('a').removeClass('current');
+							$elms.childList.find('a').removeClass('current');
 							if( pageInfo !== null ){
-								$childList.find('a[data-path="'+pageInfo.path+'"]').addClass('current');
+								$elms.childList.find('a[data-path="'+pageInfo.path+'"]').addClass('current');
 							}
 							rlv();
 						});

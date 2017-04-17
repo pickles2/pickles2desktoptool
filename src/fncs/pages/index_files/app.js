@@ -10,11 +10,10 @@ window.contApp = new (function( px ){
 
 	var _param = px.utils.parseUriParam( window.location.href );
 	var _pj = this.pj = px.getCurrentProject();
-	var _lastPreviewPath,
-		_currentPreviewPath;
+	var _currentPagePath;
 
 	var contentsComment,
-		pageLoader,
+		pageDraw,
 		pageFilter;
 
 	this.git = _pj.git();
@@ -78,7 +77,7 @@ window.contApp = new (function( px ){
 				;
 				$elms.previewIframe
 					.on('load', function(){
-						console.log('=-=-=-=-=-=-=-= iframe loaded.');
+						// console.log('=-=-=-=-=-=-=-= iframe loaded.');
 						var contProcType;
 
 						it79.fnc({}, [
@@ -95,13 +94,13 @@ window.contApp = new (function( px ){
 								var pathControot = _pj.getConfig().path_controot;
 								to = to.replace( new RegExp( '^'+px.utils.escapeRegExp( pathControot ) ), '' );
 								to = to.replace( new RegExp( '^\\/*' ), '/' );
-								_currentPreviewPath = to;
+								_currentPagePath = to;
 
 								it.next(prop);
 							} ,
 							function(it, prop){
 								// console.log(prop);
-								pageLoader.load( _currentPreviewPath, {}, function(){
+								pageDraw.draw( _currentPagePath, {}, function(){
 									it.next(prop);
 								} );
 							} ,
@@ -119,10 +118,10 @@ window.contApp = new (function( px ){
 			},
 			function(it1, arg){
 				contentsComment = new (require('./libs.ignore/contentsComment.js'))(_this, px, _pj);
-				pageLoader = new (require('./libs.ignore/pageLoader.js'))(_this, px, _pj, $elms, contentsComment, _sitemap);
+				pageDraw = new (require('./libs.ignore/pageDraw.js'))(_this, px, _pj, $elms, contentsComment, _sitemap);
 				pageFilter = new (require('./libs.ignore/pageFilter.js'))(_this, px, _pj, $elms);
 
-				pageLoader.load( _param.page_path||'/index.html', {}, function(){
+				pageDraw.draw( _param.page_path||'/index.html', {}, function(){
 					it1.next(arg);
 				} );
 			},
@@ -240,14 +239,14 @@ window.contApp = new (function( px ){
 			return;
 		}
 
-		if( _lastPreviewPath == path && !opt.force ){
+		if( _currentPagePath == path && !opt.force ){
 			// 前回ロードしたpathと同じなら、リロードをスキップ
 			callback();
 			return this;
 		}
 		// $elms.pageinfo.html('<div style="text-align:center;">now loading ...</div>');
 
-		_lastPreviewPath = path;
+		_currentPagePath = path;
 		px.preview.serverStandby( function(){
 			$elms.previewIframe.attr( 'src', px.preview.getUrl(path) );
 			callback();
@@ -358,7 +357,7 @@ window.contApp = new (function( px ){
 		$('body')
 			.css({'overflow':'auto'})
 		;
-		_this.loadPreview( _currentPreviewPath, function(){}, {'force':true} );
+		_this.loadPreview( _currentPagePath, function(){}, {'force':true} );
 		return this;
 	}
 

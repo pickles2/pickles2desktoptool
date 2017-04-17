@@ -1,5 +1,5 @@
 /**
- * pageLoader.js
+ * pageDraw.js
  */
 module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 	var it79 = require('iterate79');
@@ -9,9 +9,9 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 		_workspaceFilterListLabel='title';
 
 	/**
-	 * ページをロードする
+	 * ページを描画する
 	 */
-	this.load = function(page_path, options, callback){
+	this.draw = function(page_path, options, callback){
 		callback = callback || function(){};
 
 		if(_last_page_path == page_path){
@@ -110,7 +110,7 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 						// console.log(_workspaceFilterKeywords);
 						clearTimeout(fileterTimer);
 						fileterTimer = setTimeout(function(){
-							_this.load(_last_page_path, {}, function(){});
+							_this.draw(page_path, {}, function(){});
 						}, (e.keyCode==13 ? 0 : 1000)); // EnterKey(=13)なら、即座に再描画を開始
 					})
 				;
@@ -121,7 +121,7 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 						// console.log(_workspaceFilterListLabel);
 						clearTimeout(fileterTimer);
 						fileterTimer = setTimeout(function(){
-							_this.load(_last_page_path, {}, function(){});
+							_this.draw(page_path, {}, function(){});
 						}, 1000);
 					})
 				;

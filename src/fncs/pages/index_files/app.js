@@ -48,6 +48,7 @@ window.contApp = new (function( px ){
 		;
 		$previewIframe
 			.bind('load', function(){
+				// console.log('=-=-=-=-=-=-=-= iframe loaded.');
 				var contProcType;
 
 				it79.fnc({}, [
@@ -66,11 +67,15 @@ window.contApp = new (function( px ){
 						to = to.replace( new RegExp( '^\\/*' ), '/' );
 						_currentPreviewPath = to;
 
-						_this.pj.px2proj.get_page_info(_currentPreviewPath, function(pageInfo){
-							prop.pageInfo = pageInfo;
+						_this.pj.px2dthelperGetAll(_currentPreviewPath, {filter: false}, function(pjInfo){
+							// console.log(pjInfo);
+							prop.pageInfo = pjInfo.page_info;
+							prop.navigationInfo = pjInfo.navigation_info;
+
 							if( prop.pageInfo === null ){
-								_this.pj.px2proj.get_page_info('', function(pageInfo){
-									prop.pageInfo = pageInfo;
+								_this.pj.px2dthelperGetAll('/', {filter: false}, function(pjInfo){
+									prop.pageInfo = pjInfo.page_info;
+									prop.navigationInfo = pjInfo.navigation_info;
 									if( prop.pageInfo === null ){
 										prop.pageInfo = {};
 									}
@@ -136,6 +141,7 @@ window.contApp = new (function( px ){
 						var fileterTimer;
 						$workspaceFilter.find('input[type=text]')
 							.val(_workspaceFilterKeywords)
+							.off('keyup')
 							.on('keyup', function(e){
 								_workspaceFilterKeywords = $workspaceFilter.find('input[type=text]').val();
 								// console.log(_workspaceFilterKeywords);
@@ -146,6 +152,7 @@ window.contApp = new (function( px ){
 							})
 						;
 						$workspaceFilter.find('input[type=radio][name=list-label]')
+							.off('change')
 							.on('change', function(){
 								_workspaceFilterListLabel = $workspaceFilter.find('input[type=radio][name=list-label]:checked').val();
 								// console.log(_workspaceFilterListLabel);
@@ -582,6 +589,7 @@ window.contApp = new (function( px ){
 							}
 						);
 
+						// ページ一覧の表示更新
 						$childList.find('a').removeClass('current');
 						$childList.find('a[data-path="'+prop.pageInfo.path+'"]').addClass('current');
 
@@ -614,6 +622,7 @@ window.contApp = new (function( px ){
 				});
 			},
 			function( errors ){
+				// API設定が不十分な場合のエラー処理
 				var html = px.utils.bindEjs(
 					document.getElementById('template-not-enough-api-version').innerHTML,
 					{errors: errors}
@@ -777,6 +786,8 @@ window.contApp = new (function( px ){
 	 * 再描画
 	 */
 	this.redraw = function( current ){
+		// console.log('=-=-=-=-=-=-=-= redraw() called.');
+
 		if( _sitemap === null ){
 			px.message('[ERROR] サイトマップが正常に読み込まれていません。');
 			return;

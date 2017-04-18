@@ -12,6 +12,7 @@ window.contApp = new (function( px ){
 	var _param = px.utils.parseUriParam( window.location.href );
 	var _pj = this.pj = px.getCurrentProject();
 	var _currentPagePath;
+	var _currentPageInfo;
 
 	var contentsComment,
 		pageDraw,
@@ -79,24 +80,21 @@ window.contApp = new (function( px ){
 				$elms.previewIframe
 					.on('load', function(){
 						// console.log('=-=-=-=-=-=-=-= iframe loaded.');
-						var contProcType;
+						var currentPagePath;
 
 						it79.fnc({}, [
 							function(it, prop){
 								px.cancelDrop( $elms.previewIframe.get(0).contentWindow );
 
-								_currentPagePath = app.extractPagePathFromPreviewLocation();
+								currentPagePath = app.extractPagePathFromPreviewLocation();
 
 								it.next(prop);
 							} ,
 							function(it, prop){
 								// console.log(prop);
-								pageDraw.redraw( _currentPagePath, {}, function(){
+								app.goto( currentPagePath, {}, function(){
 									it.next(prop);
 								} );
-							} ,
-							function(it, prop){
-								it.next(prop);
 							} ,
 							function(it, prop){
 								callback();
@@ -128,8 +126,10 @@ window.contApp = new (function( px ){
 				} );
 			},
 			function(it1, arg){
-				// ページ情報を描画
-				_this.goto( _param.page_path||'/index.html', {}, function(){
+				// 最初のページ情報を描画
+				var startPage = _param.page_path||'/index.html';
+				// var startPage = '/hoge/fuga/notfound.html';
+				_this.goto( startPage, {'force':true}, function(){
 					it1.next(arg);
 				} );
 			},
@@ -226,6 +226,13 @@ window.contApp = new (function( px ){
 	}
 
 	/**
+	 * カレントページの情報をすべて取得する
+	 */
+	this.getCurrentPageInfo = function(){
+		return _currentPageInfo;
+	}
+
+	/**
 	 * ウィンドウリサイズイベントハンドラ
 	 */
 	function onWindowResize(){
@@ -254,19 +261,48 @@ window.contApp = new (function( px ){
 	 */
 	this.goto = function( page_path, options, callback ){
 		callback = callback || function(){};
-		console.log(_currentPagePath, page_path);
-		if( _currentPagePath === page_path ){
+		options = options || {};
+		// console.log(_currentPagePath, page_path);
+		if( _currentPagePath === page_path && !options.force ){
 			// 遷移先がカレントページを同じければ処理しない。
 			callback();
 			return;
 		}
 
+		if( page_path.match(new RegExp('^alias[0-9]*\\:')) ){
+			px.message( 'このページはエイリアスです。' );
+			callback();
+			return;
+		}
+
+		px.progress.start({"showProgressBar":false, 'blindness':false});
+
 		_currentPagePath = page_path;
-		pageDraw.redraw( page_path, options, function(){
-			app.loadPreview( page_path, {}, function(){
-				callback();
+
+		_pj.px2dthelperGetAll(page_path, {'filter': false}, function(pjInfo){
+			// console.log(pjInfo);
+			_currentPageInfo = pjInfo;
+
+			if(_currentPageInfo.page_info === false){
+				// var pageInfo = _pj.site.getPageInfo( page_path );
+				// console.log(pageInfo);
+				_pj.px2proj.href(page_path, function(href){
+					// console.log(href);
+					px.progress.close();
+					app.goto(href, options, callback);
+				});
+				return;
+			}
+
+			pageDraw.redraw( _currentPageInfo, options, function(){
+				app.loadPreview( _currentPagePath, options, function(){
+					px.progress.close();
+					callback();
+				} );
 			} );
-		} );
+		});
+
+
 		return;
 	}
 
@@ -282,25 +318,23 @@ window.contApp = new (function( px ){
 			page_path = _pj.getConfig().path_top;
 		}
 
-		if( page_path.match(new RegExp('^alias[0-9]*\\:')) ){
-			alert( 'このページはエイリアスです。' );
-			return;
-		}
-
 		var currentPreviewPagePath = this.extractPagePathFromPreviewLocation();
+		var gotoUrl = px.preview.getUrl(page_path);
+		var currentPreviewPageUrl = px.preview.getUrl(page_path);
+		// console.log(currentPreviewPageUrl, gotoUrl);
 
-		if( currentPreviewPagePath == page_path && !options.force ){
+		if( currentPreviewPageUrl == gotoUrl && !options.force ){
 			// 現在表示中の `page_path` と同じなら、リロードをスキップ
 			callback();
-			return this;
+			return;
 		}
 		// $elms.pageinfo.html('<div style="text-align:center;">now loading ...</div>');
 
 		px.preview.serverStandby( function(){
-			$elms.previewIframe.attr( 'src', px.preview.getUrl(page_path) );
+			$elms.previewIframe.attr( 'src', gotoUrl );
 			callback();
 		} );
-		return this;
+		return;
 	}
 
 	/**

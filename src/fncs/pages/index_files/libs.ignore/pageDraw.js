@@ -18,34 +18,39 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 	/**
 	 * ページを再描画する
 	 */
-	this.redraw = function(page_path, options, callback){
+	this.redraw = function(pj_info, options, callback){
 		callback = callback || function(){};
-
 		var contProcType;
+		var page_path = null;
+		try {
+			page_path = pj_info.page_info.path;
+		} catch (e) {
+		}
+
+		console.log(pj_info);
 
 		it79.fnc({}, [
 			function(it, prop){
 				px.cancelDrop( $elms.previewIframe.get(0).contentWindow );
 
-				pj.px2dthelperGetAll(page_path, {filter: false}, function(pjInfo){
-					// console.log(pjInfo);
-					prop.pageInfo = pjInfo.page_info;
-					prop.navigationInfo = pjInfo.navigation_info;
+				prop.pageInfo = pj_info.page_info;
+				prop.navigationInfo = pj_info.navigation_info;
 
-					if( prop.pageInfo === null ){
-						pj.px2dthelperGetAll('/', {filter: false}, function(pjInfo){
-							prop.pageInfo = pjInfo.page_info;
-							prop.navigationInfo = pjInfo.navigation_info;
-							if( prop.pageInfo === null ){
-								prop.pageInfo = {};
-							}
-							it.next(prop);
-						});
-					}else{
-						it.next(prop);
-					}
-				});
+				if( pj_info.page_info === null ){
+					// サイトマップに定義のないページにアクセスしようとした場合
+					// ページがない旨を表示して終了する。
+					$elms.pageinfo.html( '<p>ページが未定義です。</p>' );
+					callback();
+					return;
+				}else if( typeof(pj_info.page_info) != typeof({}) ){
+					// 何らかのエラーでページ情報が取得できていない場合
+					// エラーメッセージを表示して終了する。
+					$elms.pageinfo.html( '<p>ページ情報の取得に失敗しました。</p>' );
+					callback();
+					return;
+				}
 
+				it.next(prop);
 			} ,
 			function(it, prop){
 				// --------------------
@@ -123,9 +128,9 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 					})
 				;
 
+
 				// --------------------------------------
 				// ドロップダウンのサブメニューを追加
-
 				if( contProcType != '.not_exists' ){
 					$bs3btn.find('ul[role=menu]')
 						.append( $('<li>')

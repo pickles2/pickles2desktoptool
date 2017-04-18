@@ -1,10 +1,11 @@
 /**
  * pageSearch.js
  */
-module.exports = function(app, px, pj, $elms, _sitemap){
+module.exports = function(app, px, pj, $elms){
 	var it79 = require('iterate79');
 	var _this = this;
 	var fileterTimer;
+	var _sitemap = null;
 	var _workspaceSearchKeywords='',
 		_workspaceSearchListLabel='title';
 
@@ -62,12 +63,19 @@ module.exports = function(app, px, pj, $elms, _sitemap){
 
 		it79.fnc({}, [
 			function(it, prop){
-
 				if( _sitemap === null ){
-					px.message('[ERROR] サイトマップが正常に読み込まれていません。');
-					it.next(prop);
+					pj.site.updateSitemap(function(){
+						_sitemap = pj.site.getSitemap();
+						if( _sitemap === null ){
+							px.message('[ERROR] サイトマップが正常に読み込まれていません。');
+						}
+						it.next(prop);
+					});
 					return;
 				}
+				it.next(prop);
+			} ,
+			function(it, prop){
 				var $ul = $('<ul class="listview">');
 				// $elms.searchList.text( JSON.stringify(_sitemap) );
 

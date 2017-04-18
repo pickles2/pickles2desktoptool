@@ -1,7 +1,7 @@
 /**
  * pageDraw.js
  */
-module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
+module.exports = function(app, px, pj, $elms, contentsComment){
 	var it79 = require('iterate79');
 	var _this = this;
 

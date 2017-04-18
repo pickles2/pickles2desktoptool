@@ -5,8 +5,6 @@ window.contApp = new (function( px ){
 
 	var _this = this;
 	var app = this;
-	var _sitemap = null;
-	var _config = null;
 	var $elms = {};
 
 	var _param = px.utils.parseUriParam( window.location.href );
@@ -68,13 +66,6 @@ window.contApp = new (function( px ){
 				it1.next(arg);
 			},
 			function(it1, arg){
-				_this.pj.site.updateSitemap(function(){
-					_config = _this.pj.getConfig();
-					_sitemap = _this.pj.site.getSitemap();
-					it1.next(arg);
-				});
-			},
-			function(it1, arg){
 				$elms.preview
 					.css({
 						'height': 600
@@ -110,8 +101,8 @@ window.contApp = new (function( px ){
 			},
 			function(it1, arg){
 				contentsComment = new (require('./libs.ignore/contentsComment.js'))(_this, px, _pj);
-				pageDraw = new (require('./libs.ignore/pageDraw.js'))(_this, px, _pj, $elms, contentsComment, _sitemap);
-				pageSearch = new (require('./libs.ignore/pageSearch.js'))(_this, px, _pj, $elms, _sitemap);
+				pageDraw = new (require('./libs.ignore/pageDraw.js'))(_this, px, _pj, $elms, contentsComment);
+				pageSearch = new (require('./libs.ignore/pageSearch.js'))(_this, px, _pj, $elms);
 				it1.next(arg);
 			},
 			function(it1, arg){
@@ -464,8 +455,6 @@ window.contApp = new (function( px ){
 				'margin-top': 10
 			})
 		;
-		// $elms.sitemapParent = $('.cont_sitemap_parent');
-		// $elms.brosList = $('.cont_sitemap_broslist');
 		$elms.brosList
 			.css({
 				'height': $workspaceContainer.innerHeight() - $elms.sitemapParent.outerHeight()

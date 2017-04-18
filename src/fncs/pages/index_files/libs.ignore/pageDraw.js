@@ -62,7 +62,47 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 					var page_path = $(this).attr('data-page-path');
 					app.goto(page_path);
 					return false;
-				})
+				});
+				it.next(prop);
+			} ,
+			function(it, prop){
+				// --------------------
+				// parentページを表示
+				$elms.sitemapParent.html('');
+				if( pj_info.navigation_info.parent_info !== false ){
+					$elms.sitemapParent
+						.append($('<ul class="listview">')
+							.append($('<li>')
+								.append($('<a>')
+									.text(pj_info.navigation_info.parent_info.title)
+									.attr({
+										'href': 'javascript:;',
+										'data-page-path': pj_info.navigation_info.parent_info.path
+									})
+									.on('click', function(e){
+										var page_path = $(this).attr('data-page-path');
+										app.goto(page_path);
+										return false;
+									})
+								)
+							)
+						)
+					;
+				}
+				it.next(prop);
+			} ,
+			function(it, prop){
+				// --------------------
+				// 兄弟と子供ページを表示
+				$elms.brosList.html('');
+				var tpl = $('#template-bros-list').html();
+				var html = px.utils.bindEjs(tpl, {'navigationInfo': pj_info.navigation_info});
+				$elms.brosList.html(html);
+				$elms.brosList.find('a').on('click', function(e){
+					var page_path = $(this).attr('data-page-path');
+					app.goto(page_path);
+					return false;
+				});
 				it.next(prop);
 			} ,
 			function(it, prop){
@@ -548,8 +588,8 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 				);
 
 				// ページ一覧の表示更新
-				$elms.childList.find('a').removeClass('current');
-				$elms.childList.find('a[data-path="'+prop.pageInfo.path+'"]').addClass('current');
+				$elms.brosList.find('a').removeClass('current');
+				$elms.brosList.find('a[data-path="'+prop.pageInfo.path+'"]').addClass('current');
 
 				it.next(prop);
 			} ,

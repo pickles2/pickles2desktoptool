@@ -52,7 +52,8 @@ window.contApp = new (function( px ){
 			},
 			function(it1, arg){
 				$elms.editor = $('<div>');
-				$elms.childList = $('.cont_sitemap_childlist');
+				$elms.sitemapParent = $('.cont_sitemap_parent');
+				$elms.brosList = $('.cont_sitemap_broslist');
 				$elms.preview = $('.cont_preview');
 				$elms.previewIframe = $elms.preview.find('iframe');
 				$elms.pageinfo = $('.cont_page_info');
@@ -115,9 +116,7 @@ window.contApp = new (function( px ){
 			function(it1, arg){
 				// フィルター機能を初期化
 				pageFilter.init( function(){
-					pageFilter.filter( function(){
-						it1.next(arg);
-					} );
+					it1.next(arg);
 				} );
 			},
 			function(it1, arg){
@@ -128,7 +127,7 @@ window.contApp = new (function( px ){
 			},
 			function(it1, arg){
 				// 最初のページ情報を描画
-				var startPage = _param.page_path||'/index.html';
+				var startPage = _param.page_path;
 				// var startPage = '/hoge/fuga/notfound.html';
 				app.goto( startPage, {'force':true}, function(){
 					it1.next(arg);
@@ -265,6 +264,9 @@ window.contApp = new (function( px ){
 	this.goto = function( page_path, options, callback ){
 		callback = callback || function(){};
 		options = options || {};
+		if(page_path === undefined){
+			page_path = '';
+		}
 		// console.log(_currentPagePath, page_path);
 		if( _currentPagePath === page_path && !options.force ){
 			// 遷移先がカレントページを同じければ処理しない。

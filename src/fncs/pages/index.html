@@ -94,6 +94,21 @@
 				<li><strong><%= navigationInfo.page_info.title_breadcrumb %></strong></li>
 			</ul>
 		</script>
+		<script id="template-bros-list" type="text/template">
+			<ul class="listview">
+			<% for( key in navigationInfo.bros_info ){ %>
+				<li><a href="javascript:;" data-id="<%= navigationInfo.bros_info[key].id %>" data-page-path="<%= navigationInfo.bros_info[key].path %>"><%= navigationInfo.bros_info[key].title %></a>
+					<% if( navigationInfo.bros_info[key].id == navigationInfo.page_info.id && navigationInfo.children_info.length ){ %>
+					<ul>
+					<% for( key in navigationInfo.children_info ){ %>
+						<li><a href="javascript:;" data-id="<%= navigationInfo.children_info[key].id %>" data-page-path="<%= navigationInfo.children_info[key].path %>" style="font-size: 80%;"><%= navigationInfo.children_info[key].title %></a></li>
+					<% } %>
+					</ul>
+					<% } %>
+				</li>
+			<% } %>
+			</ul>
+		</script>
 	</head>
 	<body>
 		<div class="container">
@@ -132,7 +147,7 @@
 						</div><!-- /.cont_workspace_filter -->
 						<div class="cont_workspace_container">
 							<div class="cont_sitemap_parent"></div>
-							<div class="cont_sitemap_childlist"></div>
+							<div class="cont_sitemap_broslist"></div>
 						</div><!-- /.cont_workspace_container -->
 					</div>
 				</div>

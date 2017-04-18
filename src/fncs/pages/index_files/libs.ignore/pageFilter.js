@@ -66,13 +66,13 @@ module.exports = function(app, px, pj, $elms, _sitemap){
 					return;
 				}
 				var $ul = $('<ul class="listview">');
-				// $elms.childList.text( JSON.stringify(_sitemap) );
+				// $elms.brosList.text( JSON.stringify(_sitemap) );
 
 				new Promise(function(rlv){rlv();})
 					.then(function(){ return new Promise(function(rlv, rjt){
 						current = (typeof(current)==typeof('')?current:'');
 
-						$elms.childList.html('').append($ul);
+						$elms.brosList.html('').append($ul);
 
 						function isMatchKeywords(target){
 							if( typeof(target) != typeof('') ){

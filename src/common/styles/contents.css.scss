@@ -31,17 +31,25 @@ a{
 a:hover{
 	color: #666;
 }
-.contents a.icon{
-	position:relative;
-	padding-left: 0.8em;
-}
-.contents a.icon:before{
-	content: "　";
-	background:url("./fess_res/icon.svg") 0 0 no-repeat transparent;
-	position: absolute;
-	top: 0.4em;
-	left: 0;
-	background-size: 0.6em 0.6em;
+.contents{
+	a.icon{
+		position:relative;
+		padding-left: 0.8em;
+	}
+	a.icon:before{
+		content: "　";
+		background:url("./fess_res/icon.svg") 0 0 no-repeat transparent;
+		position: absolute;
+		top: 0.4em;
+		left: 0;
+		background-size: 0.6em 0.6em;
+	}
+	.input-group-btn{
+		.px2-btn{
+			font-size: 12px;
+			width: 100%;
+		}
+	}
 }
 
 /**

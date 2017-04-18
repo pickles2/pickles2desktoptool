@@ -19,17 +19,12 @@ module.exports = function(app, px, pj, $elms, _sitemap){
 		it79.fnc({}, [
 			function(it, prop){
 				// --------------------------------------
-				// ページフィルター機能
-				$elms.workspaceSearch.find('input[type=text]')
-					.val(_workspaceSearchKeywords)
-					.off('keyup')
-					.on('keyup', function(e){
+				// ページ検索機能
+				$elms.workspaceSearch.find('form#cont_search_form')
+					.on('submit', function(e){
 						_workspaceSearchKeywords = $elms.workspaceSearch.find('input[type=text]').val();
-						// console.log(_workspaceSearchKeywords);
-						clearTimeout(fileterTimer);
-						fileterTimer = setTimeout(function(){
-							_this.search(function(){});
-						}, (e.keyCode==13 ? 0 : 1000)); // EnterKey(=13)なら、即座に再描画を開始
+						_this.search(function(){});
+						return false;
 					})
 				;
 				$elms.workspaceSearch.find('input[type=radio][name=list-label]')

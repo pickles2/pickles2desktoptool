@@ -256,9 +256,26 @@ window.contApp = new (function( px ){
 			return;
 		}
 
+		// 直接表示できないパスを解決してリダイレクトする
+		function redirectPage(page_path, options, callback){
+			_pj.px2proj.href(page_path, function(href){
+				// console.log(href);
+				var path_controot = '/';
+				try {
+					path_controot = _currentPageInfo.config.path_controot;
+				} catch (e) {
+				}
+				href = href.replace(new RegExp('^'+px.utils.escapeRegExp(_currentPageInfo.config.path_controot)), '/');
+				// console.log(href);
+				px.progress.close();
+				app.goto(href, options, callback);
+			});
+			return;
+		}
+
 		if( page_path.match(new RegExp('^alias[0-9]*\\:')) ){
 			px.message( 'このページはエイリアスです。' );
-			callback();
+			redirectPage(page_path, options, callback);
 			return;
 		}
 
@@ -273,18 +290,7 @@ window.contApp = new (function( px ){
 			if(_currentPageInfo.page_info === false){
 				// var pageInfo = _pj.site.getPageInfo( page_path );
 				// console.log(pageInfo);
-				_pj.px2proj.href(page_path, function(href){
-					// console.log(href);
-					var path_controot = '/';
-					try {
-						path_controot = _currentPageInfo.config.path_controot;
-					} catch (e) {
-					}
-					href = href.replace(new RegExp('^'+px.utils.escapeRegExp(_currentPageInfo.config.path_controot)), '/');
-					// console.log(href);
-					px.progress.close();
-					app.goto(href, options, callback);
-				});
+				redirectPage(page_path, options, callback);
 				return;
 			}
 

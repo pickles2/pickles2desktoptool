@@ -16,7 +16,7 @@ window.contApp = new (function( px ){
 
 	var contentsComment,
 		pageDraw,
-		pageFilter;
+		pageSearch;
 
 	this.git = _pj.git();
 	this.gitUi = new px2dtGitUi(px, _pj);
@@ -54,6 +54,7 @@ window.contApp = new (function( px ){
 				$elms.editor = $('<div>');
 				$elms.sitemapParent = $('.cont_sitemap_parent');
 				$elms.brosList = $('.cont_sitemap_broslist');
+				$elms.searchList = $('.cont_sitemap_search');
 				$elms.preview = $('.cont_preview');
 				$elms.previewIframe = $elms.preview.find('iframe');
 				$elms.pageinfo = $('.cont_page_info');
@@ -110,12 +111,12 @@ window.contApp = new (function( px ){
 			function(it1, arg){
 				contentsComment = new (require('./libs.ignore/contentsComment.js'))(_this, px, _pj);
 				pageDraw = new (require('./libs.ignore/pageDraw.js'))(_this, px, _pj, $elms, contentsComment, _sitemap);
-				pageFilter = new (require('./libs.ignore/pageFilter.js'))(_this, px, _pj, $elms, _sitemap);
+				pageSearch = new (require('./libs.ignore/pageSearch.js'))(_this, px, _pj, $elms, _sitemap);
 				it1.next(arg);
 			},
 			function(it1, arg){
 				// フィルター機能を初期化
-				pageFilter.init( function(){
+				pageSearch.init( function(){
 					it1.next(arg);
 				} );
 			},

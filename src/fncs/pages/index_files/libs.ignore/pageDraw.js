@@ -27,7 +27,7 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 		} catch (e) {
 		}
 
-		console.log(pj_info);
+		// console.log(pj_info);
 
 		it79.fnc({}, [
 			function(it, prop){
@@ -120,8 +120,8 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 				var $bs3btn = $($('#template-bootstrap3-btn-dropdown-toggle').html());
 				var $html = $('<div>')
 					.append( $('<div class="cont_page_info-prop">')
-						.append( $('<span>')
-							.text( prop.pageInfo.title+'('+prop.pageInfo.path+')' )
+						.append( $('<span class="selectable">')
+							.text( prop.pageInfo.title+' ('+prop.pageInfo.path+')' )
 						)
 						.append( $('<span>')
 							// .text( contProcType )
@@ -589,7 +589,7 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 
 				// ページ一覧の表示更新
 				$elms.brosList.find('a').removeClass('current');
-				$elms.brosList.find('a[data-path="'+prop.pageInfo.path+'"]').addClass('current');
+				$elms.brosList.find('a[data-id="'+prop.pageInfo.id+'"]').addClass('current');
 
 				it.next(prop);
 			} ,

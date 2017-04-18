@@ -20,11 +20,11 @@ module.exports = function(app, px, pj, $elms, _sitemap){
 			function(it, prop){
 				// --------------------------------------
 				// ページフィルター機能
-				$elms.workspaceFilter.find('input[type=text]')
+				$elms.workspaceSearch.find('input[type=text]')
 					.val(_workspaceSearchKeywords)
 					.off('keyup')
 					.on('keyup', function(e){
-						_workspaceSearchKeywords = $elms.workspaceFilter.find('input[type=text]').val();
+						_workspaceSearchKeywords = $elms.workspaceSearch.find('input[type=text]').val();
 						// console.log(_workspaceSearchKeywords);
 						clearTimeout(fileterTimer);
 						fileterTimer = setTimeout(function(){
@@ -32,10 +32,10 @@ module.exports = function(app, px, pj, $elms, _sitemap){
 						}, (e.keyCode==13 ? 0 : 1000)); // EnterKey(=13)なら、即座に再描画を開始
 					})
 				;
-				$elms.workspaceFilter.find('input[type=radio][name=list-label]')
+				$elms.workspaceSearch.find('input[type=radio][name=list-label]')
 					.off('change')
 					.on('change', function(){
-						_workspaceSearchListLabel = $elms.workspaceFilter.find('input[type=radio][name=list-label]:checked').val();
+						_workspaceSearchListLabel = $elms.workspaceSearch.find('input[type=radio][name=list-label]:checked').val();
 						// console.log(_workspaceSearchListLabel);
 						clearTimeout(fileterTimer);
 						fileterTimer = setTimeout(function(){
@@ -167,6 +167,18 @@ module.exports = function(app, px, pj, $elms, _sitemap){
 				it.next(prop);
 			} ,
 			function(it, prop){
+				// カレント表示反映
+				var current = app.getCurrentPageInfo();
+				// console.log(current.page_info.id);
+				try {
+					$elms.searchList.find('a').removeClass('current');
+					$elms.searchList.find('a[data-id="'+current.page_info.id+'"]').addClass('current');
+				} catch (e) {
+				}
+				it.next(prop);
+			} ,
+			function(it, prop){
+				// ページ一覧の表示更新
 				callback();
 			}
 		]);

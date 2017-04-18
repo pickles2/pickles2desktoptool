@@ -59,7 +59,7 @@ window.contApp = new (function( px ){
 				$elms.previewIframe = $elms.preview.find('iframe');
 				$elms.pageinfo = $('.cont_page_info');
 				$elms.commentView = $('.cont_comment_view');
-				$elms.workspaceFilter = $('.cont_workspace_filter');
+				$elms.workspaceSearch = $('.cont_workspace_search');
 				$elms.breadcrumb = $('.cont_breadcrumb');
 
 				// bootstrap
@@ -227,36 +227,17 @@ window.contApp = new (function( px ){
 	}
 
 	/**
-	 * カレントページの情報をすべて取得する
+	 * カレントページの情報を取得する
 	 */
 	this.getCurrentPageInfo = function(){
 		return _currentPageInfo;
 	}
 
 	/**
-	 * ウィンドウリサイズイベントハンドラ
+	 * カレントページのパスを取得する
 	 */
-	function onWindowResize(){
-		$elms.editor
-			.css({
-				'height': $(window).innerHeight() - 0
-			})
-		;
-
-		var heightBreadcrumb = $elms.breadcrumb.outerHeight();
-
-		$('.cont_workspace_container')
-			.css({
-				'height': $(window).innerHeight() - $('.container').outerHeight() - $elms.commentView.outerHeight() - $elms.workspaceFilter.outerHeight() - heightBreadcrumb - 20,
-				'margin-top': 10
-			})
-		;
-		$elms.preview
-			.css({
-				'height': $('.cont_workspace_container').parent().outerHeight() - $elms.pageinfo.outerHeight() - heightBreadcrumb - 3
-			})
-		;
-
+	this.getCurrentPagePath = function(){
+		return _currentPagePath;
 	}
 
 	/**
@@ -456,6 +437,40 @@ window.contApp = new (function( px ){
 		;
 		_this.loadPreview( _currentPagePath, {'force':true}, function(){} );
 		return this;
+	}
+
+	/**
+	 * ウィンドウリサイズイベントハンドラ
+	 */
+	function onWindowResize(){
+		$elms.editor
+			.css({
+				'height': $(window).innerHeight() - 0
+			})
+		;
+
+		var heightBreadcrumb = $elms.breadcrumb.outerHeight();
+
+		var $workspaceContainer = $('.cont_workspace_container');
+		$workspaceContainer
+			.css({
+				'height': $(window).innerHeight() - $('.container').outerHeight() - $elms.commentView.outerHeight() - $elms.workspaceSearch.outerHeight() - heightBreadcrumb - 20,
+				'margin-top': 10
+			})
+		;
+		// $elms.sitemapParent = $('.cont_sitemap_parent');
+		// $elms.brosList = $('.cont_sitemap_broslist');
+		$elms.brosList
+			.css({
+				'height': $workspaceContainer.innerHeight() - $elms.sitemapParent.outerHeight()
+			})
+		;
+		$elms.preview
+			.css({
+				'height': $('.cont_workspace_container').parent().outerHeight() - $elms.pageinfo.outerHeight() - heightBreadcrumb
+			})
+		;
+
 	}
 
 	// 初期化処理開始

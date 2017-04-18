@@ -74,7 +74,8 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 						.append($('<ul class="listview">')
 							.append($('<li>')
 								.append($('<a>')
-									.text(pj_info.navigation_info.parent_info.title)
+									.append( '<span class="glyphicon glyphicon-level-up"></span>' )
+									.append( $('<span>').text(pj_info.navigation_info.parent_info.title) )
 									.attr({
 										'href': 'javascript:;',
 										'data-page-path': pj_info.navigation_info.parent_info.path
@@ -590,6 +591,8 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 				// ページ一覧の表示更新
 				$elms.brosList.find('a').removeClass('current');
 				$elms.brosList.find('a[data-id="'+prop.pageInfo.id+'"]').addClass('current');
+				$elms.searchList.find('a').removeClass('current');
+				$elms.searchList.find('a[data-id="'+prop.pageInfo.id+'"]').addClass('current');
 
 				it.next(prop);
 			} ,

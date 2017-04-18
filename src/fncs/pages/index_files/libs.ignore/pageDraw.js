@@ -27,7 +27,7 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 		} catch (e) {
 		}
 
-		console.log(pj_info);
+		// console.log(pj_info);
 
 		it79.fnc({}, [
 			function(it, prop){

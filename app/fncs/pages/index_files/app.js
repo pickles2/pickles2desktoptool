@@ -1412,6 +1412,7 @@ window.contApp = new (function( px ){
 	var it79 = require('iterate79');
 
 	var _this = this;
+	var app = this;
 	var _sitemap = null;
 	var _config = null;
 	var $elms = {};
@@ -1419,6 +1420,7 @@ window.contApp = new (function( px ){
 	var _param = px.utils.parseUriParam( window.location.href );
 	var _pj = this.pj = px.getCurrentProject();
 	var _currentPagePath;
+	var _currentPageInfo;
 
 	var contentsComment,
 		pageDraw,
@@ -1486,34 +1488,21 @@ window.contApp = new (function( px ){
 				$elms.previewIframe
 					.on('load', function(){
 						// console.log('=-=-=-=-=-=-=-= iframe loaded.');
-						var contProcType;
+						var currentPagePath;
 
 						it79.fnc({}, [
 							function(it, prop){
 								px.cancelDrop( $elms.previewIframe.get(0).contentWindow );
 
-								var loc = $elms.previewIframe.get(0).contentWindow.location;
-								switch( loc.href ){
-									case 'blank':
-									case 'about:blank':
-										return;
-								}
-								var to = loc.pathname;
-								var pathControot = _pj.getConfig().path_controot;
-								to = to.replace( new RegExp( '^'+px.utils.escapeRegExp( pathControot ) ), '' );
-								to = to.replace( new RegExp( '^\\/*' ), '/' );
-								_currentPagePath = to;
+								currentPagePath = app.extractPagePathFromPreviewLocation();
 
 								it.next(prop);
 							} ,
 							function(it, prop){
 								// console.log(prop);
-								pageDraw.draw( _currentPagePath, {}, function(){
+								app.goto( currentPagePath, {}, function(){
 									it.next(prop);
 								} );
-							} ,
-							function(it, prop){
-								it.next(prop);
 							} ,
 							function(it, prop){
 								callback();
@@ -1527,9 +1516,28 @@ window.contApp = new (function( px ){
 			function(it1, arg){
 				contentsComment = new (require('./libs.ignore/contentsComment.js'))(_this, px, _pj);
 				pageDraw = new (require('./libs.ignore/pageDraw.js'))(_this, px, _pj, $elms, contentsComment, _sitemap);
-				pageFilter = new (require('./libs.ignore/pageFilter.js'))(_this, px, _pj, $elms);
-
-				pageDraw.draw( _param.page_path||'/index.html', {}, function(){
+				pageFilter = new (require('./libs.ignore/pageFilter.js'))(_this, px, _pj, $elms, _sitemap);
+				it1.next(arg);
+			},
+			function(it1, arg){
+				// フィルター機能を初期化
+				pageFilter.init( function(){
+					pageFilter.filter( function(){
+						it1.next(arg);
+					} );
+				} );
+			},
+			function(it1, arg){
+				// ページ情報を初期化
+				pageDraw.init( function(){
+					it1.next(arg);
+				} );
+			},
+			function(it1, arg){
+				// 最初のページ情報を描画
+				var startPage = _param.page_path||'/index.html';
+				// var startPage = '/hoge/fuga/notfound.html';
+				_this.goto( startPage, {'force':true}, function(){
 					it1.next(arg);
 				} );
 			},
@@ -1604,6 +1612,33 @@ window.contApp = new (function( px ){
 		return this;
 	}
 
+	/**
+	 * プレビューのURL から ページパスを抽出する
+	 */
+	this.extractPagePathFromPreviewLocation = function(previewLocation){
+		if( !previewLocation ){
+			previewLocation = $elms.previewIframe.get(0).contentWindow.location;
+		}
+		switch( previewLocation.href ){
+			case 'blank':
+			case 'about:blank':
+				return;
+		}
+		var to = previewLocation.pathname;
+		var pathControot = _pj.getConfig().path_controot;
+		to = to.replace( new RegExp( '^'+px.utils.escapeRegExp( pathControot ) ), '' );
+		to = to.replace( new RegExp( '^\\/*' ), '/' );
+
+		var page_path = to;
+		return page_path;
+	}
+
+	/**
+	 * カレントページの情報をすべて取得する
+	 */
+	this.getCurrentPageInfo = function(){
+		return _currentPageInfo;
+	}
 
 	/**
 	 * ウィンドウリサイズイベントハンドラ
@@ -1629,37 +1664,85 @@ window.contApp = new (function( px ){
 
 	}
 
+	/**
+	 * 指定ページへ移動する
+	 */
+	this.goto = function( page_path, options, callback ){
+		callback = callback || function(){};
+		options = options || {};
+		// console.log(_currentPagePath, page_path);
+		if( _currentPagePath === page_path && !options.force ){
+			// 遷移先がカレントページを同じければ処理しない。
+			callback();
+			return;
+		}
+
+		if( page_path.match(new RegExp('^alias[0-9]*\\:')) ){
+			px.message( 'このページはエイリアスです。' );
+			callback();
+			return;
+		}
+
+		px.progress.start({"showProgressBar":false, 'blindness':false});
+
+		_currentPagePath = page_path;
+
+		_pj.px2dthelperGetAll(page_path, {'filter': false}, function(pjInfo){
+			// console.log(pjInfo);
+			_currentPageInfo = pjInfo;
+
+			if(_currentPageInfo.page_info === false){
+				// var pageInfo = _pj.site.getPageInfo( page_path );
+				// console.log(pageInfo);
+				_pj.px2proj.href(page_path, function(href){
+					// console.log(href);
+					px.progress.close();
+					app.goto(href, options, callback);
+				});
+				return;
+			}
+
+			pageDraw.redraw( _currentPageInfo, options, function(){
+				app.loadPreview( _currentPagePath, options, function(){
+					px.progress.close();
+					callback();
+				} );
+			} );
+		});
+
+
+		return;
+	}
 
 	/**
 	 * プレビューウィンドウにページを表示する
 	 */
-	this.loadPreview = function( path, callback, opt ){
+	this.loadPreview = function( page_path, options, callback ){
 		callback = callback || function(){};
-		if(!opt){ opt = {}; }
-		if(!opt.force){ opt.force = false; }
+		if(!options){ options = {}; }
+		if(!options.force){ options.force = false; }
 
-		if( !path ){
-			path = _pj.getConfig().path_top;
+		if( !page_path ){
+			page_path = _pj.getConfig().path_top;
 		}
 
-		if( path.match(new RegExp('^alias[0-9]*\\:')) ){
-			alert( 'このページはエイリアスです。' );
-			return;
-		}
+		var currentPreviewPagePath = this.extractPagePathFromPreviewLocation();
+		var gotoUrl = px.preview.getUrl(page_path);
+		var currentPreviewPageUrl = px.preview.getUrl(page_path);
+		// console.log(currentPreviewPageUrl, gotoUrl);
 
-		if( _currentPagePath == path && !opt.force ){
-			// 前回ロードしたpathと同じなら、リロードをスキップ
+		if( currentPreviewPageUrl == gotoUrl && !options.force ){
+			// 現在表示中の `page_path` と同じなら、リロードをスキップ
 			callback();
-			return this;
+			return;
 		}
 		// $elms.pageinfo.html('<div style="text-align:center;">now loading ...</div>');
 
-		_currentPagePath = path;
 		px.preview.serverStandby( function(){
-			$elms.previewIframe.attr( 'src', px.preview.getUrl(path) );
+			$elms.previewIframe.attr( 'src', gotoUrl );
 			callback();
 		} );
-		return this;
+		return;
 	}
 
 	/**
@@ -1765,7 +1848,7 @@ window.contApp = new (function( px ){
 		$('body')
 			.css({'overflow':'auto'})
 		;
-		_this.loadPreview( _currentPagePath, function(){}, {'force':true} );
+		_this.loadPreview( _currentPagePath, {'force':true}, function(){} );
 		return this;
 	}
 
@@ -1933,48 +2016,53 @@ module.exports = function(app, px, pj){
 module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 	var it79 = require('iterate79');
 	var _this = this;
-	var _last_page_path;
-	var _workspaceFilterKeywords='',
-		_workspaceFilterListLabel='title';
 
 	/**
-	 * ページを描画する
+	 * 初期化する
 	 */
-	this.draw = function(page_path, options, callback){
+	this.init = function(callback){
 		callback = callback || function(){};
+		// 特に何もするべきことはない。
+		callback();
+		return;
+	}
 
-		if(_last_page_path == page_path){
-			callback();
-			return;
+	/**
+	 * ページを再描画する
+	 */
+	this.redraw = function(pj_info, options, callback){
+		callback = callback || function(){};
+		var contProcType;
+		var page_path = null;
+		try {
+			page_path = pj_info.page_info.path;
+		} catch (e) {
 		}
 
-		_last_page_path = page_path;
-
-		var contProcType;
+		// console.log(pj_info);
 
 		it79.fnc({}, [
 			function(it, prop){
 				px.cancelDrop( $elms.previewIframe.get(0).contentWindow );
 
-				pj.px2dthelperGetAll(page_path, {filter: false}, function(pjInfo){
-					// console.log(pjInfo);
-					prop.pageInfo = pjInfo.page_info;
-					prop.navigationInfo = pjInfo.navigation_info;
+				prop.pageInfo = pj_info.page_info;
+				prop.navigationInfo = pj_info.navigation_info;
 
-					if( prop.pageInfo === null ){
-						pj.px2dthelperGetAll('/', {filter: false}, function(pjInfo){
-							prop.pageInfo = pjInfo.page_info;
-							prop.navigationInfo = pjInfo.navigation_info;
-							if( prop.pageInfo === null ){
-								prop.pageInfo = {};
-							}
-							it.next(prop);
-						});
-					}else{
-						it.next(prop);
-					}
-				});
+				if( pj_info.page_info === null ){
+					// サイトマップに定義のないページにアクセスしようとした場合
+					// ページがない旨を表示して終了する。
+					$elms.pageinfo.html( '<p>ページが未定義です。</p>' );
+					callback();
+					return;
+				}else if( typeof(pj_info.page_info) != typeof({}) ){
+					// 何らかのエラーでページ情報が取得できていない場合
+					// エラーメッセージを表示して終了する。
+					$elms.pageinfo.html( '<p>ページ情報の取得に失敗しました。</p>' );
+					callback();
+					return;
+				}
 
+				it.next(prop);
 			} ,
 			function(it, prop){
 				// --------------------
@@ -2028,33 +2116,6 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 				// コンテンツコメント機能
 				contentsComment.init( prop.pageInfo, $elms.commentView );
 
-				// --------------------------------------
-				// ページフィルター機能
-				var fileterTimer;
-				$elms.workspaceFilter.find('input[type=text]')
-					.val(_workspaceFilterKeywords)
-					.off('keyup')
-					.on('keyup', function(e){
-						_workspaceFilterKeywords = $elms.workspaceFilter.find('input[type=text]').val();
-						// console.log(_workspaceFilterKeywords);
-						clearTimeout(fileterTimer);
-						fileterTimer = setTimeout(function(){
-							_this.draw(page_path, {}, function(){});
-						}, (e.keyCode==13 ? 0 : 1000)); // EnterKey(=13)なら、即座に再描画を開始
-					})
-				;
-				$elms.workspaceFilter.find('input[type=radio][name=list-label]')
-					.off('change')
-					.on('change', function(){
-						_workspaceFilterListLabel = $elms.workspaceFilter.find('input[type=radio][name=list-label]:checked').val();
-						// console.log(_workspaceFilterListLabel);
-						clearTimeout(fileterTimer);
-						fileterTimer = setTimeout(function(){
-							_this.draw(page_path, {}, function(){});
-						}, 1000);
-					})
-				;
-
 
 				// --------------------------------------
 				// メインの編集ボタンにアクションを付加
@@ -2079,9 +2140,9 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 					})
 				;
 
+
 				// --------------------------------------
 				// ドロップダウンのサブメニューを追加
-
 				if( contProcType != '.not_exists' ){
 					$bs3btn.find('ul[role=menu]')
 						.append( $('<li>')
@@ -2336,9 +2397,9 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 															alert('コンテンツの複製に失敗しました。'+result[1]);
 															return;
 														}
-														app.loadPreview( _lastPreviewPath, function(){
+														app.loadPreview( _lastPreviewPath, {"force":true}, function(){
 															px.closeDialog();
-														}, {"force":true} );
+														} );
 													}
 												);
 											}),
@@ -2368,7 +2429,7 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 									$bs3btn.find('.dropdown-toggle').click();
 									var pagePath = $(this).attr('data-path');
 									pj.buildGuiEditContent( pagePath, function(result){
-										app.loadPreview( pagePath, function(){}, {'force':true} );
+										app.loadPreview( pagePath, {'force':true}, function(){} );
 									} );
 									return false;
 								})
@@ -2407,9 +2468,9 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 															alert('編集モードの変更に失敗しました。'+result[1]);
 															return;
 														}
-														app.loadPreview( _lastPreviewPath, function(){
+														app.loadPreview( _lastPreviewPath, {"force":true}, function(){
 															px.closeDialog();
-														}, {"force":true} );
+														} );
 													} )
 												}),
 											$('<button class="px2-btn">')
@@ -2469,7 +2530,7 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 							.on('click', function(){
 								$bs3btn.find('.dropdown-toggle').click();
 								var pagePath = $(this).attr('data-path');
-								app.loadPreview( pagePath, function(){}, {'force':true} );
+								app.loadPreview( pagePath, {'force':true}, function(){} );
 								return false;
 							})
 						)
@@ -2493,6 +2554,75 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 
 				it.next(prop);
 			} ,
+			function(it, prop){
+				callback();
+			}
+		]);
+		return;
+	}
+}
+
+},{"iterate79":4}],9:[function(require,module,exports){
+/**
+ * pageFilter.js
+ */
+module.exports = function(app, px, pj, $elms, _sitemap){
+	var it79 = require('iterate79');
+	var _this = this;
+	var fileterTimer;
+	var _workspaceFilterKeywords='',
+		_workspaceFilterListLabel='title';
+
+	/**
+	 * フィルター機能の初期化
+	 */
+	this.init = function( callback ){
+		callback = callback || function(){};
+
+		it79.fnc({}, [
+			function(it, prop){
+				// --------------------------------------
+				// ページフィルター機能
+				$elms.workspaceFilter.find('input[type=text]')
+					.val(_workspaceFilterKeywords)
+					.off('keyup')
+					.on('keyup', function(e){
+						_workspaceFilterKeywords = $elms.workspaceFilter.find('input[type=text]').val();
+						// console.log(_workspaceFilterKeywords);
+						clearTimeout(fileterTimer);
+						fileterTimer = setTimeout(function(){
+							_this.filter(function(){});
+						}, (e.keyCode==13 ? 0 : 1000)); // EnterKey(=13)なら、即座に再描画を開始
+					})
+				;
+				$elms.workspaceFilter.find('input[type=radio][name=list-label]')
+					.off('change')
+					.on('change', function(){
+						_workspaceFilterListLabel = $elms.workspaceFilter.find('input[type=radio][name=list-label]:checked').val();
+						// console.log(_workspaceFilterListLabel);
+						clearTimeout(fileterTimer);
+						fileterTimer = setTimeout(function(){
+							_this.filter(function(){});
+						}, 1000);
+					})
+				;
+				it.next(prop);
+
+			} ,
+			function(it, prop){
+				callback();
+			}
+		]);
+		return;
+	}
+
+	/**
+	 * フィルター実行
+	 */
+	this.filter = function( callback ){
+		callback = callback || function(){};
+
+		it79.fnc({}, [
 			function(it, prop){
 
 				if( _sitemap === null ){
@@ -2561,7 +2691,7 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 													'font-size': '12px'
 												})
 												.on('click', function(){
-													app.loadPreview( $(this).attr('data-path'), function(){}, {"force":true} );
+													app.goto( $(this).attr('data-path'), {"force":true}, function(){} );
 												} )
 											)
 										);
@@ -2575,25 +2705,9 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 						);
 					}); })
 					.then(function(){ return new Promise(function(rlv, rjt){
-
-						pj.px2proj.get_page_info(page_path, function(pageInfo){
-							$elms.childList.find('a').removeClass('current');
-							if( pageInfo !== null ){
-								$elms.childList.find('a[data-path="'+pageInfo.path+'"]').addClass('current');
-							}
-							rlv();
-						});
-						// $ul.listview();
-					}); })
-					.then(function(){ return new Promise(function(rlv, rjt){
 						it.next(prop);
 					}); })
 				;
-			} ,
-			function(it, prop){
-				app.loadPreview( page_path, function(){
-					it.next(prop);
-				} );
 			} ,
 			function(it, prop){
 				callback();
@@ -2601,14 +2715,6 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 		]);
 		return;
 	}
-}
-
-},{"iterate79":4}],9:[function(require,module,exports){
-/**
- * pageFilter.js
- */
-module.exports = function(app, px, pj, $elms){
-	var it79 = require('iterate79');
 }
 
 },{"iterate79":4}]},{},[6])

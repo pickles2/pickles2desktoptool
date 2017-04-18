@@ -4,6 +4,7 @@ window.contApp = new (function( px ){
 	var it79 = require('iterate79');
 
 	var _this = this;
+	var app = this;
 	var _sitemap = null;
 	var _config = null;
 	var $elms = {};
@@ -84,17 +85,7 @@ window.contApp = new (function( px ){
 							function(it, prop){
 								px.cancelDrop( $elms.previewIframe.get(0).contentWindow );
 
-								var loc = $elms.previewIframe.get(0).contentWindow.location;
-								switch( loc.href ){
-									case 'blank':
-									case 'about:blank':
-										return;
-								}
-								var to = loc.pathname;
-								var pathControot = _pj.getConfig().path_controot;
-								to = to.replace( new RegExp( '^'+px.utils.escapeRegExp( pathControot ) ), '' );
-								to = to.replace( new RegExp( '^\\/*' ), '/' );
-								_currentPagePath = to;
+								_currentPagePath = app.extractPagePathFromPreviewLocation();
 
 								it.next(prop);
 							} ,
@@ -138,7 +129,7 @@ window.contApp = new (function( px ){
 			},
 			function(it1, arg){
 				// ページ情報を描画
-				pageDraw.redraw( _param.page_path||'/index.html', {}, function(){
+				_this.goto( _param.page_path||'/index.html', {}, function(){
 					it1.next(arg);
 				} );
 			},
@@ -213,6 +204,26 @@ window.contApp = new (function( px ){
 		return this;
 	}
 
+	/**
+	 * プレビューのURL から ページパスを抽出する
+	 */
+	this.extractPagePathFromPreviewLocation = function(previewLocation){
+		if( !previewLocation ){
+			previewLocation = $elms.previewIframe.get(0).contentWindow.location;
+		}
+		switch( previewLocation.href ){
+			case 'blank':
+			case 'about:blank':
+				return;
+		}
+		var to = previewLocation.pathname;
+		var pathControot = _pj.getConfig().path_controot;
+		to = to.replace( new RegExp( '^'+px.utils.escapeRegExp( pathControot ) ), '' );
+		to = to.replace( new RegExp( '^\\/*' ), '/' );
+
+		var page_path = to;
+		return page_path;
+	}
 
 	/**
 	 * ウィンドウリサイズイベントハンドラ
@@ -238,34 +249,55 @@ window.contApp = new (function( px ){
 
 	}
 
+	/**
+	 * 指定ページへ移動する
+	 */
+	this.goto = function( page_path, options, callback ){
+		callback = callback || function(){};
+		console.log(_currentPagePath, page_path);
+		if( _currentPagePath === page_path ){
+			// 遷移先がカレントページを同じければ処理しない。
+			callback();
+			return;
+		}
+
+		_currentPagePath = page_path;
+		pageDraw.redraw( page_path, options, function(){
+			app.loadPreview( page_path, {}, function(){
+				callback();
+			} );
+		} );
+		return;
+	}
 
 	/**
 	 * プレビューウィンドウにページを表示する
 	 */
-	this.loadPreview = function( path, callback, opt ){
+	this.loadPreview = function( page_path, options, callback ){
 		callback = callback || function(){};
-		if(!opt){ opt = {}; }
-		if(!opt.force){ opt.force = false; }
+		if(!options){ options = {}; }
+		if(!options.force){ options.force = false; }
 
-		if( !path ){
-			path = _pj.getConfig().path_top;
+		if( !page_path ){
+			page_path = _pj.getConfig().path_top;
 		}
 
-		if( path.match(new RegExp('^alias[0-9]*\\:')) ){
+		if( page_path.match(new RegExp('^alias[0-9]*\\:')) ){
 			alert( 'このページはエイリアスです。' );
 			return;
 		}
 
-		if( _currentPagePath == path && !opt.force ){
-			// 前回ロードしたpathと同じなら、リロードをスキップ
+		var currentPreviewPagePath = this.extractPagePathFromPreviewLocation();
+
+		if( currentPreviewPagePath == page_path && !options.force ){
+			// 現在表示中の `page_path` と同じなら、リロードをスキップ
 			callback();
 			return this;
 		}
 		// $elms.pageinfo.html('<div style="text-align:center;">now loading ...</div>');
 
-		_currentPagePath = path;
 		px.preview.serverStandby( function(){
-			$elms.previewIframe.attr( 'src', px.preview.getUrl(path) );
+			$elms.previewIframe.attr( 'src', px.preview.getUrl(page_path) );
 			callback();
 		} );
 		return this;
@@ -374,7 +406,7 @@ window.contApp = new (function( px ){
 		$('body')
 			.css({'overflow':'auto'})
 		;
-		_this.loadPreview( _currentPagePath, function(){}, {'force':true} );
+		_this.loadPreview( _currentPagePath, {'force':true}, function(){} );
 		return this;
 	}
 

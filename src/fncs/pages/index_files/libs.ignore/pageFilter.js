@@ -126,7 +126,7 @@ module.exports = function(app, px, pj, $elms, _sitemap){
 													'font-size': '12px'
 												})
 												.on('click', function(){
-													app.loadPreview( $(this).attr('data-path'), function(){}, {"force":true} );
+													app.goto( $(this).attr('data-path'), {"force":true}, function(){} );
 												} )
 											)
 										);

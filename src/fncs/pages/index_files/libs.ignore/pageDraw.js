@@ -4,13 +4,13 @@
 module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 	var it79 = require('iterate79');
 	var _this = this;
-	var _last_page_path;
 
 	/**
 	 * 初期化する
 	 */
 	this.init = function(callback){
 		callback = callback || function(){};
+		// 特に何もするべきことはない。
 		callback();
 		return;
 	}
@@ -20,13 +20,6 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 	 */
 	this.redraw = function(page_path, options, callback){
 		callback = callback || function(){};
-
-		if(_last_page_path == page_path){
-			callback();
-			return;
-		}
-
-		_last_page_path = page_path;
 
 		var contProcType;
 
@@ -387,9 +380,9 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 															alert('コンテンツの複製に失敗しました。'+result[1]);
 															return;
 														}
-														app.loadPreview( _lastPreviewPath, function(){
+														app.loadPreview( _lastPreviewPath, {"force":true}, function(){
 															px.closeDialog();
-														}, {"force":true} );
+														} );
 													}
 												);
 											}),
@@ -419,7 +412,7 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 									$bs3btn.find('.dropdown-toggle').click();
 									var pagePath = $(this).attr('data-path');
 									pj.buildGuiEditContent( pagePath, function(result){
-										app.loadPreview( pagePath, function(){}, {'force':true} );
+										app.loadPreview( pagePath, {'force':true}, function(){} );
 									} );
 									return false;
 								})
@@ -458,9 +451,9 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 															alert('編集モードの変更に失敗しました。'+result[1]);
 															return;
 														}
-														app.loadPreview( _lastPreviewPath, function(){
+														app.loadPreview( _lastPreviewPath, {"force":true}, function(){
 															px.closeDialog();
-														}, {"force":true} );
+														} );
 													} )
 												}),
 											$('<button class="px2-btn">')
@@ -520,7 +513,7 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 							.on('click', function(){
 								$bs3btn.find('.dropdown-toggle').click();
 								var pagePath = $(this).attr('data-path');
-								app.loadPreview( pagePath, function(){}, {'force':true} );
+								app.loadPreview( pagePath, {'force':true}, function(){} );
 								return false;
 							})
 						)
@@ -543,11 +536,6 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 				$(window).resize();
 
 				it.next(prop);
-			} ,
-			function(it, prop){
-				app.loadPreview( page_path, function(){
-					it.next(prop);
-				} );
 			} ,
 			function(it, prop){
 				callback();

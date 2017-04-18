@@ -58,6 +58,7 @@ window.contApp = new (function( px ){
 				$elms.pageinfo = $('.cont_page_info');
 				$elms.commentView = $('.cont_comment_view');
 				$elms.workspaceFilter = $('.cont_workspace_filter');
+				$elms.breadcrumb = $('.cont_breadcrumb');
 
 				// bootstrap
 				$('*').tooltip();
@@ -129,7 +130,7 @@ window.contApp = new (function( px ){
 				// 最初のページ情報を描画
 				var startPage = _param.page_path||'/index.html';
 				// var startPage = '/hoge/fuga/notfound.html';
-				_this.goto( startPage, {'force':true}, function(){
+				app.goto( startPage, {'force':true}, function(){
 					it1.next(arg);
 				} );
 			},
@@ -238,19 +239,21 @@ window.contApp = new (function( px ){
 	function onWindowResize(){
 		$elms.editor
 			.css({
-				'height': $(window).innerHeight() -0
+				'height': $(window).innerHeight() - 0
 			})
 		;
 
+		var heightBreadcrumb = $elms.breadcrumb.outerHeight();
+
 		$('.cont_workspace_container')
 			.css({
-				'height': $(window).innerHeight() - $('.container').outerHeight() - $elms.commentView.outerHeight() - $elms.workspaceFilter.outerHeight() -20,
+				'height': $(window).innerHeight() - $('.container').outerHeight() - $elms.commentView.outerHeight() - $elms.workspaceFilter.outerHeight() - heightBreadcrumb - 20,
 				'margin-top': 10
 			})
 		;
 		$elms.preview
 			.css({
-				'height': $('.cont_workspace_container').parent().outerHeight() - $elms.pageinfo.outerHeight() - 3
+				'height': $('.cont_workspace_container').parent().outerHeight() - $elms.pageinfo.outerHeight() - heightBreadcrumb - 3
 			})
 		;
 
@@ -294,6 +297,7 @@ window.contApp = new (function( px ){
 				return;
 			}
 
+			// 描画・プレビューロードをキック
 			pageDraw.redraw( _currentPageInfo, options, function(){
 				app.loadPreview( _currentPagePath, options, function(){
 					px.progress.close();
@@ -320,7 +324,7 @@ window.contApp = new (function( px ){
 
 		var currentPreviewPagePath = this.extractPagePathFromPreviewLocation();
 		var gotoUrl = px.preview.getUrl(page_path);
-		var currentPreviewPageUrl = px.preview.getUrl(page_path);
+		var currentPreviewPageUrl = px.preview.getUrl(currentPreviewPagePath);
 		// console.log(currentPreviewPageUrl, gotoUrl);
 
 		if( currentPreviewPageUrl == gotoUrl && !options.force ){
@@ -447,7 +451,7 @@ window.contApp = new (function( px ){
 	// 初期化処理開始
 	$(function(){
 		init();
-		$(window).resize(function(){
+		$(window).on('resize', function(){
 			onWindowResize();
 		});
 

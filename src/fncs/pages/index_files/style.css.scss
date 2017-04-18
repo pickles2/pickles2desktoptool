@@ -70,6 +70,30 @@
 }
 
 /**
+ * パンくず
+ */
+.cont_breadcrumb{
+	ul{
+		margin: 0;
+		padding: 0;
+		font-size: small;
+		li{
+			margin: 0;
+			padding: 0;
+			list-style-type: none;
+			display: inline;
+			&:after{
+				content: ">";
+				margin: 0 0.3em;
+			}
+			&:last-child:after{
+				content: "";
+			}
+		}
+	}
+}
+
+/**
  * サイトマップ・フィルタ
  */
 .cont_workspace_filter{

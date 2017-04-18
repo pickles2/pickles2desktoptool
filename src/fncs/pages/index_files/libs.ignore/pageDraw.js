@@ -27,7 +27,7 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 		} catch (e) {
 		}
 
-		// console.log(pj_info);
+		console.log(pj_info);
 
 		it79.fnc({}, [
 			function(it, prop){
@@ -50,6 +50,19 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 					return;
 				}
 
+				it.next(prop);
+			} ,
+			function(it, prop){
+				// --------------------
+				// パンくずを表示
+				var tpl = $('#template-breadcrumb').html();
+				var html = px.utils.bindEjs(tpl, {'navigationInfo': pj_info.navigation_info});
+				$elms.breadcrumb.html(html);
+				$elms.breadcrumb.find('a').on('click', function(e){
+					var page_path = $(this).attr('data-page-path');
+					app.goto(page_path);
+					return false;
+				})
 				it.next(prop);
 			} ,
 			function(it, prop){
@@ -538,8 +551,11 @@ module.exports = function(app, px, pj, $elms, contentsComment, _sitemap){
 				$elms.childList.find('a').removeClass('current');
 				$elms.childList.find('a[data-path="'+prop.pageInfo.path+'"]').addClass('current');
 
+				it.next(prop);
+			} ,
+			function(it, prop){
+				// 表示サイズと位置合わせ
 				$(window).resize();
-
 				it.next(prop);
 			} ,
 			function(it, prop){

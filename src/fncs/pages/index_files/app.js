@@ -30,8 +30,8 @@ window.contApp = new (function( px ){
 			function(it1, arg){
 				_this.pj.checkPxCmdVersion(
 					{
-						apiVersion: '>=2.0.29',
-						px2dthelperVersion: '>=2.0.3'
+						apiVersion: '>=2.0.30',
+						px2dthelperVersion: '>=2.0.4'
 					},
 					function(){
 						// API設定OK
@@ -290,6 +290,13 @@ window.contApp = new (function( px ){
 				// var pageInfo = _pj.site.getPageInfo( page_path );
 				// console.log(pageInfo);
 				_pj.px2proj.href(page_path, function(href){
+					// console.log(href);
+					var path_controot = '/';
+					try {
+						path_controot = _currentPageInfo.config.path_controot;
+					} catch (e) {
+					}
+					href = href.replace(new RegExp('^'+px.utils.escapeRegExp(_currentPageInfo.config.path_controot)), '/');
 					// console.log(href);
 					px.progress.close();
 					app.goto(href, options, callback);

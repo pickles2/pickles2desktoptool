@@ -100,7 +100,7 @@ window.contApp = new (function( px ){
 							} ,
 							function(it, prop){
 								// console.log(prop);
-								pageDraw.draw( _currentPagePath, {}, function(){
+								pageDraw.redraw( _currentPagePath, {}, function(){
 									it.next(prop);
 								} );
 							} ,
@@ -119,9 +119,26 @@ window.contApp = new (function( px ){
 			function(it1, arg){
 				contentsComment = new (require('./libs.ignore/contentsComment.js'))(_this, px, _pj);
 				pageDraw = new (require('./libs.ignore/pageDraw.js'))(_this, px, _pj, $elms, contentsComment, _sitemap);
-				pageFilter = new (require('./libs.ignore/pageFilter.js'))(_this, px, _pj, $elms);
-
-				pageDraw.draw( _param.page_path||'/index.html', {}, function(){
+				pageFilter = new (require('./libs.ignore/pageFilter.js'))(_this, px, _pj, $elms, _sitemap);
+				it1.next(arg);
+			},
+			function(it1, arg){
+				// フィルター機能を初期化
+				pageFilter.init( function(){
+					pageFilter.filter( function(){
+						it1.next(arg);
+					} );
+				} );
+			},
+			function(it1, arg){
+				// ページ情報を初期化
+				pageDraw.init( function(){
+					it1.next(arg);
+				} );
+			},
+			function(it1, arg){
+				// ページ情報を描画
+				pageDraw.redraw( _param.page_path||'/index.html', {}, function(){
 					it1.next(arg);
 				} );
 			},

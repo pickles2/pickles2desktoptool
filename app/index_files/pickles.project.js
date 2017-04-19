@@ -168,22 +168,29 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		};
 		new Promise(function(rlv){rlv();})
 			.then(function(){ return new Promise(function(rlv, rjt){
-				status.pathExists = px.utils.isDirectory( _this.get('path') );
-				status.entryScriptExists = (status.pathExists && px.utils.isFile( _this.get('path')+'/'+_this.get('entry_script') ) ? true : false);
+				status.pathExists = px.utils79.is_dir( _this.get('path') );
+				status.pathContainsFileCount = false;
+				if( status.pathExists ){
+					try {
+						status.pathContainsFileCount = px.fs.readdirSync(_this.get('path')).length;
+					} catch (e) {
+					}
+				}
+				status.entryScriptExists = (status.pathExists && px.utils79.is_file( _this.get('path')+'/'+_this.get('entry_script') ) ? true : false);
 				var homeDir = _this.get('path')+'/'+_this.get('home_dir');
-				status.homeDirExists = (status.pathExists && px.utils.isDirectory( homeDir ) ? true : false);
-				// status.confFileExists = (status.homeDirExists && (px.utils.isFile( homeDir+'/config.php' )||px.utils.isFile( homeDir+'/config.json' ) ) ? true : false);
+				status.homeDirExists = (status.pathExists && px.utils79.is_dir( homeDir ) ? true : false);
+				// status.confFileExists = (status.homeDirExists && (px.utils79.is_file( homeDir+'/config.php' )||px.utils79.is_file( homeDir+'/config.json' ) ) ? true : false);
 				status.confFileExists = false;
 				if(typeof(_config) === typeof({})){ status.confFileExists = true; }
-				// status.px2DTConfFileExists = (status.homeDirExists && px.utils.isFile( homeDir+'/px2dtconfig.json' ) ? true : false);
+				// status.px2DTConfFileExists = (status.homeDirExists && px.utils79.is_file( homeDir+'/px2dtconfig.json' ) ? true : false);
 				status.px2DTConfFileExists = false;
 				if(typeof(_px2DTConfig) === typeof({})){ status.px2DTConfFileExists = true; }
-				status.composerJsonExists = (status.pathExists && px.utils.isFile( _this.get_realpath_composer_root()+'/composer.json' ) ? true : false);
-				status.vendorDirExists = (status.pathExists && px.utils.isDirectory( _this.get_realpath_composer_root()+'/vendor/' ) ? true : false);
+				status.composerJsonExists = (status.pathExists && px.utils79.is_file( _this.get_realpath_composer_root()+'/composer.json' ) ? true : false);
+				status.vendorDirExists = (status.pathExists && px.utils79.is_dir( _this.get_realpath_composer_root()+'/vendor/' ) ? true : false);
 				status.isPxStandby = ( status.pathExists && status.entryScriptExists && status.homeDirExists && status.confFileExists && status.composerJsonExists && status.vendorDirExists ? true : false );
 				status.gitDirExists = (function(path){
 					function checkParentDir(path){
-						if( status.pathExists && px.utils.isDirectory( path+'/.git/' ) ){
+						if( status.pathExists && px.utils79.is_dir( path+'/.git/' ) ){
 							return true;
 						}
 						var nextPath = px.utils.dirname( path );
@@ -422,7 +429,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		_px2DTConfig = {};
 		var path = this.get('path')+'/'+this.get('home_dir')+'/px2dtconfig.json';
 
-		if( !px.utils.isFile( path ) ){
+		if( !px.utils79.is_file( path ) ){
 			callback( null );
 			return this;
 		}
@@ -976,7 +983,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	this.get_realpath_git_root = function(){
 		return (function(path){
 			function checkParentDir(path){
-				if( px.utils.isDirectory( path ) && px.utils.isDirectory( path+'/.git/' ) ){
+				if( px.utils79.is_dir( path ) && px.utils79.is_dir( path+'/.git/' ) ){
 					return px.fs.realpathSync(path)+'/';
 				}
 				var nextPath = px.utils.dirname( path );
@@ -997,7 +1004,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	this.get_realpath_composer_root = function(){
 		return (function(path){
 			function checkParentDir(path){
-				if( px.utils.isDirectory( path ) && px.utils.isFile( path+'/composer.json' ) ){
+				if( px.utils79.is_dir( path ) && px.utils79.is_file( path+'/composer.json' ) ){
 					return px.fs.realpathSync(path)+'/';
 				}
 				var nextPath = px.utils.dirname( path );
@@ -1019,7 +1026,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	this.get_realpath_npm_root = function(){
 		return (function(path){
 			function checkParentDir(path){
-				if( px.utils.isDirectory( path ) && px.utils.isFile( path+'/package.json' ) ){
+				if( px.utils79.is_dir( path ) && px.utils79.is_file( path+'/package.json' ) ){
 					return px.fs.realpathSync(path)+'/';
 				}
 				var nextPath = px.utils.dirname( path );
@@ -1040,7 +1047,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	 */
 	this.get_realpath_controot = function(){
 		var pathBase = this.get('path');
-		if( px.utils.isFile( this.get('path')+'/'+this.get('entry_script') ) ){
+		if( px.utils79.is_file( this.get('path')+'/'+this.get('entry_script') ) ){
 			pathBase = px.utils.dirname( px.fs.realpathSync( this.get('path')+'/'+this.get('entry_script') ) )+'/';
 		}
 		return pathBase;
@@ -1110,7 +1117,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			$path = '/';
 		}
 		$path = px.utils.get_realpath( '/'+$path );
-		if( px.utils.isDirectory('./'+$path) ){
+		if( px.utils79.is_dir('./'+$path) ){
 			$path += '/';
 		}
 		$path = px.utils.normalize_path( $path );
@@ -1128,9 +1135,9 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 				$preg_pattern = px.utils.escapeRegExp($row);
 				$preg_pattern = $preg_pattern.replace( new RegExp( px.utils.escapeRegExp('\\*'),'g'), '(?:.*?)');//ワイルドカードをパターンに反映
 				$preg_pattern = $preg_pattern+'$';//前方・後方一致
-			}else if(px.utils.isDirectory($row)){
+			}else if(px.utils79.is_dir($row)){
 				$preg_pattern = px.utils.escapeRegExp( px.utils.normalize_path( px.utils.get_realpath($row) )+'/');
-			}else if(px.utils.isFile($row)){
+			}else if(px.utils79.is_file($row)){
 				$preg_pattern = px.utils.escapeRegExp( px.utils.normalize_path( px.utils.get_realpath($row) ));
 			}
 			if( $path.match( new RegExp('^'+$preg_pattern) ) ){
@@ -1209,7 +1216,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		px.utils.iterateFnc([
 			function(it, prop){
 				// 格納ディレクトリを作る
-				if( px.utils.isDirectory( px.utils.dirname( prop.realpath_cont ) ) ){
+				if( px.utils79.is_dir( px.utils.dirname( prop.realpath_cont ) ) ){
 					it.next(prop);
 					return;
 				}
@@ -1234,7 +1241,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			} ,
 			function(it, prop){
 				// リソースディレクトリを作る
-				if( !px.utils.isDirectory( prop.realpath_resource_dir ) ){
+				if( !px.utils79.is_dir( prop.realpath_resource_dir ) ){
 					px.utils.mkdirAll( prop.realpath_resource_dir );
 				}
 				if( prop.proc_type == 'html.gui' ){

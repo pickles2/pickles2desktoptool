@@ -54,7 +54,7 @@ window.contApp = new (function(){
 								return false;
 							})
 					;
-				}else if( !status.entryScriptExists ){
+				}else if( status.pathContainsFileCount && !status.entryScriptExists ){
 					// EntryScript が存在しない。
 					$mainTaskUi
 						.html( $('#template-reselectProject-entryScript').html() )

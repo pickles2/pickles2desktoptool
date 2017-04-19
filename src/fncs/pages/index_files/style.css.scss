@@ -70,6 +70,30 @@
 }
 
 /**
+ * パンくず
+ */
+.cont_breadcrumb{
+	ul{
+		margin: 0;
+		padding: 0;
+		font-size: small;
+		li{
+			margin: 0;
+			padding: 0;
+			list-style-type: none;
+			display: inline;
+			&:after{
+				content: ">";
+				margin: 0 0.3em;
+			}
+			&:last-child:after{
+				content: "";
+			}
+		}
+	}
+}
+
+/**
  * サイトマップ・フィルタ
  */
 .cont_workspace_filter{
@@ -80,5 +104,28 @@
 	}
 	label{
 		overflow: hidden;
+	}
+}
+
+.cont_workspace_container{
+	ul.listview{
+		margin: 0;
+		.glyphicon{
+			margin-right: 10px;
+		}
+		.glyphicon-level-up{
+			color: #bbaa66;
+		}
+	}
+	.cont_sitemap_broslist{
+		overflow: auto;
+	}
+	.cont_sitemap_search{
+		position: absolute;
+		top: 0; left: 0;
+		width: 100%;
+		height: 100%;
+		overflow: auto;
+		background-color: #fff;
 	}
 }

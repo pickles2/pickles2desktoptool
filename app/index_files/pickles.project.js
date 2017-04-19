@@ -208,47 +208,41 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 			.then(function(){ return new Promise(function(rlv, rjt){
 				// Pickles Framework のバージョンを確認
 				// かつ、 PX=api が利用できるか確認
-				_px2proj.query(
-					'/?PX=px2dthelper.get.all',
-					{
-						"output": "json",
-						"complete": function(data, code){
-							// console.log(data, code);
-							if( code == 0 ){
-								_config = false;
-								_px2DTConfig = false;
-								try {
-									var pjInfo = JSON.parse(data);
-									// console.log(pjInfo);
-									status.api.version = pjInfo.check_status.pxfw_api.version;
-									status.api.available = (pjInfo.check_status.pxfw_api.version ? true : false);
-									status.api.is_sitemap_loaded = pjInfo.check_status.pxfw_api.is_sitemap_loaded;
-
-									status.px2dthelper.version = pjInfo.check_status.px2dthelper.version;
-									status.px2dthelper.available = (pjInfo.check_status.px2dthelper.version ? true : false);
-									status.px2dthelper.is_sitemap_loaded = pjInfo.check_status.px2dthelper.is_sitemap_loaded;
-
-									try{
-										_config = pjInfo.config;
-										if( _config.plugins && _config.plugins.px2dt ){
-											_px2DTConfig = _config.plugins.px2dt;
-										}
-									}catch(e){
-										console.error('FAILED to parse JSON "Pickles 2" config.');
-										console.error(data_json_string);
-										_this.error( 'FAILED to parse JSON "Pickles 2" config.'+"\n"+'------------'+"\n\n"+data_json_string );
-										_config = false;
-										_px2DTConfig = false;
-									}
-								} catch (e) {
-									console.error('FAILED to getting data from "/?PX=px2dthelper.get.all"');
-								}
-							}
-							rlv();
-							return;
-						}
+				_config = false;
+				_px2DTConfig = false;
+				_this.px2dthelperGetAll('/', {'filter': false}, function(pjInfo){
+					// console.log(pjInfo);
+					if(pjInfo === false){
+						console.error('FAILED to getting data from "/?PX=px2dthelper.get.all"');
+						rlv();
+						return;
 					}
-				);
+					try {
+						status.api.version = pjInfo.check_status.pxfw_api.version;
+						status.api.available = (pjInfo.check_status.pxfw_api.version ? true : false);
+						status.api.is_sitemap_loaded = pjInfo.check_status.pxfw_api.is_sitemap_loaded;
+
+						status.px2dthelper.version = pjInfo.check_status.px2dthelper.version;
+						status.px2dthelper.available = (pjInfo.check_status.px2dthelper.version ? true : false);
+						status.px2dthelper.is_sitemap_loaded = pjInfo.check_status.px2dthelper.is_sitemap_loaded;
+
+						try{
+							_config = pjInfo.config;
+							if( _config.plugins && _config.plugins.px2dt ){
+								_px2DTConfig = _config.plugins.px2dt;
+							}
+						}catch(e){
+							console.error('FAILED to parse JSON "Pickles 2" config.');
+							console.error(data_json_string);
+							_this.error( 'FAILED to parse JSON "Pickles 2" config.'+"\n"+'------------'+"\n\n"+data_json_string );
+							_config = false;
+							_px2DTConfig = false;
+						}
+					} catch (e) {
+						console.error('FAILED to getting data from "/?PX=px2dthelper.get.all"');
+					}
+					rlv();
+				});
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
@@ -477,6 +471,7 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		);
 		return this;
 	}
+
 	/**
 	 * composerを実行する
 	 *
@@ -507,6 +502,36 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 	 */
 	this.open = function(){
 		return window.px.utils.openURL(this.get('path'));
+	}
+
+	/**
+	 * `?PX=px2dthelper.get.all` を実行する
+	 */
+	this.px2dthelperGetAll = function(path, options, callback){
+		callback = callback || function(){};
+		if( !path ){
+			path = '/';
+		}
+		options = options || {};
+		options.filter = !!options.filter;
+		_px2proj.query(
+			path+'?PX=px2dthelper.get.all&filter='+(options.filter?'true':'false'),
+			{
+				"output": "json",
+				"complete": function(data, code){
+					// console.log(data, code);
+					var pjInfo = false;
+					try {
+						pjInfo = JSON.parse(data);
+					} catch (e) {
+					}
+					callback(pjInfo);
+					return;
+				}
+			}
+		);
+
+		return;
 	}
 
 	/**

@@ -287,7 +287,7 @@ new (function($, window){
 						// {"label":"Reload(dev)",          "cond":"always", "cb": function(){window.location.href='index.html?';}} ,
 						{"label":px.lb.get('menu.systemInfo'),         "cond":"always",             "area":"shoulder", "app":null, "cb": function(){px.dialog({
 							title: px.lb.get('menu.systemInfo'),
-							body: $('<iframe>').attr('src', 'mods/systeminfo/index.html').css({'width':'100%','height':300})
+							body: $('<iframe>').attr('src', 'mods/systeminfo/index.html').css({'width':'100%','height':460})
 						});}} ,
 						{"label":_appName+" "+px.lb.get('menu.desktoptoolConfig'), "cond":"always",        "area":"shoulder", "app":null, "cb": function(){px.editPx2DTConfig();}} ,
 						{"label":px.lb.get('menu.help'), "cond":"always", "area":"shoulder", "app":null, "cb": function(){px.openHelp();} },

@@ -2,7 +2,7 @@
 
 TMP_DIR_PREFIX="_tmp_build_px2dt_";
 TMP_DIR_NAME=$(date '+%Y%m%d_%H%M%S');
-REPOSITORY_URL="https://github.com/pickles2/pickles2desktoptool.git";
+REPOSITORY_URL="https://github.com/pickles2/app-pickles2.git";
 BRANCH_NAME=$1;
 if [ ! $1 ]; then
     BRANCH_NAME="develop";

@@ -6,7 +6,7 @@
 
 ## Install
 
-Copy `Pickles2DesktopTool.app` to your Application Folder.
+Copy `Pickles2.app` to your Application Folder.
 
 
 ## for developer
@@ -14,8 +14,8 @@ Copy `Pickles2DesktopTool.app` to your Application Folder.
 ### Initial Setup for develop
 
 ```
-$ git clone https://github.com/pickles2/pickles2desktoptool.git
-$ cd pickles2desktoptool
+$ git clone https://github.com/pickles2/app-pickles2.git
+$ cd app-pickles2
 $ npm install
 $ composer install
 ```
@@ -60,6 +60,7 @@ Mac で Windows 版をビルドするにあたり、次の環境が必要です�
 - NW.js を 0.21.1 に更新。
 - Windows版で、バックグラウンドでの パブリッシュ中 と サイトマップキャッシュ生成中 に、画面左下に状態を表示するようになった。
 - 旧GUI編集エンジン `legacy` を廃止し、`pickles2-contents-editor` に一本化。
+- コンテンツ編集画面のUI改善。大量のページを扱っても破綻しないようにした。
 - その他いくつかの細かい修正。
 
 ### Pickles 2 Desktop Tool 2.0.0-beta.16 (2017年3月27日)

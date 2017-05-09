@@ -327,7 +327,7 @@ window.contApp = new (function( px ){
 			callback();
 		} );
 		return;
-	}
+	} // goto()
 
 	/**
 	 * エディター画面を開く
@@ -434,7 +434,7 @@ window.contApp = new (function( px ){
 		;
 		_this.loadPreview( _currentPagePath, {'force':true}, function(){} );
 		return this;
-	}
+	} // closeEditor()
 
 	/**
 	 * ウィンドウリサイズイベントハンドラ

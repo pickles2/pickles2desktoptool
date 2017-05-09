@@ -6,7 +6,7 @@ new (function($, window){
 	this.process = process;
 
 	// NW.js
-	this.nw = nw
+	this.nw = nw;
 	this.nwWindow = nw.Window.get();
 
 	// jQuery
@@ -330,15 +330,6 @@ new (function($, window){
 			callback();
 		});
 		return;
-	}
-
-	/**
-	 * アプリケーションを終了する
-	 */
-	this.exit = function(){
-		console.log( 'px.exit() called.' );
-		// if(!confirm('exit?')){return;}
-		process.exit();
 	}
 
 	/**
@@ -947,6 +938,23 @@ new (function($, window){
 	 */
 	this.log = function( msg ){
 		return px.px2dtLDA.log(msg);
+	}
+
+	/**
+	 * アプリケーションを終了する
+	 */
+	this.exit = function(){
+		console.log( 'px.exit() called.' );
+		// if(!confirm('exit?')){return;}
+		try {
+			if( _platform == 'win' ){
+				nw.App.closeAllWindows();
+			}else{
+				nw.App.quit();
+			}
+		} catch (e) {
+			console.error('Unknown Error on px.exit()');
+		}
 	}
 
 	/**

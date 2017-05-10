@@ -196,7 +196,7 @@ new (function($, window){
 					// 各国語言語切替機能のロード
 					var LangBank = require('langbank');
 					px.lb = new LangBank( require('path').resolve('./app/common/language/language.csv'), function(){
-						px.lb.setLang(px.px2dtLDA.db.language);
+						px.lb.setLang(px.px2dtLDA.getLanguage());
 						// console.log(px.lb.get('welcome'));
 						it1.next();
 					}); // new LangBank()
@@ -206,7 +206,7 @@ new (function($, window){
 					// ヒント機能のロード
 					var Px2Hint = require('./index_files/pickles.hint.js');
 					px.hint = new Px2Hint( px, require('path').resolve('./app/common/language/hint.csv'), function(){
-						px.hint.setLang(px.px2dtLDA.db.language);
+						px.hint.setLang(px.px2dtLDA.getLanguage());
 						it1.next();
 					}); // new LangBank()
 					return;
@@ -359,10 +359,9 @@ new (function($, window){
 	 */
 	this.getProjectList = function(callback){
 		callback = callback || function(){};
-		this.px2dtLDA.getProjectAll(function(projects){
-			callback(projects);
-		});
+		var projects = this.px2dtLDA.getProjectAll();
 		// var rtn = px.px2dtLDA.db.projects;
+		callback(projects);
 		return;
 	}
 
@@ -383,21 +382,44 @@ new (function($, window){
 			projectInfo.entry_script = '.px_execute.php'
 		}
 
-		var pj = new (require('./index_files/pickles.project.js')).classProject( window, this, projectInfo, px.px2dtLDA.db.projects.length );
-		var pjValidated = pj.validate();
+		var isError = false;
+		var errorMsg = {};
 
-		if( pjValidated.isError ){
-			opt.error(pjValidated.errorMsg);
+		if( typeof(projectInfo.name) != typeof('') || !projectInfo.name.length ){
+			errorMsg.name = 'name is required.';
+			isError = true;
+		}
+		if( typeof(projectInfo.path) != typeof('') || !projectInfo.path.length ){
+			errorMsg.path = 'path is required.';
+			isError = true;
+		}else if( !px.fs.existsSync(projectInfo.path) ){
+			errorMsg.path = 'path is required as a existed directory path.';
+			isError = true;
+		}
+		if( typeof(projectInfo.home_dir) != typeof('') || !projectInfo.home_dir.length ){
+			errorMsg.home_dir = 'home directory is required.';
+			isError = true;
+		}
+		if( typeof(projectInfo.entry_script) != typeof('') || !projectInfo.entry_script.length ){
+			errorMsg.entry_script = 'entry_script is required.';
+			isError = true;
+		}
+		if( isError ){
+			opt.error(errorMsg);
 			opt.complete();
 			return false;
 		}
 
-		px.px2dtLDA.addProject( projectInfo, function(result){
-			px.save(function(){
-				opt.success();
-				opt.complete();
-			});
-		} );
+		var result = px.px2dtLDA.addProject( projectInfo );
+		if( !result ){
+			opt.error({'common': 'Unknown ERROR'});
+			opt.complete();
+			return false;
+		}
+		px.save(function(){
+			opt.success();
+			opt.complete();
+		});
 
 		return true;
 	}
@@ -419,7 +441,7 @@ new (function($, window){
 	 */
 	this.deleteProject = function(projectId, callback){
 		callback = callback || function(){};
-		px.px2dtLDA.db.projects.splice( projectId, 1 );
+		var result = px.px2dtLDA.removeProject( projectId );
 		this.deselectProject();
 		this.save(function(){
 			callback();
@@ -460,7 +482,7 @@ new (function($, window){
 		px.watcher.stop();
 
 		// alert(num);
-		_pj = new (require('./index_files/pickles.project.js')).classProject(
+		_pj = new (require('./index_files/pickles.project.js'))(
 			window,
 			this,
 			px.px2dtLDA.db.projects[_selectedProject],
@@ -556,7 +578,7 @@ new (function($, window){
 	 * DBデータまるごと取得
 	 */
 	this.getDb = function(){
-		return px.px2dtLDA.db;
+		return px.px2dtLDA.getData();
 	}
 
 
@@ -732,9 +754,9 @@ new (function($, window){
 						$ul.append(
 							$('<a class="list-group-item">')
 								.attr('href', 'javascript:;')
-								.data('path', list[i].path)
+								.data('path', list[i].getPath())
 								.data('num', i)
-								.click( function(){
+								.on('click', function(){
 									var timer = setTimeout(function(){
 										px.progress.start({"showProgressBar":true, 'blindness':true});
 									}, 1000);
@@ -744,7 +766,7 @@ new (function($, window){
 										px.subapp();
 									} );
 								} )
-								.text( list[i].name )
+								.text( list[i].getName() )
 						);
 					}
 

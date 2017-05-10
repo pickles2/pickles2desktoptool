@@ -21,7 +21,6 @@ window.contApp = new (function(){
 				$('.tpl_path').text( pj.get('path') );
 				$('.tpl_home_dir').text( pj.get('home_dir') );
 				$('.tpl_entry_script').text( pj.get('entry_script') );
-				$('.tpl_vcs').text( pj.get('vcs') );
 				$('address.center').text( px.packageJson.pickles2.credit );
 				it.next(arg);
 			} ,
@@ -242,7 +241,6 @@ window.contApp = new (function(){
 		// $form.find('[name=pj_path]').val(pj.get('path'));//←セットできない！
 		$form.find('[name=pj_home_dir]').val(pj.get('home_dir'));
 		$form.find('[name=pj_entry_script]').val(pj.get('entry_script'));
-		// $form.find('[name=pj_vcs]').val(pj.get('vcs'));
 
 		px.dialog( {
 			title: 'プロジェクト情報を編集',
@@ -256,7 +254,6 @@ window.contApp = new (function(){
 							.set('name', $form.find('[name=pj_name]').val())
 							.set('home_dir', $form.find('[name=pj_home_dir]').val())
 							.set('entry_script', $form.find('[name=pj_entry_script]').val())
-							.set('vcs', $form.find('[name=pj_vcs]').val())
 						;
 						if( $form.find('[name=pj_path]').val().length ){
 							pj

@@ -1,4 +1,4 @@
-module.exports.classProject = function( window, px, projectInfo, projectId, cbStandby ) {
+module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	var _this = this;
 
 	this.projectInfo = projectInfo;
@@ -110,36 +110,6 @@ module.exports.classProject = function( window, px, projectInfo, projectId, cbSt
 		return;
 	} // init()
 
-
-	/**
-	 * プロジェクト情報作成の入力情報を検証
-	 */
-	this.validate = function(){
-		var isError = false;
-		var errorMsg = {};
-
-		if( typeof(this.projectInfo.name) != typeof('') || !this.projectInfo.name.length ){
-			errorMsg.name = 'name is required.';
-			isError = true;
-		}
-		if( typeof(this.projectInfo.path) != typeof('') || !this.projectInfo.path.length ){
-			errorMsg.path = 'path is required.';
-			isError = true;
-		}else if( !px.fs.existsSync(this.projectInfo.path) ){
-			errorMsg.path = 'path is required as a existed directory path.';
-			isError = true;
-		}
-		if( typeof(this.projectInfo.home_dir) != typeof('') || !this.projectInfo.home_dir.length ){
-			errorMsg.home_dir = 'home directory is required.';
-			isError = true;
-		}
-		if( typeof(this.projectInfo.entry_script) != typeof('') || !this.projectInfo.entry_script.length ){
-			errorMsg.entry_script = 'entry_script is required.';
-			isError = true;
-		}
-
-		return {isError: isError, errorMsg: errorMsg};
-	}
 
 	/**
 	 * プロジェクトのステータスを調べる

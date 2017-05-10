@@ -14,6 +14,7 @@ window.contApp = new (function(){
 	 * initialize
 	 */
 	function init(){
+		var px2dtLDA_pj = px.px2dtLDA.project(pj.projectId);
 
 		px.utils.iterateFnc([
 			function(it, arg){
@@ -21,6 +22,7 @@ window.contApp = new (function(){
 				$('.tpl_path').text( pj.get('path') );
 				$('.tpl_home_dir').text( pj.get('home_dir') );
 				$('.tpl_entry_script').text( pj.get('entry_script') );
+				$('.tpl_external_preview_server_origin').text( px2dtLDA_pj.getExtendedData('external_preview_server_origin')||'' );
 				$('address.center').text( px.packageJson.pickles2.credit );
 				it.next(arg);
 			} ,
@@ -237,10 +239,12 @@ window.contApp = new (function(){
 	 */
 	this.editProject = function(){
 		var $form = $( $('#template-form-editProject').html() );
-		$form.find('[name=pj_name]').val(pj.get('name'));
+		var px2dtLDA_pj = px.px2dtLDA.project(pj.projectId);
+		$form.find('[name=pj_name]').val(px2dtLDA_pj.getName());
 		// $form.find('[name=pj_path]').val(pj.get('path'));//←セットできない！
-		$form.find('[name=pj_home_dir]').val(pj.get('home_dir'));
-		$form.find('[name=pj_entry_script]').val(pj.get('entry_script'));
+		$form.find('[name=pj_home_dir]').val(px2dtLDA_pj.get().home_dir);
+		$form.find('[name=pj_entry_script]').val(px2dtLDA_pj.getEntryScript());
+		$form.find('[name=pj_external_preview_server_origin]').val(px2dtLDA_pj.getExtendedData('external_preview_server_origin'));
 
 		px.dialog( {
 			title: 'プロジェクト情報を編集',
@@ -250,17 +254,16 @@ window.contApp = new (function(){
 					.text('OK')
 					.addClass('px2-btn--primary')
 					.on('click', function(){
-						pj
-							.set('name', $form.find('[name=pj_name]').val())
-							.set('home_dir', $form.find('[name=pj_home_dir]').val())
-							.set('entry_script', $form.find('[name=pj_entry_script]').val())
-						;
+						var data = px2dtLDA_pj.get();
+						data.home_dir = $form.find('[name=pj_home_dir]').val()
+						px2dtLDA_pj.setName($form.find('[name=pj_name]').val());
+						px2dtLDA_pj.setEntryScript($form.find('[name=pj_entry_script]').val());
+						var external_preview_server_origin = $form.find('[name=pj_external_preview_server_origin]').val();
+						px2dtLDA_pj.setExtendedData('external_preview_server_origin', (external_preview_server_origin || undefined));
 						if( $form.find('[name=pj_path]').val().length ){
-							pj
-								.set('path', $form.find('[name=pj_path]').val())
-							;
-
+							px2dtLDA_pj.setPath($form.find('[name=pj_path]').val());
 						}
+
 						px.save(function(){
 							px.closeDialog();
 							px.message('プロジェクト情報を更新しました。');

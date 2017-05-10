@@ -2,6 +2,7 @@
 	var _previewServer = require('./index_files/px_server_emulator.node.js').init(px);
 	px.preview = new (function(){
 		this.getUrl = function( path ){
+
 			var port = this.getPort();
 
 			if( typeof(path) !== typeof('') ){ path = ''; }
@@ -17,6 +18,15 @@
 				croot = croot.replace( new RegExp('\\/+$'), '/' );
 			}
 
+			// 外部プレビューサーバーの設定があれば、それを優先
+			var px2dtLDA_Pj = px.px2dtLDA.project(pj.projectId);
+			var external_preview_server_origin = px2dtLDA_Pj.getExtendedData('external_preview_server_origin');
+			if( typeof(external_preview_server_origin)==typeof('') && external_preview_server_origin.match(/^https?\:\/\//i) ){
+				var url = external_preview_server_origin+'/'+croot+path;
+				return url;
+			}
+
+			// デフォルト：内蔵プレビューサーバーの設定を返却
 			var url = 'http://127.0.0.1:'+port+'/'+croot+path;
 
 			return url;

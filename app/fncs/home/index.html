@@ -219,6 +219,14 @@
 							<td><input type="text" name="pj_entry_script" value="" placeholder=".px_execute.php" class="form-control" /></td>
 						</tr>
 					</table>
+					<h2>Optional</h2>
+					<table class="form_elements" style="width:100%;">
+						<colgroup><col width="30%" /><col width="70%" /></colgroup>
+						<tr>
+							<th>External Preview Server Origin</th>
+							<td><input type="text" name="pj_external_preview_server_origin" value="" placeholder="eg. http://localhost:8080" class="form-control" /></td>
+						</tr>
+					</table>
 				</form>
 			</div>
 		</script>
@@ -274,6 +282,14 @@
 								<tr>
 									<th>Entry script</th>
 									<td class="tpl_entry_script selectable">...</td>
+								</tr>
+							</table>
+							<h3>Optional</h3>
+							<table class="def" style="width:100%; table-layout: fixed;">
+								<colgroup><col width="30%" /><col width="70%" /></colgroup>
+								<tr>
+									<th>External Preview Server Origin</th>
+									<td class="tpl_external_preview_server_origin selectable">...</td>
 								</tr>
 							</table>
 							<p><button class="px2-btn" onclick="contApp.editProject(); return false;">プロジェクト情報を編集する</button></p>

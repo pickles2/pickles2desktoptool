@@ -17,17 +17,20 @@
 				croot = croot.replace( new RegExp('^\\/+'), '' );
 				croot = croot.replace( new RegExp('\\/+$'), '/' );
 			}
+			var croot_path = croot+path;
+			croot_path = croot_path.replace( /^\/+/, '' );
 
 			// 外部プレビューサーバーの設定があれば、それを優先
 			var px2dtLDA_Pj = px.px2dtLDA.project(pj.projectId);
 			var external_preview_server_origin = px2dtLDA_Pj.getExtendedData('external_preview_server_origin');
 			if( typeof(external_preview_server_origin)==typeof('') && external_preview_server_origin.match(/^https?\:\/\//i) ){
-				var url = external_preview_server_origin+'/'+croot+path;
+				external_preview_server_origin = external_preview_server_origin.replace( /\/+$/, '' );
+				var url = external_preview_server_origin+'/'+croot_path;
 				return url;
 			}
 
 			// デフォルト：内蔵プレビューサーバーの設定を返却
-			var url = 'http://127.0.0.1:'+port+'/'+croot+path;
+			var url = 'http://127.0.0.1:'+port+'/'+croot_path;
 
 			return url;
 		}

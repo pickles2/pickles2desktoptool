@@ -2522,7 +2522,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 															alert('コンテンツの複製に失敗しました。'+result[1]);
 															return;
 														}
-														app.loadPreview( _lastPreviewPath, {"force":true}, function(){
+														app.loadPreview( app.getCurrentPagePath(), {"force":true}, function(){
 															px.closeDialog();
 														} );
 													}
@@ -2593,7 +2593,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 															alert('編集モードの変更に失敗しました。'+result[1]);
 															return;
 														}
-														app.loadPreview( _lastPreviewPath, {"force":true}, function(){
+														app.loadPreview( app.getCurrentPagePath(), {"force":true}, function(){
 															px.closeDialog();
 														} );
 													} )

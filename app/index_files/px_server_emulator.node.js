@@ -161,7 +161,15 @@
 				'processor': function(html, ext, callback, response){
 					// console.log(response);
 					if( ext == 'html' ){
-						html += getBroccoliScript();
+						if( html.match('<script data-broccoli-receive-message="yes">') ){
+							// すでに挿入済みの場合はスキップする。
+							// `external_preview_server_origin` が導入された際に、
+							// px2-px2dthelper にこのタグを挿入する機能が追加された。
+							// ただしこれはオプションなので、適用される場合とされない場合がある。
+							// なのでここでは、有無をチェックし、挿入されていない場合にのみ、挿入する。
+						}else{
+							html += getBroccoliScript();
+						}
 					}
 					var errorHtml = '';
 					if( response.status != 200 ){

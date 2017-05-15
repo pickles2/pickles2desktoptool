@@ -182,11 +182,12 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 					})
 				;
 
+				var $dropdownMenu = $bs3btn.find('ul.cont_page-dropdown-menu');
 
 				// --------------------------------------
 				// ドロップダウンのサブメニューを追加
 				if( contProcType != '.not_exists' ){
-					$bs3btn.find('ul[role=menu]')
+					$dropdownMenu
 						.append( $('<li>')
 							.append( $('<a>')
 								.text( 'フォルダを開く' )
@@ -204,7 +205,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 					;
 				}
 				if( contProcType != 'html.gui' ){
-					$bs3btn.find('ul[role=menu]')
+					$dropdownMenu
 						.append( $('<li>')
 							.append( $('<a>')
 								.text( '外部テキストエディタで編集' )
@@ -223,7 +224,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 					;
 				}
 
-				$bs3btn.find('ul[role=menu]')
+				$dropdownMenu
 					.append( $('<li>')
 						.append( $('<a>')
 							.text( 'ブラウザでプレビュー' )
@@ -315,7 +316,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 						)
 					)
 				;
-				$bs3btn.find('ul[role=menu]')
+				$dropdownMenu
 					.append( $('<li class="divider">') )
 					.append( $('<li>')
 						.append( $('<a>')
@@ -334,7 +335,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 						)
 					)
 				;
-				$bs3btn.find('ul[role=menu]')
+				$dropdownMenu
 					.append( $('<li>')
 						.append( $('<a>')
 							.text( '素材フォルダを開く (--)' )
@@ -381,7 +382,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 
 				}, 10);
 
-				$bs3btn.find('ul[role=menu]')
+				$dropdownMenu
 					.append( $('<li>')
 						.append( $('<a>')
 							.text( 'コンテンツコメントを編集' )
@@ -398,7 +399,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 					)
 				;
 
-				$bs3btn.find('ul[role=menu]')
+				$dropdownMenu
 					.append( $('<li class="divider">') )
 					.append( $('<li>')
 						.append( $('<a>')
@@ -417,6 +418,52 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 								var $body = $('<div>')
 									.append( $('#template-copy-from-other-page').html() )
 								;
+								var $input = $body.find('input');
+								var $list = $body.find('.cont_sample_list')
+									.css({
+										'overflow': 'auto',
+										'height': 200,
+										'background-color': '#f9f9f9',
+										'border': '1px solid #bbb',
+										'padding': 10,
+										'margin': '10px auto',
+										'border-radius': 5
+									})
+								;
+								$input.on('change', function(){
+									var val = $input.val();
+									$list.html('<div class="px2-loading"></div>');
+									pj.px2proj.query('/?PX=px2dthelper.search_sitemap&keyword='+encodeURIComponent(val), {
+										"output": "json",
+										"success": function(data){
+											// console.log(data);
+										},
+										"complete": function(data, code){
+											// console.log(data, code);
+											var page_list = JSON.parse(data);
+											// console.log(page_list);
+
+											var $ul = $('<ul>')
+											for(var i in page_list){
+												var $li = $('<li>')
+												$li.append( $('<a>')
+													.text(page_list[i].path)
+													.attr({
+														'href': 'javascript:;',
+														'data-path': page_list[i].path
+													})
+													.on('click', function(e){
+														var path = $(this).attr('data-path');
+														$input.val(path);
+													})
+												);
+												$ul.append($li);
+											}
+											$list.html('').append($ul);
+										}
+									});
+								});
+
 								px.dialog({
 									'title': '他のページから複製',
 									'body': $body,
@@ -425,7 +472,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 											.text('OK')
 											.addClass('px2-btn--primary')
 											.on('click', function(){
-												var val = $body.find('input').val();
+												var val = $input.val();
 												var pageinfo = pj.site.getPageInfo(val);
 												if( !pageinfo ){
 													alert('存在しないページです。');
@@ -458,7 +505,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 					)
 				;
 				if( contProcType == 'html.gui' ){
-					$bs3btn.find('ul[role=menu]')
+					$dropdownMenu
 						.append( $('<li>')
 							.append( $('<a>')
 								.text( 'GUI編集コンテンツを再構成する' )
@@ -481,7 +528,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 				}
 
 				if( contProcType != '.not_exists' ){
-					$bs3btn.find('ul[role=menu]')
+					$dropdownMenu
 						.append( $('<li>')
 							.append( $('<a>')
 								.text( '編集方法を変更' )
@@ -528,7 +575,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 						)
 					;
 				}
-				$bs3btn.find('ul[role=menu]')
+				$dropdownMenu
 					.append( $('<li>')
 						.append( $('<a>')
 							.text( 'コンテンツをコミット' )
@@ -545,7 +592,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 					)
 				;
 
-				$bs3btn.find('ul[role=menu]')
+				$dropdownMenu
 					.append( $('<li>')
 						.append( $('<a>')
 							.text( 'コンテンツのコミットログ' )
@@ -561,7 +608,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 						)
 					)
 				;
-				$bs3btn.find('ul[role=menu]')
+				$dropdownMenu
 					.append( $('<li>')
 						.append( $('<a>')
 							.text( 'ページをリロード' )

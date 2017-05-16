@@ -539,6 +539,33 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	 */
 	this.getPageContentEditorMode = function( pagePath, callback ){
 		callback = callback || function(){};
+		var pagePath = pagePath;
+
+		if( pagePath.match( /^alias[0-9]*\:([\s\S]+)/ ) ){
+			//  エイリアスを解決
+			pagePath = RegExp.$1;
+		}else if( pagePath.match( /\{[\s\S]+\}/ ) ){
+			//  ダイナミックパスをバインド
+			var $tmp_path = pagePath;
+			pagePath = '';
+			while( 1 ){
+				if( !$tmp_path.match( /^([\s\S]*?)\{(\$|\*)([a-zA-Z0-9\_\-]*)\}([\s\S]*)$/ ) ){
+					pagePath += $tmp_path;
+					break;
+				}
+				pagePath += RegExp.$1;
+				var paramName = RegExp.$3;
+				$tmp_path = RegExp.$4;
+
+				if( typeof(paramName) != typeof('') || !paramName.length ){
+					//無名のパラメータはバインドしない。
+				}else{
+					pagePath += paramName;
+				}
+				continue;
+			}
+		}
+
 		_px2proj.query(
 			pagePath+'?PX=px2dthelper.check_editor_mode', {
 				"output": "json",

@@ -659,11 +659,19 @@ new (function($, window){
 		if(_platform=='win'){
 			px.utils.exec( 'start cmd /K cd "'+ path + '"' );
 		}else{
+			var termProgram = 'Terminal';
+			try {
+				if( process.env.TERM_PROGRAM ){
+					termProgram = process.env.TERM_PROGRAM;
+				}
+			} catch (e) {
+			}
+
 			px.utils.spawn(
 				px.cmd('open'),
 				[
 					'-a',
-					'Terminal',
+					termProgram,
 					path
 				],
 				{}

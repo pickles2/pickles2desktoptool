@@ -485,7 +485,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 		options = options || {};
 		options.filter = !!options.filter;
 		_px2proj.query(
-			path+'?PX=px2dthelper.get.all&filter='+(options.filter?'true':'false'),
+			this.getConcretePath(path)+'?PX=px2dthelper.get.all&filter='+(options.filter?'true':'false'),
 			{
 				"output": "json",
 				"complete": function(data, code){
@@ -539,35 +539,9 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	 */
 	this.getPageContentEditorMode = function( pagePath, callback ){
 		callback = callback || function(){};
-		var pagePath = pagePath;
-
-		if( pagePath.match( /^alias[0-9]*\:([\s\S]+)/ ) ){
-			//  エイリアスを解決
-			pagePath = RegExp.$1;
-		}else if( pagePath.match( /\{[\s\S]+\}/ ) ){
-			//  ダイナミックパスをバインド
-			var $tmp_path = pagePath;
-			pagePath = '';
-			while( 1 ){
-				if( !$tmp_path.match( /^([\s\S]*?)\{(\$|\*)([a-zA-Z0-9\_\-]*)\}([\s\S]*)$/ ) ){
-					pagePath += $tmp_path;
-					break;
-				}
-				pagePath += RegExp.$1;
-				var paramName = RegExp.$3;
-				$tmp_path = RegExp.$4;
-
-				if( typeof(paramName) != typeof('') || !paramName.length ){
-					//無名のパラメータはバインドしない。
-				}else{
-					pagePath += paramName;
-				}
-				continue;
-			}
-		}
 
 		_px2proj.query(
-			pagePath+'?PX=px2dthelper.check_editor_mode', {
+			this.getConcretePath(pagePath)+'?PX=px2dthelper.check_editor_mode', {
 				"output": "json",
 				"complete": function(data, code){
 					// console.log(data, code);
@@ -608,7 +582,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	this.changeContentEditorMode = function( pagePath, editorModeTo, callback ){
 		callback = callback || function(){};
 		_px2proj.query(
-			pagePath+'?PX=px2dthelper.change_content_editor_mode&editor_mode='+editorModeTo, {
+			this.getConcretePath(pagePath)+'?PX=px2dthelper.change_content_editor_mode&editor_mode='+editorModeTo, {
 				"output": "json",
 				"complete": function(data, code){
 					// console.log(data, code);
@@ -619,6 +593,37 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 			}
 		);
 		return;
+	}
+
+	/**
+	 * 具体的なパスを取得する
+	 */
+	this.getConcretePath = function(pagePath){
+		if( pagePath.match( /^alias[0-9]*\:([\s\S]+)/ ) ){
+			//  エイリアスを解決
+			pagePath = RegExp.$1;
+		}else if( pagePath.match( /\{[\s\S]+\}/ ) ){
+			//  ダイナミックパスをバインド
+			var $tmp_path = pagePath;
+			pagePath = '';
+			while( 1 ){
+				if( !$tmp_path.match( /^([\s\S]*?)\{(\$|\*)([a-zA-Z0-9\_\-]*)\}([\s\S]*)$/ ) ){
+					pagePath += $tmp_path;
+					break;
+				}
+				pagePath += RegExp.$1;
+				var paramName = RegExp.$3;
+				$tmp_path = RegExp.$4;
+
+				if( typeof(paramName) != typeof('') || !paramName.length ){
+					//無名のパラメータはバインドしない。
+				}else{
+					pagePath += paramName;
+				}
+				continue;
+			}
+		}
+		return pagePath;
 	}
 
 	/**
@@ -984,7 +989,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	this.copyContentsData = function( pathFrom, pathTo, callback ){
 		callback = callback || function(){};
 		_px2proj.query(
-			pathTo+'?PX=px2dthelper.copy_content&from='+pathFrom+'&to='+pathTo, {
+			this.getConcretePath(pathTo)+'?PX=px2dthelper.copy_content&from='+this.getConcretePath(pathFrom)+'&to='+this.getConcretePath(pathTo), {
 				"output": "json",
 				"complete": function(data, code){
 					// console.log(data, code);

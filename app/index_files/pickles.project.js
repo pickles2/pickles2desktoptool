@@ -341,6 +341,22 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 		return filelist;
 	}
 
+	/** サイトマップファイルを削除する */
+	this.deleteSitemapFile = function(basefilename, callback){
+		callback = callback || function(){};
+		var pathDir = this.get('path')+'/'+this.get('home_dir')+'/sitemaps/';
+		var filelist = this.getSitemapFilelist();
+		for( var idx in filelist ){
+			var filename = filelist[idx].replace(/\.[a-zA-Z0-9]+$/, '');
+			var ext = px.utils.getExtension(filelist[idx]).toLowerCase();
+			if( filename == basefilename ){
+				px.fs.unlinkSync( pathDir+filelist[idx] );
+			}
+		}
+		callback();
+		return;
+	}
+
 	/** プロジェクト設定情報を取得する */
 	this.getConfig = function(){
 		return _config;

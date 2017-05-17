@@ -1,6 +1,9 @@
 @charset "utf-8";
 .contents{
 	.cont_filelist_sitemap{
+		overflow: auto;
+		margin: 10px 0 0 0;
+
 		&__ext-list{
 			border: none;
 			display: block;

@@ -6052,15 +6052,22 @@ window.contApp = new (function(px, $){
 								'data-num': idx
 							})
 							.on('click', function(e){
+								e.stopPropagation();
+								e.preventDefault();
 								var path = realpath_sitemap_dir+$(this).attr('data-filename');
 								px.utils.openURL( path );
+								return false;
 							} )
-							.text( filelist[idx].masterFilename )
+							.append( $('<h2>')
+								.text( filelist[idx].masterFilename )
+							)
 						)
 					);
 
 					var $extUl = $('<ul>').addClass('cont_filelist_sitemap__ext-list');
 					$a.append($extUl);
+
+					$extUl.append( $('<li>').text('Edit:') );
 
 					for( var ext in filelist[idx].exts ){
 						var $aExt = $('<a>');
@@ -6072,8 +6079,11 @@ window.contApp = new (function(px, $){
 									'data-filename': filelist[idx].exts[ext].filename
 								})
 								.on('click', function(e){
+									e.stopPropagation();
+									e.preventDefault();
 									var path = realpath_sitemap_dir+$(this).attr('data-filename');
 									px.utils.openURL( path );
+									return false;
 								})
 								.text( filelist[idx].exts[ext].ext )
 							)
@@ -6083,12 +6093,39 @@ window.contApp = new (function(px, $){
 						}
 						$extUl.append($li);
 					}
+					$extUl.append( $('<li>').text('Delete:') );
+					$extUl.append( $('<li>').append($('<a>')
+						.addClass('px2-btn')
+						.addClass('px2-btn--danger')
+						.attr({
+							'href': 'javascript:;',
+							'data-basefilename': filelist[idx].exts[ext].basefilename
+						})
+						.on('click', function(e){
+							e.stopPropagation();
+							e.preventDefault();
+							var basefilename = $(this).attr('data-basefilename');
+							if( !confirm('サイトマップファイル "'+basefilename+'" を削除しますか？') ){
+								return false;
+							}
+							pj.deleteSitemapFile(basefilename, function(){
+								init();
+							});
+							return false;
+						})
+						.text('Delete')
+					));
 				}
+
 
 				$filelist
 					.html('')
 					.append( $ul )
 				;
+				it1.next(arg);
+			},
+			function(it1, arg){
+				onWindowResized();
 				it1.next(arg);
 			},
 			function(it1, arg){
@@ -6104,6 +6141,7 @@ window.contApp = new (function(px, $){
 	this.commitSitemap = function(){
 		this.gitUi.commit('sitemaps', {}, function(result){
 			console.log('(コミット完了しました)');
+			init();
 		});
 		return this;
 	}
@@ -6114,6 +6152,7 @@ window.contApp = new (function(px, $){
 	this.logSitemap = function(){
 		this.gitUi.log('sitemaps', {}, function(result){
 			console.log('(コミットログを表示しました)');
+			init();
 		});
 		return this;
 	}
@@ -6126,11 +6165,39 @@ window.contApp = new (function(px, $){
 	}
 
 	/**
+	 * マニュアルを開く
+	 */
+	this.openManual = function(){
+		var $body = $('<div>');
+		$body.html( $('#template-manual').html() );
+		px.dialog({
+			'title': 'サイトマップの編集方法',
+			'body': $body
+		});
+	}
+
+	/**
+	 * ウィンドウリサイズイベントハンドラ
+	 */
+	function onWindowResized(){
+		$('.cont_filelist_sitemap')
+			.css({
+				'height': $(window).height() - $('.cont_buttons').height() - 100
+			})
+		;
+	}
+
+	/**
 	 * 初期化イベント発火
 	 */
-	$(function(){
-		init();
-	});
+	$(window)
+		.on('load', function(){
+			init();
+		})
+		.on('resize', function(){
+			onWindowResized();
+		})
+	;
 
 })(px, $);
 

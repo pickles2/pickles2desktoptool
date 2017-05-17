@@ -338,22 +338,42 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	this.getSitemapFilelist = function(){
 		var pathDir = this.get('path')+'/'+this.get('home_dir')+'/sitemaps/';
 		var filelist = px.fs.readdirSync( pathDir );
-		return filelist;
+		var rtn = [];
+		for( var idx in filelist ){
+			if( filelist[idx].match( /^\~\$/ ) ){
+				// エクセルの編集中のキャッシュファイルのファイル名だからスルー
+				continue;
+			}
+			if( filelist[idx].match( /^\.\~lock\./ ) ){
+				// Libre Office, Open Office の編集中のキャッシュファイルのファイル名だからスルー
+				continue;
+			}
+
+			rtn.push( filelist[idx] );
+		}
+		return rtn;
 	}
 
 	/** サイトマップファイルを削除する */
 	this.deleteSitemapFile = function(basefilename, callback){
 		callback = callback || function(){};
+		var result = true;
 		var pathDir = this.get('path')+'/'+this.get('home_dir')+'/sitemaps/';
 		var filelist = this.getSitemapFilelist();
 		for( var idx in filelist ){
-			var filename = filelist[idx].replace(/\.[a-zA-Z0-9]+$/, '');
-			var ext = px.utils.getExtension(filelist[idx]).toLowerCase();
-			if( filename == basefilename ){
-				px.fs.unlinkSync( pathDir+filelist[idx] );
+			try {
+				var filename = filelist[idx].replace(/\.[a-zA-Z0-9]+$/, '');
+				var ext = px.utils.getExtension(filelist[idx]).toLowerCase();
+				if( filename == basefilename ){
+					px.fs.unlinkSync( pathDir+filelist[idx] );
+					if( px.utils79.is_file( pathDir+filelist[idx] ) ){
+						result = false; // 消えてない場合
+					}
+				}
+			} catch (e) {
 			}
 		}
-		callback();
+		callback(result);
 		return;
 	}
 

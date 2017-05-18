@@ -72,7 +72,7 @@
 
 										// ------------- Step 4 -------------
 										upd.runInstaller(newAppPath, [upd.getAppPath(), upd.getAppExec()],{});
-										gui.App.quit();
+										px.nw.App.quit();
 
 									}, manifest);
 

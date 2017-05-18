@@ -22,6 +22,10 @@ new (function($, window){
 	// data
 	var _path_data_dir = (process.env.HOME||process.env.LOCALAPPDATA) + '/'+_packageJson.pickles2.dataDirName+'/';
 
+	var AutoUpdater = require('./index_files/auto_updater.js'),
+		autoUpdater = new AutoUpdater(window, this);
+	this.getAutoUpdater = function(){ return autoUpdater; }
+
 	/**
 	 * Pickles 2 のバージョン情報を取得する。
 	 *

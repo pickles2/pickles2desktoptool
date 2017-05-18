@@ -34,6 +34,56 @@
 					})
 				;
 
+				// --------------------------------------
+				// ボタンアクション設定： 自動更新のチェック
+				$('.cont_update-check button')
+					.on('click', function(){
+						var upd = px.getAutoUpdater().getUpdater();
+						// console.log(upd);
+
+						// ------------- Step 1 -------------
+						upd.checkNewVersion(function(error, newVersionExists, manifest) {
+							if( error ){
+								console.error(error);
+								return;
+							}
+							if ( !newVersionExists ) {
+								alert('お使いのアプリケーションは最新版です。');
+
+							} else {
+								if( !confirm('新しいバージョンが見つかりました。更新しますか？') ){
+									return;
+								}
+
+								// ------------- Step 2 -------------
+								upd.download(function(error, filename) {
+									if( error ){
+										console.error(error);
+										return;
+									}
+
+									// ------------- Step 3 -------------
+									upd.unpack(filename, function(error, newAppPath) {
+										if( error ){
+											console.error(error);
+											return;
+										}
+
+										// ------------- Step 4 -------------
+										upd.runInstaller(newAppPath, [upd.getAppPath(), upd.getAppExec()],{});
+										gui.App.quit();
+
+									}, manifest);
+
+								}, manifest);
+
+							}
+						});
+
+						return false;
+					})
+				;
+
 				it1.next();
 			},
 			function(it1, arg){

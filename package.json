@@ -50,6 +50,7 @@
     "gulp-plumber": "^1.1.0",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^2.3.2",
+    "node-webkit-updater": "^0.3.3",
     "nw": "0.21.1-sdk",
     "nw-builder": "3.2.0",
     "px2style": "file:submodules/px2style"
@@ -73,6 +74,7 @@
     },
     "credit": "(C)Pickles 2 Project."
   },
+  "manifestUrl": "http://pickles2.pxt.jp/release/app/Pickles2/package.json",
   "window": {
     "title": "Pickles 2",
     "toolbar": true,

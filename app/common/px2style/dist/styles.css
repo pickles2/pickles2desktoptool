@@ -92,6 +92,25 @@
       color: #ddd;
       cursor: default; }
 
+.px2-table {
+  border: none;
+  border-collapse: collapse;
+  text-align: left; }
+  .px2-table th,
+  .px2-table td {
+    border: 1px solid #999999;
+    background: #ffffff;
+    padding: 10px; }
+  .px2-table th {
+    background: #e7e7e7; }
+  .px2-table thead th,
+  .px2-table tfoot th {
+    background: #d9d9d9;
+    text-align: center; }
+  .px2-table thead td,
+  .px2-table tfoot td {
+    background: #eeeeee; }
+
 .px2-modal {
   display: block;
   background: rgba(0, 0, 0, 0.5);
@@ -260,3 +279,49 @@
   100% {
     -webkit-transform: rotate(720deg) scale(0, 0);
             transform: rotate(720deg) scale(0, 0); } }
+
+.px2-document {
+  font-size: medium;
+  line-height: 1.5; }
+  .px2-document p {
+    margin-top: 1em;
+    margin-bottom: 1em; }
+  .px2-document h1 {
+    font-weight: bold;
+    margin-top: 2em;
+    margin-bottom: 0.5em; }
+  .px2-document h2, .px2-document h3, .px2-document h4, .px2-document h5, .px2-document h6 {
+    font-weight: bold;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em; }
+  .px2-document h1 {
+    font-size: 240%; }
+  .px2-document h2 {
+    font-size: 180%; }
+  .px2-document h3 {
+    font-size: 160%; }
+  .px2-document h4 {
+    font-size: 130%; }
+  .px2-document h5 {
+    font-size: 120%; }
+  .px2-document h6 {
+    font-size: 110%; }
+  .px2-document ul, .px2-document ol {
+    display: block;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    padding-left: 40px; }
+    .px2-document ul ul, .px2-document ul ol, .px2-document ol ul, .px2-document ol ol {
+      margin-top: 0;
+      margin-bottom: 0; }
+
+.px2-p {
+  margin-top: 1em;
+  margin-bottom: 1em; }
+
+.px2-slim {
+  margin: 0;
+  padding: 0; }
+
+.px2-responsive {
+  overflow: auto; }

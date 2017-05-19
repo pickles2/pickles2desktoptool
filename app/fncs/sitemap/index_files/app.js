@@ -6070,12 +6070,11 @@ window.contApp = new (function(px, $){
 					$extUl.append( $('<li>').text('Edit:') );
 
 					for( var ext in filelist[idx].exts ){
-						var $aExt = $('<a>');
+						var $aExt = $('<button>');
 						var $li = $('<li>')
 							.append( $aExt
 								.addClass('px2-btn')
 								.attr({
-									'href': 'javascript:;',
 									'data-filename': filelist[idx].exts[ext].filename
 								})
 								.on('click', function(e){
@@ -6094,11 +6093,10 @@ window.contApp = new (function(px, $){
 						$extUl.append($li);
 					}
 					$extUl.append( $('<li>').text('Delete:') );
-					$extUl.append( $('<li>').append($('<a>')
+					$extUl.append( $('<li>').append($('<button>')
 						.addClass('px2-btn')
 						.addClass('px2-btn--danger')
 						.attr({
-							'href': 'javascript:;',
 							'data-basefilename': filelist[idx].exts[ext].basefilename
 						})
 						.on('click', function(e){
@@ -6170,7 +6168,7 @@ window.contApp = new (function(px, $){
 	this.openManual = function(){
 		var $body = $('<div>');
 		$body.html( $('#template-manual').html() );
-		px.dialog({
+		px2style.modal({
 			'title': 'サイトマップの編集方法',
 			'body': $body
 		});

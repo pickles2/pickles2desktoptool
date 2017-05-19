@@ -122,29 +122,39 @@
   z-index: 10000; }
   .px2-modal__dialog {
     position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
     top: 0;
     left: 0;
     background-color: #fff;
     box-sizing: border-box;
-    padding: 20px;
+    padding: 10px 0;
     margin: 20px auto;
     width: calc(100% - 40px);
-    max-width: 700px;
     max-height: calc(100% - 40px);
     overflow: auto;
     height: auto; }
   .px2-modal__header {
-    border-bottom: 1px solid #00a0e6; }
+    border-bottom: 1px solid #00a0e6;
+    padding: 0 20px; }
   .px2-modal__body {
     position: relative;
     top: 0;
-    left: 0; }
+    left: 0;
+    padding: 0 20px;
+    overflow: auto; }
   .px2-modal__title {
-    font-weight: bold; }
+    font-weight: bold;
+    font-size: large; }
   .px2-modal__footer {
     border-top: 1px solid #00a0e6;
     margin: 10px 0 0 0;
-    padding: 10px 0 0 0; }
+    padding: 10px 20px 0 20px; }
     .px2-modal__footer > ul {
       display: -webkit-box;
       display: -ms-flexbox;

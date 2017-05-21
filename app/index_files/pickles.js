@@ -301,6 +301,17 @@ new (function($, window){
 					it1.next(data);
 				},
 				function(it1, data){
+					// 開発者のための隠しコマンド
+					// Ctrl + Opt + R で トップフレームを再読込する
+					$(window).on('keypress', function(e){
+						// console.log(e);
+						if(e.keyCode == 18 && e.ctrlKey && e.altKey ){
+							window.location.href='./index.html';
+						}
+					});
+					it1.next(data);
+				},
+				function(it1, data){
 					callback();
 				}
 

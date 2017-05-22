@@ -338,7 +338,43 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	this.getSitemapFilelist = function(){
 		var pathDir = this.get('path')+'/'+this.get('home_dir')+'/sitemaps/';
 		var filelist = px.fs.readdirSync( pathDir );
-		return filelist;
+		var rtn = [];
+		for( var idx in filelist ){
+			if( filelist[idx].match( /^\~\$/ ) ){
+				// エクセルの編集中のキャッシュファイルのファイル名だからスルー
+				continue;
+			}
+			if( filelist[idx].match( /^\.\~lock\./ ) ){
+				// Libre Office, Open Office の編集中のキャッシュファイルのファイル名だからスルー
+				continue;
+			}
+
+			rtn.push( filelist[idx] );
+		}
+		return rtn;
+	}
+
+	/** サイトマップファイルを削除する */
+	this.deleteSitemapFile = function(basefilename, callback){
+		callback = callback || function(){};
+		var result = true;
+		var pathDir = this.get('path')+'/'+this.get('home_dir')+'/sitemaps/';
+		var filelist = this.getSitemapFilelist();
+		for( var idx in filelist ){
+			try {
+				var filename = filelist[idx].replace(/\.[a-zA-Z0-9]+$/, '');
+				var ext = px.utils.getExtension(filelist[idx]).toLowerCase();
+				if( filename == basefilename ){
+					px.fs.unlinkSync( pathDir+filelist[idx] );
+					if( px.utils79.is_file( pathDir+filelist[idx] ) ){
+						result = false; // 消えてない場合
+					}
+				}
+			} catch (e) {
+			}
+		}
+		callback(result);
+		return;
 	}
 
 	/** プロジェクト設定情報を取得する */
@@ -485,7 +521,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 		options = options || {};
 		options.filter = !!options.filter;
 		_px2proj.query(
-			path+'?PX=px2dthelper.get.all&filter='+(options.filter?'true':'false'),
+			this.getConcretePath(path)+'?PX=px2dthelper.get.all&filter='+(options.filter?'true':'false'),
 			{
 				"output": "json",
 				"complete": function(data, code){
@@ -539,8 +575,9 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	 */
 	this.getPageContentEditorMode = function( pagePath, callback ){
 		callback = callback || function(){};
+
 		_px2proj.query(
-			pagePath+'?PX=px2dthelper.check_editor_mode', {
+			this.getConcretePath(pagePath)+'?PX=px2dthelper.check_editor_mode', {
 				"output": "json",
 				"complete": function(data, code){
 					// console.log(data, code);
@@ -581,7 +618,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	this.changeContentEditorMode = function( pagePath, editorModeTo, callback ){
 		callback = callback || function(){};
 		_px2proj.query(
-			pagePath+'?PX=px2dthelper.change_content_editor_mode&editor_mode='+editorModeTo, {
+			this.getConcretePath(pagePath)+'?PX=px2dthelper.change_content_editor_mode&editor_mode='+editorModeTo, {
 				"output": "json",
 				"complete": function(data, code){
 					// console.log(data, code);
@@ -592,6 +629,37 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 			}
 		);
 		return;
+	}
+
+	/**
+	 * 具体的なパスを取得する
+	 */
+	this.getConcretePath = function(pagePath){
+		if( pagePath.match( /^alias[0-9]*\:([\s\S]+)/ ) ){
+			//  エイリアスを解決
+			pagePath = RegExp.$1;
+		}else if( pagePath.match( /\{[\s\S]+\}/ ) ){
+			//  ダイナミックパスをバインド
+			var $tmp_path = pagePath;
+			pagePath = '';
+			while( 1 ){
+				if( !$tmp_path.match( /^([\s\S]*?)\{(\$|\*)([a-zA-Z0-9\_\-]*)\}([\s\S]*)$/ ) ){
+					pagePath += $tmp_path;
+					break;
+				}
+				pagePath += RegExp.$1;
+				var paramName = RegExp.$3;
+				$tmp_path = RegExp.$4;
+
+				if( typeof(paramName) != typeof('') || !paramName.length ){
+					//無名のパラメータはバインドしない。
+				}else{
+					pagePath += paramName;
+				}
+				continue;
+			}
+		}
+		return pagePath;
 	}
 
 	/**
@@ -957,7 +1025,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	this.copyContentsData = function( pathFrom, pathTo, callback ){
 		callback = callback || function(){};
 		_px2proj.query(
-			pathTo+'?PX=px2dthelper.copy_content&from='+pathFrom+'&to='+pathTo, {
+			this.getConcretePath(pathTo)+'?PX=px2dthelper.copy_content&from='+this.getConcretePath(pathFrom)+'&to='+this.getConcretePath(pathTo), {
 				"output": "json",
 				"complete": function(data, code){
 					// console.log(data, code);

@@ -64,15 +64,11 @@ window.contApp = new (function( px ){
 								);
 								return;
 							},
+							'clipboard': px.clipboard,
 							'complete': function(){
 								window.parent.contApp.closeEditor();
 							},
 							'onClickContentsLink': function( url, data ){
-								// console.log(url);
-								// console.log(data);
-								// function preg_quote(str, delimiter){
-								// 	return (str + '').replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\' + (delimiter || '') + '-]', 'g'), '\\$&');
-								// }
 								_page_url.match(new RegExp('^([a-zA-Z0-9]+\\:\\/\\/[^\\/]+\\/)'));
 								var currentDomain = RegExp.$1;
 

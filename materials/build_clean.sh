@@ -21,7 +21,7 @@ cd ~/${TMP_DIR_PREFIX}${TMP_DIR_NAME}/;
 pwd
 
 sleep 1s; echo ""; echo "=-=-=-=-=-=-=-=-=-= git clone";
-git clone -b ${BRANCH_NAME} ${REPOSITORY_URL} ./;
+git clone --depth 1 -b ${BRANCH_NAME} ${REPOSITORY_URL} ./;
 git submodule update --init --recursive --force;
 
 sleep 1s; echo ""; echo "=-=-=-=-=-=-=-=-=-= composer install --no-dev";

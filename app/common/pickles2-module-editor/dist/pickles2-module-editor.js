@@ -1777,7 +1777,7 @@ module.exports = function sha256(buf) {
 'use strict';
 
 /**
- * @file Embedded JavaScript templating engine. {@link http://ejs.co}
+ * @file Embedded JavaScript templating engine.
  * @author Matthew Eernisse <mde@fleegix.org>
  * @author Tiancheng "Timothy" Gu <timothygu99@gmail.com>
  * @project EJS
@@ -1814,10 +1814,6 @@ var _NAME = 'ejs';
 var _REGEX_STRING = '(<%%|%%>|<%=|<%-|<%_|<%#|<%|%>|-%>|_%>)';
 var _OPTS = ['delimiter', 'scope', 'context', 'debug', 'compileDebug',
   'client', '_with', 'rmWhitespace', 'strict', 'filename'];
-// We don't allow 'cache' option to be passed in the data obj
-// for the normal `render` call, but this is where Express puts it
-// so we make an exception for `renderFile`
-var _OPTS_EXPRESS = _OPTS.concat('cache');
 var _BOM = /^\uFEFF/;
 
 /**
@@ -1829,15 +1825,6 @@ var _BOM = /^\uFEFF/;
  */
 
 exports.cache = utils.cache;
-
-/**
- * Custom file loader. Useful for template preprocessing or restricting access
- * to a certain part of the filesystem.
- *
- * @type {fileLoader}
- */
-
-exports.fileLoader = fs.readFileSync;
 
 /**
  * Name of the object containing the locals.
@@ -1925,7 +1912,7 @@ function handleCache(options, template) {
       return func;
     }
     if (!hasTemplate) {
-      template = fileLoader(filename).toString().replace(_BOM, '');
+      template = fs.readFileSync(filename).toString().replace(_BOM, '');
     }
   }
   else if (!hasTemplate) {
@@ -1934,48 +1921,13 @@ function handleCache(options, template) {
       throw new Error('Internal EJS error: no file name or template '
                     + 'provided');
     }
-    template = fileLoader(filename).toString().replace(_BOM, '');
+    template = fs.readFileSync(filename).toString().replace(_BOM, '');
   }
   func = exports.compile(template, options);
   if (options.cache) {
     exports.cache.set(filename, func);
   }
   return func;
-}
-
-/**
- * Try calling handleCache with the given options and data and call the
- * callback with the result. If an error occurs, call the callback with
- * the error. Used by renderFile().
- *
- * @memberof module:ejs-internal
- * @param {Options} options    compilation options
- * @param {Object} data        template data
- * @param {RenderFileCallback} cb callback
- * @static
- */
-
-function tryHandleCache(options, data, cb) {
-  var result;
-  try {
-    result = handleCache(options)(data);
-  }
-  catch (err) {
-    return cb(err);
-  }
-  return cb(null, result);
-}
-
-/**
- * fileLoader is independent
- *
- * @param {String} filePath ejs file path.
- * @return {String} The contents of the specified file.
- * @static
- */
-
-function fileLoader(filePath){
-  return exports.fileLoader(filePath);
 }
 
 /**
@@ -2011,8 +1963,8 @@ function includeSource(path, options) {
   var opts = utils.shallowCopy({}, options);
   var includePath;
   var template;
-  includePath = getIncludePath(path, opts);
-  template = fileLoader(includePath).toString().replace(_BOM, '');
+  includePath = getIncludePath(path,opts);
+  template = fs.readFileSync(includePath).toString().replace(_BOM, '');
   opts.filename = includePath;
   var templ = new Template(template, opts);
   templ.generateSource();
@@ -2036,11 +1988,11 @@ function includeSource(path, options) {
  * @static
  */
 
-function rethrow(err, str, flnm, lineno, esc){
+function rethrow(err, str, flnm, lineno){
   var lines = str.split('\n');
   var start = Math.max(lineno - 3, 0);
   var end = Math.min(lines.length, lineno + 3);
-  var filename = esc(flnm); // eslint-disable-line
+  var filename = utils.escapeXML(flnm);
   // Error context
   var context = lines.slice(start, end).map(function (line, i){
     var curr = i + start + 1;
@@ -2060,7 +2012,7 @@ function rethrow(err, str, flnm, lineno, esc){
   throw err;
 }
 
-function stripSemi(str){
+function stripSemi(str) {
   return str.replace(/;(\s*$)/, '$1');
 }
 
@@ -2136,38 +2088,43 @@ exports.render = function (template, d, o) {
  */
 
 exports.renderFile = function () {
-  var filename = arguments[0];
-  var cb = arguments[arguments.length - 1];
-  var opts = {filename: filename};
-  var data;
+  var args = Array.prototype.slice.call(arguments);
+  var filename = args.shift();
+  var cb = args.pop();
+  var data = args.shift() || {};
+  var opts = args.pop() || {};
+  var optsKeys =_OPTS.slice();
+  var result;
 
-  if (arguments.length > 2) {
-    data = arguments[1];
+  // Don't pollute passed in opts obj with new vals
+  opts = utils.shallowCopy({}, opts);
 
-    // No options object -- if there are optiony names
-    // in the data, copy them to options
-    if (arguments.length === 3) {
-      // Express 4
-      if (data.settings && data.settings['view options']) {
-        utils.shallowCopyFromList(opts, data.settings['view options'], _OPTS_EXPRESS);
-      }
-      // Express 3 and lower
-      else {
-        utils.shallowCopyFromList(opts, data, _OPTS_EXPRESS);
-      }
+  // We don't allow 'cache' option to be passed in the data obj
+  // for the normal `render` call, but this is where Expres puts it
+  // so we make an exception for `renderFile`
+  optsKeys.push('cache');
+
+  // No options object -- if there are optiony names
+  // in the data, copy them to options
+  if (arguments.length == 3) {
+    // Express 4
+    if (data.settings && data.settings['view options']) {
+      utils.shallowCopyFromList(opts, data.settings['view options'], optsKeys);
     }
+    // Express 3 and lower
     else {
-      // Use shallowCopy so we don't pollute passed in opts obj with new vals
-      utils.shallowCopy(opts, arguments[2]);
+      utils.shallowCopyFromList(opts, data, optsKeys);
     }
-
-    opts.filename = filename;
   }
-  else {
-    data = {};
-  }
+  opts.filename = filename;
 
-  return tryHandleCache(opts, data, cb);
+  try {
+    result = handleCache(opts)(data);
+  }
+  catch(err) {
+    return cb(err);
+  }
+  return cb(null, result);
 };
 
 /**
@@ -2235,7 +2192,7 @@ Template.prototype = {
     var opts = this.opts;
     var prepended = '';
     var appended = '';
-    var escapeFn = opts.escapeFunction;
+    var escape = opts.escapeFunction;
 
     if (!this.source) {
       this.generateSource();
@@ -2256,7 +2213,7 @@ Template.prototype = {
           + 'try {' + '\n'
           + this.source
           + '} catch (e) {' + '\n'
-          + '  rethrow(e, __lines, __filename, __line, escapeFn);' + '\n'
+          + '  rethrow(e, __lines, __filename, __line);' + '\n'
           + '}' + '\n';
     }
     else {
@@ -2268,7 +2225,7 @@ Template.prototype = {
     }
 
     if (opts.client) {
-      src = 'escapeFn = escapeFn || ' + escapeFn.toString() + ';' + '\n' + src;
+      src = 'escape = escape || ' + escape.toString() + ';' + '\n' + src;
       if (opts.compileDebug) {
         src = 'rethrow = rethrow || ' + rethrow.toString() + ';' + '\n' + src;
       }
@@ -2279,7 +2236,7 @@ Template.prototype = {
     }
 
     try {
-      fn = new Function(opts.localsName + ', escapeFn, include, rethrow', src);
+      fn = new Function(opts.localsName + ', escape, include, rethrow', src);
     }
     catch(e) {
       // istanbul ignore else
@@ -2310,7 +2267,7 @@ Template.prototype = {
         }
         return includeFile(path, opts)(d);
       };
-      return fn.apply(opts.context, [data || {}, escapeFn, include, rethrow]);
+      return fn.apply(opts.context, [data || {}, escape, include, rethrow]);
     };
     returnedFn.dependencies = this.dependencies;
     return returnedFn;
@@ -2505,7 +2462,7 @@ Template.prototype = {
           break;
             // Exec, esc, and output
         case Template.modes.ESCAPED:
-          this.source += '    ; __append(escapeFn(' + stripSemi(line) + '))' + '\n';
+          this.source += '    ; __append(escape(' + stripSemi(line) + '))' + '\n';
           break;
             // Exec and output
         case Template.modes.RAW:
@@ -2567,7 +2524,7 @@ if (require.extensions) {
       filename: filename,
       client: true
     };
-    var template = fileLoader(filename).toString();
+    var template = fs.readFileSync(filename).toString();
     var fn = exports.compile(template, options);
     module._compile('module.exports = ' + fn.toString() + ';', filename);
   };
@@ -2734,12 +2691,11 @@ exports.shallowCopy = function (to, from) {
  * @private
  */
 exports.shallowCopyFromList = function (to, from, list) {
-  for (var i = 0; i < list.length; i++) {
-    var p = list[i];
+  list.forEach(function (p) {
     if (typeof from[p] != 'undefined') {
       to[p] = from[p];
     }
-  }
+  });
   return to;
 };
 
@@ -2769,25 +2725,25 @@ module.exports={
   "_args": [
     [
       {
-        "raw": "ejs@2.5.6",
+        "raw": "ejs@^2.4.1",
         "scope": null,
         "escapedName": "ejs",
         "name": "ejs",
-        "rawSpec": "2.5.6",
-        "spec": "2.5.6",
-        "type": "version"
+        "rawSpec": "^2.4.1",
+        "spec": ">=2.4.1 <3.0.0",
+        "type": "range"
       },
       "/mydoc_TomK/Dropbox/localhosts/pickles2projects/pickles2/node-pickles2-module-editor"
     ]
   ],
-  "_from": "ejs@2.5.6",
-  "_id": "ejs@2.5.6",
+  "_from": "ejs@>=2.4.1 <3.0.0",
+  "_id": "ejs@2.5.5",
   "_inCache": true,
   "_location": "/ejs",
   "_nodeVersion": "6.9.1",
   "_npmOperationalInternal": {
-    "host": "packages-12-west.internal.npmjs.com",
-    "tmp": "tmp/ejs-2.5.6.tgz_1487277787176_0.4875628533773124"
+    "host": "packages-18-east.internal.npmjs.com",
+    "tmp": "tmp/ejs-2.5.5.tgz_1481011535826_0.4493071837350726"
   },
   "_npmUser": {
     "name": "mde",
@@ -2796,26 +2752,24 @@ module.exports={
   "_npmVersion": "3.10.8",
   "_phantomChildren": {},
   "_requested": {
-    "raw": "ejs@2.5.6",
+    "raw": "ejs@^2.4.1",
     "scope": null,
     "escapedName": "ejs",
     "name": "ejs",
-    "rawSpec": "2.5.6",
-    "spec": "2.5.6",
-    "type": "version"
+    "rawSpec": "^2.4.1",
+    "spec": ">=2.4.1 <3.0.0",
+    "type": "range"
   },
   "_requiredBy": [
-    "#USER",
     "/",
     "/broccoli-html-editor",
     "/langbank",
-    "/pickles2-contents-editor",
-    "/pickles2-contents-editor/broccoli-html-editor"
+    "/pickles2-contents-editor"
   ],
-  "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.5.6.tgz",
-  "_shasum": "479636bfa3fe3b1debd52087f0acb204b4f19c88",
+  "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.5.5.tgz",
+  "_shasum": "6ef4e954ea7dcf54f66aad2fe7aa421932d9ed77",
   "_shrinkwrap": null,
-  "_spec": "ejs@2.5.6",
+  "_spec": "ejs@^2.4.1",
   "_where": "/mydoc_TomK/Dropbox/localhosts/pickles2projects/pickles2/node-pickles2-module-editor",
   "author": {
     "name": "Matthew Eernisse",
@@ -2847,8 +2801,8 @@ module.exports={
   },
   "directories": {},
   "dist": {
-    "shasum": "479636bfa3fe3b1debd52087f0acb204b4f19c88",
-    "tarball": "https://registry.npmjs.org/ejs/-/ejs-2.5.6.tgz"
+    "shasum": "6ef4e954ea7dcf54f66aad2fe7aa421932d9ed77",
+    "tarball": "https://registry.npmjs.org/ejs/-/ejs-2.5.5.tgz"
   },
   "engines": {
     "node": ">=0.10.0"
@@ -2881,7 +2835,7 @@ module.exports={
     "lint": "eslint \"**/*.js\" Jakefile",
     "test": "mocha"
   },
-  "version": "2.5.6"
+  "version": "2.5.5"
 }
 
 },{}],13:[function(require,module,exports){
@@ -14254,8 +14208,9 @@ module.exports = function(ary){
  * base64デコードする
  */
 module.exports = function( base64 ){
-    var bin = new Buffer(base64, 'base64').toString();
-    return bin;
+	base64 = this.toStr(base64);
+	var bin = new Buffer(base64, 'base64').toString();
+	return bin;
 }
 
 }).call(this,require("buffer").Buffer)
@@ -14265,8 +14220,9 @@ module.exports = function( base64 ){
  * base64エンコードする
  */
 module.exports = function( bin ){
-    var base64 = new Buffer(bin).toString('base64');
-    return base64;
+	bin = this.toStr(bin);
+	var base64 = new Buffer(bin).toString('base64');
+	return base64;
 }
 
 }).call(this,require("buffer").Buffer)
@@ -14301,18 +14257,18 @@ module.exports = function(path){
  * 文字列をn文字ずつ分割する
  */
 module.exports = function(str, n){
-    if(typeof(str) !== typeof('')){
-        str = str.toString();
-    }
-    if(typeof(n) !== typeof(0)){return false;}
-    if(n <= 0){return false;}
-    if(n !== Math.floor(n)){return false;}
-    var rtn = [];
-    for(var i = 0; i < str.length; i = i+n ){
-        var sbstr = str.substring(i,i+n); // i文字目からn文字ずつとりだす
-        rtn.push(sbstr);
-    }
-    return rtn;
+	if(typeof(str) !== typeof('')){
+		str = this.toStr(str);
+	}
+	if(typeof(n) !== typeof(0)){return false;}
+	if(n <= 0){return false;}
+	if(n !== Math.floor(n)){return false;}
+	var rtn = [];
+	for(var i = 0; i < str.length; i = i+n ){
+		var sbstr = str.substring(i,i+n); // i文字目からn文字ずつとりだす
+		rtn.push(sbstr);
+	}
+	return rtn;
 }
 
 },{}],25:[function(require,module,exports){
@@ -14320,11 +14276,12 @@ module.exports = function(str, n){
  * HTML特殊文字をエスケープする
  */
 module.exports = function(str){
-    str = str.replace(/\&/g, '&amp;');
-    str = str.replace(/\</g, '&lt;');
-    str = str.replace(/\>/g, '&gt;');
-    str = str.replace(/\"/g, '&quot;');
-    return str;
+	str = this.toStr(str);
+	str = str.replace(/\&/g, '&amp;');
+	str = str.replace(/\</g, '&lt;');
+	str = str.replace(/\>/g, '&gt;');
+	str = str.replace(/\"/g, '&quot;');
+	return str;
 }
 
 },{}],26:[function(require,module,exports){
@@ -14356,10 +14313,11 @@ module.exports = function( path ){
  * md5ハッシュを求める
  */
 module.exports = function( str ){
-    var crypto = require('crypto');
-    var md5 = crypto.createHash('md5');
-    md5.update(str, 'utf8');
-    return md5.digest('hex');
+	str = this.toStr(str);
+	var crypto = require('crypto');
+	var md5 = crypto.createHash('md5');
+	md5.update(str, 'utf8');
+	return md5.digest('hex');
 }
 
 },{"crypto":5}],29:[function(require,module,exports){
@@ -14407,10 +14365,11 @@ module.exports = function(str) {
  * sha1ハッシュを求める
  */
 module.exports = function( str ){
-    var crypto = require('crypto');
-    var sha1 = crypto.createHash('sha1');
-    sha1.update(str, 'utf8');
-    return sha1.digest('hex');
+	str = this.toStr(str);
+	var crypto = require('crypto');
+	var sha1 = crypto.createHash('sha1');
+	sha1.update(str, 'utf8');
+	return sha1.digest('hex');
 }
 
 },{"crypto":5}],32:[function(require,module,exports){
@@ -14443,9 +14402,10 @@ module.exports = function(val){
  * 文字列の前後から空白文字列を削除する
  */
 module.exports = function(str){
-    str = str.replace(/[\s]*$/, '');
-    str = str.replace(/^[\s]*/, '');
-    return str;
+	str = this.toStr(str);
+	str = str.replace(/[\s]*$/, '');
+	str = str.replace(/^[\s]*/, '');
+	return str;
 }
 
 },{}],34:[function(require,module,exports){

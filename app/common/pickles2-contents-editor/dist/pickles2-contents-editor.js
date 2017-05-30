@@ -2973,7 +2973,7 @@ module.exports.stringify = stringify;
 'use strict';
 
 /**
- * @file Embedded JavaScript templating engine. {@link http://ejs.co}
+ * @file Embedded JavaScript templating engine.
  * @author Matthew Eernisse <mde@fleegix.org>
  * @author Tiancheng "Timothy" Gu <timothygu99@gmail.com>
  * @project EJS
@@ -3006,14 +3006,11 @@ var scopeOptionWarned = false;
 var _VERSION_STRING = require('../package.json').version;
 var _DEFAULT_DELIMITER = '%';
 var _DEFAULT_LOCALS_NAME = 'locals';
-var _NAME = 'ejs';
 var _REGEX_STRING = '(<%%|%%>|<%=|<%-|<%_|<%#|<%|%>|-%>|_%>)';
-var _OPTS = ['delimiter', 'scope', 'context', 'debug', 'compileDebug',
-  'client', '_with', 'rmWhitespace', 'strict', 'filename'];
-// We don't allow 'cache' option to be passed in the data obj
-// for the normal `render` call, but this is where Express puts it
-// so we make an exception for `renderFile`
-var _OPTS_EXPRESS = _OPTS.concat('cache');
+var _OPTS = [ 'cache', 'filename', 'delimiter', 'scope', 'context',
+        'debug', 'compileDebug', 'client', '_with', 'root', 'rmWhitespace',
+        'strict', 'localsName'];
+var _TRAILING_SEMCOL = /;\s*$/;
 var _BOM = /^\uFEFF/;
 
 /**
@@ -3027,18 +3024,9 @@ var _BOM = /^\uFEFF/;
 exports.cache = utils.cache;
 
 /**
- * Custom file loader. Useful for template preprocessing or restricting access
- * to a certain part of the filesystem.
- *
- * @type {fileLoader}
- */
-
-exports.fileLoader = fs.readFileSync;
-
-/**
  * Name of the object containing the locals.
  *
- * This variable is overridden by {@link Options}`.localsName` if it is not
+ * This variable is overriden by {@link Options}`.localsName` if it is not
  * `undefined`.
  *
  * @type {String}
@@ -3070,7 +3058,7 @@ exports.resolveInclude = function(name, filename, isDir) {
 
 /**
  * Get the path to the included file by Options
- *
+ * 
  * @param  {String}  path    specified path
  * @param  {Options} options compilation options
  * @return {String}
@@ -3084,7 +3072,7 @@ function getIncludePath(path, options){
     if (!options.filename) {
       throw new Error('`include` use relative path requires the \'filename\' option.');
     }
-    includePath = exports.resolveInclude(path, options.filename);
+    includePath = exports.resolveInclude(path, options.filename);  
   }
   return includePath;
 }
@@ -3121,7 +3109,7 @@ function handleCache(options, template) {
       return func;
     }
     if (!hasTemplate) {
-      template = fileLoader(filename).toString().replace(_BOM, '');
+      template = fs.readFileSync(filename).toString().replace(_BOM, '');
     }
   }
   else if (!hasTemplate) {
@@ -3130,48 +3118,13 @@ function handleCache(options, template) {
       throw new Error('Internal EJS error: no file name or template '
                     + 'provided');
     }
-    template = fileLoader(filename).toString().replace(_BOM, '');
+    template = fs.readFileSync(filename).toString().replace(_BOM, '');
   }
   func = exports.compile(template, options);
   if (options.cache) {
     exports.cache.set(filename, func);
   }
   return func;
-}
-
-/**
- * Try calling handleCache with the given options and data and call the
- * callback with the result. If an error occurs, call the callback with
- * the error. Used by renderFile().
- *
- * @memberof module:ejs-internal
- * @param {Options} options    compilation options
- * @param {Object} data        template data
- * @param {RenderFileCallback} cb callback
- * @static
- */
-
-function tryHandleCache(options, data, cb) {
-  var result;
-  try {
-    result = handleCache(options)(data);
-  }
-  catch (err) {
-    return cb(err);
-  }
-  return cb(null, result);
-}
-
-/**
- * fileLoader is independent
- *
- * @param {String} filePath ejs file path.
- * @return {String} The contents of the specified file.
- * @static
- */
-
-function fileLoader(filePath){
-  return exports.fileLoader(filePath);
 }
 
 /**
@@ -3207,8 +3160,8 @@ function includeSource(path, options) {
   var opts = utils.shallowCopy({}, options);
   var includePath;
   var template;
-  includePath = getIncludePath(path, opts);
-  template = fileLoader(includePath).toString().replace(_BOM, '');
+  includePath = getIncludePath(path,opts);
+  template = fs.readFileSync(includePath).toString().replace(_BOM, '');
   opts.filename = includePath;
   var templ = new Template(template, opts);
   templ.generateSource();
@@ -3232,11 +3185,10 @@ function includeSource(path, options) {
  * @static
  */
 
-function rethrow(err, str, flnm, lineno, esc){
+function rethrow(err, str, filename, lineno){
   var lines = str.split('\n');
   var start = Math.max(lineno - 3, 0);
   var end = Math.min(lines.length, lineno + 3);
-  var filename = esc(flnm); // eslint-disable-line
   // Error context
   var context = lines.slice(start, end).map(function (line, i){
     var curr = i + start + 1;
@@ -3256,8 +3208,24 @@ function rethrow(err, str, flnm, lineno, esc){
   throw err;
 }
 
-function stripSemi(str){
-  return str.replace(/;(\s*$)/, '$1');
+/**
+ * Copy properties in data object that are recognized as options to an
+ * options object.
+ *
+ * This is used for compatibility with earlier versions of EJS and Express.js.
+ *
+ * @memberof module:ejs-internal
+ * @param {Object}  data data object
+ * @param {Options} opts options object
+ * @static
+ */
+
+function cpOptsInData(data, opts) {
+  _OPTS.forEach(function (p) {
+    if (typeof data[p] != 'undefined') {
+      opts[p] = data[p];
+    }
+  });
 }
 
 /**
@@ -3312,7 +3280,7 @@ exports.render = function (template, d, o) {
   // No options object -- if there are optiony names
   // in the data, copy them to options
   if (arguments.length == 2) {
-    utils.shallowCopyFromList(opts, data, _OPTS);
+    cpOptsInData(data, opts);
   }
 
   return handleCache(opts, template)(data);
@@ -3332,38 +3300,37 @@ exports.render = function (template, d, o) {
  */
 
 exports.renderFile = function () {
-  var filename = arguments[0];
-  var cb = arguments[arguments.length - 1];
-  var opts = {filename: filename};
-  var data;
+  var args = Array.prototype.slice.call(arguments);
+  var filename = args.shift();
+  var cb = args.pop();
+  var data = args.shift() || {};
+  var opts = args.pop() || {};
+  var result;
 
-  if (arguments.length > 2) {
-    data = arguments[1];
+  // Don't pollute passed in opts obj with new vals
+  opts = utils.shallowCopy({}, opts);
 
-    // No options object -- if there are optiony names
-    // in the data, copy them to options
-    if (arguments.length === 3) {
-      // Express 4
-      if (data.settings && data.settings['view options']) {
-        utils.shallowCopyFromList(opts, data.settings['view options'], _OPTS_EXPRESS);
-      }
-      // Express 3 and lower
-      else {
-        utils.shallowCopyFromList(opts, data, _OPTS_EXPRESS);
-      }
+  // No options object -- if there are optiony names
+  // in the data, copy them to options
+  if (arguments.length == 3) {
+    // Express 4
+    if (data.settings && data.settings['view options']) {
+      cpOptsInData(data.settings['view options'], opts);
     }
+    // Express 3 and lower
     else {
-      // Use shallowCopy so we don't pollute passed in opts obj with new vals
-      utils.shallowCopy(opts, arguments[2]);
+      cpOptsInData(data, opts);
     }
-
-    opts.filename = filename;
   }
-  else {
-    data = {};
-  }
+  opts.filename = filename;
 
-  return tryHandleCache(opts, data, cb);
+  try {
+    result = handleCache(opts)(data);
+  }
+  catch(err) {
+    return cb(err);
+  }
+  return cb(null, result);
 };
 
 /**
@@ -3431,7 +3398,7 @@ Template.prototype = {
     var opts = this.opts;
     var prepended = '';
     var appended = '';
-    var escapeFn = opts.escapeFunction;
+    var escape = opts.escapeFunction;
 
     if (!this.source) {
       this.generateSource();
@@ -3452,7 +3419,7 @@ Template.prototype = {
           + 'try {' + '\n'
           + this.source
           + '} catch (e) {' + '\n'
-          + '  rethrow(e, __lines, __filename, __line, escapeFn);' + '\n'
+          + '  rethrow(e, __lines, __filename, __line);' + '\n'
           + '}' + '\n';
     }
     else {
@@ -3464,7 +3431,7 @@ Template.prototype = {
     }
 
     if (opts.client) {
-      src = 'escapeFn = escapeFn || ' + escapeFn.toString() + ';' + '\n' + src;
+      src = 'escape = escape || ' + escape.toString() + ';' + '\n' + src;
       if (opts.compileDebug) {
         src = 'rethrow = rethrow || ' + rethrow.toString() + ';' + '\n' + src;
       }
@@ -3475,7 +3442,7 @@ Template.prototype = {
     }
 
     try {
-      fn = new Function(opts.localsName + ', escapeFn, include, rethrow', src);
+      fn = new Function(opts.localsName + ', escape, include, rethrow', src);
     }
     catch(e) {
       // istanbul ignore else
@@ -3483,9 +3450,7 @@ Template.prototype = {
         if (opts.filename) {
           e.message += ' in ' + opts.filename;
         }
-        e.message += ' while compiling ejs\n\n';
-        e.message += 'If the above error is not helpful, you may want to try EJS-Lint:\n';
-        e.message += 'https://github.com/RyanZim/EJS-Lint';
+        e.message += ' while compiling ejs';
       }
       throw e;
     }
@@ -3506,7 +3471,7 @@ Template.prototype = {
         }
         return includeFile(path, opts)(d);
       };
-      return fn.apply(opts.context, [data || {}, escapeFn, include, rethrow]);
+      return fn.apply(opts.context, [data || {}, escape, include, rethrow]);
     };
     returnedFn.dependencies = this.dependencies;
     return returnedFn;
@@ -3627,8 +3592,9 @@ Template.prototype = {
         self.truncate = false;
       }
       else if (self.opts.rmWhitespace) {
-        // rmWhitespace has already removed trailing spaces, just need
-        // to remove linebreaks
+        // Gotta be more careful here.
+        // .replace(/^(\s*)\n/, '$1') might be more appropriate here but as
+        // rmWhitespace already removes trailing spaces anyway so meh.
         line = line.replace(/^\n/, '');
       }
       if (!line) {
@@ -3651,75 +3617,77 @@ Template.prototype = {
     newLineCount = (line.split('\n').length - 1);
 
     switch (line) {
-    case '<' + d:
-    case '<' + d + '_':
-      this.mode = Template.modes.EVAL;
-      break;
-    case '<' + d + '=':
-      this.mode = Template.modes.ESCAPED;
-      break;
-    case '<' + d + '-':
-      this.mode = Template.modes.RAW;
-      break;
-    case '<' + d + '#':
-      this.mode = Template.modes.COMMENT;
-      break;
-    case '<' + d + d:
-      this.mode = Template.modes.LITERAL;
-      this.source += '    ; __append("' + line.replace('<' + d + d, '<' + d) + '")' + '\n';
-      break;
-    case d + d + '>':
-      this.mode = Template.modes.LITERAL;
-      this.source += '    ; __append("' + line.replace(d + d + '>', d + '>') + '")' + '\n';
-      break;
-    case d + '>':
-    case '-' + d + '>':
-    case '_' + d + '>':
-      if (this.mode == Template.modes.LITERAL) {
-        _addOutput();
-      }
+      case '<' + d:
+      case '<' + d + '_':
+        this.mode = Template.modes.EVAL;
+        break;
+      case '<' + d + '=':
+        this.mode = Template.modes.ESCAPED;
+        break;
+      case '<' + d + '-':
+        this.mode = Template.modes.RAW;
+        break;
+      case '<' + d + '#':
+        this.mode = Template.modes.COMMENT;
+        break;
+      case '<' + d + d:
+        this.mode = Template.modes.LITERAL;
+        this.source += '    ; __append("' + line.replace('<' + d + d, '<' + d) + '")' + '\n';
+        break;
+      case d + d + '>':
+        this.mode = Template.modes.LITERAL;
+        this.source += '    ; __append("' + line.replace(d + d + '>', d + '>') + '")' + '\n';
+        break;
+      case d + '>':
+      case '-' + d + '>':
+      case '_' + d + '>':
+        if (this.mode == Template.modes.LITERAL) {
+          _addOutput();
+        }
 
-      this.mode = null;
-      this.truncate = line.indexOf('-') === 0 || line.indexOf('_') === 0;
-      break;
-    default:
+        this.mode = null;
+        this.truncate = line.indexOf('-') === 0 || line.indexOf('_') === 0;
+        break;
+      default:
         // In script mode, depends on type of tag
-      if (this.mode) {
+        if (this.mode) {
           // If '//' is found without a line break, add a line break.
-        switch (this.mode) {
-        case Template.modes.EVAL:
-        case Template.modes.ESCAPED:
-        case Template.modes.RAW:
-          if (line.lastIndexOf('//') > line.lastIndexOf('\n')) {
-            line += '\n';
+          switch (this.mode) {
+            case Template.modes.EVAL:
+            case Template.modes.ESCAPED:
+            case Template.modes.RAW:
+              if (line.lastIndexOf('//') > line.lastIndexOf('\n')) {
+                line += '\n';
+              }
+          }
+          switch (this.mode) {
+            // Just executing code
+            case Template.modes.EVAL:
+              this.source += '    ; ' + line + '\n';
+              break;
+            // Exec, esc, and output
+            case Template.modes.ESCAPED:
+              this.source += '    ; __append(escape(' +
+                line.replace(_TRAILING_SEMCOL, '').trim() + '))' + '\n';
+              break;
+            // Exec and output
+            case Template.modes.RAW:
+              this.source += '    ; __append(' +
+                line.replace(_TRAILING_SEMCOL, '').trim() + ')' + '\n';
+              break;
+            case Template.modes.COMMENT:
+              // Do nothing
+              break;
+            // Literal <%% mode, append as raw output
+            case Template.modes.LITERAL:
+              _addOutput();
+              break;
           }
         }
-        switch (this.mode) {
-            // Just executing code
-        case Template.modes.EVAL:
-          this.source += '    ; ' + line + '\n';
-          break;
-            // Exec, esc, and output
-        case Template.modes.ESCAPED:
-          this.source += '    ; __append(escapeFn(' + stripSemi(line) + '))' + '\n';
-          break;
-            // Exec and output
-        case Template.modes.RAW:
-          this.source += '    ; __append(' + stripSemi(line) + ')' + '\n';
-          break;
-        case Template.modes.COMMENT:
-              // Do nothing
-          break;
-            // Literal <%% mode, append as raw output
-        case Template.modes.LITERAL:
-          _addOutput();
-          break;
-        }
-      }
         // In string mode, just add the output
-      else {
-        _addOutput();
-      }
+        else {
+          _addOutput();
+        }
     }
 
     if (self.opts.compileDebug && newLineCount) {
@@ -3760,10 +3728,10 @@ if (require.extensions) {
   require.extensions['.ejs'] = function (module, flnm) {
     var filename = flnm || /* istanbul ignore next */ module.filename;
     var options = {
-      filename: filename,
-      client: true
-    };
-    var template = fileLoader(filename).toString();
+          filename: filename,
+          client: true
+        };
+    var template = fs.readFileSync(filename).toString();
     var fn = exports.compile(template, options);
     module._compile('module.exports = ' + fn.toString() + ';', filename);
   };
@@ -3778,16 +3746,6 @@ if (require.extensions) {
  */
 
 exports.VERSION = _VERSION_STRING;
-
-/**
- * Name for detection of EJS.
- *
- * @readonly
- * @type {String}
- * @public
- */
-
-exports.name = _NAME;
 
 /* istanbul ignore if */
 if (typeof window != 'undefined') {
@@ -3842,17 +3800,17 @@ exports.escapeRegExpChars = function (string) {
 };
 
 var _ENCODE_HTML_RULES = {
-  '&': '&amp;',
-  '<': '&lt;',
-  '>': '&gt;',
-  '"': '&#34;',
-  "'": '&#39;'
-};
-var _MATCH_HTML = /[&<>\'"]/g;
+      '&': '&amp;'
+    , '<': '&lt;'
+    , '>': '&gt;'
+    , '"': '&#34;'
+    , "'": '&#39;'
+    }
+  , _MATCH_HTML = /[&<>\'"]/g;
 
 function encode_char(c) {
   return _ENCODE_HTML_RULES[c] || c;
-}
+};
 
 /**
  * Stringified version of constants used by {@link module:utils.escapeXML}.
@@ -3895,13 +3853,11 @@ exports.escapeXML = function (markup) {
         .replace(_MATCH_HTML, encode_char);
 };
 exports.escapeXML.toString = function () {
-  return Function.prototype.toString.call(this) + ';\n' + escapeFuncStr;
+  return Function.prototype.toString.call(this) + ';\n' + escapeFuncStr
 };
 
 /**
- * Naive copy of properties from one object to another.
- * Does not recurse into non-scalar properties
- * Does not check to see if the property has a value before copying
+ * Copy all properties from one object to another, in a shallow fashion.
  *
  * @param  {Object} to   Destination object
  * @param  {Object} from Source object
@@ -3913,28 +3869,6 @@ exports.shallowCopy = function (to, from) {
   from = from || {};
   for (var p in from) {
     to[p] = from[p];
-  }
-  return to;
-};
-
-/**
- * Naive copy of a list of key names, from one object to another.
- * Only copies property if it is actually defined
- * Does not recurse into non-scalar properties
- *
- * @param  {Object} to   Destination object
- * @param  {Object} from Source object
- * @param  {Array} list List of properties to copy
- * @return {Object}      Destination object
- * @static
- * @private
- */
-exports.shallowCopyFromList = function (to, from, list) {
-  for (var i = 0; i < list.length; i++) {
-    var p = list[i];
-    if (typeof from[p] != 'undefined') {
-      to[p] = from[p];
-    }
   }
   return to;
 };
@@ -3960,56 +3894,54 @@ exports.cache = {
   }
 };
 
+
 },{}],17:[function(require,module,exports){
 module.exports={
   "_args": [
     [
       {
-        "raw": "ejs@2.5.6",
+        "raw": "ejs@^2.4.1",
         "scope": null,
         "escapedName": "ejs",
         "name": "ejs",
-        "rawSpec": "2.5.6",
-        "spec": "2.5.6",
-        "type": "version"
+        "rawSpec": "^2.4.1",
+        "spec": ">=2.4.1 <3.0.0",
+        "type": "range"
       },
       "/mydoc_TomK/Dropbox/localhosts/pickles2projects/pickles2/node-pickles2-contents-editor"
     ]
   ],
-  "_from": "ejs@2.5.6",
-  "_id": "ejs@2.5.6",
+  "_from": "ejs@>=2.4.1 <3.0.0",
+  "_id": "ejs@2.5.2",
   "_inCache": true,
   "_location": "/ejs",
-  "_nodeVersion": "6.9.1",
+  "_nodeVersion": "4.2.2",
   "_npmOperationalInternal": {
     "host": "packages-12-west.internal.npmjs.com",
-    "tmp": "tmp/ejs-2.5.6.tgz_1487277787176_0.4875628533773124"
+    "tmp": "tmp/ejs-2.5.2.tgz_1473259584869_0.9678213631268591"
   },
   "_npmUser": {
     "name": "mde",
     "email": "mde@fleegix.org"
   },
-  "_npmVersion": "3.10.8",
+  "_npmVersion": "2.14.7",
   "_phantomChildren": {},
   "_requested": {
-    "raw": "ejs@2.5.6",
+    "raw": "ejs@^2.4.1",
     "scope": null,
     "escapedName": "ejs",
     "name": "ejs",
-    "rawSpec": "2.5.6",
-    "spec": "2.5.6",
-    "type": "version"
+    "rawSpec": "^2.4.1",
+    "spec": ">=2.4.1 <3.0.0",
+    "type": "range"
   },
   "_requiredBy": [
-    "#USER",
-    "/",
-    "/broccoli-html-editor",
-    "/langbank"
+    "/"
   ],
-  "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.5.6.tgz",
-  "_shasum": "479636bfa3fe3b1debd52087f0acb204b4f19c88",
+  "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.5.2.tgz",
+  "_shasum": "21444ba09386f0c65b6eafb96a3d51bcb3be80d1",
   "_shrinkwrap": null,
-  "_spec": "ejs@2.5.6",
+  "_spec": "ejs@^2.4.1",
   "_where": "/mydoc_TomK/Dropbox/localhosts/pickles2projects/pickles2/node-pickles2-contents-editor",
   "author": {
     "name": "Matthew Eernisse",
@@ -4031,18 +3963,18 @@ module.exports={
   "devDependencies": {
     "browserify": "^13.0.1",
     "eslint": "^3.0.0",
-    "git-directory-deploy": "^1.5.1",
     "istanbul": "~0.4.3",
     "jake": "^8.0.0",
     "jsdoc": "^3.4.0",
     "lru-cache": "^4.0.1",
     "mocha": "^3.0.2",
+    "rimraf": "^2.2.8",
     "uglify-js": "^2.6.2"
   },
   "directories": {},
   "dist": {
-    "shasum": "479636bfa3fe3b1debd52087f0acb204b4f19c88",
-    "tarball": "https://registry.npmjs.org/ejs/-/ejs-2.5.6.tgz"
+    "shasum": "21444ba09386f0c65b6eafb96a3d51bcb3be80d1",
+    "tarball": "https://registry.npmjs.org/ejs/-/ejs-2.5.2.tgz"
   },
   "engines": {
     "node": ">=0.10.0"
@@ -4057,6 +3989,10 @@ module.exports={
   "main": "./lib/ejs.js",
   "maintainers": [
     {
+      "name": "tjholowaychuk",
+      "email": "tj@vision-media.ca"
+    },
+    {
       "name": "mde",
       "email": "mde@fleegix.org"
     }
@@ -4070,12 +4006,11 @@ module.exports={
   },
   "scripts": {
     "coverage": "istanbul cover node_modules/mocha/bin/_mocha",
-    "devdoc": "jake doc[dev]",
-    "doc": "jake doc",
-    "lint": "eslint \"**/*.js\" Jakefile",
+    "devdoc": "rimraf out && jsdoc -p -c jsdoc.json lib/* docs/jsdoc/*",
+    "doc": "rimraf out && jsdoc -c jsdoc.json lib/* docs/jsdoc/*",
     "test": "mocha"
   },
-  "version": "2.5.6"
+  "version": "2.5.2"
 }
 
 },{}],18:[function(require,module,exports){

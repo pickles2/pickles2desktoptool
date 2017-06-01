@@ -1,5 +1,6 @@
 (function(px, $){
-	var clipboard = '';
+	// get the system clipboard
+	var clipboard = nw.Clipboard.get();
 
 	/**
 	 * クリップボード管理オブジェクト
@@ -8,29 +9,13 @@
 
 		// clipboardに値をセットする
 		this.set = function( text ){
-			clipboard = text;
-
-			var copyArea = $("<textarea/>");
-			copyArea.text(text);
-			$("body").append(copyArea);
-			copyArea.select();
-			document.execCommand("copy");
-			copyArea.remove();
+			clipboard.set(text, 'text');
 			return this;
 		}// px.clipboard.set();
 
 		// clipboardから値を取得する
 		this.get = function(){
-			var copyArea = $("<textarea/>");
-			$("body").append(copyArea);
-			copyArea.select();
-			document.execCommand("paste");
-			var rtn = copyArea.text();
-			copyArea.remove();
-
-			if( typeof(rtn) !== typeof('') || !rtn.length ){
-				rtn = clipboard;
-			}
+			var rtn = clipboard.get('text');
 			return rtn;
 		}// px.clipboard.get();
 

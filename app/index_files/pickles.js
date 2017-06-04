@@ -12,9 +12,6 @@ new (function($, window){
 	// jQuery
 	this.$ = $;
 
-	// Underscore
-	this._ = _;
-
 	// package.json
 	var _packageJson = require('../package.json');
 	this.packageJson = _packageJson;

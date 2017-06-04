@@ -234,10 +234,10 @@ new (function($, window){
 					// CSS拡張
 					$('head').append( $('<style>')
 						.html(
-							'.theme_gmenu ul li a:hover,'
-							+'.theme_gmenu ul li a.current{color: '+_packageJson.pickles2.colors.defaultKeyColor+';}'
-							+'.theme_shoulder_menu button {border-left: 1px solid '+_packageJson.pickles2.colors.defaultKeyColor+';}'
-							+'.theme_shoulder_menu ul li a.current {background-color: '+_packageJson.pickles2.colors.defaultKeyColor+';}'
+							'.theme-header__gmenu ul li a:hover,'
+							+'.theme-header__gmenu ul li a.current{color: '+_packageJson.pickles2.colors.defaultKeyColor+';}'
+							+'.theme-header__shoulder-menu button {border-left: 1px solid '+_packageJson.pickles2.colors.defaultKeyColor+';}'
+							+'.theme-header__shoulder-menu ul li a.current {background-color: '+_packageJson.pickles2.colors.defaultKeyColor+';}'
 						)
 					);
 					it1.next();
@@ -847,7 +847,7 @@ new (function($, window){
 			cpj_s = cpj.status()
 		}
 
-		$('.theme_gmenu').html( $('<ul>')
+		$('.theme-header__gmenu').html( $('<ul>')
 			.append( $('<li>')
 				.append( '<span>&nbsp;</span>' )
 			)
@@ -889,7 +889,7 @@ new (function($, window){
 					);
 					break;
 				default:
-					$('.theme_gmenu ul').append( $('<li>')
+					$('.theme-header__gmenu ul').append( $('<li>')
 						.append( $tmpMenu )
 					);
 					break;
@@ -897,19 +897,19 @@ new (function($, window){
 		}
 
 		if( cpj === null ){
-			$('.theme_px2logo').css({
+			$('.theme-header__px2logo').css({
 				"width": 70,
 				"height": 70
 			});
-			$('.theme_id')
+			$('.theme-header__id')
 				.css({"opacity":0})
 			;
 		}else{
-			$('.theme_px2logo').css({
+			$('.theme-header__px2logo').css({
 				"width": 45,
 				"height": 45
 			});
-			$('.theme_id')
+			$('.theme-header__id')
 				.html('')
 				.append( $('<div>')
 					.text( /* '-> ' + */ cpj.get('name') )
@@ -1033,17 +1033,17 @@ new (function($, window){
 			function(it, arg){
 
 				// DOMスキャン
-				$header   = $('.theme_header');
+				$header   = $('.theme-header');
 				$contents = $('.contents');
-				$footer   = $('.theme_footer');
+				$footer   = $('.theme-footer');
 				// $dialog   = $('<div>');
-				$shoulderMenu = $('.theme_shoulder_menu');
+				$shoulderMenu = $('.theme-header__shoulder-menu');
 
 				$header.css({
 					'border-bottom-color': _packageJson.pickles2.colors.defaultKeyColor,
 					'color': _packageJson.pickles2.colors.defaultKeyColor
 				});
-				$header.find('.theme_px2logo a')
+				$header.find('.theme-header__px2logo a')
 					.html(function(){
 						var src = _fs.readFileSync('./app/common/images/logo.svg').toString();
 						return src;

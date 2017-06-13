@@ -22219,16 +22219,15 @@ module.exports = function(px2ce, iframe){
 		var win = $(iframe).get(0).contentWindow;
 		$.ajax({
 			"url": __dirname+'/pickles2-preview-contents.js',
-			// "url": __dirname+'/libs/broccoli-html-editor/client/dist/broccoli-preview-contents.js',
-			// "dataType": "text/plain",
 			"complete": function(XMLHttpRequest, textStatus){
-				// console.log(XMLHttpRequest, textStatus);
-				// console.log(XMLHttpRequest.responseText);
 				var base64 = new Buffer(XMLHttpRequest.responseText).toString('base64');
-				// console.log(base64);
-				// console.log(__dirname+'/broccoli-preview-contents.js');
 				win.postMessage({'scriptUrl':'data:text/javascript;charset=utf8;base64,'+base64}, targetWindowOrigin);
-				callback();
+				setTimeout(function(){
+					// TODO: より確実な方法が欲しい。
+					// 子ウィンドウに走らせるスクリプトの準備が整うまで若干のタイムラグが生じる。
+					// 一旦 50ms あけて callback するようにしたが、より確実に完了を拾える方法が必要。
+					callback();
+				}, 100);
 			}
 		});
 		return this;
@@ -22243,7 +22242,7 @@ module.exports = function(px2ce, iframe){
 		var callbackId = createUUID();
 		// console.log(callbackId);
 
-		callbackMemory[callbackId] = callback;
+		callbackMemory[callbackId] = callback; // callbackは送信先から呼ばれる。
 
 		var message = {
 			'api': api,
@@ -22255,8 +22254,6 @@ module.exports = function(px2ce, iframe){
 		var win = $(iframe).get(0).contentWindow;
 		var targetWindowOrigin = getTargetOrigin(iframe);
 		win.postMessage(message, targetWindowOrigin);
-
-		// callback();//TODO: 仮実装。本当は、iframe側からコールバックされる。
 		return this;
 	}
 
@@ -22658,12 +22655,19 @@ module.exports = function(px2ce){
 	this.init = function(editorOption, callback){
 		callback = callback || function(){};
 
-		px2ce.gpiBridge(
-			{
-				'api': 'getProjectConf'
+		it79.fnc({}, [
+			function(it1, arg){
+				px2ce.gpiBridge(
+					{
+						'api': 'getProjectConf'
+					},
+					function(_px2conf){
+						px2conf = _px2conf;
+						it1.next(arg);
+					}
+				);
 			},
-			function(_px2conf){
-				px2conf = _px2conf;
+			function(it1, arg){
 				toolbar.init({
 					"btns":[
 						{
@@ -22706,172 +22710,176 @@ module.exports = function(px2ce){
 						);
 					}
 				},function(){
-					$canvas.append((function(){
-						var fin = ''
-								+'<div class="pickles2-contents-editor--default">'
-									+'<div class="pickles2-contents-editor--default-editor">'
-										+'<div class="pickles2-contents-editor--default-switch-tab">'
-											+'<div class="btn-group btn-group-justified" role="group">'
-												+'<div class="btn-group" role="group">'
-													+'<button class="btn btn-default btn-xs" data-pickles2-contents-editor-switch="html" disabled>HTML</button>'
-												+'</div>'
-												+'<div class="btn-group" role="group">'
-													+'<button class="btn btn-default btn-xs" data-pickles2-contents-editor-switch="css">CSS (SCSS)</button>'
-												+'</div>'
-												+'<div class="btn-group" role="group">'
-													+'<button class="btn btn-default btn-xs" data-pickles2-contents-editor-switch="js">JavaScript</button>'
-												+'</div>'
+					it1.next(arg);
+				});
+			},
+			function(it1, arg){
+				$canvas.append((function(){
+					var fin = ''
+							+'<div class="pickles2-contents-editor--default">'
+								+'<div class="pickles2-contents-editor--default-editor">'
+									+'<div class="pickles2-contents-editor--default-switch-tab">'
+										+'<div class="btn-group btn-group-justified" role="group">'
+											+'<div class="btn-group" role="group">'
+												+'<button class="btn btn-default btn-xs" data-pickles2-contents-editor-switch="html" disabled>HTML</button>'
+											+'</div>'
+											+'<div class="btn-group" role="group">'
+												+'<button class="btn btn-default btn-xs" data-pickles2-contents-editor-switch="css">CSS (SCSS)</button>'
+											+'</div>'
+											+'<div class="btn-group" role="group">'
+												+'<button class="btn btn-default btn-xs" data-pickles2-contents-editor-switch="js">JavaScript</button>'
 											+'</div>'
 										+'</div>'
-										+'<div class="pickles2-contents-editor--default-editor-body">'
-											+'<div class="pickles2-contents-editor--default-editor-body-html"></div>'
-											+'<div class="pickles2-contents-editor--default-editor-body-css"></div>'
-											+'<div class="pickles2-contents-editor--default-editor-body-js"></div>'
-										+'</div>'
 									+'</div>'
-									+'<div class="pickles2-contents-editor--default-canvas" data-pickles2-contents-editor-preview-url="">'
+									+'<div class="pickles2-contents-editor--default-editor-body">'
+										+'<div class="pickles2-contents-editor--default-editor-body-html"></div>'
+										+'<div class="pickles2-contents-editor--default-editor-body-css"></div>'
+										+'<div class="pickles2-contents-editor--default-editor-body-js"></div>'
 									+'</div>'
 								+'</div>'
-						;
-						return fin;
-					})());
-
-					$canvas.find('.pickles2-contents-editor--default-editor-body-css').hide();
-					$canvas.find('.pickles2-contents-editor--default-editor-body-js').hide();
-
-					$elmCanvas = $canvas.find('.pickles2-contents-editor--default-canvas');
-					$elmEditor = $canvas.find('.pickles2-contents-editor--default-editor');
-					$elmBtns = $canvas.find('.pickles2-contents-editor--default-btns');
-
-					$elmTabs = $canvas.find('.pickles2-contents-editor--default-switch-tab [data-pickles2-contents-editor-switch]');
-					$elmTabs
-						.on('click', function(){
-							var $this = $(this);
-							$elmTabs.removeAttr('disabled');
-							$this.attr({'disabled': 'disabled'});
-							var tabFor = $this.attr('data-pickles2-contents-editor-switch');
-							// console.log(tabFor);
-							$canvas.find('.pickles2-contents-editor--default-editor-body-html').hide();
-							$canvas.find('.pickles2-contents-editor--default-editor-body-css').hide();
-							$canvas.find('.pickles2-contents-editor--default-editor-body-js').hide();
-							$canvas.find('.pickles2-contents-editor--default-editor-body-'+tabFor).show();
-						})
+								+'<div class="pickles2-contents-editor--default-canvas" data-pickles2-contents-editor-preview-url="">'
+								+'</div>'
+							+'</div>'
 					;
+					return fin;
+				})());
+
+				$canvas.find('.pickles2-contents-editor--default-editor-body-css').hide();
+				$canvas.find('.pickles2-contents-editor--default-editor-body-js').hide();
+
+				$elmCanvas = $canvas.find('.pickles2-contents-editor--default-canvas');
+				$elmEditor = $canvas.find('.pickles2-contents-editor--default-editor');
+				$elmBtns = $canvas.find('.pickles2-contents-editor--default-btns');
+
+				$elmTabs = $canvas.find('.pickles2-contents-editor--default-switch-tab [data-pickles2-contents-editor-switch]');
+				$elmTabs
+					.on('click', function(){
+						var $this = $(this);
+						$elmTabs.removeAttr('disabled');
+						$this.attr({'disabled': 'disabled'});
+						var tabFor = $this.attr('data-pickles2-contents-editor-switch');
+						// console.log(tabFor);
+						$canvas.find('.pickles2-contents-editor--default-editor-body-html').hide();
+						$canvas.find('.pickles2-contents-editor--default-editor-body-css').hide();
+						$canvas.find('.pickles2-contents-editor--default-editor-body-js').hide();
+						$canvas.find('.pickles2-contents-editor--default-editor-body-'+tabFor).show();
+					})
+				;
 
 
-					$iframe = $('<iframe>');
-					$elmCanvas.html('').append($iframe);
-					$iframe
-						.on('load', function(){
-							console.log('pickles2-contents-editor: preview loaded');
-							// alert('pickles2-contents-editor: preview loaded');
-							onPreviewLoad( callback );
-						})
-					;
-					// $iframe.attr({"src":"about:blank"});
-					_this.postMessenger = new (require('../../apis/postMessenger.js'))(px2ce, $iframe.get(0));
+				$iframe = $('<iframe>');
+				$elmCanvas.html('').append($iframe);
+				$iframe
+					.on('load', function(){
+						console.log('pickles2-contents-editor: preview loaded');
+						// alert('pickles2-contents-editor: preview loaded');
+						onPreviewLoad( callback );
+					})
+				;
+				// $iframe.attr({"src":"about:blank"});
+				_this.postMessenger = new (require('../../apis/postMessenger.js'))(px2ce, $iframe.get(0));
 
-					windowResized(function(){
-
-						$elmCanvas.attr({
-							"data-pickles2-contents-editor-preview-url": getPreviewUrl()
-						});
-
-						px2ce.gpiBridge(
-							{
-								'api': 'getContentsSrc',
-								'page_path': page_path
-							},
-							function(codes){
-								// console.log(codes);
-
-								if( editorLib == 'ace' ){
-									$canvas.find('.pickles2-contents-editor--default-editor-body-html').append('<div>');
-									$canvas.find('.pickles2-contents-editor--default-editor-body-css').append('<div>');
-									$canvas.find('.pickles2-contents-editor--default-editor-body-js').append('<div>');
-
-									var aceCss = {
-										'position': 'relative',
-										'width': '100%',
-										'height': '100%'
-									};
-									$elmTextareas = {};
-									$elmTextareas['html'] = ace.edit(
-										$canvas.find('.pickles2-contents-editor--default-editor-body-html div').text(codes['html']).css(aceCss).get(0)
-									);
-									$elmTextareas['css'] = ace.edit(
-										$canvas.find('.pickles2-contents-editor--default-editor-body-css div').text(codes['css']).css(aceCss).get(0)
-									);
-									$elmTextareas['js'] = ace.edit(
-										$canvas.find('.pickles2-contents-editor--default-editor-body-js div').text(codes['js']).css(aceCss).get(0)
-									);
-									for(var i in $elmTextareas){
-										$elmTextareas[i].setFontSize(16);
-										$elmTextareas[i].getSession().setUseWrapMode(true);// Ace 自然改行
-										$elmTextareas[i].setShowInvisibles(true);// Ace 不可視文字の可視化
-										$elmTextareas[i].$blockScrolling = Infinity;
-										$elmTextareas[i].setTheme("ace/theme/github");
-										$elmTextareas[i].getSession().setMode("ace/mode/html");
-									}
-									$elmTextareas['html'].setTheme("ace/theme/monokai");
-									$elmTextareas['html'].getSession().setMode("ace/mode/php");
-									$elmTextareas['css'].setTheme("ace/theme/tomorrow");
-									$elmTextareas['css'].getSession().setMode("ace/mode/scss");
-									$elmTextareas['js'].setTheme("ace/theme/xcode");
-									$elmTextareas['js'].getSession().setMode("ace/mode/javascript");
-									switch(editorOption.editorMode){
-										case 'md':
-											$elmTextareas['html'].setTheme("ace/theme/github");
-											$elmTextareas['html'].getSession().setMode("ace/mode/markdown");
-											$canvas.find('.pickles2-contents-editor--default-switch-tab [data-pickles2-contents-editor-switch=html]').text('Markdown');
-											break;
-										case 'txt':
-											$elmTextareas['html'].setTheme("ace/theme/katzenmilch");
-											$elmTextareas['html'].getSession().setMode("ace/mode/plain_text");
-											$canvas.find('.pickles2-contents-editor--default-switch-tab [data-pickles2-contents-editor-switch=html]').text('Text');
-											break;
-										case 'html':
-										default:
-											$elmTextareas['html'].setTheme("ace/theme/monokai");
-											$elmTextareas['html'].getSession().setMode("ace/mode/php");
-											break;
-									}
-
-								}else{
-									$canvas.find('.pickles2-contents-editor--default-editor-body-html').append('<textarea>');
-									$canvas.find('.pickles2-contents-editor--default-editor-body-css').append('<textarea>');
-									$canvas.find('.pickles2-contents-editor--default-editor-body-js').append('<textarea>');
-
-									$elmTextareas = {};
-									$elmTextareas['html'] = $canvas.find('.pickles2-contents-editor--default-editor-body-html textarea');
-									$elmTextareas['css'] = $canvas.find('.pickles2-contents-editor--default-editor-body-css textarea');
-									$elmTextareas['js'] = $canvas.find('.pickles2-contents-editor--default-editor-body-js textarea');
-
-									$elmTextareas['html'].val(codes['html']);
-									$elmTextareas['css'] .val(codes['css']);
-									$elmTextareas['js']  .val(codes['js']);
-
-								}
-
-								setKeyboardEvent(function(){
-									windowResized(function(){
-										// broccoli.redraw();
-									});
-
-									updatePreview();
-
-									// callback();
-								});
-
-							}
-						);
-
-					});
-
+				it1.next(arg);
+			},
+			function(it1, arg){
+				windowResized(function(){
+					it1.next(arg);
+				});
+			},
+			function(it1, arg){
+				$elmCanvas.attr({
+					"data-pickles2-contents-editor-preview-url": getPreviewUrl()
 				});
 
+				px2ce.gpiBridge(
+					{
+						'api': 'getContentsSrc',
+						'page_path': page_path
+					},
+					function(codes){
+						// console.log(codes);
+
+						if( editorLib == 'ace' ){
+							$canvas.find('.pickles2-contents-editor--default-editor-body-html').append('<div>');
+							$canvas.find('.pickles2-contents-editor--default-editor-body-css').append('<div>');
+							$canvas.find('.pickles2-contents-editor--default-editor-body-js').append('<div>');
+
+							var aceCss = {
+								'position': 'relative',
+								'width': '100%',
+								'height': '100%'
+							};
+							$elmTextareas = {};
+							$elmTextareas['html'] = ace.edit(
+								$canvas.find('.pickles2-contents-editor--default-editor-body-html div').text(codes['html']).css(aceCss).get(0)
+							);
+							$elmTextareas['css'] = ace.edit(
+								$canvas.find('.pickles2-contents-editor--default-editor-body-css div').text(codes['css']).css(aceCss).get(0)
+							);
+							$elmTextareas['js'] = ace.edit(
+								$canvas.find('.pickles2-contents-editor--default-editor-body-js div').text(codes['js']).css(aceCss).get(0)
+							);
+							for(var i in $elmTextareas){
+								$elmTextareas[i].setFontSize(16);
+								$elmTextareas[i].getSession().setUseWrapMode(true);// Ace 自然改行
+								$elmTextareas[i].setShowInvisibles(true);// Ace 不可視文字の可視化
+								$elmTextareas[i].$blockScrolling = Infinity;
+								$elmTextareas[i].setTheme("ace/theme/github");
+								$elmTextareas[i].getSession().setMode("ace/mode/html");
+							}
+							$elmTextareas['html'].setTheme("ace/theme/monokai");
+							$elmTextareas['html'].getSession().setMode("ace/mode/php");
+							$elmTextareas['css'].setTheme("ace/theme/tomorrow");
+							$elmTextareas['css'].getSession().setMode("ace/mode/scss");
+							$elmTextareas['js'].setTheme("ace/theme/xcode");
+							$elmTextareas['js'].getSession().setMode("ace/mode/javascript");
+							switch(editorOption.editorMode){
+								case 'md':
+									$elmTextareas['html'].setTheme("ace/theme/github");
+									$elmTextareas['html'].getSession().setMode("ace/mode/markdown");
+									$canvas.find('.pickles2-contents-editor--default-switch-tab [data-pickles2-contents-editor-switch=html]').text('Markdown');
+									break;
+								case 'txt':
+									$elmTextareas['html'].setTheme("ace/theme/katzenmilch");
+									$elmTextareas['html'].getSession().setMode("ace/mode/plain_text");
+									$canvas.find('.pickles2-contents-editor--default-switch-tab [data-pickles2-contents-editor-switch=html]').text('Text');
+									break;
+								case 'html':
+								default:
+									$elmTextareas['html'].setTheme("ace/theme/monokai");
+									$elmTextareas['html'].getSession().setMode("ace/mode/php");
+									break;
+							}
+
+						}else{
+							$canvas.find('.pickles2-contents-editor--default-editor-body-html').append('<textarea>');
+							$canvas.find('.pickles2-contents-editor--default-editor-body-css').append('<textarea>');
+							$canvas.find('.pickles2-contents-editor--default-editor-body-js').append('<textarea>');
+
+							$elmTextareas = {};
+							$elmTextareas['html'] = $canvas.find('.pickles2-contents-editor--default-editor-body-html textarea');
+							$elmTextareas['css'] = $canvas.find('.pickles2-contents-editor--default-editor-body-css textarea');
+							$elmTextareas['js'] = $canvas.find('.pickles2-contents-editor--default-editor-body-js textarea');
+
+							$elmTextareas['html'].val(codes['html']);
+							$elmTextareas['css'] .val(codes['css']);
+							$elmTextareas['js']  .val(codes['js']);
+
+						}
+
+						it1.next(arg);
+					}
+				);
+			},
+			function(it1, arg){
+				setKeyboardEvent(function(){
+					windowResized(function(){
+					});
+					updatePreview();
+				});
+				it1.next(arg);
 			}
-		);
+		]);
 
 	};
 
@@ -22968,21 +22976,32 @@ module.exports = function(px2ce){
 		callback = callback || function(){};
 		if(_this.postMessenger===undefined){return;}
 
-		it79.fnc(
-			{},
-			[
-				function( it1, data ){
-					// postMessageの送受信を行う準備
-					_this.postMessenger.init(function(){
-						it1.next(data);
-					});
-				} ,
-				function(it1, data){
-					callback();
-					it1.next();
-				}
-			]
-		);
+		it79.fnc({}, [
+			function( it1, data ){
+				// postMessageの送受信を行う準備
+				console.log('---- postMessenger.init()');
+				_this.postMessenger.init(function(){
+					it1.next(data);
+				});
+			} ,
+			function(it1, arg){
+				// iframeのサイズ合わせ
+				// TODO: 子ウィンドウは、最初の通信で Origin を記憶するので、特に必要ないけどリクエストを投げている。よりよい方法が欲しい。
+				_this.postMessenger.send(
+					'getHtmlContentHeightWidth',
+					{},
+					function(hw){
+						// $canvas.find('iframe').height( hw.h + 0 ).width( hw.w + 0 );
+						// it1.next(data);
+						it1.next(arg);
+					}
+				);
+			},
+			function(it1, data){
+				callback();
+				it1.next(data);
+			}
+		]);
 		return this;
 	}
 

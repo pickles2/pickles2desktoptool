@@ -419,7 +419,7 @@ new (function($, window){
 		}
 
 		var result = px.px2dtLDA.addProject( projectInfo );
-		if( !result ){
+		if( result === false ){
 			opt.error({'common': 'Unknown ERROR'});
 			opt.complete();
 			return false;

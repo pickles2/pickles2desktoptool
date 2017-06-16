@@ -1508,9 +1508,9 @@ window.contApp = new (function( px ){
 				it1.next(arg);
 			},
 			function(it1, arg){
-				contentsComment = new (require('./libs.ignore/contentsComment.js'))(_this, px, _pj);
-				pageDraw = new (require('./libs.ignore/pageDraw.js'))(_this, px, _pj, $elms, contentsComment);
-				pageSearch = new (require('./libs.ignore/pageSearch.js'))(_this, px, _pj, $elms);
+				contentsComment = new (require('../../../fncs/pages/index_files/libs.ignore/contentsComment.js'))(_this, px, _pj);
+				pageDraw = new (require('../../../fncs/pages/index_files/libs.ignore/pageDraw.js'))(_this, px, _pj, $elms, contentsComment);
+				pageSearch = new (require('../../../fncs/pages/index_files/libs.ignore/pageSearch.js'))(_this, px, _pj, $elms);
 				it1.next(arg);
 			},
 			function(it1, arg){
@@ -1887,7 +1887,7 @@ window.contApp = new (function( px ){
 
 })( window.parent.px );
 
-},{"./libs.ignore/contentsComment.js":7,"./libs.ignore/pageDraw.js":8,"./libs.ignore/pageSearch.js":9,"iterate79":4}],7:[function(require,module,exports){
+},{"../../../fncs/pages/index_files/libs.ignore/contentsComment.js":7,"../../../fncs/pages/index_files/libs.ignore/pageDraw.js":8,"../../../fncs/pages/index_files/libs.ignore/pageSearch.js":9,"iterate79":4}],7:[function(require,module,exports){
 /**
  * contentsComment.js
  */

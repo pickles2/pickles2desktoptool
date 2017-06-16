@@ -100,9 +100,9 @@ window.contApp = new (function( px ){
 				it1.next(arg);
 			},
 			function(it1, arg){
-				contentsComment = new (require('./libs.ignore/contentsComment.js'))(_this, px, _pj);
-				pageDraw = new (require('./libs.ignore/pageDraw.js'))(_this, px, _pj, $elms, contentsComment);
-				pageSearch = new (require('./libs.ignore/pageSearch.js'))(_this, px, _pj, $elms);
+				contentsComment = new (require('../../../fncs/pages/index_files/libs.ignore/contentsComment.js'))(_this, px, _pj);
+				pageDraw = new (require('../../../fncs/pages/index_files/libs.ignore/pageDraw.js'))(_this, px, _pj, $elms, contentsComment);
+				pageSearch = new (require('../../../fncs/pages/index_files/libs.ignore/pageSearch.js'))(_this, px, _pj, $elms);
 				it1.next(arg);
 			},
 			function(it1, arg){

@@ -27,7 +27,9 @@ body {
   box-shadow: 0 5px 13px rgba(0, 0, 0, 0.1);
   color: #666;
   line-height: 1;
-  box-sizing: border-box; }
+  box-sizing: border-box;
+  border-bottom-color: #00a0e6;
+  color: #00a0e6; }
   .theme-header__inner {
     padding: 0px 0px 0px 60px; }
   .theme-header a {

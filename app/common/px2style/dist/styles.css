@@ -92,6 +92,13 @@
       color: #ddd;
       cursor: default; }
 
+.px2-link.px2-link--burette::before {
+  width: 0.8em;
+  height: 0.8em;
+  margin-right: 0.2em;
+  content: url(data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIKCSB5PSIwcHgiIHZpZXdCb3g9IjAgMCAzLjMgMy43IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAzLjMgMy43IiB3aWR0aD0iMTJweCIgaGVpZ2h0PSI5cHgiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8cG9seWdvbiBmaWxsPSIjMDBhMGU2IiBwb2ludHM9IjMuMiwxLjggMCwwIDAsMy43ICIvPgo8L3N2Zz4K);
+  overflow: hidden; }
+
 .px2-table {
   border: none;
   border-collapse: collapse;

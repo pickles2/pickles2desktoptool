@@ -561,9 +561,28 @@ new (function($, window){
 	 */
 	this.openInBrowser = function(){
 		var px = this;
-		this.preview.serverStandby(function(){
+
+		// 外部プレビューサーバーの設定があるか調べる
+		var pj = px.getCurrentProject();
+		if(pj){
+			var px2dtLDA_Pj = px.px2dtLDA.project(pj.projectId);
+			var external_preview_server_origin = px2dtLDA_Pj.getExtendedData('external_preview_server_origin');
+			if( typeof(external_preview_server_origin)==typeof('') && external_preview_server_origin.match(/^https?\:\/\//i) ){
+				// 外部プレビューサーバーが設定されていたら、
+				// 内蔵サーバーの起動はせず、ブラウザを呼び出す。
+				px.utils.openURL( px.preview.getUrl() );
+				return;
+			}
+		}
+
+		this.preview.serverStandby(function(result){
+			if(result === false){
+				px.message('プレビューサーバーの起動に失敗しました。');
+				return;
+			}
 			px.utils.openURL( px.preview.getUrl() );
 		});
+		return;
 	}
 
 	/**

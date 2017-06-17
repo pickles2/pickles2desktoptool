@@ -1730,7 +1730,10 @@ window.contApp = new (function( px ){
 		}
 		// $elms.pageinfo.html('<div style="text-align:center;">now loading ...</div>');
 
-		px.preview.serverStandby( function(){
+		px.preview.serverStandby( function(result){
+			if(result === false){
+				px.message('プレビューサーバーの起動に失敗しました。');
+			}
 			$elms.previewIframe.attr( 'src', gotoUrl );
 			callback();
 		} );

@@ -57,12 +57,12 @@
 	/**
 	 * サーバーを起動
 	 */
-	exports.start = function(port, cb){
-		cb = cb||function(){};
+	exports.start = function(port, callback){
+		callback = callback||function(){};
 		_port = port;
 
 		if( _running ){
-			cb(true);
+			callback(true);
 			return this;
 		}
 
@@ -202,12 +202,23 @@
 
 
 		// 指定ポートでLISTEN状態にする
-		_server.listen(_port, function(){
+		var listenResult;
+		var timerListeningCallbackFalse = setTimeout(function(){
+			console.log('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=');
+			if( !listenResult.listening ){
+				console.error( 'Failed to start Pickles 2 server emulator; port: '+_port+', NOT standby;' );
+				callback(false);
+				return;
+			}
+			callback(true);
+		}, 2000);
+		listenResult = _server.listen(_port, function(a){
+			clearTimeout(timerListeningCallbackFalse); // 成功したらエラー応答のタイマーをキャンセル
 			_running = true;
-			console.log( 'Pickles2 server emulator started;' );
+			console.log( 'Pickles 2 server emulator started;' );
 			console.log( 'port: '+_port );
 			console.log( 'standby;' );
-			cb(true);
+			callback(true);
 		});
 
 		return this;

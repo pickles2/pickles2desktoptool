@@ -177,7 +177,7 @@
 								errorHtml += '</ul>';
 							}
 							if( response.errors.length ){
-								errorHtml += '<ul style="background-color: #fee; border: 1px solid #f33; padding: 10px; margin: 0.5em; border-radius: 5px;">';
+								errorHtml += '<ul style="background-color: #fee; border: 3px solid #f33; padding: 10px; margin: 0.5em; border-radius: 5px;">';
 								for( var idx in response.errors ){
 									errorHtml += '<li style="color: #f00; list-style-type: none;">'+response.errors[idx]+'</li>';
 								}

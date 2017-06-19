@@ -57,12 +57,12 @@
 	/**
 	 * サーバーを起動
 	 */
-	exports.start = function(port, cb){
-		cb = cb||function(){};
+	exports.start = function(port, callback){
+		callback = callback||function(){};
 		_port = port;
 
 		if( _running ){
-			cb(true);
+			callback(true);
 			return this;
 		}
 
@@ -172,19 +172,19 @@
 
 							var errorHtml = '';
 							if( response.status != 200 ){
-								errorHtml += '<ul style="background-color: #fee; border: 1px solid #f33; padding: 10px; margin: 0.5em; border-radius: 5px;">';
+								errorHtml += '<ul style="background-color: #fee; border: 3px solid #f33; padding: 10px; margin: 0.5em; border-radius: 5px;">';
 								errorHtml += '<li style="color: #f00; list-style-type: none;">STATUS: '+response.status+' '+response.message+'</li>';
 								errorHtml += '</ul>';
 							}
 							if( response.errors.length ){
-								errorHtml += '<ul style="background-color: #fee; border: 1px solid #f33; padding: 10px; margin: 0.5em; border-radius: 5px;">';
+								errorHtml += '<ul style="background-color: #fee; border: 3px solid #f33; padding: 10px; margin: 0.5em; border-radius: 5px;">';
 								for( var idx in response.errors ){
 									errorHtml += '<li style="color: #f00; list-style-type: none;">'+response.errors[idx]+'</li>';
 								}
 								errorHtml += '</ul>';
 							}
 							if( errorHtml.length ){
-								html += '<div style="position: fixed; top: 10px; left: 5%; width: 90%; font-size: 11px; opacity: 0.8;" onclick="this.style.display=\'none\';">';
+								html += '<div style="position: fixed; top: 10px; left: 5%; width: 90%; font-size: 14px; opacity: 0.8; z-index: 2147483000;" onclick="this.style.display=\'none\';">';
 								html += errorHtml;
 								html += '</div>';
 							}
@@ -202,12 +202,23 @@
 
 
 		// 指定ポートでLISTEN状態にする
-		_server.listen(_port, function(){
+		var listenResult;
+		var timerListeningCallbackFalse = setTimeout(function(){
+			console.log('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=');
+			if( !listenResult.listening ){
+				console.error( 'Failed to start Pickles 2 server emulator; port: '+_port+', NOT standby;' );
+				callback(false);
+				return;
+			}
+			callback(true);
+		}, 2000);
+		listenResult = _server.listen(_port, function(a){
+			clearTimeout(timerListeningCallbackFalse); // 成功したらエラー応答のタイマーをキャンセル
 			_running = true;
-			console.log( 'Pickles2 server emulator started;' );
+			console.log( 'Pickles 2 server emulator started;' );
 			console.log( 'port: '+_port );
 			console.log( 'standby;' );
-			cb(true);
+			callback(true);
 		});
 
 		return this;

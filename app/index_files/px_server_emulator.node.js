@@ -172,7 +172,7 @@
 
 							var errorHtml = '';
 							if( response.status != 200 ){
-								errorHtml += '<ul style="background-color: #fee; border: 1px solid #f33; padding: 10px; margin: 0.5em; border-radius: 5px;">';
+								errorHtml += '<ul style="background-color: #fee; border: 3px solid #f33; padding: 10px; margin: 0.5em; border-radius: 5px;">';
 								errorHtml += '<li style="color: #f00; list-style-type: none;">STATUS: '+response.status+' '+response.message+'</li>';
 								errorHtml += '</ul>';
 							}
@@ -184,7 +184,7 @@
 								errorHtml += '</ul>';
 							}
 							if( errorHtml.length ){
-								html += '<div style="position: fixed; top: 10px; left: 5%; width: 90%; font-size: 11px; opacity: 0.8;" onclick="this.style.display=\'none\';">';
+								html += '<div style="position: fixed; top: 10px; left: 5%; width: 90%; font-size: 14px; opacity: 0.8; z-index: 2147483000;" onclick="this.style.display=\'none\';">';
 								html += errorHtml;
 								html += '</div>';
 							}

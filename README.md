@@ -2,8 +2,6 @@
 
 [Pickles 2](http://pickles2.pxt.jp/) のプロジェクトテンプレートをベースに、ウェブサイトを編集するGUI編集環境を提供します。
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/videoseries?list=PL5ZUBZrE-CkDSYUvVZNDCILrzGhRG2U8L" frameborder="0" allowfullscreen></iframe>
-
 ## Install
 
 Copy `Pickles2.app` to your Application Folder.
@@ -42,6 +40,15 @@ $ npm run build
 
 `./build/` にZIPファイルが出力されます。
 
+### Build application cleanly
+
+```
+$ sh materials/build_clean.sh {$branch_or_version}
+```
+
+ユーザーのホームディレクトリにZIPファイルが出力されます。
+
+
 ### node and npm version
 
 - node@6.9.1
@@ -54,13 +61,14 @@ Mac で Windows 版をビルドするにあたり、次の環境が必要です�
 
 ## 更新履歴 - Change log
 
-### Pickles 2 2.0.0-beta.18 (20??年??月??日)
+### Pickles 2 @2.0.0-beta.17.1 (2017年6月21日)
 
 - 新規プロジェクト作成時に成功しているのにエラーが表示される不具合を修正。
 - コンテンツ一括加工の不具合を修正。
 - 内蔵のプレビュー用サーバーの起動に失敗した場合に、画面に通知を表示するようになった。
+- その他いくつかの細かい修正。
 
-### Pickles 2 2.0.0-beta.17 (2017年6月1日)
+### Pickles 2 @2.0.0-beta.17 (2017年6月1日)
 
 - アプリケーションの名称を `Pickles 2 Desktop Tool` から `Pickles 2` に変更。
 - NW.js を 0.21.1 に更新。

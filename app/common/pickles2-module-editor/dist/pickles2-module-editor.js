@@ -17745,9 +17745,11 @@ module.exports = function(px2me, $canvasContent, options, callback){
 	var $ = require('jquery');
 	var utils79 = require('utils79');
 	var Promise = require('es6-promise').Promise;
-	var $previewWin,
+	var $editModuleWindow,
+		$previewWin,
 		$previewEditorWin;
 	var broccoli;
+	var currentTab;
 
 	px2me.moduleId = options.moduleId;
 
@@ -17778,18 +17780,26 @@ module.exports = function(px2me, $canvasContent, options, callback){
 						'moduleCode': moduleCode
 					}
 				);
-				$canvasContent.html('').append(html);
+				$editModuleWindow = $(html);
+				$canvasContent.html('').append($editModuleWindow);
 
-				$canvasContent.find('[name=infoJson]').val( moduleCode.infoJson );
-				$canvasContent.find('[name=template]').val( moduleCode.template );
-				$canvasContent.find('[name=templateExt]').val( moduleCode.templateExt );
-				$canvasContent.find('[name=css]').val( moduleCode.css );
-				$canvasContent.find('[name=cssExt]').val( moduleCode.cssExt );
-				$canvasContent.find('[name=js]').val( moduleCode.js );
-				$canvasContent.find('[name=jsExt]').val( moduleCode.jsExt );
-				$canvasContent.find('[name=finalizeJs]').val( moduleCode.finalizeJs );
-				$canvasContent.find('[name=clipJson]').val( moduleCode.clipJson );
+				$editModuleWindow.find('[name=infoJson]').val( moduleCode.infoJson );
+				$editModuleWindow.find('[name=template]').val( moduleCode.template );
+				$editModuleWindow.find('[name=templateExt]').val( moduleCode.templateExt );
+				$editModuleWindow.find('[name=css]').val( moduleCode.css );
+				$editModuleWindow.find('[name=cssExt]').val( moduleCode.cssExt );
+				$editModuleWindow.find('[name=js]').val( moduleCode.js );
+				$editModuleWindow.find('[name=jsExt]').val( moduleCode.jsExt );
+				$editModuleWindow.find('[name=finalizeJs]').val( moduleCode.finalizeJs );
+				$editModuleWindow.find('[name=clipJson]').val( moduleCode.clipJson );
 
+				$editModuleWindow.find('.pickles2-module-editor__module-edit__tab button').on('click', function(e){
+					// タブ切り替え
+					var $this = $(this);
+					var target = $this.attr('data-pickles2-module-editor-target');
+					changeTabTo(target);
+				})
+				windowResizedEvent();
 				rlv();
 			} );
 		}); })
@@ -17799,37 +17809,19 @@ module.exports = function(px2me, $canvasContent, options, callback){
 				"title": "モジュールを編集",
 				"body": $canvasContent,
 				"buttons": [
-					$('<button class="px2-btn px2-btn--primary">').text('OK').click(function(){
-						save(function(result){
-							broccoli.saveContents(function(result){
+					$('<button class="px2-btn px2-btn--primary">')
+						.text('SAVE & CLOSE')
+						.on('click', function(){
+							save(function(result){
 								$(window).off('resize.editModule');
 								px2me.loadPage('list', {}, function(){
 									px2me.closeModal();
 								});
 							});
-						});
-					})
+						})
 				]
 			});
-			$canvasContent.find('button')
-				.on('click', function(){
-					save(function(result){
-						loadBroccoli(function(){
-						});
-					});
-				})
-			;
 			rlv();
-		}); })
-		.then(function(){ return new Promise(function(rlv, rjt){
-			// broccoli-html-editor インスタンスを生成
-			loadBroccoli(function(){
-				$(window).on('resize.editModule', function(){
-					console.log('--- window resized.');
-					broccoli.redraw();
-				});
-				rlv();
-			});
 		}); })
 		.then(function(){ return new Promise(function(rlv, rjt){
 			px2me.closeProgress(function(){
@@ -17837,10 +17829,18 @@ module.exports = function(px2me, $canvasContent, options, callback){
 			});
 		}); })
 		.then(function(){ return new Promise(function(rlv, rjt){
+			// 画面の調整
+			windowResizedEvent();
+			$(window).on('resize.editModule', function(){
+				windowResizedEvent();
+			});
+
 			callback();
 			rlv();
 		}); })
 		.catch(function(){
+			windowResizedEvent();
+
 			px2me.closeProgress(function(){
 				px2me.loadPage('list', {}, function(){
 					px2me.closeModal(function(){
@@ -17870,6 +17870,10 @@ module.exports = function(px2me, $canvasContent, options, callback){
 		});
 		return;
 	}
+
+	/**
+	 * broccoli-html-editorをロードしてプレビュー画面を生成する
+	 */
 	function loadBroccoli(callback){
 		callback = callback || function(){};
 
@@ -17913,6 +17917,78 @@ module.exports = function(px2me, $canvasContent, options, callback){
 		);
 
 		return;
+	} // loadBroccoli();
+
+	/**
+	 * broccoli-html-editorをアンロードする
+	 */
+	function unloadBroccoli(callback){
+		callback = callback || function(){};
+
+		var $frame = $canvasContent
+			.find('.pickles2-module-editor__module-edit__preview')
+		;
+		$frame.html('');
+
+		broccoli = undefined;
+		delete(broccoli);
+		callback();
+
+		return;
+	} // unloadBroccoli();
+
+
+	function changeTabTo(target){
+		if(target){
+			currentTab = target;
+		}
+		if(!target){
+			currentTab = 'html'; // デフォルトのタブ
+		}
+		$editModuleWindow.find('.pickles2-module-editor__module-edit__tab *').removeAttr('disabled');
+		$editModuleWindow.find('.pickles2-module-editor__module-edit__tab *[data-pickles2-module-editor-target='+currentTab+']').attr({'disabled': 'disabled'});
+
+		$editModuleWindow.find('.pickles2-module-editor__module-edit__layout__content').hide();
+		var $targetTab = $editModuleWindow.find('.pickles2-module-editor__module-edit__layout__content--'+currentTab).show();
+		$targetTab.show();
+		var height_h2 = $targetTab.find('h2').outerHeight();
+		var height_select = $targetTab.find('select').outerHeight();
+		$targetTab.find('textarea').css({
+			'height': $editModuleWindow.innerHeight() - 60 - height_h2 - height_select
+		});
+
+		new Promise(function(rlv){rlv();})
+			.then(function(){ return new Promise(function(rlv, rjt){
+				if( currentTab == 'preview' ){
+					px2me.progress( function(){
+						save(function(result){
+							loadBroccoli(function(){
+								px2me.closeProgress(function(){
+									rlv();
+								});
+							});
+						});
+					} );
+				}else{
+					unloadBroccoli(function(){
+						rlv();
+					});
+				}
+			}); })
+		;
+	}
+
+	function windowResizedEvent(){
+		console.log('--- window resized.');
+		$editModuleWindow.css({
+			'height': function(){
+				return $(window).innerHeight() - 200;
+			}
+		})
+		changeTabTo();
+		if(broccoli){
+			broccoli.redraw();
+		}
 	}
 
 }

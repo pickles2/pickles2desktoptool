@@ -2108,7 +2108,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 				// --------------------
 				// parentページを表示
 				$elms.sitemapParent.html('');
-				if( pj_info.navigation_info.parent_info !== false ){
+				if( pj_info.navigation_info.parent_info ){
 					$elms.sitemapParent
 						.append($('<ul class="listview">')
 							.append($('<li>')

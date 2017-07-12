@@ -91,19 +91,29 @@
 		<script id="template-breadcrumb" type="text/template">
 			<ul>
 				<% for( key in navigationInfo.breadcrumb_info ){ %>
+					<% if(!navigationInfo.breadcrumb_info[key]){ %>
+						<li>---</li>
+						<% continue %>
+					<% } %>
 					<li><a href="javascript:;" data-page-path="<%= navigationInfo.breadcrumb_info[key].path %>"><%= navigationInfo.breadcrumb_info[key].title_breadcrumb %></a></li>
 				<% } %>
+				<% if(navigationInfo.page_info){ %>
 				<li><strong><%= navigationInfo.page_info.title_breadcrumb %></strong></li>
+				<% }else{ %>
+				<li><strong>---</strong></li>
+				<% } %>
 			</ul>
 		</script>
 		<script id="template-bros-list" type="text/template">
 			<ul class="listview">
-			<% for( key in navigationInfo.bros_info ){ %>
-				<li><a href="javascript:;" data-id="<%= navigationInfo.bros_info[key].id %>" data-page-path="<%= navigationInfo.bros_info[key].path %>"><%= navigationInfo.bros_info[key].title %></a>
-					<% if( navigationInfo.bros_info[key].id == navigationInfo.page_info.id && navigationInfo.children_info.length ){ %>
+			<% for( brosKey in navigationInfo.bros_info ){ %>
+				<% if(!navigationInfo.bros_info[brosKey]){ continue; } %>
+				<li><a href="javascript:;" data-id="<%= navigationInfo.bros_info[brosKey].id %>" data-page-path="<%= navigationInfo.bros_info[brosKey].path %>"><%= navigationInfo.bros_info[brosKey].title %></a>
+					<% if( navigationInfo.bros_info[brosKey].id == navigationInfo.page_info.id && navigationInfo.children_info.length ){ %>
 					<ul>
-					<% for( key in navigationInfo.children_info ){ %>
-						<li><a href="javascript:;" data-id="<%= navigationInfo.children_info[key].id %>" data-page-path="<%= navigationInfo.children_info[key].path %>" style="font-size: 80%;"><%= navigationInfo.children_info[key].title %></a></li>
+					<% for( childKey in navigationInfo.children_info ){ %>
+						<% if(!navigationInfo.children_info[childKey]){ continue; } %>
+						<li><a href="javascript:;" data-id="<%= navigationInfo.children_info[childKey].id %>" data-page-path="<%= navigationInfo.children_info[childKey].path %>" style="font-size: 80%;"><%= navigationInfo.children_info[childKey].title %></a></li>
 					<% } %>
 					</ul>
 					<% } %>

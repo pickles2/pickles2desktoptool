@@ -252,21 +252,28 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 							.on('click', function(){
 								$bs3btn.find('.dropdown-toggle').click();
 								var pathCont = pj.findPageContent( $(this).attr('data-path') );
+								if( !px.utils79.is_file(pj.get_realpath_controot()+pathCont) ){
+									console.error('コンテンツファイルが存在しません。', pathCont);
+									alert('コンテンツファイルが存在しません。');
+									return false;
+								}
 								var src = px.fs.readFileSync( pj.get_realpath_controot()+pathCont );
 								px.dialog({
 									title: 'コンテンツのソースコードを表示',
 									body: $('<div>')
 										.append( $('<p>').text('ソースの閲覧・確認ができます。ここで編集はできません。'))
 										.append( $('<p>').text('GUI編集されたコンテンツの場合は、編集後にビルドされたソースが表示されています。'))
-										.append( $('<textarea class="form-control">')
-											.val(src)
-											.attr({'readonly':true})
-											.css({
-												'width':'100%',
-												'height':300,
-												'font-size': 14,
-												'font-family': 'monospace'
-											})
+										.append( $('<p>')
+											.append( $('<textarea class="form-control">')
+												.val(src)
+												.attr({'readonly':true})
+												.css({
+													'width':'100%',
+													'height':300,
+													'font-size': 14,
+													'font-family': 'monospace'
+												})
+											)
 										)
 								});
 								return false;

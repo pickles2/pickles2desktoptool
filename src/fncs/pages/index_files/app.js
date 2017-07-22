@@ -29,7 +29,7 @@ window.contApp = new (function( px ){
 				_this.pj.checkPxCmdVersion(
 					{
 						apiVersion: '>=2.0.30',
-						px2dthelperVersion: '>=2.0.4'
+						px2dthelperVersion: '>=2.0.6'
 					},
 					function(){
 						// API設定OK

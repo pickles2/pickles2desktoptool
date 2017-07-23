@@ -144,7 +144,7 @@ module.exports = function(app, px, pj, $elms){
 											'font-size': '12px'
 										})
 										.on('click', function(){
-											app.goto( $(this).attr('data-page-path'), {"force":true}, function(){} );
+											app.goto( $(this).attr('data-id'), {"force":true}, function(){} );
 										} )
 									)
 								);

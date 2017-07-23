@@ -13,10 +13,12 @@ module.exports = function(app, px, pj){
 	this.init = function( _pageInfo, _$commentView ){
 		pageInfo = _pageInfo;
 		$commentView = _$commentView;
+		var pageContent = pj.findPageContent( pageInfo.path );
+		if( pageContent === null ){
+			return;
+		}
 
-		var pathFiles = pj.getContentFilesByPageContent(
-			pj.findPageContent( pageInfo.path )
-		);
+		var pathFiles = pj.getContentFilesByPageContent( pageContent );
 		var realpathFiles = pj.get_realpath_controot()+pathFiles;
 		var realpath_matDir = realpathFiles + 'comments.ignore/';
 		realpath_comment_file = realpath_matDir + 'comment.md';

@@ -521,7 +521,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 		options = options || {};
 		options.filter = !!options.filter;
 		_px2proj.query(
-			this.getConcretePath(path)+'?PX=px2dthelper.get.all&filter='+(options.filter?'true':'false'),
+			'/?PX=px2dthelper.get.all&path='+encodeURIComponent(path)+'&filter='+(options.filter?'true':'false'),
 			{
 				"output": "json",
 				"complete": function(data, code){

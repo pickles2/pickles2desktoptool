@@ -22,19 +22,21 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 		callback = callback || function(){};
 		var contProcType;
 		var page_path = null;
+		var $html,
+			$bs3btn,
+			$dropdownMenu;
+
 		try {
 			page_path = pj_info.page_info.path;
 		} catch (e) {
 		}
 
-		// console.log(pj_info);
-
 		it79.fnc({}, [
 			function(it, prop){
 				px.cancelDrop( $elms.previewIframe.get(0).contentWindow );
-
 				prop.pageInfo = pj_info.page_info;
 				prop.navigationInfo = pj_info.navigation_info;
+				prop.pathType = pj_info.path_type;
 
 				if( pj_info.page_info === null ){
 					// サイトマップに定義のないページにアクセスしようとした場合
@@ -78,10 +80,11 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 									.append( $('<span>').text(pj_info.navigation_info.parent_info.title) )
 									.attr({
 										'href': 'javascript:;',
-										'data-page-path': pj_info.navigation_info.parent_info.path
+										'data-page-path': pj_info.navigation_info.parent_info.path,
+										'data-id': pj_info.navigation_info.parent_info.id
 									})
 									.on('click', function(e){
-										var page_path = $(this).attr('data-page-path');
+										var page_path = $(this).attr('data-id');
 										app.goto(page_path);
 										return false;
 									})
@@ -100,7 +103,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 				var html = px.utils.bindEjs(tpl, {'navigationInfo': pj_info.navigation_info});
 				$elms.brosList.html(html);
 				$elms.brosList.find('a').on('click', function(e){
-					var page_path = $(this).attr('data-page-path');
+					var page_path = $(this).attr('data-id');
 					app.goto(page_path);
 					return false;
 				});
@@ -109,24 +112,29 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 			function(it, prop){
 				// --------------------
 				// エディターモードを取得
+				if( prop.pathType == 'alias' ){
+					contProcType = 'alias';
+					it.next(prop);
+					return;
+				}
 				pj.getPageContentEditorMode( prop.pageInfo.path, function(editorMode){
 					contProcType = editorMode;
 					it.next(prop);
 				} );
 			} ,
 			function(it, prop){
-
 				// --------------------
 				// ボタンアクションを設定
-				var $bs3btn = $($('#template-bootstrap3-btn-dropdown-toggle').html());
-				var $html = $('<div>')
+				$bs3btn = $($('#template-bootstrap3-btn-dropdown-toggle').html());
+				$html = $('<div>')
 					.append( $('<div class="cont_page_info-prop">')
 						.append( $('<span class="selectable">')
 							.text( prop.pageInfo.title+' ('+prop.pageInfo.path+')' )
 						)
 						.append( $('<span>')
 							// .text( contProcType )
-							.addClass( 'px2-editor-type__' + (function(contProcType){
+							.addClass( 'px2-editor-type')
+							.addClass( 'px2-editor-type--' + (function(contProcType){
 								switch(contProcType){
 									case 'html.gui': return 'html-gui'; break;
 									case '.not_exists': return 'not-exists'; break;
@@ -143,6 +151,9 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 					)
 				;
 
+				it.next(prop);
+			} ,
+			function(it, prop){
 				// サイトマップに編集者コメント欄があったら表示する
 				// 　※サイトマップ拡張項目 "editor-comment" から自動的に取得する。
 				// 　　Markdown 処理して表示する。
@@ -153,12 +164,15 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 						)
 					;
 				}
-
+				it.next(prop);
+			} ,
+			function(it, prop){
 				// --------------------------------------
 				// コンテンツコメント機能
 				contentsComment.init( prop.pageInfo, $elms.commentView );
-
-
+				it.next(prop);
+			} ,
+			function(it, prop){
 				// --------------------------------------
 				// メインの編集ボタンにアクションを付加
 				$bs3btn.find('button.btn--edit').eq(0)
@@ -172,6 +186,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 						app.openEditor( $(this).attr('data-path') );
 						return false;
 					})
+					.removeAttr('disabled')
 				;
 				$bs3btn.find('button.btn--resources').eq(0)
 					.attr({'data-path': prop.pageInfo.path})
@@ -180,12 +195,26 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 						app.openResourcesDirectory( $(this).attr('data-path') );
 						return false;
 					})
+					.removeAttr('disabled')
 				;
+				if( prop.pathType == 'alias' ){
+					// エイリアスの場合は操作できない
+					$bs3btn.find('button.btn--edit').eq(0).attr({'disabled':'disabled'});
+					$bs3btn.find('button.btn--resources').eq(0).attr({'disabled':'disabled'});
+				}
 
-				var $dropdownMenu = $bs3btn.find('ul.cont_page-dropdown-menu');
+				$dropdownMenu = $bs3btn.find('ul.cont_page-dropdown-menu');
 
+
+				it.next(prop);
+			} ,
+			function(it, prop){
 				// --------------------------------------
 				// ドロップダウンのサブメニューを追加
+				if( prop.pathType == 'alias' ){
+					it.next(prop);
+					return;
+				}
 				if( contProcType != '.not_exists' ){
 					$dropdownMenu
 						.append( $('<li>')
@@ -242,6 +271,8 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 							})
 						)
 					)
+				;
+				$dropdownMenu
 					.append( $('<li>')
 						.append( $('<a>')
 							.text( 'コンテンツのソースコードを表示' )
@@ -280,6 +311,12 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 							})
 						)
 					)
+				;
+
+				it.next(prop);
+			} ,
+			function(it, prop){
+				$dropdownMenu
 					.append( $('<li>')
 						.append( $('<a>')
 							.text( 'ページ情報を表示' )
@@ -323,6 +360,13 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 						)
 					)
 				;
+				it.next(prop);
+			} ,
+			function(it, prop){
+				if( prop.pathType == 'alias' ){
+					it.next(prop);
+					return;
+				}
 				$dropdownMenu
 					.append( $('<li class="divider">') )
 					.append( $('<li>')
@@ -342,6 +386,13 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 						)
 					)
 				;
+				it.next(prop);
+			} ,
+			function(it, prop){
+				if( prop.pathType == 'alias' ){
+					it.next(prop);
+					return;
+				}
 				$dropdownMenu
 					.append( $('<li>')
 						.append( $('<a>')
@@ -388,6 +439,13 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 					countFile_r(realpath_matDir);
 
 				}, 10);
+				it.next(prop);
+			} ,
+			function(it, prop){
+				if( prop.pathType == 'alias' ){
+					it.next(prop);
+					return;
+				}
 
 				$dropdownMenu
 					.append( $('<li>')
@@ -405,6 +463,13 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 						)
 					)
 				;
+				it.next(prop);
+			} ,
+			function(it, prop){
+				if( prop.pathType == 'alias' ){
+					it.next(prop);
+					return;
+				}
 
 				$dropdownMenu
 					.append( $('<li class="divider">') )
@@ -511,76 +576,95 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 						)
 					)
 				;
-				if( contProcType == 'html.gui' ){
-					$dropdownMenu
-						.append( $('<li>')
-							.append( $('<a>')
-								.text( 'GUI編集コンテンツを再構成する' )
-								.attr({
-									'title':'モジュールの変更を反映させます。',
-									'data-path': prop.pageInfo.path ,
-									'href':'javascript:;'
-								})
-								.on('click', function(){
-									$bs3btn.find('.dropdown-toggle').click();
-									var pagePath = $(this).attr('data-path');
-									pj.buildGuiEditContent( pagePath, function(result){
-										app.loadPreview( pagePath, {'force':true}, function(){} );
-									} );
-									return false;
-								})
-							)
-						)
-					;
+				it.next(prop);
+			} ,
+			function(it, prop){
+				if( prop.pathType == 'alias' || contProcType != 'html.gui' ){
+					it.next(prop);
+					return;
 				}
 
-				if( contProcType != '.not_exists' ){
-					$dropdownMenu
-						.append( $('<li>')
-							.append( $('<a>')
-								.text( '編集方法を変更' )
-								.attr({
-									'data-path': prop.pageInfo.path ,
-									'data-proc_type': contProcType ,
-									'href':'javascript:;'
-								})
-								.on('click', function(){
-									$bs3btn.find('.dropdown-toggle').click();
-									var $this = $(this);
-									var $body = $('<div>')
-										.append( $('#template-change-proctype').html() )
-									;
-									$body.find('input[name=proc_type]').val( [$this.attr('data-proc_type')] );
-									px.dialog({
-										'title': '編集方法を変更する',
-										'body': $body,
-										'buttons':[
-											$('<button class="px2-btn px2-btn--primary">')
-												.text('OK')
-												.on('click', function(){
-													var val = $body.find('input[name=proc_type]:checked').val();
-													pj.changeContentEditorMode( $this.attr('data-path'), val, function(result){
-														if( !result[0] ){
-															alert('編集モードの変更に失敗しました。'+result[1]);
-															return;
-														}
-														app.loadPreview( app.getCurrentPagePath(), {"force":true}, function(){
-															px.closeDialog();
-														} );
-													} )
-												}),
-											$('<button class="px2-btn">')
-												.text('キャンセル')
-												.on('click', function(){
-													px.closeDialog();
-												})
-										]
-									});
-									return false;
-								})
-							)
+				$dropdownMenu
+					.append( $('<li>')
+						.append( $('<a>')
+							.text( 'GUI編集コンテンツを再構成する' )
+							.attr({
+								'title':'モジュールの変更を反映させます。',
+								'data-path': prop.pageInfo.path ,
+								'href':'javascript:;'
+							})
+							.on('click', function(){
+								$bs3btn.find('.dropdown-toggle').click();
+								var pagePath = $(this).attr('data-path');
+								pj.buildGuiEditContent( pagePath, function(result){
+									app.loadPreview( pagePath, {'force':true}, function(){} );
+								} );
+								return false;
+							})
 						)
-					;
+					)
+				;
+
+				it.next(prop);
+			} ,
+			function(it, prop){
+				if( prop.pathType == 'alias' || contProcType == '.not_exists' ){
+					it.next(prop);
+					return;
+				}
+
+				$dropdownMenu
+					.append( $('<li>')
+						.append( $('<a>')
+							.text( '編集方法を変更' )
+							.attr({
+								'data-path': prop.pageInfo.path ,
+								'data-proc_type': contProcType ,
+								'href':'javascript:;'
+							})
+							.on('click', function(){
+								$bs3btn.find('.dropdown-toggle').click();
+								var $this = $(this);
+								var $body = $('<div>')
+									.append( $('#template-change-proctype').html() )
+								;
+								$body.find('input[name=proc_type]').val( [$this.attr('data-proc_type')] );
+								px.dialog({
+									'title': '編集方法を変更する',
+									'body': $body,
+									'buttons':[
+										$('<button class="px2-btn px2-btn--primary">')
+											.text('OK')
+											.on('click', function(){
+												var val = $body.find('input[name=proc_type]:checked').val();
+												pj.changeContentEditorMode( $this.attr('data-path'), val, function(result){
+													if( !result[0] ){
+														alert('編集モードの変更に失敗しました。'+result[1]);
+														return;
+													}
+													app.loadPreview( app.getCurrentPagePath(), {"force":true}, function(){
+														px.closeDialog();
+													} );
+												} )
+											}),
+										$('<button class="px2-btn">')
+											.text('キャンセル')
+											.on('click', function(){
+												px.closeDialog();
+											})
+									]
+								});
+								return false;
+							})
+						)
+					)
+				;
+				it.next(prop);
+			} ,
+			function(it, prop){
+				if( prop.pathType == 'alias' ){
+					it.next(prop);
+					return;
 				}
 				$dropdownMenu
 					.append( $('<li>')
@@ -598,7 +682,13 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 						)
 					)
 				;
-
+				it.next(prop);
+			} ,
+			function(it, prop){
+				if( prop.pathType == 'alias' ){
+					it.next(prop);
+					return;
+				}
 				$dropdownMenu
 					.append( $('<li>')
 						.append( $('<a>')
@@ -615,6 +705,13 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 						)
 					)
 				;
+				it.next(prop);
+			} ,
+			function(it, prop){
+				if( prop.pathType == 'alias' ){
+					it.next(prop);
+					return;
+				}
 				$dropdownMenu
 					.append( $('<li>')
 						.append( $('<a>')
@@ -632,6 +729,9 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 						)
 					)
 				;
+				it.next(prop);
+			} ,
+			function(it, prop){
 
 				$elms.pageinfo.html( $html );
 

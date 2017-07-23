@@ -235,6 +235,7 @@ window.contApp = new (function( px ){
 	 * 指定ページへ移動する
 	 */
 	this.goto = function( page_path, options, callback ){
+		// console.log('=-=-=-=-=-=-=-=-=-=-=-=-=-=-= goto');
 		callback = callback || function(){};
 		options = options || {};
 		if(page_path === undefined){
@@ -281,13 +282,23 @@ window.contApp = new (function( px ){
 			if(_currentPageInfo.page_info === false){
 				// var pageInfo = _pj.site.getPageInfo( page_path );
 				// console.log(pageInfo);
-				redirectPage(page_path, options, callback);
+				// redirectPage(page_path, options, callback);
+				alert('Error: ページ情報がロードされませんでした。');
+				px.progress.close();
+				callback();
 				return;
 			}
 
 			// 描画・プレビューロードをキック
 			pageDraw.redraw( _currentPageInfo, options, function(){
-				app.loadPreview( _currentPagePath, options, function(){
+				if( _currentPageInfo.path_type == 'alias' ){
+					// エイリアスはロードしない
+					px.progress.close();
+					callback();
+					return;
+				}
+
+				app.loadPreview( _currentPageInfo.page_info.path, options, function(){
 					px.progress.close();
 					callback();
 				} );
@@ -302,6 +313,8 @@ window.contApp = new (function( px ){
 	 * プレビューウィンドウにページを表示する
 	 */
 	this.loadPreview = function( page_path, options, callback ){
+		// console.log('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= loadPreview');
+		// console.log(page_path);
 		callback = callback || function(){};
 		if(!options){ options = {}; }
 		if(!options.force){ options.force = false; }
@@ -317,6 +330,7 @@ window.contApp = new (function( px ){
 
 		if( currentPreviewPageUrl == gotoUrl && !options.force ){
 			// 現在表示中の `page_path` と同じなら、リロードをスキップ
+			// console.log('skipped :', page_path);
 			callback();
 			return;
 		}
@@ -325,12 +339,14 @@ window.contApp = new (function( px ){
 		px.preview.serverStandby( function(result){
 			if(result === false){
 				px.message('プレビューサーバーの起動に失敗しました。');
+				callback();
+				return;
 			}
 			$elms.previewIframe.attr( 'src', gotoUrl );
 			callback();
 		} );
 		return;
-	} // goto()
+	} // loadPreview()
 
 	/**
 	 * エディター画面を開く

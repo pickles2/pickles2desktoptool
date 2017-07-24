@@ -1,7 +1,7 @@
 @charset "UTF-8";
 .px2-btn {
   display: inline-block;
-  border-radius: 1px;
+  border-radius: 3px;
   background-color: #fff;
   color: #666;
   border: 1px solid #666;
@@ -18,24 +18,22 @@
       -ms-flex-align: stretch;
           align-items: stretch;
   font-family: sans-serif;
-  -webkit-transition: color 0.1s, background 0.1s, -webkit-transform 0.1s;
-          transition: color 0.1s, background 0.1s, transform 0.1s; }
+  -webkit-transition: color 0.1s, background-color 0.1s, -webkit-transform 0.1s;
+          transition: color 0.1s, background-color 0.1s, transform 0.1s; }
   .px2-btn:focus, .px2-btn:hover {
     text-decoration: none;
     font-weight: normal;
     color: #666;
     background-color: #f9f9f9;
-    outline: none;
-    -webkit-transform: scale(1.04, 1.04);
-            transform: scale(1.04, 1.04); }
+    outline: none; }
   .px2-btn:hover {
     background-color: #f0f0f0; }
   .px2-btn:active {
     background-color: #333;
     color: #fff;
     box-shadow: inset 0 3px 15px rgba(0, 0, 0, 0.3);
-    -webkit-transform: translateY(3px) scale(1.04, 1.04);
-            transform: translateY(3px) scale(1.04, 1.04); }
+    -webkit-transform: translateY(1px);
+            transform: translateY(1px); }
 
 .px2-btn.px2-btn--primary {
   border-color: #00a0e6;
@@ -223,87 +221,97 @@
         margin: 0 0 0 5px;
         padding: 0; }
 
-.px2-editor-type__html {
+.px2-editor-type {
   display: inline-block;
   font-size: 12px;
   line-height: 1;
   padding: 0.4em 1em;
   text-align: center;
-  color: #fff;
-  background-color: #4a8a98; }
-  .px2-editor-type__html:before {
-    content: "HTML"; }
-
-.px2-editor-type__html-gui {
-  display: inline-block;
-  font-size: 12px;
-  line-height: 1;
-  padding: 0.4em 1em;
-  text-align: center;
-  color: #fff;
-  background-color: #9f5b75; }
-  .px2-editor-type__html-gui:before {
-    content: "GUI"; }
-
-.px2-editor-type__txt {
-  display: inline-block;
-  font-size: 12px;
-  line-height: 1;
-  padding: 0.4em 1em;
-  text-align: center;
-  color: #fff;
-  background-color: #999; }
-  .px2-editor-type__txt:before {
-    content: "TEXT"; }
-
-.px2-editor-type__md {
-  display: inline-block;
-  font-size: 12px;
-  line-height: 1;
-  padding: 0.4em 1em;
-  text-align: center;
-  color: #fff;
-  background-color: #ae9b59; }
-  .px2-editor-type__md:before {
-    content: "Markdown"; }
-
-.px2-editor-type__jade {
-  display: inline-block;
-  font-size: 12px;
-  line-height: 1;
-  padding: 0.4em 1em;
-  text-align: center;
-  color: #fff;
-  background-color: #999; }
-  .px2-editor-type__jade:before {
-    content: "Jade"; }
-
-.px2-editor-type__not-exists {
-  display: inline-block;
-  font-size: 12px;
-  line-height: 1;
-  padding: 0.4em 1em;
-  text-align: center;
-  color: #fff;
-  background-color: #c3c3c3; }
-  .px2-editor-type__not-exists:before {
-    content: "未作成"; }
-
-.px2-editor-type__page-not-exists {
-  display: inline-block;
-  font-size: 12px;
-  line-height: 1;
-  padding: 0.4em 1em;
-  text-align: center;
-  color: #fff;
-  background-color: #c3c3c3; }
-  .px2-editor-type__page-not-exists:before {
-    content: "ページ未作成"; }
-
-.px2-editor-type--fullwidth {
-  width: auto;
-  display: block;
-  float: none; }
+  color: #fff; }
+  .px2-editor-type__html, .px2-editor-type--html {
+    display: inline-block;
+    font-size: 12px;
+    line-height: 1;
+    padding: 0.4em 1em;
+    text-align: center;
+    color: #fff;
+    background-color: #4a8a98; }
+    .px2-editor-type__html:before, .px2-editor-type--html:before {
+      content: "HTML"; }
+  .px2-editor-type__html-gui, .px2-editor-type--html-gui {
+    display: inline-block;
+    font-size: 12px;
+    line-height: 1;
+    padding: 0.4em 1em;
+    text-align: center;
+    color: #fff;
+    background-color: #9f5b75; }
+    .px2-editor-type__html-gui:before, .px2-editor-type--html-gui:before {
+      content: "GUI"; }
+  .px2-editor-type__txt, .px2-editor-type--txt {
+    display: inline-block;
+    font-size: 12px;
+    line-height: 1;
+    padding: 0.4em 1em;
+    text-align: center;
+    color: #fff;
+    background-color: #999; }
+    .px2-editor-type__txt:before, .px2-editor-type--txt:before {
+      content: "TEXT"; }
+  .px2-editor-type__md, .px2-editor-type--md {
+    display: inline-block;
+    font-size: 12px;
+    line-height: 1;
+    padding: 0.4em 1em;
+    text-align: center;
+    color: #fff;
+    background-color: #ae9b59; }
+    .px2-editor-type__md:before, .px2-editor-type--md:before {
+      content: "Markdown"; }
+  .px2-editor-type__jade, .px2-editor-type--jade {
+    display: inline-block;
+    font-size: 12px;
+    line-height: 1;
+    padding: 0.4em 1em;
+    text-align: center;
+    color: #fff;
+    background-color: #999; }
+    .px2-editor-type__jade:before, .px2-editor-type--jade:before {
+      content: "Jade"; }
+  .px2-editor-type__not-exists, .px2-editor-type--not-exists {
+    display: inline-block;
+    font-size: 12px;
+    line-height: 1;
+    padding: 0.4em 1em;
+    text-align: center;
+    color: #fff;
+    background-color: #c3c3c3; }
+    .px2-editor-type__not-exists:before, .px2-editor-type--not-exists:before {
+      content: "未作成"; }
+  .px2-editor-type__page-not-exists, .px2-editor-type--page-not-exists {
+    display: inline-block;
+    font-size: 12px;
+    line-height: 1;
+    padding: 0.4em 1em;
+    text-align: center;
+    color: #fff;
+    background-color: #c3c3c3; }
+    .px2-editor-type__page-not-exists:before, .px2-editor-type--page-not-exists:before {
+      content: "ページ未作成"; }
+  .px2-editor-type__alias, .px2-editor-type--alias {
+    display: inline-block;
+    font-size: 12px;
+    line-height: 1;
+    padding: 0.4em 1em;
+    text-align: center;
+    color: #fff;
+    background-color: #c3c3c3; }
+    .px2-editor-type__alias:before, .px2-editor-type--alias:before {
+      content: "ALIAS"; }
+  .px2-editor-type--fullwidth {
+    width: auto;
+    display: block;
+    float: none; }
 
 .px2-loading {
   clear: both;

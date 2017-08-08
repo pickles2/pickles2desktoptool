@@ -136,16 +136,129 @@ window.contApp = new (function(){
 	 */
 	this.openThemeHome = function(themeId){
 		console.log('Theme: '+themeId);
-		var html = px.utils.bindEjs(
-			document.getElementById('template-theme-home').innerHTML,
-			{
-				'themeId': themeId,
-				'realpathThemeCollectionDir': realpathThemeCollectionDir
+		it79.fnc({}, [
+			function(it1, arg){
+				var ls = px.fs.readdirSync(realpathThemeCollectionDir+themeId);
+				arg.layouts = [];
+				for( var idx in ls ){
+					if( px.utils79.is_file( realpathThemeCollectionDir+themeId+'/'+ls[idx] ) ){
+						var layoutId = ls[idx];
+						layoutId = layoutId.replace(/\.[a-zA-Z0-9]+$/i, '');
+						arg.layouts.push( layoutId );
+					}
+				}
+				it1.next(arg);
+			},
+			function(it1, arg){
+				var html = px.utils.bindEjs(
+					document.getElementById('template-theme-home').innerHTML,
+					{
+						'themeId': themeId,
+						'layouts': arg.layouts,
+						'realpathThemeCollectionDir': realpathThemeCollectionDir
+					}
+				);
+				$('.contents').html( html );
 			}
-		);
-		$('.contents').html( html );
+		]);
 		return;
 	}
+
+	/**
+	 * エディター画面を開く
+	 */
+	this.openEditor = function( themeId, layoutId ){
+		alert(themeId + '/' + layoutId + ': 開発中です');
+
+		// var pageInfo = _pj.site.getPageInfo( pagePath );
+		// if( !pageInfo ){
+		// 	alert('ERROR: Undefined page path. - ' + pagePath);
+		// 	return this;
+		// }
+		//
+		// this.closeEditor();//一旦閉じる
+		//
+		// // プログレスモード表示
+		// px.progress.start({
+		// 	'blindness':true,
+		// 	'showProgressBar': true
+		// });
+		//
+		// var contPath = _pj.findPageContent( pagePath );
+		// var contRealpath = _pj.get('path')+'/'+contPath;
+		// var pathInfo = px.utils.parsePath(contPath);
+		// var pagePath = pageInfo.path;
+		// if( _pj.site.getPathType( pageInfo.path ) == 'dynamic' ){
+		// 	var dynamicPathInfo = _pj.site.get_dynamic_path_info(pageInfo.path);
+		// 	pagePath = dynamicPathInfo.path;
+		// }
+		//
+		// if( px.fs.existsSync( contRealpath ) ){
+		// 	contRealpath = px.fs.realpathSync( contRealpath );
+		// }
+		//
+		// $elms.editor = $('<div>')
+		// 	.css({
+		// 		'position':'fixed',
+		// 		'top':0,
+		// 		'left':0 ,
+		// 		'z-index': '1000',
+		// 		'width':'100%',
+		// 		'height':$(window).height()
+		// 	})
+		// 	.append(
+		// 		$('<iframe>')
+		// 			//↓エディタ自体は別のHTMLで実装
+		// 			.attr( 'src', '../../mods/editor/index.html'
+		// 				+'?page_path='+encodeURIComponent( pagePath )
+		// 			)
+		// 			.css({
+		// 				'border':'0px none',
+		// 				'width':'100%',
+		// 				'height':'100%'
+		// 			})
+		// 	)
+		// 	.append(
+		// 		$('<a>')
+		// 			.html('&times;')
+		// 			.attr('href', 'javascript:;')
+		// 			.click( function(){
+		// 				// if(!confirm('編集中の内容は破棄されます。エディタを閉じますか？')){ return false; }
+		// 				_this.closeEditor();
+		// 			} )
+		// 			.css({
+		// 				'position':'absolute',
+		// 				'bottom':5,
+		// 				'right':5,
+		// 				'font-size':'18px',
+		// 				'color':'#333',
+		// 				'background-color':'#eee',
+		// 				'border-radius':'0.5em',
+		// 				'border':'1px solid #333',
+		// 				'text-align':'center',
+		// 				'opacity':0.4,
+		// 				'width':'1.5em',
+		// 				'height':'1.5em',
+		// 				'text-decoration': 'none'
+		// 			})
+		// 			.hover(function(){
+		// 				$(this).animate({
+		// 					'opacity':1
+		// 				});
+		// 			}, function(){
+		// 				$(this).animate({
+		// 					'opacity':0.4
+		// 				});
+		// 			})
+		// 	)
+		// ;
+		// $('body')
+		// 	.append($elms.editor)
+		// 	.css({'overflow':'hidden'})
+		// ;
+
+		return;
+	} // openEditor()
 
 	/**
 	 * イベント

@@ -8,7 +8,8 @@ window.contApp = new (function(){
 	var multithemePluginFunctionName = 'tomk79\\pickles2\\multitheme\\theme::exec';
 	var px2all,
 		themePluginList,
-		realpathThemeCollectionDir;
+		realpathThemeCollectionDir,
+		themeCollection;
 
 	function init( callback ){
 		it79.fnc({}, [
@@ -80,12 +81,22 @@ window.contApp = new (function(){
 			},
 			function(it1, arg){
 				// --------------------------------------
+				// テーマコレクションをリスト化
+				themeCollection = [];
+				var ls = px.fs.readdirSync(realpathThemeCollectionDir);
+				// console.log(ls);
+				for( var idx in ls ){
+					var isThemeExists = px.utils79.is_file( realpathThemeCollectionDir+ls[idx]+'/default.html' );
+					if( isThemeExists ){
+						themeCollection.push( ls[idx] );
+					}
+				}
+				it1.next(arg);
+			},
+			function(it1, arg){
+				// --------------------------------------
 				// スタンバイ完了
-				var html = px.utils.bindEjs(
-					document.getElementById('template-not-enough-api-version').innerHTML,
-					{}
-				);
-				$('.contents').html( html );
+				_this.openHome();
 				callback();
 			}
 		]);
@@ -106,12 +117,44 @@ window.contApp = new (function(){
 	}
 
 	/**
+	 * ホーム画面を開く
+	 */
+	this.openHome = function(){
+		var html = px.utils.bindEjs(
+			document.getElementById('template-list').innerHTML,
+			{
+				'themePluginList': themePluginList,
+				'realpathThemeCollectionDir': realpathThemeCollectionDir,
+				'themeCollection': themeCollection
+			}
+		);
+		$('.contents').html( html );
+	}
+
+	/**
+	 * テーマのホーム画面を開く
+	 */
+	this.openThemeHome = function(themeId){
+		console.log('Theme: '+themeId);
+		var html = px.utils.bindEjs(
+			document.getElementById('template-theme-home').innerHTML,
+			{
+				'themeId': themeId,
+				'realpathThemeCollectionDir': realpathThemeCollectionDir
+			}
+		);
+		$('.contents').html( html );
+		return;
+	}
+
+	/**
 	 * イベント
 	 */
 	$(window).on('load', function(){
 		init(function(){
-			console.log(themePluginList);
-			console.log(realpathThemeCollectionDir);
+			// console.log(themePluginList);
+			// console.log(realpathThemeCollectionDir);
+			// console.log(themeCollection);
 			console.log('Standby.');
 		});
 	});

@@ -19514,7 +19514,7 @@ window.contApp = new (function( px ){
 				var _page_url = px.preview.getUrl( arg.page_path );
 				var elmA = document.createElement('a');
 				elmA.href = _page_url;
-				var _page_origin = elmA.href;
+				var _page_origin = elmA.origin;
 				if( arg.target_html == 'theme_layout' ){
 					_page_url = 'file://'+require('path').resolve(realpathThemeCollectionDir+arg.page_path);
 					_page_origin = 'file://'+require('path').resolve(realpathThemeCollectionDir);

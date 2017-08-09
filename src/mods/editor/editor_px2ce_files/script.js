@@ -68,7 +68,7 @@ window.contApp = new (function( px ){
 				var _page_origin = elmA.origin;
 				if( arg.target_html == 'theme_layout' ){
 					_page_url = 'file://'+require('path').resolve(realpathThemeCollectionDir+arg.page_path);
-					_page_origin = 'file://'+require('path').resolve(realpathThemeCollectionDir);
+					_page_origin = './editor_px2ce_files/preview.html#';
 					px2ceInitOptions.documentRoot = realpathThemeCollectionDir;
 					px2ceInitOptions.realpathDataDir = realpathThemeCollectionDir+_param.theme_id+'/guieditor.ignore/'+_param.layout_id+'/data/';
 					px2ceInitOptions.pathResourceDir = '/'+_param.theme_id+'/theme_files/layouts/'+_param.layout_id+'/resources/';
@@ -124,7 +124,9 @@ window.contApp = new (function( px ){
 							},
 							'onMessage': function( message ){
 								px.message(message);
-							}
+							},
+							'contents_area_selector': '[data-contents-area]',
+							'contents_bowl_name_by': 'data-contents-area'
 						},
 						function(){
 							// スタンバイ完了したら呼び出されるコールバックメソッドです。

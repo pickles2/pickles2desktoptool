@@ -23171,6 +23171,8 @@ module.exports = function(px2ce){
 			this.options.clipboard = this.options.clipboard || {};
 			this.options.clipboard.set = this.options.clipboard.set || null;
 			this.options.clipboard.get = this.options.clipboard.get || null;
+			this.options.contents_area_selector = this.options.contents_area_selector || null;
+			this.options.contents_bowl_name_by = this.options.contents_bowl_name_by || null;
 
 			this.page_path = this.options.page_path;
 
@@ -23452,15 +23454,17 @@ module.exports = function(px2ce){
 					rlv();
 				}); })
 				.then(function(){ return new Promise(function(rlv, rjt){
+					var contents_area_selector = _this.options.contents_area_selector || px2conf.plugins.px2dt.contents_area_selector;
+					var contents_bowl_name_by = _this.options.contents_bowl_name_by || px2conf.plugins.px2dt.contents_bowl_name_by;
 					broccoliInitializeOptions = {
 						'elmCanvas': document.createElement('div'),
 						'elmModulePalette': document.createElement('div'),
 						'elmInstanceTreeView': document.createElement('div'),
 						'elmInstancePathView': document.createElement('div'),
-						'contents_area_selector': px2conf.plugins.px2dt.contents_area_selector,
+						'contents_area_selector': contents_area_selector,
 						// ↑編集可能領域を探すためのクエリを設定します。
 						//  この例では、data-contents属性が付いている要素が編集可能領域として認識されます。
-						'contents_bowl_name_by': px2conf.plugins.px2dt.contents_bowl_name_by,
+						'contents_bowl_name_by': contents_bowl_name_by,
 						// ↑bowlの名称を、data-contents属性値から取得します。
 						'customFields': customFields,
 						'lang': px2ce.options.lang,

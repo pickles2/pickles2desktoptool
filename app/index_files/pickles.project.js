@@ -541,6 +541,37 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	}
 
 	/**
+	 * テーマコレクションディレクトリのパスを得る
+	 */
+	this.px2dthelperGetRealpathThemeCollectionDir = function( callback ){
+		var multithemePluginFunctionName = 'tomk79\\pickles2\\multitheme\\theme::exec';
+		var realpathThemeCollectionDir = false;
+		_this.px2dthelperGetAll('/', {}, function(px2all){
+			realpathThemeCollectionDir = px2all.realpath_homedir+'themes/';
+			_this.px2proj.query(
+				'/?PX=px2dthelper.plugins.get_plugin_options&func_div=processor.html&plugin_name='+encodeURIComponent(multithemePluginFunctionName),
+				{
+					"output": "json",
+					"complete": function(result, code){
+						try {
+							result = JSON.parse(result);
+							// console.log(result);
+							if( result[0].options.path_theme_collection ){
+								realpathThemeCollectionDir = require('path').resolve( px2all.realpath_docroot + px2all.path_controot, result[0].options.path_theme_collection )+'/';
+							}
+						} catch (e) {
+						}
+						// console.log(realpathThemeCollectionDir);
+						callback(realpathThemeCollectionDir);
+						return;
+					}
+				}
+			);
+		});
+		return;
+	}
+
+	/**
 	 * ページパスからコンテンツを探す
 	 */
 	this.findPageContent = function( pagePath ){

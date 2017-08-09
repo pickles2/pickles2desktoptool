@@ -72,7 +72,7 @@
 				<h2>テーマコレクション</h2>
 				<ul>
 				<% for( var idx in themeCollection ){ %>
-					<li><button class="px2-btn" data-theme-id="<%= themeCollection[idx] %>" onclick="contApp.openThemeHome($(this).attr('data-theme-id'));"><%= themeCollection[idx] %></button></li>
+					<li><button class="px2-btn" data-theme-id="<%= themeCollection[idx] %>" onclick="contApp.pageThemeHome($(this).attr('data-theme-id'));"><%= themeCollection[idx] %></button></li>
 				<% } %>
 				</ul>
 				<!-- <%= realpathThemeCollectionDir %> -->
@@ -94,7 +94,7 @@
 					<li><a href="javascript:;" data-theme-id="<%= themeId %>" data-layout-id="<%= layouts[idx] %>" onclick="contApp.openEditor($(this).attr('data-theme-id'), $(this).attr('data-layout-id'));return false;"><%= layouts[idx] %></a></li>
 				<% } %>
 				</ul>
-				<p><button class="px2-btn" onclick="contApp.openHome();">戻る</button></p>
+				<p><button class="px2-btn" onclick="contApp.pageHome();">戻る</button></p>
 			</div>
 		</script>
 	</head>

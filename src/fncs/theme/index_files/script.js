@@ -27,12 +27,8 @@ window.contApp = new (function(){
 					},
 					function( errors ){
 						// API設定が不十分な場合のエラー処理
-						var html = px.utils.bindEjs(
-							document.getElementById('template-not-enough-api-version').innerHTML,
-							{errors: errors}
-						);
-						$('.contents').html( html );
 						// エラーだったらここで離脱。
+						_this.pageNotEnoughApiVersion(errors);
 						callback();
 						return;
 					}
@@ -42,47 +38,33 @@ window.contApp = new (function(){
 				// --------------------------------------
 				// Pickles 2 の各種情報から、
 				// テーマプラグインの一覧を取得
-				pj.px2proj.query(
-					'/?PX=px2dthelper.get.all',
-					{
-						"output": "json",
-						"complete": function(result, code){
-							px2all = JSON.parse(result);
-							// console.log(px2all);
-							themePluginList = px2all.packages.package_list.themes;
-							it1.next(arg);
-							return;
-						}
-					}
-				);
+				pj.px2dthelperGetAll('/', {}, function(result){
+					px2all = result;
+					// console.log(px2all);
+					themePluginList = px2all.packages.package_list.themes;
+					it1.next(arg);
+					return;
+				});
 			},
 			function(it1, arg){
 				// --------------------------------------
 				// テーマコレクションディレクトリのパスを求める
-				realpathThemeCollectionDir = px2all.realpath_homedir+'themes/';
-				pj.px2proj.query(
-					'/?PX=px2dthelper.plugins.get_plugin_options&func_div=processor.html&plugin_name='+encodeURIComponent(multithemePluginFunctionName),
-					{
-						"output": "json",
-						"complete": function(result, code){
-							try {
-								result = JSON.parse(result);
-								// console.log(result);
-								if( result[0].options.path_theme_collection ){
-									realpathThemeCollectionDir = require('path').resolve( px2all.realpath_docroot + px2all.path_controot, result[0].options.path_theme_collection )+'/';
-								}
-							} catch (e) {
-							}
-							// console.log(realpathThemeCollectionDir);
-							it1.next(arg);
-							return;
-						}
-					}
-				);
+				pj.px2dthelperGetRealpathThemeCollectionDir(function(result){
+					realpathThemeCollectionDir = result;
+					it1.next(arg);
+				});
 			},
 			function(it1, arg){
 				// --------------------------------------
 				// テーマコレクションをリスト化
+				if( !px.utils79.is_dir(realpathThemeCollectionDir) ){
+					// テーマディレクトリが存在しなければ終了
+					var err = 'Theme Collection Dir is NOT exists.';
+					console.log(err, realpathThemeCollectionDir);
+					_this.pageNotEnoughApiVersion([err]);
+					callback();
+					return;
+				}
 				themeCollection = [];
 				var ls = px.fs.readdirSync(realpathThemeCollectionDir);
 				// console.log(ls);
@@ -97,30 +79,16 @@ window.contApp = new (function(){
 			function(it1, arg){
 				// --------------------------------------
 				// スタンバイ完了
-				_this.openHome();
+				_this.pageHome();
 				callback();
 			}
 		]);
 	}
 
 	/**
-	 * フォルダを開く
-	 */
-	this.openInFinder = function(){
-		px.utils.openURL( realpathThemeCollectionDir );
-	}
-
-	/**
-	 * 外部テキストエディタで開く
-	 */
-	this.openInTextEditor = function(){
-		px.openInTextEditor( realpathThemeCollectionDir );
-	}
-
-	/**
 	 * ホーム画面を開く
 	 */
-	this.openHome = function(){
+	this.pageHome = function(){
 		var html = px.utils.bindEjs(
 			document.getElementById('template-list').innerHTML,
 			{
@@ -135,7 +103,7 @@ window.contApp = new (function(){
 	/**
 	 * テーマのホーム画面を開く
 	 */
-	this.openThemeHome = function(themeId){
+	this.pageThemeHome = function(themeId){
 		console.log('Theme: '+themeId);
 		it79.fnc({}, [
 			function(it1, arg){
@@ -163,6 +131,17 @@ window.contApp = new (function(){
 			}
 		]);
 		return;
+	}
+
+	/**
+	 * APIバージョンが不十分(旧画面)
+	 */
+	this.pageNotEnoughApiVersion = function( errors ){
+		var html = px.utils.bindEjs(
+			document.getElementById('template-not-enough-api-version').innerHTML,
+			{'errors': errors}
+		);
+		$('.contents').html( html );
 	}
 
 	/**
@@ -259,6 +238,31 @@ window.contApp = new (function(){
 		;
 		return;
 	} // closeEditor()
+
+	/**
+	 * フォルダを開く
+	 */
+	this.openInFinder = function( theme_id ){
+		var url = realpathThemeCollectionDir;
+		if(theme_id){
+			url += theme_id+'/';
+		}
+		px.utils.openURL( url );
+	}
+
+	/**
+	 * 外部テキストエディタで開く
+	 */
+	this.openInTextEditor = function( theme_id, layout_id ){
+		var url = realpathThemeCollectionDir;
+		if(theme_id){
+			url += theme_id+'/';
+		}
+		if(layout_id){
+			url += layout_id+'.html';
+		}
+		px.openInTextEditor( url );
+	}
 
 	/**
 	 * イベント

@@ -875,7 +875,8 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	/**
 	 * pickles2-contents-editor(サーバーサイド)を生成する
 	 */
-	this.createPickles2ContentsEditorServer = function(page_path, callback){
+	this.createPickles2ContentsEditorServer = function(page_path, options, callback){
+		options = options || {};
 		callback = callback || function(){};
 		var Px2CE = require('pickles2-contents-editor');
 		var _pj = this;
@@ -885,20 +886,26 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 
 		// console.log(broccoli);
 		// console.log(require('path').resolve('/', './'+page_path));
-		px2ce.init(
-			{
-				'page_path': page_path,
-				'appMode': 'desktop', // 'web' or 'desktop'. default to 'web'
-				'entryScript': require('path').resolve( _pj.get('path'), _pj.get('entry_script') ),
-				'customFields': _pj.mkBroccoliCustomFieldOptionBackend() ,
-				'customFieldsIncludePath': _pj.mkBroccoliCustomFieldIncludePathOptionBackend() ,
-				'log': function(msg){
-					px.log(msg);
-				},
-				'commands':{
-					'php': px.nodePhpBinOptions
-				}
+
+		var initOption = {
+			'page_path': page_path,
+			'appMode': 'desktop', // 'web' or 'desktop'. default to 'web'
+			'entryScript': require('path').resolve( _pj.get('path'), _pj.get('entry_script') ),
+			'customFields': _pj.mkBroccoliCustomFieldOptionBackend() ,
+			'customFieldsIncludePath': _pj.mkBroccoliCustomFieldIncludePathOptionBackend() ,
+			'log': function(msg){
+				px.log(msg);
 			},
+			'commands':{
+				'php': px.nodePhpBinOptions
+			}
+		};
+		if( options.documentRoot ){ initOption.documentRoot = options.documentRoot; }
+		if( options.realpathDataDir ){ initOption.realpathDataDir = options.realpathDataDir; }
+		if( options.pathResourceDir ){ initOption.pathResourceDir = options.pathResourceDir; }
+
+		px2ce.init(
+			initOption,
 			function(){
 				callback(px2ce);
 			}
@@ -1041,7 +1048,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 		callback = callback || function(){};
 		var BroccoliProcessor = require('broccoli-processor');
 
-		this.createPickles2ContentsEditorServer( page_path, function(px2ce){
+		this.createPickles2ContentsEditorServer( page_path, {}, function(px2ce){
 			px2ce.createBroccoli(function(broccoli){
 				var broccoliProcessor = new BroccoliProcessor(broccoli, {});
 				callback( broccoliProcessor );

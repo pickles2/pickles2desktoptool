@@ -5,8 +5,9 @@ window.contApp = new (function( px ){
 	var utils79 = require('utils79');
 	var php = require('phpjs');
 	var _pj = px.getCurrentProject();
-	var pickles2ContentsEditor = new Pickles2ContentsEditor();
+	var pickles2ContentsEditor = new Pickles2ContentsEditor(); // px2ce client
 	var resizeTimer;
+	var realpathThemeCollectionDir;
 
 	var _param = px.utils.parseUriParam( window.location.href );
 
@@ -29,26 +30,57 @@ window.contApp = new (function( px ){
 
 	function init(){
 		it79.fnc({}, [
-			function(it1, data){
+			function(it1, arg){
 				px.cancelDrop( window );
 				fitWindowSize(function(){
-					it1.next(data);
+					it1.next(arg);
 				});
 
 			},
-			function(it1, data){
+			function(it1, arg){
+				if( _param.page_path ){
+					arg.target_html = 'contents';
+					arg.page_path = _param.page_path;
+				}else if( _param.theme_id && _param.layout_id ){
+					arg.target_html = 'theme_layout';
+					arg.page_path = require('path').resolve('/'+_param.theme_id+'/'+_param.layout_id+'.html');
+				}
+				// console.log(arg);
+				it1.next(arg);
+			},
+			function(it1, arg){
+				if( arg.target_html == 'theme_layout' ){
+					_pj.px2dthelperGetRealpathThemeCollectionDir(function(result){
+						realpathThemeCollectionDir = result;
+						it1.next(arg);
+					});
+					return;
+				}
+				it1.next(arg);
+			},
+			function(it1, arg){
 
-				var _page_url = px.preview.getUrl( _param.page_path );
+				var px2ceInitOptions = {};
+
+				var _page_url = px.preview.getUrl( arg.page_path );
 				var elmA = document.createElement('a');
 				elmA.href = _page_url;
+				var _page_origin = elmA.href;
+				if( arg.target_html == 'theme_layout' ){
+					_page_url = 'file://'+require('path').resolve(realpathThemeCollectionDir+arg.page_path);
+					_page_origin = 'file://'+require('path').resolve(realpathThemeCollectionDir);
+					px2ceInitOptions.documentRoot = realpathThemeCollectionDir;
+					px2ceInitOptions.realpathDataDir = realpathThemeCollectionDir+_param.theme_id+'/guieditor.ignore/'+_param.layout_id+'/data/';
+					px2ceInitOptions.pathResourceDir = '/'+_param.theme_id+'/theme_files/layouts/'+_param.layout_id+'/resources/';
+				}
 
-				window.contAppPx2CEServer(px, _param.page_path, function(px2ceServer){
+				window.contAppPx2CEServer(px, arg.page_path, px2ceInitOptions, function(px2ceServer){
 					pickles2ContentsEditor.init(
 						{
-							'page_path': _param.page_path , // <- 編集対象ページのパス
+							'page_path': arg.page_path , // <- 編集対象ページのパス
 							'elmCanvas': document.getElementById('canvas'), // <- 編集画面を描画するための器となる要素
 							'preview':{ // プレビュー用サーバーの情報を設定します。
-								'origin': elmA.origin
+								'origin': _page_origin
 							},
 							'customFields': _pj.mkBroccoliCustomFieldOptionFrontend(window, false),
 							'lang': px.getDb().language,
@@ -83,7 +115,7 @@ window.contApp = new (function( px ){
 								to = to.replace( new RegExp( '^'+px.utils.escapeRegExp( pathControot ) ), '/' );
 								to = to.replace( new RegExp( '^\\/+' ), '/' );
 
-								if( to != _param.page_path ){
+								if( to != arg.page_path ){
 									if( !confirm( '"'+to+'" へ遷移しますか?' ) ){
 										return;
 									}
@@ -96,12 +128,12 @@ window.contApp = new (function( px ){
 						},
 						function(){
 							// スタンバイ完了したら呼び出されるコールバックメソッドです。
-							it1.next(data);
+							it1.next(arg);
 						}
 					);
 				});
 			} ,
-			function(it1, _data){
+			function(it1, arg){
 				px.progress.close();
 				console.info('standby!!');
 			}

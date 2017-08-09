@@ -174,7 +174,7 @@ window.contApp = new (function(){
 			.append(
 				$('<iframe>')
 					//↓エディタ自体は別のHTMLで実装
-					.attr( 'src', '../../mods/theme_editor/index.html'
+					.attr( 'src', '../../mods/editor/index.html'
 						+'?theme_id='+encodeURIComponent( themeId )
 						+'&layout_id='+encodeURIComponent( layoutId )
 					)

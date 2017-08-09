@@ -1,8 +1,8 @@
-window.contAppPx2CEServer = function(px, page_path, callback){
+window.contAppPx2CEServer = function(px, page_path, options, callback){
+	options = options || {};
 	callback = callback||function(){};
 
 	var _this = this;
-	var data = {};
 	var param = {};
 
 	var it79 = require('iterate79');
@@ -10,7 +10,7 @@ window.contAppPx2CEServer = function(px, page_path, callback){
 	var _pj;
 
 
-	it79.fnc(data, [
+	it79.fnc({}, [
 		function(it1, data){
 			param = px.utils.parseUriParam( window.location.href );
 			// console.log( param );
@@ -26,6 +26,7 @@ window.contAppPx2CEServer = function(px, page_path, callback){
 
 			_pj.createPickles2ContentsEditorServer(
 				page_path ,
+				options,
 				function(b){
 					px2ce = b;
 					console.log('px2ce callbacked.');

@@ -888,6 +888,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 		// console.log(require('path').resolve('/', './'+page_path));
 
 		var initOption = {
+			'target_mode': (options.target_mode || 'page_content'),
 			'page_path': page_path,
 			'appMode': 'desktop', // 'web' or 'desktop'. default to 'web'
 			'entryScript': require('path').resolve( _pj.get('path'), _pj.get('entry_script') ),
@@ -900,10 +901,6 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 				'php': px.nodePhpBinOptions
 			}
 		};
-		if( options.documentRoot ){ initOption.documentRoot = options.documentRoot; }
-		if( options.realpathDataDir ){ initOption.realpathDataDir = options.realpathDataDir; }
-		if( options.pathResourceDir ){ initOption.pathResourceDir = options.pathResourceDir; }
-		if( options.realpathFiles ){ initOption.realpathFiles = options.realpathFiles; }
 
 		px2ce.init(
 			initOption,

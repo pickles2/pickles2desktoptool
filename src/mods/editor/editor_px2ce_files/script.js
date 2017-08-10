@@ -39,17 +39,17 @@ window.contApp = new (function( px ){
 			},
 			function(it1, arg){
 				if( _param.page_path ){
-					arg.target_html = 'contents';
+					arg.target_mode = 'page_content';
 					arg.page_path = _param.page_path;
 				}else if( _param.theme_id && _param.layout_id ){
-					arg.target_html = 'theme_layout';
+					arg.target_mode = 'theme_layout';
 					arg.page_path = require('path').resolve('/'+_param.theme_id+'/'+_param.layout_id+'.html');
 				}
 				// console.log(arg);
 				it1.next(arg);
 			},
 			function(it1, arg){
-				if( arg.target_html == 'theme_layout' ){
+				if( arg.target_mode == 'theme_layout' ){
 					_pj.px2dthelperGetRealpathThemeCollectionDir(function(result){
 						realpathThemeCollectionDir = result;
 						it1.next(arg);
@@ -66,18 +66,14 @@ window.contApp = new (function( px ){
 				var elmA = document.createElement('a');
 				elmA.href = _page_url;
 				var _page_origin = elmA.origin;
-				if( arg.target_html == 'theme_layout' ){
-					_page_url = 'file://'+require('path').resolve(realpathThemeCollectionDir+arg.page_path);
-					_page_origin = './editor_px2ce_files/preview.html#';
-					px2ceInitOptions.documentRoot = realpathThemeCollectionDir;
-					px2ceInitOptions.realpathDataDir = realpathThemeCollectionDir+_param.theme_id+'/guieditor.ignore/'+_param.layout_id+'/data/';
-					px2ceInitOptions.pathResourceDir = '/'+_param.theme_id+'/theme_files/layouts/'+_param.layout_id+'/resources/';
-					px2ceInitOptions.realpathFiles = realpathThemeCollectionDir+_param.theme_id+'/theme_files/layouts/'+_param.layout_id+'/';
+				if( arg.target_mode == 'theme_layout' ){
+					px2ceInitOptions.target_mode = arg.target_mode;
 				}
 
 				window.contAppPx2CEServer(px, arg.page_path, px2ceInitOptions, function(px2ceServer){
 					pickles2ContentsEditor.init(
 						{
+							'target_mode': arg.target_mode,
 							'page_path': arg.page_path , // <- 編集対象ページのパス
 							'elmCanvas': document.getElementById('canvas'), // <- 編集画面を描画するための器となる要素
 							'preview':{ // プレビュー用サーバーの情報を設定します。
@@ -125,9 +121,7 @@ window.contApp = new (function( px ){
 							},
 							'onMessage': function( message ){
 								px.message(message);
-							},
-							'contents_area_selector': (arg.target_html == 'theme_layout' ? '[data-contents-area]' : null),
-							'contents_bowl_name_by': (arg.target_html == 'theme_layout' ? 'data-contents-area' : null)
+							}
 						},
 						function(){
 							// スタンバイ完了したら呼び出されるコールバックメソッドです。

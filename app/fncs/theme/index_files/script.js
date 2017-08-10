@@ -1673,13 +1673,25 @@ window.contApp = new (function(){
 	}
 
 	/**
+	 * ウィンドウリサイズイベントハンドラ
+	 */
+	function onWindowResize(){
+		$elms.editor
+			.css({
+				'height': $(window).innerHeight() - 0
+			})
+		;
+
+	}
+
+	/**
 	 * イベント
 	 */
 	$(window).on('load', function(){
 		init(function(){
-			// console.log(themePluginList);
-			// console.log(realpathThemeCollectionDir);
-			// console.log(themeCollection);
+			$(window).on('resize', function(){
+				onWindowResize();
+			});
 			console.log('Standby.');
 		});
 	});

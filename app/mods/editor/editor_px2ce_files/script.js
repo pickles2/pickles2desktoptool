@@ -19521,6 +19521,7 @@ window.contApp = new (function( px ){
 					px2ceInitOptions.documentRoot = realpathThemeCollectionDir;
 					px2ceInitOptions.realpathDataDir = realpathThemeCollectionDir+_param.theme_id+'/guieditor.ignore/'+_param.layout_id+'/data/';
 					px2ceInitOptions.pathResourceDir = '/'+_param.theme_id+'/theme_files/layouts/'+_param.layout_id+'/resources/';
+					px2ceInitOptions.realpathFiles = realpathThemeCollectionDir+_param.theme_id+'/theme_files/layouts/'+_param.layout_id+'/';
 				}
 
 				window.contAppPx2CEServer(px, arg.page_path, px2ceInitOptions, function(px2ceServer){
@@ -19574,8 +19575,8 @@ window.contApp = new (function( px ){
 							'onMessage': function( message ){
 								px.message(message);
 							},
-							'contents_area_selector': '[data-contents-area]',
-							'contents_bowl_name_by': 'data-contents-area'
+							'contents_area_selector': (arg.target_html == 'theme_layout' ? '[data-contents-area]' : null),
+							'contents_bowl_name_by': (arg.target_html == 'theme_layout' ? 'data-contents-area' : null)
 						},
 						function(){
 							// スタンバイ完了したら呼び出されるコールバックメソッドです。

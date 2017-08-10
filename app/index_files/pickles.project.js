@@ -903,6 +903,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 		if( options.documentRoot ){ initOption.documentRoot = options.documentRoot; }
 		if( options.realpathDataDir ){ initOption.realpathDataDir = options.realpathDataDir; }
 		if( options.pathResourceDir ){ initOption.pathResourceDir = options.pathResourceDir; }
+		if( options.realpathFiles ){ initOption.realpathFiles = options.realpathFiles; }
 
 		px2ce.init(
 			initOption,

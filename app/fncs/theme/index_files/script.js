@@ -1477,7 +1477,7 @@ window.contApp = new (function(){
 				var ls = px.fs.readdirSync(realpathThemeCollectionDir);
 				// console.log(ls);
 				for( var idx in ls ){
-					var isThemeExists = px.utils79.is_file( realpathThemeCollectionDir+ls[idx]+'/default.html' );
+					var isThemeExists = px.utils79.is_dir( realpathThemeCollectionDir+ls[idx]+'/' );
 					if( isThemeExists ){
 						themeCollection.push( ls[idx] );
 					}
@@ -1497,6 +1497,7 @@ window.contApp = new (function(){
 	 * ホーム画面を開く
 	 */
 	this.pageHome = function(){
+		$('h1').text('テーマ');
 		var html = px.utils.bindEjs(
 			document.getElementById('template-list').innerHTML,
 			{
@@ -1513,6 +1514,7 @@ window.contApp = new (function(){
 	 */
 	this.pageThemeHome = function(themeId){
 		console.log('Theme: '+themeId);
+		$('h1').text('テーマ "'+themeId+'"');
 		it79.fnc({}, [
 			function(it1, arg){
 				var ls = px.fs.readdirSync(realpathThemeCollectionDir+themeId);
@@ -1520,6 +1522,7 @@ window.contApp = new (function(){
 				for( var idx in ls ){
 					if( px.utils79.is_file( realpathThemeCollectionDir+themeId+'/'+ls[idx] ) ){
 						var layoutId = ls[idx];
+						if( !layoutId.match(/\.html$/) ){continue;}
 						layoutId = layoutId.replace(/\.[a-zA-Z0-9]+$/i, '');
 						arg.layouts.push( layoutId );
 					}
@@ -1536,8 +1539,33 @@ window.contApp = new (function(){
 					}
 				);
 				$('.contents').html( html );
+				it1.next(arg);
+			},
+			function(it1, arg){
+				$('.contents').find('.cont-layout-list a button').on('click', function(e){
+					e.stopPropagation();
+				});
+				it1.next(arg);
 			}
 		]);
+		return;
+	}
+
+	/**
+	 * 新規レイアウトを作成する
+	 */
+	this.addNewLayout = function(theme_id){
+		alert('開発中です - '+theme_id);
+		// TODO: モーダルダイアログを開き、 レイアウト名と編集モードを選択してもらう。
+		return;
+	}
+
+	/**
+	 * レイアウトを削除する
+	 */
+	this.deleteLayout = function(theme_id){
+		alert('開発中です - '+theme_id);
+		// TODO: モーダルダイアログを開き、 本当に削除してもよいという意志を確認してもらう。
 		return;
 	}
 
@@ -1631,7 +1659,7 @@ window.contApp = new (function(){
 			.css({'overflow':'hidden'})
 		;
 
-		px.progress.close();
+		// px.progress.close();
 		return;
 	} // openEditor()
 
@@ -1655,6 +1683,7 @@ window.contApp = new (function(){
 		if(theme_id){
 			url += theme_id+'/';
 		}
+		px.fsEx.mkdirsSync( url );
 		px.utils.openURL( url );
 	}
 

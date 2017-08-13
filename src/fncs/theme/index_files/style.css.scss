@@ -5,4 +5,17 @@
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
+	.cont-layout-menu{
+		border: none;
+		display: block;
+		li{
+			display: inline-block;
+			border: none;
+			padding: 1px 2px;
+			button{
+				font-size: small;
+				padding: 0.2em 1em;
+			}
+		}
+	}
 }

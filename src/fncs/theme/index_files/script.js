@@ -186,6 +186,7 @@ window.contApp = new (function(){
 
 		$form.on('submit', function(e){
 			var newLayoutId = $form.find('input[name=layoutId]').val();
+			var editMode = $form.find('input[name=editMode]:checked').val();
 			var $errMsg = $form.find('[data-form-column-name=layoutId] .cont-error-message')
 			if( !newLayoutId.length ){
 				$errMsg.text('レイアウトIDを指定してください。');
@@ -205,6 +206,17 @@ window.contApp = new (function(){
 					return;
 				}
 			}
+			if( !layout_id ){
+				if( !editMode ){
+					$errMsg.text('編集方法が選択されていません。');
+					return;
+				}
+				if( editMode != 'html' && editMode != 'html.gui' ){
+					$errMsg.text('編集方法が不正です。');
+					return;
+				}
+			}
+
 
 			var realpathLayout = realpathThemeCollectionDir+theme_id+'/'+encodeURIComponent(newLayoutId)+'.html';
 			if( px.utils79.is_file( realpathLayout ) ){
@@ -230,6 +242,10 @@ window.contApp = new (function(){
 			}else{
 				// ファイル生成
 				px.fs.writeFileSync( realpathLayout, '<!DOCTYPE html>'+"\n" );
+				if( editMode == 'html.gui' ){
+					px.fsEx.mkdirsSync( realpathThemeCollectionDir+theme_id+'/guieditor.ignore/'+encodeURIComponent(newLayoutId)+'/data/' );
+					px.fs.writeFileSync( realpathThemeCollectionDir+theme_id+'/guieditor.ignore/'+encodeURIComponent(newLayoutId)+'/data/data.json', '{}'+"\n" );
+				}
 			}
 
 			var msg = (layout_id ? 'レイアウト '+layout_id+' を '+newLayoutId+' にリネームしました。' : 'レイアウト '+newLayoutId+' を作成しました。')

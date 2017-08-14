@@ -15,6 +15,16 @@
 						<div class="cont-error-message"></div>
 					</td>
 				</tr>
+				<% if( !layoutId ){ %>
+					<tr data-form-column-name="editMode">
+						<th>編集方法</th>
+						<td>
+							<div><label><input type="radio" name="editMode" value="html.gui" checked="checked" /> HTML + GUI編集</label></div>
+							<div><label><input type="radio" name="editMode" value="html" /> HTML</label></div>
+							<div class="cont-error-message"></div>
+						</td>
+					</tr>
+				<% } %>
 			</tbody>
 		</table>
 	</div>

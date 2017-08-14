@@ -22490,7 +22490,8 @@ module.exports = function(px2ce){
 
 				px2ce.gpiBridge(
 					{
-						'api': 'getModuleCssJsSrc'
+						'api': 'getModuleCssJsSrc',
+						'theme_id': px2ce.theme_id
 					},
 					function(CssJs){
 						moduleCssJs = CssJs;

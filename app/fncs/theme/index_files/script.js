@@ -1481,10 +1481,10 @@ window.contApp = new (function(){
 				var ls = px.fs.readdirSync(realpathThemeCollectionDir);
 				// console.log(ls);
 				for( var idx in ls ){
-					var isThemeExists = px.utils79.is_dir( realpathThemeCollectionDir+ls[idx]+'/' );
-					if( isThemeExists ){
-						themeCollection.push( ls[idx] );
+					if( !px.utils79.is_dir( realpathThemeCollectionDir+ls[idx]+'/' ) ){
+						continue;
 					}
+					themeCollection.push( ls[idx] );
 				}
 				it1.next(arg);
 			},
@@ -1517,19 +1517,30 @@ window.contApp = new (function(){
 	 * テーマのホーム画面を開く
 	 */
 	this.pageThemeHome = function(themeId){
-		console.log('Theme: '+themeId);
+		// console.log('Theme: '+themeId);
 		$('h1').text('テーマ "'+themeId+'"');
 		it79.fnc({}, [
 			function(it1, arg){
-				var ls = px.fs.readdirSync(realpathThemeCollectionDir+themeId);
+				var ls = px.fs.readdirSync(realpathThemeCollectionDir+encodeURIComponent(themeId));
 				arg.layouts = [];
 				for( var idx in ls ){
-					if( px.utils79.is_file( realpathThemeCollectionDir+themeId+'/'+ls[idx] ) ){
-						var layoutId = ls[idx];
-						if( !layoutId.match(/\.html$/) ){continue;}
-						layoutId = layoutId.replace(/\.[a-zA-Z0-9]+$/i, '');
-						arg.layouts.push( layoutId );
+					var layoutId = ls[idx];
+					if( !px.utils79.is_file( realpathThemeCollectionDir+encodeURIComponent(themeId)+'/'+encodeURIComponent(layoutId) ) ){
+						continue;
 					}
+					if( !layoutId.match(/\.html$/) ){
+						continue;
+					}
+					var layoutId = layoutId.replace(/\.[a-zA-Z0-9]+$/i, '');
+					var editMode = 'html';
+					if( px.utils79.is_file( realpathThemeCollectionDir+encodeURIComponent(themeId)+'/guieditor.ignore/'+encodeURIComponent(layoutId)+'/data/data.json' ) ){
+						editMode = 'html.gui';
+					}
+
+					arg.layouts.push( {
+						'id': layoutId,
+						'editMode': editMode
+					} );
 				}
 				it1.next(arg);
 			},
@@ -1556,20 +1567,171 @@ window.contApp = new (function(){
 	}
 
 	/**
-	 * 新規レイアウトを作成する
+	 * 新規レイアウトを作成またはリネームする
 	 */
-	this.addNewLayout = function(theme_id){
-		alert('開発中です - '+theme_id);
-		// TODO: モーダルダイアログを開き、 レイアウト名と編集モードを選択してもらう。
+	this.addNewLayout = function(theme_id, layout_id){
+		if( !theme_id ){
+			return;
+		}
+		var html = px.utils.bindEjs(
+			px.fs.readFileSync('app/fncs/theme/index_files/templates/form-layout.html').toString(),
+			{
+				'themeId': theme_id,
+				'layoutId': layout_id
+			}
+		);
+		var $body = $('<div>').append( html );
+		var $form = $body.find('form');
+
+		px2style.modal(
+			{
+				'title': (layout_id ? 'レイアウトのリネーム' : '新規レイアウト作成'),
+				'body': $body,
+				'buttons': [
+					$('<button class="px2-btn">')
+						.text('キャンセル')
+						.on('click', function(e){
+							px2style.closeModal();
+						}),
+					$('<button class="px2-btn px2-btn--primary">')
+						.text('OK')
+						.on('click', function(e){
+							$form.submit();
+						})
+				]
+			},
+			function(){}
+		);
+
+		$form.on('submit', function(e){
+			var newLayoutId = $form.find('input[name=layoutId]').val();
+			var editMode = $form.find('input[name=editMode]:checked').val();
+			var $errMsg = $form.find('[data-form-column-name=layoutId] .cont-error-message')
+			if( !newLayoutId.length ){
+				$errMsg.text('レイアウトIDを指定してください。');
+				return;
+			}
+			if( !newLayoutId.match(/^[a-zA-Z0-9\_\-]+$/) ){
+				$errMsg.text('レイアウトIDに使えない文字が含まれています。');
+				return;
+			}
+			if( newLayoutId.length > 128 ){
+				$errMsg.text('レイアウトIDが長すぎます。');
+				return;
+			}
+			if( layout_id ){
+				if( layout_id == newLayoutId ){
+					$errMsg.text('レイアウトIDが変更されていません。');
+					return;
+				}
+			}
+			if( !layout_id ){
+				if( !editMode ){
+					$errMsg.text('編集方法が選択されていません。');
+					return;
+				}
+				if( editMode != 'html' && editMode != 'html.gui' ){
+					$errMsg.text('編集方法が不正です。');
+					return;
+				}
+			}
+
+
+			var realpathLayout = realpathThemeCollectionDir+theme_id+'/'+encodeURIComponent(newLayoutId)+'.html';
+			if( px.utils79.is_file( realpathLayout ) ){
+				$errMsg.text('レイアウトID '+newLayoutId+' は、すでに存在します。');
+				return;
+			}
+
+			if( layout_id ){
+				// ファイル名変更
+				px.fs.renameSync( realpathThemeCollectionDir+theme_id+'/'+encodeURIComponent(layout_id)+'.html', realpathLayout );
+				if( px.utils79.is_dir( realpathThemeCollectionDir+theme_id+'/guieditor.ignore/'+encodeURIComponent(layout_id)+'/' ) ){
+					px.fs.renameSync(
+						realpathThemeCollectionDir+theme_id+'/guieditor.ignore/'+encodeURIComponent(layout_id)+'/',
+						realpathThemeCollectionDir+theme_id+'/guieditor.ignore/'+encodeURIComponent(newLayoutId)+'/'
+					);
+				}
+				if( px.utils79.is_dir( realpathThemeCollectionDir+theme_id+'/theme_files/layouts/'+encodeURIComponent(layout_id)+'/' ) ){
+					px.fs.renameSync(
+						realpathThemeCollectionDir+theme_id+'/theme_files/layouts/'+encodeURIComponent(layout_id)+'/',
+						realpathThemeCollectionDir+theme_id+'/theme_files/layouts/'+encodeURIComponent(newLayoutId)+'/'
+					);
+				}
+			}else{
+				// ファイル生成
+				px.fs.writeFileSync( realpathLayout, '<!DOCTYPE html>'+"\n" );
+				if( editMode == 'html.gui' ){
+					px.fsEx.mkdirsSync( realpathThemeCollectionDir+theme_id+'/guieditor.ignore/'+encodeURIComponent(newLayoutId)+'/data/' );
+					px.fs.writeFileSync( realpathThemeCollectionDir+theme_id+'/guieditor.ignore/'+encodeURIComponent(newLayoutId)+'/data/data.json', '{}'+"\n" );
+				}
+			}
+
+			var msg = (layout_id ? 'レイアウト '+layout_id+' を '+newLayoutId+' にリネームしました。' : 'レイアウト '+newLayoutId+' を作成しました。')
+			px.message(msg);
+			px2style.closeModal();
+			_this.pageThemeHome(theme_id);
+		});
+
 		return;
+	}
+
+	/**
+	 * レイアウトをリネームする
+	 */
+	this.renameLayout = function(theme_id, layout_id){
+		return this.addNewLayout(theme_id, layout_id);
 	}
 
 	/**
 	 * レイアウトを削除する
 	 */
-	this.deleteLayout = function(theme_id){
-		alert('開発中です - '+theme_id);
-		// TODO: モーダルダイアログを開き、 本当に削除してもよいという意志を確認してもらう。
+	this.deleteLayout = function(theme_id, layout_id){
+		var html = px.utils.bindEjs(
+			px.fs.readFileSync('app/fncs/theme/index_files/templates/form-layout-delete.html').toString(),
+			{
+				'themeId': theme_id,
+				'layoutId': layout_id
+			}
+		);
+		var $body = $('<div>').append( html );
+		var $form = $body.find('form');
+
+		px2style.modal(
+			{
+				'title': 'レイアウト削除',
+				'body': $body,
+				'buttons': [
+					$('<button class="px2-btn">')
+						.text('キャンセル')
+						.on('click', function(e){
+							px2style.closeModal();
+						}),
+					$('<button class="px2-btn px2-btn--danger">')
+						.text('削除する')
+						.on('click', function(e){
+							$form.submit();
+						})
+				]
+			},
+			function(){}
+		);
+
+		$form.on('submit', function(e){
+			// ファイルを削除
+			px.fs.unlinkSync( realpathThemeCollectionDir+theme_id+'/'+encodeURIComponent(layout_id)+'.html' );
+			if( px.utils79.is_dir( realpathThemeCollectionDir+theme_id+'/guieditor.ignore/'+encodeURIComponent(layout_id)+'/' ) ){
+				px.fsEx.removeSync( realpathThemeCollectionDir+theme_id+'/guieditor.ignore/'+encodeURIComponent(layout_id)+'/' );
+			}
+			if( px.utils79.is_dir( realpathThemeCollectionDir+theme_id+'/theme_files/layouts/'+encodeURIComponent(layout_id)+'/' ) ){
+				px.fsEx.removeSync( realpathThemeCollectionDir+theme_id+'/theme_files/layouts/'+encodeURIComponent(layout_id)+'/' );
+			}
+
+			px.message('レイアウト ' + layout_id + ' を削除しました。');
+			px2style.closeModal();
+			_this.pageThemeHome(theme_id);
+		});
+
 		return;
 	}
 
@@ -1577,6 +1739,10 @@ window.contApp = new (function(){
 	 * APIバージョンが不十分(旧画面)
 	 */
 	this.pageNotEnoughApiVersion = function( errors ){
+		// ↓このケースでは、 `realpathThemeCollectionDir` を返すAPIが利用できないため、
+		// 　古い方法でパスを求める。
+		realpathThemeCollectionDir = pj.get('path')+'/'+pj.get('home_dir')+'/themes/';
+
 		var html = px.utils.bindEjs(
 			px.fs.readFileSync('app/fncs/theme/index_files/templates/not-enough-api-version.html').toString(),
 			{'errors': errors}

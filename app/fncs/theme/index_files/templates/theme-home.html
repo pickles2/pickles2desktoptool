@@ -15,11 +15,14 @@
 	<% if( layouts.length ){ %>
 		<ul class="cont-layout-list listview">
 		<% for( var idx in layouts ){ %>
-			<li><a href="javascript:;" data-theme-id="<%= themeId %>" data-layout-id="<%= layouts[idx] %>" onclick="contApp.openEditor($(this).attr('data-theme-id'), $(this).attr('data-layout-id'));return false;">
-				<%= layouts[idx] %>
+			<li><a href="javascript:;" data-theme-id="<%= themeId %>" data-layout-id="<%= layouts[idx].id %>" onclick="contApp.openEditor($(this).attr('data-theme-id'), $(this).attr('data-layout-id'));return false;">
+				<%= layouts[idx].id %>
+				<span class="px2-editor-type px2-editor-type--<%= (layouts[idx].editMode == 'html.gui' ? 'html-gui' : layouts[idx].editMode) %>"></span>
+
 				<ul class="cont-layout-menu">
-					<li><button class="px2-btn px2-btn--primary" data-theme-id="<%= themeId %>" data-layout-id="<%= layouts[idx] %>" onclick="contApp.openEditor($(this).attr('data-theme-id'), $(this).attr('data-layout-id'));return false;">編集する</button></li>
-					<li><button class="px2-btn px2-btn--danger" data-theme-id="<%= themeId %>" data-layout-id="<%= layouts[idx] %>" onclick="contApp.deleteLayout($(this).attr('data-theme-id'), $(this).attr('data-layout-id'));return false;">削除する</button></li>
+					<li><button class="px2-btn px2-btn--primary" data-theme-id="<%= themeId %>" data-layout-id="<%= layouts[idx].id %>" onclick="contApp.openEditor($(this).attr('data-theme-id'), $(this).attr('data-layout-id'));return false;">編集する</button></li>
+					<li><button class="px2-btn" data-theme-id="<%= themeId %>" data-layout-id="<%= layouts[idx].id %>" onclick="contApp.renameLayout($(this).attr('data-theme-id'), $(this).attr('data-layout-id'));return false;">リネームする</button></li>
+					<li><button class="px2-btn px2-btn--danger" data-theme-id="<%= themeId %>" data-layout-id="<%= layouts[idx].id %>" onclick="contApp.deleteLayout($(this).attr('data-theme-id'), $(this).attr('data-layout-id'));return false;">削除する</button></li>
 				</ul>
 			</a></li>
 		<% } %>

@@ -73,10 +73,10 @@ window.contApp = new (function(){
 				var ls = px.fs.readdirSync(realpathThemeCollectionDir);
 				// console.log(ls);
 				for( var idx in ls ){
-					var isThemeExists = px.utils79.is_dir( realpathThemeCollectionDir+ls[idx]+'/' );
-					if( isThemeExists ){
-						themeCollection.push( ls[idx] );
+					if( !px.utils79.is_dir( realpathThemeCollectionDir+ls[idx]+'/' ) ){
+						continue;
 					}
+					themeCollection.push( ls[idx] );
 				}
 				it1.next(arg);
 			},
@@ -113,15 +113,26 @@ window.contApp = new (function(){
 		$('h1').text('テーマ "'+themeId+'"');
 		it79.fnc({}, [
 			function(it1, arg){
-				var ls = px.fs.readdirSync(realpathThemeCollectionDir+themeId);
+				var ls = px.fs.readdirSync(realpathThemeCollectionDir+encodeURIComponent(themeId));
 				arg.layouts = [];
 				for( var idx in ls ){
-					if( px.utils79.is_file( realpathThemeCollectionDir+themeId+'/'+ls[idx] ) ){
-						var layoutId = ls[idx];
-						if( !layoutId.match(/\.html$/) ){continue;}
-						layoutId = layoutId.replace(/\.[a-zA-Z0-9]+$/i, '');
-						arg.layouts.push( layoutId );
+					var layoutId = ls[idx];
+					if( !px.utils79.is_file( realpathThemeCollectionDir+encodeURIComponent(themeId)+'/'+encodeURIComponent(layoutId) ) ){
+						continue;
 					}
+					if( !layoutId.match(/\.html$/) ){
+						continue;
+					}
+					var layoutId = layoutId.replace(/\.[a-zA-Z0-9]+$/i, '');
+					var editMode = 'html';
+					if( px.utils79.is_file( realpathThemeCollectionDir+encodeURIComponent(themeId)+'/guieditor.ignore/'+encodeURIComponent(layoutId)+'/data/data.json' ) ){
+						editMode = 'html.gui';
+					}
+
+					arg.layouts.push( {
+						'id': layoutId,
+						'editMode': editMode
+					} );
 				}
 				it1.next(arg);
 			},

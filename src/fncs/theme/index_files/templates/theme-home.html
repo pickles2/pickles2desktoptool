@@ -1,0 +1,33 @@
+<div class="container">
+	<div class="btn-group btn-group-justified" role="group">
+		<div class="btn-group" role="group">
+			<button class="btn px2-btn" onclick="contApp.openInFinder('/<%= themeId %>/');"><%= themeId %> フォルダを開く</button>
+		</div>
+		<div class="btn-group" role="group">
+			<button class="btn px2-btn" onclick="contApp.openInFinder('/<%= themeId %>/theme_files/');">リソースフォルダを開く</button>
+		</div>
+		<div class="btn-group" role="group">
+			<button class="btn px2-btn" onclick="contApp.openInTextEditor('/<%= themeId %>/');">外部テキストエディタで開く</button>
+		</div>
+	</div>
+
+	<h2>レイアウト</h2>
+	<% if( layouts.length ){ %>
+		<ul class="cont-layout-list listview">
+		<% for( var idx in layouts ){ %>
+			<li><a href="javascript:;" data-theme-id="<%= themeId %>" data-layout-id="<%= layouts[idx] %>" onclick="contApp.openEditor($(this).attr('data-theme-id'), $(this).attr('data-layout-id'));return false;">
+				<%= layouts[idx] %>
+				<ul class="cont-layout-menu">
+					<li><button class="px2-btn px2-btn--primary" data-theme-id="<%= themeId %>" data-layout-id="<%= layouts[idx] %>" onclick="contApp.openEditor($(this).attr('data-theme-id'), $(this).attr('data-layout-id'));return false;">編集する</button></li>
+					<li><button class="px2-btn px2-btn--danger" data-theme-id="<%= themeId %>" data-layout-id="<%= layouts[idx] %>" onclick="contApp.deleteLayout($(this).attr('data-theme-id'), $(this).attr('data-layout-id'));return false;">削除する</button></li>
+				</ul>
+			</a></li>
+		<% } %>
+		</ul>
+	<% }else{ %>
+		<p>レイアウトを作成してください。</p>
+	<% } %>
+	<p class="text-right"><button class="px2-btn px2-btn--primary" onclick="contApp.addNewLayout('<%= themeId %>');return false;">新規レイアウト作成</button></p>
+
+	<p class="text-center"><button class="px2-btn" onclick="contApp.pageHome();">テーマコレクションへ戻る</button></p>
+</div>

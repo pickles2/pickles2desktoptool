@@ -1449,7 +1449,11 @@ window.contApp = new (function(){
 				pj.px2dthelperGetAll('/', {}, function(result){
 					px2all = result;
 					// console.log(px2all);
-					themePluginList = px2all.packages.package_list.themes;
+					themePluginList = [];
+					try {
+						themePluginList = px2all.packages.package_list.themes;
+					} catch (e) {
+					}
 					it1.next(arg);
 					return;
 				});
@@ -1499,7 +1503,7 @@ window.contApp = new (function(){
 	this.pageHome = function(){
 		$('h1').text('テーマ');
 		var html = px.utils.bindEjs(
-			document.getElementById('template-list').innerHTML,
+			px.fs.readFileSync('app/fncs/theme/index_files/templates/list.html').toString(),
 			{
 				'themePluginList': themePluginList,
 				'realpathThemeCollectionDir': realpathThemeCollectionDir,
@@ -1531,7 +1535,7 @@ window.contApp = new (function(){
 			},
 			function(it1, arg){
 				var html = px.utils.bindEjs(
-					document.getElementById('template-theme-home').innerHTML,
+					px.fs.readFileSync('app/fncs/theme/index_files/templates/theme-home.html').toString(),
 					{
 						'themeId': themeId,
 						'layouts': arg.layouts,
@@ -1574,7 +1578,7 @@ window.contApp = new (function(){
 	 */
 	this.pageNotEnoughApiVersion = function( errors ){
 		var html = px.utils.bindEjs(
-			document.getElementById('template-not-enough-api-version').innerHTML,
+			px.fs.readFileSync('app/fncs/theme/index_files/templates/not-enough-api-version.html').toString(),
 			{'errors': errors}
 		);
 		$('.contents').html( html );

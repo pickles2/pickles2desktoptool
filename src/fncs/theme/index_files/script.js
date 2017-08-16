@@ -84,13 +84,22 @@ window.contApp = new (function(){
 			return;
 		}
 		themeCollection = [];
+		var realpathDefaultThumb = 'data:image/png;base64,'+px.fs.readFileSync( px.path.resolve( './app/common/images/appicon.png' ) ).toString('base64');
 		var ls = px.fs.readdirSync(realpathThemeCollectionDir);
 		// console.log(ls);
 		for( var idx in ls ){
 			if( !px.utils79.is_dir( realpathThemeCollectionDir+ls[idx]+'/' ) ){
 				continue;
 			}
-			themeCollection.push( ls[idx] );
+			var themeInfo = {};
+			themeInfo.id = ls[idx];
+
+			themeInfo.thumb = realpathDefaultThumb;
+			if( px.utils79.is_file( realpathThemeCollectionDir+ls[idx]+'/thumb.png' ) ){
+				themeInfo.thumb = 'data:image/png;base64,'+px.fs.readFileSync( px.path.resolve( realpathThemeCollectionDir+ls[idx]+'/thumb.png' ) ).toString('base64');
+			}
+
+			themeCollection.push( themeInfo );
 		}
 
 		var html = px.utils.bindEjs(
@@ -112,6 +121,7 @@ window.contApp = new (function(){
 		$('h1').text('テーマ "'+themeId+'"');
 		it79.fnc({}, [
 			function(it1, arg){
+				// レイアウトをリスト化
 				var ls = px.fs.readdirSync(realpathThemeCollectionDir+encodeURIComponent(themeId));
 				arg.layouts = [];
 				for( var idx in ls ){
@@ -136,11 +146,35 @@ window.contApp = new (function(){
 				it1.next(arg);
 			},
 			function(it1, arg){
+				// README 取得
+				arg.readme = '';
+				if( px.utils79.is_file( realpathThemeCollectionDir+themeId+'/README.md' ) ){
+					arg.readme = px.fs.readFileSync( realpathThemeCollectionDir+themeId+'/README.md' ).toString();
+					arg.readme = px.utils.markdown( arg.readme );
+				}else if( px.utils79.is_file( realpathThemeCollectionDir+themeId+'/README.html' ) ){
+					arg.readme = px.fs.readFileSync( realpathThemeCollectionDir+themeId+'/README.html' ).toString();
+				}
+				it1.next(arg);
+			},
+			function(it1, arg){
+				// サムネイル取得
+				arg.thumb = '';
+				var realpathImage = px.path.resolve( './app/common/images/appicon.png' );
+				if( px.utils79.is_file( realpathThemeCollectionDir+themeId+'/thumb.png' ) ){
+					realpathImage = px.path.resolve( realpathThemeCollectionDir+themeId+'/thumb.png' );
+				}
+				arg.thumb = 'data:image/png;base64,'+px.fs.readFileSync( realpathImage ).toString('base64');
+				it1.next(arg);
+			},
+			function(it1, arg){
+				// テンプレート描画
 				var html = px.utils.bindEjs(
 					px.fs.readFileSync('app/fncs/theme/index_files/templates/theme-home.html').toString(),
 					{
 						'themeId': themeId,
 						'layouts': arg.layouts,
+						'thumb': arg.thumb,
+						'readme': arg.readme,
 						'realpathThemeCollectionDir': realpathThemeCollectionDir
 					}
 				);
@@ -148,6 +182,7 @@ window.contApp = new (function(){
 				it1.next(arg);
 			},
 			function(it1, arg){
+				// イベント処理登録
 				$('.contents').find('.cont-layout-list a button').on('click', function(e){
 					e.stopPropagation();
 				});

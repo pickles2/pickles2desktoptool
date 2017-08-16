@@ -5,6 +5,19 @@
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
+	.cont-theme-list{
+		&__unit{
+			display: flex;
+			&-thumb{
+				width: 60px;
+				margin-right: 20px;
+				img{
+					width: 60px;
+					height: 60px;
+				}
+			}
+		}
+	}
 	.cont-layout-menu{
 		border: none;
 		display: block;
@@ -16,6 +29,22 @@
 				font-size: small;
 				padding: 0.2em 1em;
 			}
+		}
+	}
+	.cont-theme-home-readme{
+		&__thumb{
+			float: left;
+			margin: 0 20px 20px 0;
+			width: 220px;
+			img{
+				width: 220px;
+				height: 220px;
+			}
+		}
+		&:after{
+			content:" ";
+			display:block;
+			clear:both;
 		}
 	}
 }

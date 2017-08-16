@@ -10,9 +10,18 @@
 
 	<h2>テーマコレクション</h2>
 	<% if( themeCollection.length ){ %>
-		<ul class="listview">
+		<ul class="listview cont-theme-list">
 		<% for( var idx in themeCollection ){ %>
-			<li><a href="javascript:;" data-theme-id="<%= themeCollection[idx] %>" onclick="contApp.pageThemeHome($(this).attr('data-theme-id'));"><%= themeCollection[idx] %></a></li>
+			<li><a href="javascript:;" data-theme-id="<%= themeCollection[idx].id %>" onclick="contApp.pageThemeHome($(this).attr('data-theme-id'));">
+				<div class="cont-theme-list__unit">
+					<div class="cont-theme-list__unit-thumb">
+						<img src="<%= themeCollection[idx].thumb %>" alt="" />
+					</div>
+					<div class="cont-theme-list__unit-body">
+						<p><%= themeCollection[idx].id %></p>
+					</div>
+				</div>
+			</a></li>
 		<% } %>
 		</ul>
 	<% }else{ %>

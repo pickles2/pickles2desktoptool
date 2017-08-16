@@ -30,7 +30,14 @@
 	<% }else{ %>
 		<p>レイアウトを作成してください。</p>
 	<% } %>
-	<p class="text-right"><button class="px2-btn px2-btn--primary" onclick="contApp.addNewLayout('<%= themeId %>');return false;">新規レイアウト作成</button></p>
+	<p class="text-right">
+		<button class="px2-btn px2-btn--primary" onclick="contApp.addNewLayout('<%= themeId %>');return false;">新規レイアウト作成</button>
+	</p>
 
-	<p class="text-center"><button class="px2-btn" onclick="contApp.pageHome();">テーマコレクションへ戻る</button></p>
+	<p class="text-center">
+		<button class="px2-btn" onclick="contApp.renameTheme('<%= themeId %>');return false;">テーマ名を変更する</button>
+	</p>
+	<p class="text-center">
+		<button class="px2-btn" onclick="contApp.pageHome();">テーマコレクションへ戻る</button>
+	</p>
 </div>

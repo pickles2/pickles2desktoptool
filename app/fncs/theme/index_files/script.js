@@ -1468,28 +1468,6 @@ window.contApp = new (function(){
 			},
 			function(it1, arg){
 				// --------------------------------------
-				// テーマコレクションをリスト化
-				if( !px.utils79.is_dir(realpathThemeCollectionDir) ){
-					// テーマディレクトリが存在しなければ終了
-					var err = 'Theme Collection Dir is NOT exists.';
-					console.log(err, realpathThemeCollectionDir);
-					_this.pageNotEnoughApiVersion([err]);
-					callback();
-					return;
-				}
-				themeCollection = [];
-				var ls = px.fs.readdirSync(realpathThemeCollectionDir);
-				// console.log(ls);
-				for( var idx in ls ){
-					if( !px.utils79.is_dir( realpathThemeCollectionDir+ls[idx]+'/' ) ){
-						continue;
-					}
-					themeCollection.push( ls[idx] );
-				}
-				it1.next(arg);
-			},
-			function(it1, arg){
-				// --------------------------------------
 				// スタンバイ完了
 				_this.pageHome();
 				callback();
@@ -1502,6 +1480,27 @@ window.contApp = new (function(){
 	 */
 	this.pageHome = function(){
 		$('h1').text('テーマ');
+
+		// --------------------------------------
+		// テーマコレクションをリスト化
+		if( !px.utils79.is_dir(realpathThemeCollectionDir) ){
+			// テーマディレクトリが存在しなければ終了
+			var err = 'Theme Collection Dir is NOT exists.';
+			console.log(err, realpathThemeCollectionDir);
+			_this.pageNotEnoughApiVersion([err]);
+			callback();
+			return;
+		}
+		themeCollection = [];
+		var ls = px.fs.readdirSync(realpathThemeCollectionDir);
+		// console.log(ls);
+		for( var idx in ls ){
+			if( !px.utils79.is_dir( realpathThemeCollectionDir+ls[idx]+'/' ) ){
+				continue;
+			}
+			themeCollection.push( ls[idx] );
+		}
+
 		var html = px.utils.bindEjs(
 			px.fs.readFileSync('app/fncs/theme/index_files/templates/list.html').toString(),
 			{
@@ -1563,6 +1562,142 @@ window.contApp = new (function(){
 				it1.next(arg);
 			}
 		]);
+		return;
+	}
+
+	/**
+	 * 新規テーマを作成またはリネームする
+	 */
+	this.addNewTheme = function(theme_id){
+		var html = px.utils.bindEjs(
+			px.fs.readFileSync('app/fncs/theme/index_files/templates/form-theme.html').toString(),
+			{
+				'themeId': theme_id
+			}
+		);
+		var $body = $('<div>').append( html );
+		var $form = $body.find('form');
+
+		px2style.modal(
+			{
+				'title': (theme_id ? 'テーマのリネーム' : '新規テーマ作成'),
+				'body': $body,
+				'buttons': [
+					$('<button class="px2-btn">')
+						.text('キャンセル')
+						.on('click', function(e){
+							px2style.closeModal();
+						}),
+					$('<button class="px2-btn px2-btn--primary">')
+						.text('OK')
+						.on('click', function(e){
+							$form.submit();
+						})
+				]
+			},
+			function(){}
+		);
+
+		$form.on('submit', function(e){
+			var newThemeId = $form.find('input[name=themeId]').val();
+			var $errMsg = $form.find('[data-form-column-name=themeId] .cont-error-message')
+			if( !newThemeId.length ){
+				$errMsg.text('テーマIDを指定してください。');
+				return;
+			}
+			if( !newThemeId.match(/^[a-zA-Z0-9\_\-]+$/) ){
+				$errMsg.text('テーマIDに使えない文字が含まれています。');
+				return;
+			}
+			if( newThemeId.length > 128 ){
+				$errMsg.text('テーマIDが長すぎます。');
+				return;
+			}
+			if( theme_id ){
+				if( theme_id == newThemeId ){
+					$errMsg.text('テーマIDが変更されていません。');
+					return;
+				}
+			}
+
+
+			var realpathTheme = realpathThemeCollectionDir+encodeURIComponent(newThemeId)+'/';
+			if( px.utils79.is_dir( realpathTheme ) ){
+				$errMsg.text('テーマID '+newThemeId+' は、すでに存在します。');
+				return;
+			}
+
+			if( theme_id ){
+				// フォルダ名変更
+				px.fs.renameSync( realpathThemeCollectionDir+theme_id+'/', realpathTheme );
+			}else{
+				// フォルダ生成
+				px.fsEx.mkdirsSync( realpathTheme );
+				px.fs.writeFileSync( realpathTheme+'/default.html', '' );
+				px.fs.writeFileSync( realpathTheme+'/plain.html', '' );
+				px.fs.writeFileSync( realpathTheme+'/naked.html', '' );
+				px.fs.writeFileSync( realpathTheme+'/popup.html', '' );
+				px.fs.writeFileSync( realpathTheme+'/top.html', '' );
+			}
+
+			var msg = (theme_id ? 'テーマ '+theme_id+' を '+newThemeId+' にリネームしました。' : 'テーマ '+newThemeId+' を作成しました。')
+			px.message(msg);
+			px2style.closeModal();
+			_this.pageThemeHome(newThemeId);
+		});
+
+		return;
+	}
+
+	/**
+	 * テーマをリネームする
+	 */
+	this.renameTheme = function(theme_id){
+		return this.addNewTheme(theme_id);
+	}
+
+	/**
+	 * テーマを削除する
+	 */
+	this.deleteTheme = function(theme_id){
+		var html = px.utils.bindEjs(
+			px.fs.readFileSync('app/fncs/theme/index_files/templates/form-theme-delete.html').toString(),
+			{
+				'themeId': theme_id
+			}
+		);
+		var $body = $('<div>').append( html );
+		var $form = $body.find('form');
+
+		px2style.modal(
+			{
+				'title': 'テーマ削除',
+				'body': $body,
+				'buttons': [
+					$('<button class="px2-btn">')
+						.text('キャンセル')
+						.on('click', function(e){
+							px2style.closeModal();
+						}),
+					$('<button class="px2-btn px2-btn--danger">')
+						.text('削除する')
+						.on('click', function(e){
+							$form.submit();
+						})
+				]
+			},
+			function(){}
+		);
+
+		$form.on('submit', function(e){
+			// フォルダを削除
+			px.fsEx.removeSync( realpathThemeCollectionDir+theme_id+'/' );
+
+			px.message('テーマ ' + theme_id + ' を削除しました。');
+			px2style.closeModal();
+			_this.pageHome();
+		});
+
 		return;
 	}
 

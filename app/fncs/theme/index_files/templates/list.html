@@ -16,9 +16,12 @@
 		<% } %>
 		</ul>
 	<% }else{ %>
-		<p>レイアウトを作成してください。</p>
+		<p>テーマを作成してください。</p>
 	<% } %>
 	<!-- <%= realpathThemeCollectionDir %> -->
+	<p class="text-right">
+		<button class="px2-btn px2-btn--primary" onclick="contApp.addNewTheme();return false;">新規テーマ作成</button>
+	</p>
 
 	<!--
 	<h2>テーマパッケージ</h2>

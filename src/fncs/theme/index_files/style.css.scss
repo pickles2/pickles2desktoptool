@@ -10,6 +10,7 @@
 			display: flex;
 			&-thumb{
 				width: 60px;
+				max-width: 100%;
 				margin-right: 20px;
 				img{
 					width: 60px;
@@ -36,6 +37,7 @@
 			float: left;
 			margin: 0 20px 20px 0;
 			width: 220px;
+			max-width: 100%;
 			img{
 				width: 220px;
 				height: 220px;

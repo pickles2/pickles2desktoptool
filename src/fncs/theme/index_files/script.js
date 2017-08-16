@@ -9,7 +9,8 @@ window.contApp = new (function(){
 	var px2all,
 		themePluginList,
 		realpathThemeCollectionDir,
-		themeCollection;
+		themeCollection,
+		multithemePluginOptions;
 	var $elms = {'editor': $('<div>')};
 
 	function init( callback ){
@@ -46,17 +47,36 @@ window.contApp = new (function(){
 						themePluginList = px2all.packages.package_list.themes;
 					} catch (e) {
 					}
+
+					// テーマコレクションディレクトリのパスを求める
+					realpathThemeCollectionDir = px2all.realpath_theme_collection_dir;
+
 					it1.next(arg);
 					return;
 				});
 			},
 			function(it1, arg){
 				// --------------------------------------
-				// テーマコレクションディレクトリのパスを求める
-				pj.px2dthelperGetRealpathThemeCollectionDir(function(result){
-					realpathThemeCollectionDir = result;
-					it1.next(arg);
-				});
+				// テーマプラグインのオプションを取得する
+
+				var multithemePluginFunctionName = 'tomk79\\pickles2\\multitheme\\theme::exec';
+
+				pj.px2proj.query(
+					'/?PX=px2dthelper.plugins.get_plugin_options&func_div=processor.html&plugin_name='+encodeURIComponent(multithemePluginFunctionName),
+					{
+						"output": "json",
+						"complete": function(result, code){
+							try {
+								result = JSON.parse(result);
+								multithemePluginOptions = result[0].options;
+							} catch (e) {
+							}
+							// console.log(multithemePluginOptions);
+							it1.next(arg);
+						}
+					}
+				);
+
 			},
 			function(it1, arg){
 				// --------------------------------------
@@ -107,7 +127,8 @@ window.contApp = new (function(){
 			{
 				'themePluginList': themePluginList,
 				'realpathThemeCollectionDir': realpathThemeCollectionDir,
-				'themeCollection': themeCollection
+				'themeCollection': themeCollection,
+				'default_theme_id': multithemePluginOptions.default_theme_id
 			}
 		);
 		$('.contents').html( html );

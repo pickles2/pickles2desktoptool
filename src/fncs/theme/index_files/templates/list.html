@@ -18,7 +18,10 @@
 						<img src="<%= themeCollection[idx].thumb %>" alt="" />
 					</div>
 					<div class="cont-theme-list__unit-body">
-						<p><%= themeCollection[idx].id %></p>
+						<p>
+							<%= themeCollection[idx].id %>
+							<% if(default_theme_id == themeCollection[idx].id){ %> <span style="color: #da0;">★</span><% } %>
+						</p>
 					</div>
 				</div>
 			</a></li>

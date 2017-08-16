@@ -9,9 +9,9 @@ window.contApp = new (function(){
 	var px2all,
 		themePluginList,
 		realpathThemeCollectionDir,
-		themeCollection,
 		multithemePluginOptions;
 	var $elms = {'editor': $('<div>')};
+	var realpathDefaultThumb = 'data:image/png;base64,'+px.fs.readFileSync( px.path.resolve( './app/common/images/default_theme_thumb.png' ) ).toString('base64');
 
 	function init( callback ){
 		it79.fnc({}, [
@@ -47,6 +47,7 @@ window.contApp = new (function(){
 						themePluginList = px2all.packages.package_list.themes;
 					} catch (e) {
 					}
+					// console.log(themePluginList);
 
 					// テーマコレクションディレクトリのパスを求める
 					realpathThemeCollectionDir = px2all.realpath_theme_collection_dir;
@@ -58,9 +59,6 @@ window.contApp = new (function(){
 			function(it1, arg){
 				// --------------------------------------
 				// テーマプラグインのオプションを取得する
-
-				var multithemePluginFunctionName = 'tomk79\\pickles2\\multitheme\\theme::exec';
-
 				pj.px2proj.query(
 					'/?PX=px2dthelper.plugins.get_plugin_options&func_div=processor.html&plugin_name='+encodeURIComponent(multithemePluginFunctionName),
 					{
@@ -93,45 +91,30 @@ window.contApp = new (function(){
 	this.pageHome = function(){
 		$('h1').text('テーマ');
 
-		// --------------------------------------
-		// テーマコレクションをリスト化
 		if( !px.utils79.is_dir(realpathThemeCollectionDir) ){
-			// テーマディレクトリが存在しなければ終了
+			// テーマコレクションディレクトリが存在しなければ終了
 			var err = 'Theme Collection Dir is NOT exists.';
 			console.log(err, realpathThemeCollectionDir);
 			_this.pageNotEnoughApiVersion([err]);
-			callback();
 			return;
 		}
-		themeCollection = [];
-		var realpathDefaultThumb = 'data:image/png;base64,'+px.fs.readFileSync( px.path.resolve( './app/common/images/appicon.png' ) ).toString('base64');
-		var ls = px.fs.readdirSync(realpathThemeCollectionDir);
-		// console.log(ls);
-		for( var idx in ls ){
-			if( !px.utils79.is_dir( realpathThemeCollectionDir+ls[idx]+'/' ) ){
-				continue;
-			}
-			var themeInfo = {};
-			themeInfo.id = ls[idx];
 
-			themeInfo.thumb = realpathDefaultThumb;
-			if( px.utils79.is_file( realpathThemeCollectionDir+ls[idx]+'/thumb.png' ) ){
-				themeInfo.thumb = 'data:image/png;base64,'+px.fs.readFileSync( px.path.resolve( realpathThemeCollectionDir+ls[idx]+'/thumb.png' ) ).toString('base64');
-			}
+		// テーマコレクションをリスト化
+		listThemeCollection(function(themeCollection){
 
-			themeCollection.push( themeInfo );
-		}
+			var html = px.utils.bindEjs(
+				px.fs.readFileSync('app/fncs/theme/index_files/templates/list.html').toString(),
+				{
+					'themePluginList': themePluginList,
+					'themeCollection': themeCollection,
+					'realpathThemeCollectionDir': realpathThemeCollectionDir,
+					'default_theme_id': multithemePluginOptions.default_theme_id
+				}
+			);
+			$('.contents').html( html );
 
-		var html = px.utils.bindEjs(
-			px.fs.readFileSync('app/fncs/theme/index_files/templates/list.html').toString(),
-			{
-				'themePluginList': themePluginList,
-				'realpathThemeCollectionDir': realpathThemeCollectionDir,
-				'themeCollection': themeCollection,
-				'default_theme_id': multithemePluginOptions.default_theme_id
-			}
-		);
-		$('.contents').html( html );
+		});
+		return;
 	}
 
 	/**
@@ -180,7 +163,7 @@ window.contApp = new (function(){
 			function(it1, arg){
 				// サムネイル取得
 				arg.thumb = '';
-				var realpathImage = px.path.resolve( './app/common/images/appicon.png' );
+				var realpathImage = px.path.resolve( './app/common/images/default_theme_thumb.png' );
 				if( px.utils79.is_file( realpathThemeCollectionDir+themeId+'/thumb.png' ) ){
 					realpathImage = px.path.resolve( realpathThemeCollectionDir+themeId+'/thumb.png' );
 				}
@@ -217,81 +200,107 @@ window.contApp = new (function(){
 	 * 新規テーマを作成またはリネームする
 	 */
 	this.addNewTheme = function(theme_id){
-		var html = px.utils.bindEjs(
-			px.fs.readFileSync('app/fncs/theme/index_files/templates/form-theme.html').toString(),
-			{
-				'themeId': theme_id
-			}
-		);
-		var $body = $('<div>').append( html );
-		var $form = $body.find('form');
+		// テーマコレクションをリスト化
+		listThemeCollection(function(themeCollection){
 
-		px2style.modal(
-			{
-				'title': (theme_id ? 'テーマのリネーム' : '新規テーマ作成'),
-				'body': $body,
-				'buttons': [
-					$('<button class="px2-btn">')
-						.text('キャンセル')
-						.on('click', function(e){
-							px2style.closeModal();
-						}),
-					$('<button class="px2-btn px2-btn--primary">')
-						.text('OK')
-						.on('click', function(e){
-							$form.submit();
-						})
-				]
-			},
-			function(){}
-		);
+			var html = px.utils.bindEjs(
+				px.fs.readFileSync('app/fncs/theme/index_files/templates/form-theme.html').toString(),
+				{
+					'themeId': theme_id,
+					'themePluginList': themePluginList,
+					'themeCollection': themeCollection
+				}
+			);
+			var $body = $('<div>').append( html );
+			var $form = $body.find('form');
 
-		$form.on('submit', function(e){
-			var newThemeId = $form.find('input[name=themeId]').val();
-			var $errMsg = $form.find('[data-form-column-name=themeId] .cont-error-message')
-			if( !newThemeId.length ){
-				$errMsg.text('テーマIDを指定してください。');
-				return;
-			}
-			if( !newThemeId.match(/^[a-zA-Z0-9\_\-]+$/) ){
-				$errMsg.text('テーマIDに使えない文字が含まれています。');
-				return;
-			}
-			if( newThemeId.length > 128 ){
-				$errMsg.text('テーマIDが長すぎます。');
-				return;
-			}
-			if( theme_id ){
-				if( theme_id == newThemeId ){
-					$errMsg.text('テーマIDが変更されていません。');
+			px2style.modal(
+				{
+					'title': (theme_id ? 'テーマのリネーム' : '新規テーマ作成'),
+					'body': $body,
+					'buttons': [
+						$('<button class="px2-btn">')
+							.text('キャンセル')
+							.on('click', function(e){
+								px2style.closeModal();
+							}),
+						$('<button class="px2-btn px2-btn--primary">')
+							.text('OK')
+							.on('click', function(e){
+								$form.submit();
+							})
+					]
+				},
+				function(){}
+			);
+
+			$form.on('submit', function(e){
+				var newThemeId = $form.find('input[name=themeId]').val();
+				var importFrom = $form.find('input[name=import_from]:checked').val();
+				var $errMsg = $form.find('[data-form-column-name=themeId] .cont-error-message')
+				if( !newThemeId.length ){
+					$errMsg.text('テーマIDを指定してください。');
 					return;
 				}
-			}
+				if( !newThemeId.match(/^[a-zA-Z0-9\_\-]+$/) ){
+					$errMsg.text('テーマIDに使えない文字が含まれています。');
+					return;
+				}
+				if( newThemeId.length > 128 ){
+					$errMsg.text('テーマIDが長すぎます。');
+					return;
+				}
+				if( theme_id ){
+					if( theme_id == newThemeId ){
+						$errMsg.text('テーマIDが変更されていません。');
+						return;
+					}
+				}
 
 
-			var realpathTheme = realpathThemeCollectionDir+encodeURIComponent(newThemeId)+'/';
-			if( px.utils79.is_dir( realpathTheme ) ){
-				$errMsg.text('テーマID '+newThemeId+' は、すでに存在します。');
-				return;
-			}
+				var realpathTheme = realpathThemeCollectionDir+encodeURIComponent(newThemeId)+'/';
+				if( px.utils79.is_dir( realpathTheme ) ){
+					$errMsg.text('テーマID '+newThemeId+' は、すでに存在します。');
+					return;
+				}
 
-			if( theme_id ){
-				// フォルダ名変更
-				px.fs.renameSync( realpathThemeCollectionDir+theme_id+'/', realpathTheme );
-			}else{
-				// フォルダ生成
-				px.fsEx.mkdirsSync( realpathTheme );
-				px.fs.writeFileSync( realpathTheme+'/default.html', '' );
-				px.fs.writeFileSync( realpathTheme+'/plain.html', '' );
-				px.fs.writeFileSync( realpathTheme+'/naked.html', '' );
-				px.fs.writeFileSync( realpathTheme+'/popup.html', '' );
-				px.fs.writeFileSync( realpathTheme+'/top.html', '' );
-			}
+				if( theme_id ){
+					// フォルダ名変更
+					px.fs.renameSync( realpathThemeCollectionDir+theme_id+'/', realpathTheme );
+				}else{
+					// フォルダ生成
+					px.fsEx.mkdirsSync( realpathTheme );
+					if( !importFrom ){
+						px.fs.writeFileSync( realpathTheme+'/default.html', '' );
+						px.fs.writeFileSync( realpathTheme+'/plain.html', '' );
+						px.fs.writeFileSync( realpathTheme+'/naked.html', '' );
+						px.fs.writeFileSync( realpathTheme+'/popup.html', '' );
+						px.fs.writeFileSync( realpathTheme+'/top.html', '' );
+					}else{
+						importFrom.match(/^(themeCollection|themePlugin)\:([\S]+)$/);
+						var fromDiv = RegExp.$1;
+						var fromId = RegExp.$2;
+						if( fromDiv == 'themeCollection' ){
+							px.utils.copy_r(
+								realpathThemeCollectionDir+fromId,
+								realpathTheme
+							);
+						}else if(fromDiv == 'themePlugin'){
+							var pluginInfo = themePluginList[fromId];
+							px.utils.copy_r(
+								pluginInfo.path,
+								realpathTheme
+							);
+						}
+					}
+				}
 
-			var msg = (theme_id ? 'テーマ '+theme_id+' を '+newThemeId+' にリネームしました。' : 'テーマ '+newThemeId+' を作成しました。')
-			px.message(msg);
-			px2style.closeModal();
-			_this.pageThemeHome(newThemeId);
+				var msg = (theme_id ? 'テーマ '+theme_id+' を '+newThemeId+' にリネームしました。' : 'テーマ '+newThemeId+' を作成しました。')
+				px.message(msg);
+				px2style.closeModal();
+				_this.pageThemeHome(newThemeId);
+			});
+
 		});
 
 		return;
@@ -653,6 +662,33 @@ window.contApp = new (function(){
 		}
 		px.openInTextEditor( url );
 	}
+
+	/**
+	 * テーマコレクションをリスト化
+	 */
+	function listThemeCollection(callback){
+		callback = callback || function(){};
+		var themeCollection = [];
+		var ls = px.fs.readdirSync(realpathThemeCollectionDir);
+		// console.log(ls);
+		for( var idx in ls ){
+			if( !px.utils79.is_dir( realpathThemeCollectionDir+ls[idx]+'/' ) ){
+				continue;
+			}
+			var themeInfo = {};
+			themeInfo.id = ls[idx];
+			themeInfo.name = ls[idx];
+			themeInfo.thumb = realpathDefaultThumb;
+
+			if( px.utils79.is_file( realpathThemeCollectionDir+ls[idx]+'/thumb.png' ) ){
+				themeInfo.thumb = 'data:image/png;base64,'+px.fs.readFileSync( px.path.resolve( realpathThemeCollectionDir+ls[idx]+'/thumb.png' ) ).toString('base64');
+			}
+
+			themeCollection.push( themeInfo );
+		}
+		callback(themeCollection);
+		return;
+	} // listThemeCollection();
 
 	/**
 	 * ウィンドウリサイズイベントハンドラ

@@ -12,4 +12,26 @@
 			</tbody>
 		</table>
 	</div>
+
+	<% if( !themeId ){ %>
+		<div class="px2-p">
+			<h2>インポート</h2>
+			<ul>
+				<li><label><input type="radio" name="import_from" value="" checked="checked" /> インポートしない</label></li>
+			</ul>
+			<h3>テーマコレクション</h3>
+			<ul>
+			<% for( var idx in themeCollection ){ %>
+				<li><label><input type="radio" name="import_from" value="themeCollection:<%= themeCollection[idx].id %>" /> <%= themeCollection[idx].name %></label></li>
+			<% } %>
+			</ul>
+			<h3>テーマパッケージ</h3>
+			<ul>
+			<% for( var idx in themePluginList ){ %>
+				<li><label><input type="radio" name="import_from" value="themePlugin:<%= idx %>" /> <%= themePluginList[idx].name %></label></li>
+			<% } %>
+			</ul>
+		</div>
+	<% } %>
+
 </form>

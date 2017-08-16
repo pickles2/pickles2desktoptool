@@ -249,6 +249,51 @@ window.contApp = new (function(){
 	}
 
 	/**
+	 * テーマを削除する
+	 */
+	this.deleteTheme = function(theme_id){
+		var html = px.utils.bindEjs(
+			px.fs.readFileSync('app/fncs/theme/index_files/templates/form-theme-delete.html').toString(),
+			{
+				'themeId': theme_id
+			}
+		);
+		var $body = $('<div>').append( html );
+		var $form = $body.find('form');
+
+		px2style.modal(
+			{
+				'title': 'テーマ削除',
+				'body': $body,
+				'buttons': [
+					$('<button class="px2-btn">')
+						.text('キャンセル')
+						.on('click', function(e){
+							px2style.closeModal();
+						}),
+					$('<button class="px2-btn px2-btn--danger">')
+						.text('削除する')
+						.on('click', function(e){
+							$form.submit();
+						})
+				]
+			},
+			function(){}
+		);
+
+		$form.on('submit', function(e){
+			// フォルダを削除
+			px.fsEx.removeSync( realpathThemeCollectionDir+theme_id+'/' );
+
+			px.message('テーマ ' + theme_id + ' を削除しました。');
+			px2style.closeModal();
+			_this.pageHome();
+		});
+
+		return;
+	}
+
+	/**
 	 * 新規レイアウトを作成またはリネームする
 	 */
 	this.addNewLayout = function(theme_id, layout_id){

@@ -1879,16 +1879,36 @@ exports.resolveInclude = function(name, filename, isDir) {
  * @param  {Options} options compilation options
  * @return {String}
  */
-function getIncludePath(path, options){
+function getIncludePath(path, options) {
   var includePath;
+  var filePath;
+  var views = options.views;
+
+  // Abs path
   if (path.charAt(0) == '/') {
     includePath = exports.resolveInclude(path.replace(/^\/*/,''), options.root || '/', true);
   }
+  // Relative paths
   else {
-    if (!options.filename) {
-      throw new Error('`include` use relative path requires the \'filename\' option.');
+    // Look relative to a passed filename first
+    if (options.filename) {
+      filePath = exports.resolveInclude(path, options.filename);
+      if (fs.existsSync(filePath)) {
+        includePath = filePath;
+      }
     }
-    includePath = exports.resolveInclude(path, options.filename);
+    // Then look in any views directories
+    if (!includePath) {
+      if (Array.isArray(views) && views.some(function (v) {
+        filePath = exports.resolveInclude(path, v, true);
+        return fs.existsSync(filePath);
+      })) {
+        includePath = filePath;
+      }
+    }
+    if (!includePath) {
+      throw new Error('Could not find include include file.');
+    }
   }
   return includePath;
 }
@@ -2148,8 +2168,13 @@ exports.renderFile = function () {
     // in the data, copy them to options
     if (arguments.length === 3) {
       // Express 4
-      if (data.settings && data.settings['view options']) {
-        utils.shallowCopyFromList(opts, data.settings['view options'], _OPTS_EXPRESS);
+      if (data.settings) {
+        if (data.settings['view options']) {
+          utils.shallowCopyFromList(opts, data.settings['view options'], _OPTS_EXPRESS);
+        }
+        if (data.settings.views) {
+          opts.views = data.settings.views;
+        }
       }
       // Express 3 and lower
       else {
@@ -2200,6 +2225,7 @@ function Template(text, opts) {
   options.rmWhitespace = opts.rmWhitespace;
   options.root = opts.root;
   options.localsName = opts.localsName || exports.localsName || _DEFAULT_LOCALS_NAME;
+  options.views = opts.views;
 
   if (options.strict) {
     options._with = false;
@@ -2263,10 +2289,6 @@ Template.prototype = {
       src = this.source;
     }
 
-    if (opts.debug) {
-      console.log(src);
-    }
-
     if (opts.client) {
       src = 'escapeFn = escapeFn || ' + escapeFn.toString() + ';' + '\n' + src;
       if (opts.compileDebug) {
@@ -2276,6 +2298,9 @@ Template.prototype = {
 
     if (opts.strict) {
       src = '"use strict";\n' + src;
+    }
+    if (opts.debug) {
+      console.log(src);
     }
 
     try {
@@ -2369,7 +2394,7 @@ Template.prototype = {
                   + '      try {' + '\n'
                   + includeObj.source
                   + '      } catch (e) {' + '\n'
-                  + '        rethrow(e, __lines, __filename, __line);' + '\n'
+                  + '        rethrow(e, __lines, __filename, __line, escapeFn);' + '\n'
                   + '      }' + '\n'
                   + '    ; }).call(this)' + '\n';
             }else{
@@ -2415,42 +2440,42 @@ Template.prototype = {
     return arr;
   },
 
+  _addOutput: function (line) {
+    if (this.truncate) {
+      // Only replace single leading linebreak in the line after
+      // -%> tag -- this is the single, trailing linebreak
+      // after the tag that the truncation mode replaces
+      // Handle Win / Unix / old Mac linebreaks -- do the \r\n
+      // combo first in the regex-or
+      line = line.replace(/^(?:\r\n|\r|\n)/, '');
+      this.truncate = false;
+    }
+    else if (this.opts.rmWhitespace) {
+      // rmWhitespace has already removed trailing spaces, just need
+      // to remove linebreaks
+      line = line.replace(/^\n/, '');
+    }
+    if (!line) {
+      return line;
+    }
+
+    // Preserve literal slashes
+    line = line.replace(/\\/g, '\\\\');
+
+    // Convert linebreaks
+    line = line.replace(/\n/g, '\\n');
+    line = line.replace(/\r/g, '\\r');
+
+    // Escape double-quotes
+    // - this will be the delimiter during execution
+    line = line.replace(/"/g, '\\"');
+    this.source += '    ; __append("' + line + '")' + '\n';
+  },
+
   scanLine: function (line) {
     var self = this;
     var d = this.opts.delimiter;
     var newLineCount = 0;
-
-    function _addOutput() {
-      if (self.truncate) {
-        // Only replace single leading linebreak in the line after
-        // -%> tag -- this is the single, trailing linebreak
-        // after the tag that the truncation mode replaces
-        // Handle Win / Unix / old Mac linebreaks -- do the \r\n
-        // combo first in the regex-or
-        line = line.replace(/^(?:\r\n|\r|\n)/, '');
-        self.truncate = false;
-      }
-      else if (self.opts.rmWhitespace) {
-        // rmWhitespace has already removed trailing spaces, just need
-        // to remove linebreaks
-        line = line.replace(/^\n/, '');
-      }
-      if (!line) {
-        return;
-      }
-
-      // Preserve literal slashes
-      line = line.replace(/\\/g, '\\\\');
-
-      // Convert linebreaks
-      line = line.replace(/\n/g, '\\n');
-      line = line.replace(/\r/g, '\\r');
-
-      // Escape double-quotes
-      // - this will be the delimiter during execution
-      line = line.replace(/"/g, '\\"');
-      self.source += '    ; __append("' + line + '")' + '\n';
-    }
 
     newLineCount = (line.split('\n').length - 1);
 
@@ -2480,7 +2505,7 @@ Template.prototype = {
     case '-' + d + '>':
     case '_' + d + '>':
       if (this.mode == Template.modes.LITERAL) {
-        _addOutput();
+        this._addOutput(line);
       }
 
       this.mode = null;
@@ -2516,13 +2541,13 @@ Template.prototype = {
           break;
             // Literal <%% mode, append as raw output
         case Template.modes.LITERAL:
-          _addOutput();
+          this._addOutput(line);
           break;
         }
       }
         // In string mode, just add the output
       else {
-        _addOutput();
+        this._addOutput(line);
       }
     }
 
@@ -2769,25 +2794,25 @@ module.exports={
   "_args": [
     [
       {
-        "raw": "ejs@2.5.6",
+        "raw": "ejs@2.5.7",
         "scope": null,
         "escapedName": "ejs",
         "name": "ejs",
-        "rawSpec": "2.5.6",
-        "spec": "2.5.6",
+        "rawSpec": "2.5.7",
+        "spec": "2.5.7",
         "type": "version"
       },
       "/mydoc_TomK/Dropbox/localhosts/pickles2projects/pickles2/node-pickles2-module-editor"
     ]
   ],
-  "_from": "ejs@2.5.6",
-  "_id": "ejs@2.5.6",
+  "_from": "ejs@2.5.7",
+  "_id": "ejs@2.5.7",
   "_inCache": true,
   "_location": "/ejs",
   "_nodeVersion": "6.9.1",
   "_npmOperationalInternal": {
-    "host": "packages-12-west.internal.npmjs.com",
-    "tmp": "tmp/ejs-2.5.6.tgz_1487277787176_0.4875628533773124"
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/ejs-2.5.7.tgz_1501385411193_0.3807816591579467"
   },
   "_npmUser": {
     "name": "mde",
@@ -2796,12 +2821,12 @@ module.exports={
   "_npmVersion": "3.10.8",
   "_phantomChildren": {},
   "_requested": {
-    "raw": "ejs@2.5.6",
+    "raw": "ejs@2.5.7",
     "scope": null,
     "escapedName": "ejs",
     "name": "ejs",
-    "rawSpec": "2.5.6",
-    "spec": "2.5.6",
+    "rawSpec": "2.5.7",
+    "spec": "2.5.7",
     "type": "version"
   },
   "_requiredBy": [
@@ -2809,13 +2834,12 @@ module.exports={
     "/",
     "/broccoli-html-editor",
     "/langbank",
-    "/pickles2-contents-editor",
-    "/pickles2-contents-editor/broccoli-html-editor"
+    "/pickles2-contents-editor"
   ],
-  "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.5.6.tgz",
-  "_shasum": "479636bfa3fe3b1debd52087f0acb204b4f19c88",
+  "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.5.7.tgz",
+  "_shasum": "cc872c168880ae3c7189762fd5ffc00896c9518a",
   "_shrinkwrap": null,
-  "_spec": "ejs@2.5.6",
+  "_spec": "ejs@2.5.7",
   "_where": "/mydoc_TomK/Dropbox/localhosts/pickles2projects/pickles2/node-pickles2-module-editor",
   "author": {
     "name": "Matthew Eernisse",
@@ -2847,8 +2871,8 @@ module.exports={
   },
   "directories": {},
   "dist": {
-    "shasum": "479636bfa3fe3b1debd52087f0acb204b4f19c88",
-    "tarball": "https://registry.npmjs.org/ejs/-/ejs-2.5.6.tgz"
+    "shasum": "cc872c168880ae3c7189762fd5ffc00896c9518a",
+    "tarball": "https://registry.npmjs.org/ejs/-/ejs-2.5.7.tgz"
   },
   "engines": {
     "node": ">=0.10.0"
@@ -2879,9 +2903,9 @@ module.exports={
     "devdoc": "jake doc[dev]",
     "doc": "jake doc",
     "lint": "eslint \"**/*.js\" Jakefile",
-    "test": "mocha"
+    "test": "jake test"
   },
-  "version": "2.5.6"
+  "version": "2.5.7"
 }
 
 },{}],13:[function(require,module,exports){
@@ -16965,14 +16989,19 @@ module.exports = exports['default'];
 		this.moduleId;
 
 		var px2meConf,
+			px2conf,
 			templates;
 		var pages = {
 			'list': require('./pages/list/index.js'),
 			'editModule': require('./pages/editModule/index.js'),
 			'editCategory': require('./pages/editCategory/index.js'),
 			'editPackage': require('./pages/editPackage/index.js'),
+			'addNewPackage': require('./pages/addNewPackage/index.js'),
 			'addNewCategory': require('./pages/addNewCategory/index.js'),
-			'addNewModule': require('./pages/addNewModule/index.js')
+			'addNewModule': require('./pages/addNewModule/index.js'),
+			'deletePackage': require('./pages/deletePackage/index.js'),
+			'deleteCategory': require('./pages/deleteCategory/index.js'),
+			'deleteModule': require('./pages/deleteModule/index.js')
 		};
 		var px2ce;
 
@@ -16981,10 +17010,9 @@ module.exports = exports['default'];
 		*/
 		this.init = function(options, callback){
 			console.info('initialize pickles2-module-editor...');
-
 			callback = callback || function(){};
-			var _this = this;
 			// console.log(options);
+
 			this.options = options;
 			this.options.gpiBridge = this.options.gpiBridge || function(){ alert('gpiBridge required.'); };
 			this.options.complete = this.options.complete || function(){ alert('finished.'); };
@@ -17055,6 +17083,16 @@ module.exports = exports['default'];
 				.then(function(){ return new Promise(function(rlv, rjt){
 					_this.getConfig( function(conf){
 						px2meConf = conf;
+						_this.px2meConf = px2meConf;
+						// console.log(px2meConf);
+						rlv();
+					} );
+				}); })
+				.then(function(){ return new Promise(function(rlv, rjt){
+					_this.getPickles2Config( function(conf){
+						px2conf = conf;
+						_this.px2conf = px2conf;
+						// console.log(px2conf);
 						rlv();
 					} );
 				}); })
@@ -17133,6 +17171,22 @@ module.exports = exports['default'];
 			this.gpiBridge(
 				{
 					'api':'getConfig'
+				},
+				function(conf){
+					callback(conf);
+				}
+			);
+			return;
+		}
+
+		/**
+		 * Pickles 2 のコンフィグ情報を取得する
+		 */
+		this.getPickles2Config = function(callback){
+			callback = callback || function(){};
+			this.gpiBridge(
+				{
+					'api':'getPickles2Config'
 				},
 				function(conf){
 					callback(conf);
@@ -17288,6 +17342,41 @@ module.exports = exports['default'];
 		}
 
 		/**
+		 * broccoli モジュールパッケージを新規追加
+		 */
+		this.addNewPackage = function(data, callback){
+			callback = callback || function(){};
+			this.gpiBridge(
+				{
+					'api':'addNewPackage',
+					'data': data
+				},
+				function(result){
+					callback(result);
+				}
+			);
+			return;
+		}
+
+		/**
+		 * broccoli モジュールパッケージを削除
+		 */
+		this.deletePackage = function(packageId, callback){
+			callback = callback || function(){};
+			this.gpiBridge(
+				{
+					'api':'deletePackage',
+					'packageId': packageId,
+					'data': {}
+				},
+				function(result){
+					callback(result);
+				}
+			);
+			return;
+		}
+
+		/**
 		 * broccoli モジュールカテゴリを新規追加
 		 */
 		this.addNewCategory = function(packageId, data, callback){
@@ -17306,6 +17395,24 @@ module.exports = exports['default'];
 		}
 
 		/**
+		 * broccoli モジュールカテゴリを削除
+		 */
+		this.deleteCategory = function(categoryId, callback){
+			callback = callback || function(){};
+			this.gpiBridge(
+				{
+					'api':'deleteCategory',
+					'categoryId': categoryId,
+					'data': {}
+				},
+				function(result){
+					callback(result);
+				}
+			);
+			return;
+		}
+
+		/**
 		 * broccoli モジュールを新規追加する
 		 */
 		this.addNewModule = function(categoryId, data, callback){
@@ -17315,6 +17422,24 @@ module.exports = exports['default'];
 					'api':'addNewModule',
 					'categoryId': categoryId,
 					'data': data
+				},
+				function(result){
+					callback(result);
+				}
+			);
+			return;
+		}
+
+		/**
+		 * broccoli モジュールを削除する
+		 */
+		this.deleteModule = function(moduleId, callback){
+			callback = callback || function(){};
+			this.gpiBridge(
+				{
+					'api':'deleteModule',
+					'moduleId': moduleId,
+					'data': {}
 				},
 				function(result){
 					callback(result);
@@ -17479,7 +17604,7 @@ module.exports = exports['default'];
 	}
 })();
 
-},{"./pages/addNewCategory/index.js":101,"./pages/addNewModule/index.js":102,"./pages/editCategory/index.js":103,"./pages/editModule/index.js":104,"./pages/editPackage/index.js":105,"./pages/list/index.js":106,"ejs":10,"es6-promise":13,"jquery":15}],101:[function(require,module,exports){
+},{"./pages/addNewCategory/index.js":101,"./pages/addNewModule/index.js":102,"./pages/addNewPackage/index.js":103,"./pages/deleteCategory/index.js":104,"./pages/deleteModule/index.js":105,"./pages/deletePackage/index.js":106,"./pages/editCategory/index.js":107,"./pages/editModule/index.js":108,"./pages/editPackage/index.js":109,"./pages/list/index.js":110,"ejs":10,"es6-promise":13,"jquery":15}],101:[function(require,module,exports){
 /**
  * pages/addNewCategory/index.js
  */
@@ -17528,6 +17653,11 @@ module.exports = function(px2me, $canvasContent, options, callback){
 				"title": "新規カテゴリを追加",
 				"body": $canvasContent,
 				"buttons": [
+					$('<button class="px2-btn">').text('キャンセル').click(function(){
+						px2me.loadPage('list', {}, function(){
+							px2me.closeModal();
+						});
+					}),
 					$('<button class="px2-btn px2-btn--primary">').text('OK').click(function(){
 						var data = {};
 						data.categoryId = $canvasContent.find('[name=categoryId]').val();
@@ -17615,6 +17745,11 @@ module.exports = function(px2me, $canvasContent, options, callback){
 				"title": "新規モジュールを追加",
 				"body": $canvasContent,
 				"buttons": [
+					$('<button class="px2-btn">').text('キャンセル').click(function(){
+						px2me.loadPage('list', {}, function(){
+							px2me.closeModal();
+						});
+					}),
 					$('<button class="px2-btn px2-btn--primary">').text('OK').click(function(){
 						var data = {};
 						data.moduleId = $canvasContent.find('[name=moduleId]').val();
@@ -17653,6 +17788,383 @@ module.exports = function(px2me, $canvasContent, options, callback){
 }
 
 },{"es6-promise":13,"jquery":15,"utils79":35}],103:[function(require,module,exports){
+/**
+ * pages/addNewPackage/index.js
+ */
+module.exports = function(px2me, $canvasContent, options, callback){
+	callback = callback||function(){};
+	var $ = require('jquery');
+	var utils79 = require('utils79');
+	var Promise = require('es6-promise').Promise;
+	var pluginPackages = [],
+		broccoliPackages = [];
+
+	new Promise(function(rlv){rlv();})
+		.then(function(){ return new Promise(function(rlv, rjt){
+			console.log('loading addNewPackage page...');
+			px2me.progress( function(){
+				rlv();
+			} );
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			// インポート元の一覧を取得 - プラグインパッケージより
+			px2me.gpiBridge(
+				{
+					'api':'getPluginPackage'
+				},
+				function(packages){
+					try {
+						pluginPackages = packages.package_list.broccoliModules;
+					} catch (e) {
+					}
+					// console.log(pluginPackages);
+					rlv();
+				}
+			);
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			// インポート元の一覧を取得 - broccoliより
+			px2me.getPackageList(function(packageList){
+				try {
+					broccoliPackages = packageList;
+				} catch (e) {
+				}
+				// console.log(broccoliPackages);
+				rlv();
+			});
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			// 編集画面を描画
+			var html = px2me.bindEjs(
+				px2me.getTemplates('addNewPackage'),
+				{
+					'pluginPackages': pluginPackages,
+					'broccoliPackages': broccoliPackages
+				}
+			);
+			$canvasContent.html('').append(html);
+
+			$canvasContent.find('[name=packageId]').val( '' );
+			$canvasContent.find('[name=packageName]').val( '' );
+			rlv();
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			// モーダルダイアログを開く
+			px2me.modal({
+				"title": "新規パッケージを追加",
+				"body": $canvasContent,
+				"buttons": [
+					$('<button class="px2-btn">').text('キャンセル').click(function(){
+						px2me.loadPage('list', {}, function(){
+							px2me.closeModal();
+						});
+					}),
+					$('<button class="px2-btn px2-btn--primary">').text('OK').click(function(){
+						var data = {};
+						data.packageId = $canvasContent.find('[name=packageId]').val();
+						data.packageName = $canvasContent.find('[name=packageName]').val();
+						data.importFrom = $canvasContent.find('[name=import_from]:checked').val();
+
+						px2me.addNewPackage(data, function(result){
+							px2me.loadPage('list', {}, function(){
+								px2me.closeModal();
+							});
+						})
+					})
+				]
+			});
+			rlv();
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			px2me.closeProgress(function(){
+				rlv();
+			});
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			callback();
+			rlv();
+		}); })
+		.catch(function(){
+			px2me.closeProgress(function(){
+				px2me.loadPage('list', {}, function(){
+					px2me.closeModal(function(){
+						callback();
+					});
+				});
+			});
+		})
+	;
+
+}
+
+},{"es6-promise":13,"jquery":15,"utils79":35}],104:[function(require,module,exports){
+/**
+ * pages/deleteCategory/index.js
+ */
+module.exports = function(px2me, $canvasContent, options, callback){
+	callback = callback||function(){};
+	var $ = require('jquery');
+	var utils79 = require('utils79');
+	var Promise = require('es6-promise').Promise;
+
+	new Promise(function(rlv){rlv();})
+		.then(function(){ return new Promise(function(rlv, rjt){
+			console.log('loading deleteCategory page...');
+			px2me.progress( function(){
+				rlv();
+			} );
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			// 編集画面を描画
+			// console.log(options);
+			px2me.getCategoryCode( options.categoryId, function(categoryCode){
+				// console.log(categoryCode);
+
+				if( !categoryCode.editable ){
+					alert('このモジュールは編集許可されていないパスにあります。');
+					rjt();
+					return;
+				}
+
+				var html = px2me.bindEjs(
+					px2me.getTemplates('deleteCategory'),
+					{
+						'categoryId': options.categoryId,
+						'categoryCode': categoryCode
+					}
+				);
+				$canvasContent.html('').append(html);
+
+				$canvasContent.find('[name=infoJson]').val( categoryCode.infoJson );
+				rlv();
+			} );
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			// モーダルダイアログを開く
+			px2me.modal({
+				"title": "カテゴリを削除",
+				"body": $canvasContent,
+				"buttons": [
+					$('<button class="px2-btn">').text('キャンセル').click(function(){
+						px2me.loadPage('list', {}, function(){
+							px2me.closeModal();
+						});
+					}),
+					$('<button class="px2-btn px2-btn--primary">').text('OK').click(function(){
+						px2me.deleteCategory(options.categoryId, function(result){
+							px2me.loadPage('list', {}, function(){
+								px2me.closeModal();
+							});
+						})
+					})
+				]
+			});
+			rlv();
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			px2me.closeProgress(function(){
+				rlv();
+			});
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			callback();
+			rlv();
+		}); })
+		.catch(function(){
+			px2me.closeProgress(function(){
+				px2me.loadPage('list', {}, function(){
+					px2me.closeModal(function(){
+						callback();
+					});
+				});
+			});
+		})
+	;
+
+}
+
+},{"es6-promise":13,"jquery":15,"utils79":35}],105:[function(require,module,exports){
+/**
+ * pages/deleteModule/index.js
+ */
+module.exports = function(px2me, $canvasContent, options, callback){
+	callback = callback||function(){};
+	var $ = require('jquery');
+	var utils79 = require('utils79');
+	var Promise = require('es6-promise').Promise;
+	var $deleteModuleWindow,
+		$previewWin,
+		$previewEditorWin;
+	var broccoli;
+	var currentTab;
+
+	px2me.moduleId = options.moduleId;
+
+	new Promise(function(rlv){rlv();})
+		.then(function(){ return new Promise(function(rlv, rjt){
+			console.log('loading deleteModule page...');
+			px2me.progress( function(){
+				rlv();
+			} );
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			// 編集画面を描画
+			// console.log(options);
+			console.log('module ID:', options.moduleId);
+			px2me.getModuleCode( options.moduleId, function(moduleCode){
+				// console.log(moduleCode);
+
+				if( !moduleCode.editable ){
+					alert('このモジュールは編集許可されていないパスにあります。');
+					rjt();
+					return;
+				}
+
+				var html = px2me.bindEjs(
+					px2me.getTemplates('deleteModule'),
+					{
+						'moduleId': options.moduleId,
+						'moduleCode': moduleCode
+					}
+				);
+				$deleteModuleWindow = $(html);
+				$canvasContent.html('').append($deleteModuleWindow);
+
+				rlv();
+			} );
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			// モーダルダイアログを開く
+			px2me.modal({
+				"title": "モジュールを削除",
+				"body": $canvasContent,
+				"buttons": [
+					$('<button class="px2-btn">').text('キャンセル').click(function(){
+						px2me.loadPage('list', {}, function(){
+							px2me.closeModal();
+						});
+					}),
+					$('<button class="px2-btn px2-btn--danger">')
+						.text('削除する')
+						.on('click', function(){
+							px2me.deleteModule(options.moduleId, function(result){
+								px2me.loadPage('list', {}, function(){
+									px2me.closeModal();
+								});
+							});
+						})
+				]
+			});
+			rlv();
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			px2me.closeProgress(function(){
+				rlv();
+			});
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			callback();
+			rlv();
+		}); })
+		.catch(function(){
+			px2me.closeProgress(function(){
+				px2me.loadPage('list', {}, function(){
+					px2me.closeModal(function(){
+						callback();
+					});
+				});
+			});
+		})
+	;
+
+}
+
+},{"es6-promise":13,"jquery":15,"utils79":35}],106:[function(require,module,exports){
+/**
+ * pages/deletePackage/index.js
+ */
+module.exports = function(px2me, $canvasContent, options, callback){
+	callback = callback||function(){};
+
+	var $ = require('jquery');
+	var utils79 = require('utils79');
+	var Promise = require('es6-promise').Promise;
+
+	new Promise(function(rlv){rlv();})
+		.then(function(){ return new Promise(function(rlv, rjt){
+			console.log('loading deletePackage page...');
+			px2me.progress( function(){
+				rlv();
+			} );
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			// 編集画面を描画
+			// console.log(options);
+			px2me.getPackageCode( options.packageId, function(packageCode){
+				// console.log(packageCode);
+
+				if( !packageCode.editable ){
+					alert('このモジュールは編集許可されていないパスにあります。');
+					rjt();
+					return;
+				}
+				var html = px2me.bindEjs(
+					px2me.getTemplates('deletePackage'),
+					{
+						'packageId': options.packageId,
+						'packageCode': packageCode
+					}
+				);
+				$canvasContent.html('').append(html);
+				rlv();
+			} );
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			// モーダルダイアログを開く
+			px2me.modal({
+				"title": "パッケージを削除する",
+				"body": $canvasContent,
+				"buttons": [
+					$('<button class="px2-btn">').text('キャンセル').click(function(){
+						px2me.loadPage('list', {}, function(){
+							px2me.closeModal();
+						});
+					}),
+					$('<button class="px2-btn px2-btn--danger">').text('削除する').click(function(){
+						px2me.deletePackage(options.packageId, function(result){
+							px2me.loadPage('list', {}, function(){
+								px2me.closeModal();
+							});
+						})
+
+					})
+				]
+			});
+			rlv();
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			px2me.closeProgress(function(){
+				rlv();
+			});
+		}); })
+		.then(function(){ return new Promise(function(rlv, rjt){
+			callback();
+			rlv();
+		}); })
+		.catch(function(){
+			px2me.closeProgress(function(){
+				px2me.loadPage('list', {}, function(){
+					px2me.closeModal(function(){
+						callback();
+					});
+				});
+			});
+		})
+	;
+
+}
+
+},{"es6-promise":13,"jquery":15,"utils79":35}],107:[function(require,module,exports){
 /**
  * pages/editCategory/index.js
  */
@@ -17700,6 +18212,11 @@ module.exports = function(px2me, $canvasContent, options, callback){
 				"title": "カテゴリを編集",
 				"body": $canvasContent,
 				"buttons": [
+					$('<button class="px2-btn">').text('キャンセル').click(function(){
+						px2me.loadPage('list', {}, function(){
+							px2me.closeModal();
+						});
+					}),
 					$('<button class="px2-btn px2-btn--primary">').text('OK').click(function(){
 						var data = {};
 						data.infoJson = $canvasContent.find('[name=infoJson]').val();
@@ -17736,7 +18253,7 @@ module.exports = function(px2me, $canvasContent, options, callback){
 
 }
 
-},{"es6-promise":13,"jquery":15,"utils79":35}],104:[function(require,module,exports){
+},{"es6-promise":13,"jquery":15,"utils79":35}],108:[function(require,module,exports){
 /**
  * pages/editModule/index.js
  */
@@ -17809,6 +18326,11 @@ module.exports = function(px2me, $canvasContent, options, callback){
 				"title": "モジュールを編集",
 				"body": $canvasContent,
 				"buttons": [
+					$('<button class="px2-btn">').text('キャンセル').click(function(){
+						px2me.loadPage('list', {}, function(){
+							px2me.closeModal();
+						});
+					}),
 					$('<button class="px2-btn px2-btn--primary">')
 						.text('SAVE & CLOSE')
 						.on('click', function(){
@@ -17993,7 +18515,7 @@ module.exports = function(px2me, $canvasContent, options, callback){
 
 }
 
-},{"es6-promise":13,"jquery":15,"utils79":35}],105:[function(require,module,exports){
+},{"es6-promise":13,"jquery":15,"utils79":35}],109:[function(require,module,exports){
 /**
  * pages/editPackage/index.js
  */
@@ -18041,6 +18563,11 @@ module.exports = function(px2me, $canvasContent, options, callback){
 				"title": "パッケージを編集する",
 				"body": $canvasContent,
 				"buttons": [
+					$('<button class="px2-btn">').text('キャンセル').click(function(){
+						px2me.loadPage('list', {}, function(){
+							px2me.closeModal();
+						});
+					}),
 					$('<button class="px2-btn px2-btn--primary">').text('OK').click(function(){
 						var data = {};
 						data.infoJson = $canvasContent.find('[name=infoJson]').val();
@@ -18078,7 +18605,7 @@ module.exports = function(px2me, $canvasContent, options, callback){
 
 }
 
-},{"es6-promise":13,"jquery":15,"utils79":35}],106:[function(require,module,exports){
+},{"es6-promise":13,"jquery":15,"utils79":35}],110:[function(require,module,exports){
 /**
  * pages/list/index.js
  */
@@ -18102,7 +18629,10 @@ module.exports = function(px2me, $canvasContent, options, callback){
 
 				var html = px2me.bindEjs(
 					px2me.getTemplates('list'),
-					{'packageList': packageList}
+					{
+						'packageList': packageList,
+						'px2conf': px2me.px2conf
+					}
 				);
 				$canvasContent.html('').append(html);
 				rlv();
@@ -18127,20 +18657,32 @@ module.exports = function(px2me, $canvasContent, options, callback){
 							}
 						);
 						break;
+					case 'addNewPackage':
+						px2me.loadPage('addNewPackage', {}, function(){});
+						break;
 					case 'editPackage':
 						px2me.loadPage('editPackage', {'packageId': target}, function(){});
 						break;
-					case 'editCategory':
-						px2me.loadPage('editCategory', {'categoryId': target}, function(){});
+					case 'deletePackage':
+						px2me.loadPage('deletePackage', {'packageId': target}, function(){});
 						break;
 					case 'addNewCategory':
 						px2me.loadPage('addNewCategory', {'packageId': target}, function(){});
 						break;
-					case 'editModule':
-						px2me.loadPage('editModule', {'moduleId': target}, function(){});
+					case 'editCategory':
+						px2me.loadPage('editCategory', {'categoryId': target}, function(){});
+						break;
+					case 'deleteCategory':
+						px2me.loadPage('deleteCategory', {'categoryId': target}, function(){});
 						break;
 					case 'addNewModule':
 						px2me.loadPage('addNewModule', {'categoryId': target}, function(){});
+						break;
+					case 'editModule':
+						px2me.loadPage('editModule', {'moduleId': target}, function(){});
+						break;
+					case 'deleteModule':
+						px2me.loadPage('deleteModule', {'moduleId': target}, function(){});
 						break;
 					default:
 						alert('ERROR: unknown action. - '+act);

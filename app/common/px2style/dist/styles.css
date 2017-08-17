@@ -193,7 +193,8 @@
     height: auto; }
   .px2-modal__header {
     border-bottom: 1px solid #00a0e6;
-    padding: 0 20px; }
+    padding: 0 20px;
+    margin-bottom: 0.5em; }
   .px2-modal__body {
     position: relative;
     top: 0;

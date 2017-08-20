@@ -11,7 +11,7 @@ window.contApp = new (function(){
 		realpathThemeCollectionDir,
 		multithemePluginOptions;
 	var $elms = {'editor': $('<div>')};
-	var realpathDefaultThumb = 'data:image/png;base64,'+px.fs.readFileSync( px.path.resolve( './app/common/images/default_theme_thumb.png' ) ).toString('base64');
+	var realpathDefaultThumb = 'data:image/png;base64,'+px.fs.readFileSync( px.path.resolve( './app/common/images/no-image.png' ) ).toString('base64');
 
 	function init( callback ){
 		it79.fnc({}, [
@@ -163,7 +163,7 @@ window.contApp = new (function(){
 			function(it1, arg){
 				// サムネイル取得
 				arg.thumb = '';
-				var realpathImage = px.path.resolve( './app/common/images/default_theme_thumb.png' );
+				var realpathImage = px.path.resolve( './app/common/images/no-image.png' );
 				if( px.utils79.is_file( realpathThemeCollectionDir+themeId+'/thumb.png' ) ){
 					realpathImage = px.path.resolve( realpathThemeCollectionDir+themeId+'/thumb.png' );
 				}

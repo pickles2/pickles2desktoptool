@@ -1,0 +1,38 @@
+<div class="container">
+	<div class="btn-group btn-group-justified" role="group">
+		<div class="btn-group" role="group">
+			<button class="btn px2-btn" onclick="contApp.openInFinder();">テーマコレクションフォルダを開く</button>
+		</div>
+		<div class="btn-group" role="group">
+			<button class="btn px2-btn" onclick="contApp.openInTextEditor();">外部テキストエディタで開く</button>
+		</div>
+	</div>
+
+	<h2>テーマコレクション</h2>
+	<% if( themeCollection.length ){ %>
+		<ul class="listview cont-theme-list">
+		<% for( var idx in themeCollection ){ %>
+			<li><a href="javascript:;" data-theme-id="<%= themeCollection[idx].id %>" onclick="contApp.pageThemeHome($(this).attr('data-theme-id'));">
+				<div class="cont-theme-list__unit">
+					<div class="cont-theme-list__unit-thumb">
+						<img src="<%= themeCollection[idx].thumb %>" alt="" />
+					</div>
+					<div class="cont-theme-list__unit-body">
+						<p>
+							<%= themeCollection[idx].id %>
+							<% if(default_theme_id == themeCollection[idx].id){ %> <span style="color: #da0;">★</span><% } %>
+						</p>
+					</div>
+				</div>
+			</a></li>
+		<% } %>
+		</ul>
+	<% }else{ %>
+		<p>テーマを作成してください。</p>
+	<% } %>
+	<!-- <%= realpathThemeCollectionDir %> -->
+	<p class="text-right">
+		<button class="px2-btn px2-btn--primary" onclick="contApp.addNewTheme();return false;">新規テーマ作成</button>
+	</p>
+
+</div>

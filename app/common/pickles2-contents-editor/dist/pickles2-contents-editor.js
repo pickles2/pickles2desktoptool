@@ -22352,11 +22352,14 @@ module.exports = function(px2ce){
 module.exports = function(px2ce){
 	var _this = this;
 	var $ = require('jquery');
+	var utils79 = require('utils79');
 	var it79 = require('iterate79');
 	var $canvas = $(px2ce.getElmCanvas());
 	var page_path = px2ce.page_path;
 	var Promise = require('es6-promise').Promise;
-	var px2conf = {};
+	var px2conf = {}
+		moduleCssJs = {css: '', js: ''},
+		pagesByLayout = [];
 
 	var toolbar = new (require('../../apis/toolbar.js'))(px2ce);
 
@@ -22368,10 +22371,30 @@ module.exports = function(px2ce){
 
 	var show_instanceTreeView = true;
 
-	function getPreviewUrl(){
+	function getCanvasPageUrl(){
+		if( px2ce.target_mode == 'theme_layout' ){
+			var path_html = px2ce.__dirname + '/editor/broccoli/canvas.html'
+			path_html += '?css='+utils79.base64_encode(moduleCssJs.css);
+			path_html += '&js='+utils79.base64_encode(moduleCssJs.js);
+			return path_html;
+		}
 		var pathname = px2conf.path_controot + page_path;
 		pathname = pathname.replace( new RegExp('\/+', 'g'), '/' );
 		return px2ce.options.preview.origin + pathname;
+	}
+	function getPreviewUrl(){
+		if( px2ce.target_mode == 'theme_layout' ){
+			var page_path = '/index.html';
+			if( pagesByLayout.length ){
+				page_path = pagesByLayout[0].path;
+			}
+			var pathname = px2conf.path_controot + page_path;
+			pathname = pathname.replace( new RegExp('\/+', 'g'), '/' );
+			pathname += '?THEME='+encodeURIComponent(px2ce.theme_id);
+			return px2ce.options.preview.origin + pathname;
+		}
+
+		return getCanvasPageUrl();
 	}
 
 	/**
@@ -22388,6 +22411,23 @@ module.exports = function(px2ce){
 					},
 					function(_px2conf){
 						px2conf = _px2conf;
+						rlv();
+					}
+				);
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				pagesByLayout = [];
+				if( px2ce.target_mode != 'theme_layout' ){
+					rlv();
+					return;
+				}
+				px2ce.gpiBridge(
+					{
+						'api': 'getPagesByLayout',
+						'layout_id': px2ce.layout_id
+					},
+					function(pages){
+						pagesByLayout = pages;
 						rlv();
 					}
 				);
@@ -22441,8 +22481,27 @@ module.exports = function(px2ce){
 				});
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
+				// モジュールのCSS, JS ソースを取得する
+				if( px2ce.target_mode != 'theme_layout' ){
+					// テーマ編集時のみ必要。
+					rlv();
+					return;
+				}
+
+				px2ce.gpiBridge(
+					{
+						'api': 'getModuleCssJsSrc',
+						'theme_id': px2ce.theme_id
+					},
+					function(CssJs){
+						moduleCssJs = CssJs;
+						rlv();
+					}
+				);
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
 				$elmCanvas.attr({
-					"data-broccoli-preview": getPreviewUrl()
+					"data-broccoli-preview": getCanvasPageUrl()
 				});
 				rlv();
 			}); })
@@ -22618,7 +22677,7 @@ module.exports = function(px2ce){
 
 }
 
-},{"../../apis/toolbar.js":122,"es6-promise":18,"iterate79":22,"jquery":23}],124:[function(require,module,exports){
+},{"../../apis/toolbar.js":122,"es6-promise":18,"iterate79":22,"jquery":23,"utils79":56}],124:[function(require,module,exports){
 /**
  * default/default.js
  */
@@ -22628,7 +22687,8 @@ module.exports = function(px2ce){
 	var it79 = require('iterate79');
 	var $canvas = $(px2ce.getElmCanvas());
 	var page_path = px2ce.page_path;
-	var px2conf = {};
+	var px2conf = {},
+		pagesByLayout = [];
 	var editorLib = null;
 	if(window.ace){
 		editorLib = 'ace';
@@ -22643,10 +22703,23 @@ module.exports = function(px2ce){
 		$elmTextareas,
 		$elmTabs;
 
-	function getPreviewUrl(){
-		var pathname = px2conf.path_controot + page_path;
+	function getCanvasPageUrl(){
+		if( px2ce.target_mode == 'theme_layout' ){
+			var page_path = '/index.html';
+			if( pagesByLayout.length ){
+				page_path = pagesByLayout[0].path;
+			}
+			var pathname = px2conf.path_controot + page_path;
+			pathname = pathname.replace( new RegExp('\/+', 'g'), '/' );
+			pathname += '?THEME='+encodeURIComponent(px2ce.theme_id);
+			return px2ce.options.preview.origin + pathname;
+		}
+		var pathname = px2conf.path_controot + px2ce.page_path;
 		pathname = pathname.replace( new RegExp('\/+', 'g'), '/' );
 		return px2ce.options.preview.origin + pathname;
+	}
+	function getPreviewUrl(){
+		return getCanvasPageUrl();
 	}
 
 	/**
@@ -22663,6 +22736,23 @@ module.exports = function(px2ce){
 					},
 					function(_px2conf){
 						px2conf = _px2conf;
+						it1.next(arg);
+					}
+				);
+			},
+			function(it1, arg){
+				pagesByLayout = [];
+				if( px2ce.target_mode != 'theme_layout' ){
+					it1.next(arg);
+					return;
+				}
+				px2ce.gpiBridge(
+					{
+						'api': 'getPagesByLayout',
+						'layout_id': px2ce.layout_id
+					},
+					function(pages){
+						pagesByLayout = pages;
 						it1.next(arg);
 					}
 				);
@@ -22788,7 +22878,7 @@ module.exports = function(px2ce){
 			},
 			function(it1, arg){
 				$elmCanvas.attr({
-					"data-pickles2-contents-editor-preview-url": getPreviewUrl()
+					"data-pickles2-contents-editor-preview-url": getCanvasPageUrl()
 				});
 
 				px2ce.gpiBridge(
@@ -23146,6 +23236,9 @@ module.exports = function(px2ce){
 		this.__dirname = __dirname;
 		this.options = {};
 		this.page_path;
+		this.target_mode;
+		this.theme_id;
+		this.layout_id;
 
 		var serverConfig;
 		var editor;
@@ -23206,6 +23299,9 @@ module.exports = function(px2ce){
 							function(config){
 								// console.log(config);
 								serverConfig = config;
+								_this.target_mode = config.target_mode;
+								_this.theme_id = config.theme_id;
+								_this.layout_id = config.layout_id;
 								it1.next(data);
 							}
 						);
@@ -23452,16 +23548,23 @@ module.exports = function(px2ce){
 					rlv();
 				}); })
 				.then(function(){ return new Promise(function(rlv, rjt){
+					var contents_area_selector = px2conf.plugins.px2dt.contents_area_selector;
+					var contents_bowl_name_by = px2conf.plugins.px2dt.contents_bowl_name_by;
+					if(_this.target_mode == 'theme_layout'){
+						contents_area_selector = '[data-pickles2-theme-editor-contents-area]';
+						contents_bowl_name_by = 'data-pickles2-theme-editor-contents-area';
+					}
+
 					broccoliInitializeOptions = {
 						'elmCanvas': document.createElement('div'),
 						'elmModulePalette': document.createElement('div'),
 						'elmInstanceTreeView': document.createElement('div'),
 						'elmInstancePathView': document.createElement('div'),
-						'contents_area_selector': px2conf.plugins.px2dt.contents_area_selector,
-						// ↑編集可能領域を探すためのクエリを設定します。
-						//  この例では、data-contents属性が付いている要素が編集可能領域として認識されます。
-						'contents_bowl_name_by': px2conf.plugins.px2dt.contents_bowl_name_by,
-						// ↑bowlの名称を、data-contents属性値から取得します。
+						'contents_area_selector': contents_area_selector,
+							// ↑編集可能領域を探すためのクエリを設定します。
+							//  この例では、data-contents属性が付いている要素が編集可能領域として認識されます。
+						'contents_bowl_name_by': contents_bowl_name_by,
+							// ↑bowlの名称を、data-contents属性値から取得します。
 						'customFields': customFields,
 						'lang': px2ce.options.lang,
 						'gpiBridge': function(api, options, callback){

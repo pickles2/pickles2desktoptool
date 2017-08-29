@@ -541,6 +541,37 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	}
 
 	/**
+	 * テーマコレクションディレクトリのパスを得る
+	 */
+	this.px2dthelperGetRealpathThemeCollectionDir = function( callback ){
+		var multithemePluginFunctionName = 'tomk79\\pickles2\\multitheme\\theme::exec';
+		var realpathThemeCollectionDir = false;
+		_this.px2dthelperGetAll('/', {}, function(px2all){
+			realpathThemeCollectionDir = px2all.realpath_homedir+'themes/';
+			_this.px2proj.query(
+				'/?PX=px2dthelper.plugins.get_plugin_options&func_div=processor.html&plugin_name='+encodeURIComponent(multithemePluginFunctionName),
+				{
+					"output": "json",
+					"complete": function(result, code){
+						try {
+							result = JSON.parse(result);
+							// console.log(result);
+							if( result[0].options.path_theme_collection ){
+								realpathThemeCollectionDir = require('path').resolve( px2all.realpath_docroot + px2all.path_controot, result[0].options.path_theme_collection )+'/';
+							}
+						} catch (e) {
+						}
+						// console.log(realpathThemeCollectionDir);
+						callback(realpathThemeCollectionDir);
+						return;
+					}
+				}
+			);
+		});
+		return;
+	}
+
+	/**
 	 * ページパスからコンテンツを探す
 	 */
 	this.findPageContent = function( pagePath ){
@@ -844,7 +875,8 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	/**
 	 * pickles2-contents-editor(サーバーサイド)を生成する
 	 */
-	this.createPickles2ContentsEditorServer = function(page_path, callback){
+	this.createPickles2ContentsEditorServer = function(page_path, options, callback){
+		options = options || {};
 		callback = callback || function(){};
 		var Px2CE = require('pickles2-contents-editor');
 		var _pj = this;
@@ -854,20 +886,24 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 
 		// console.log(broccoli);
 		// console.log(require('path').resolve('/', './'+page_path));
-		px2ce.init(
-			{
-				'page_path': page_path,
-				'appMode': 'desktop', // 'web' or 'desktop'. default to 'web'
-				'entryScript': require('path').resolve( _pj.get('path'), _pj.get('entry_script') ),
-				'customFields': _pj.mkBroccoliCustomFieldOptionBackend() ,
-				'customFieldsIncludePath': _pj.mkBroccoliCustomFieldIncludePathOptionBackend() ,
-				'log': function(msg){
-					px.log(msg);
-				},
-				'commands':{
-					'php': px.nodePhpBinOptions
-				}
+
+		var initOption = {
+			'target_mode': (options.target_mode || 'page_content'),
+			'page_path': page_path,
+			'appMode': 'desktop', // 'web' or 'desktop'. default to 'web'
+			'entryScript': require('path').resolve( _pj.get('path'), _pj.get('entry_script') ),
+			'customFields': _pj.mkBroccoliCustomFieldOptionBackend() ,
+			'customFieldsIncludePath': _pj.mkBroccoliCustomFieldIncludePathOptionBackend() ,
+			'log': function(msg){
+				px.log(msg);
 			},
+			'commands':{
+				'php': px.nodePhpBinOptions
+			}
+		};
+
+		px2ce.init(
+			initOption,
 			function(){
 				callback(px2ce);
 			}
@@ -1010,7 +1046,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 		callback = callback || function(){};
 		var BroccoliProcessor = require('broccoli-processor');
 
-		this.createPickles2ContentsEditorServer( page_path, function(px2ce){
+		this.createPickles2ContentsEditorServer( page_path, {}, function(px2ce){
 			px2ce.createBroccoli(function(broccoli){
 				var broccoliProcessor = new BroccoliProcessor(broccoli, {});
 				callback( broccoliProcessor );

@@ -1614,6 +1614,7 @@ window.contApp = new (function( px ){
 		switch( previewLocation.href ){
 			case 'blank':
 			case 'about:blank':
+			case 'data:text/html,chromewebdata': // <- サーバーが立ち上がってないとき、chromeがこのURLを返す模様
 				return;
 		}
 		var to = previewLocation.pathname;
@@ -1644,6 +1645,7 @@ window.contApp = new (function( px ){
 	 */
 	this.goto = function( page_path, options, callback ){
 		// console.log('=-=-=-=-=-=-=-=-=-=-=-=-=-=-= goto');
+		// console.log(_currentPagePath, page_path);
 		callback = callback || function(){};
 		options = options || {};
 		if(page_path === undefined){
@@ -1701,6 +1703,13 @@ window.contApp = new (function( px ){
 			pageDraw.redraw( _currentPageInfo, options, function(){
 				if( _currentPageInfo.path_type == 'alias' ){
 					// エイリアスはロードしない
+					px.progress.close();
+					callback();
+					return;
+				}
+
+				if( !_currentPageInfo.page_info ){
+					// ページ情報が正常にロードされていない場合
 					px.progress.close();
 					callback();
 					return;

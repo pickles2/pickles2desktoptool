@@ -7,7 +7,7 @@
   "scripts": {
     "preinstall": "git submodule update --init --recursive --force",
     "start": "nw",
-    "submodules-update": "npm install file:submodules/broccoli-html-editor file:submodules/broccoli-field-table file:submodules/node-broccoli-processor file:submodules/node-broccoli-styleguide-generator file:submodules/node-px2dt-localdata-access file:submodules/node-express-pickles2 file:submodules/node-pickles2-contents-editor file:submodules/node-pickles2-module-editor file:submodules/node-px2agent file:submodules/node-utils79 file:submodules/px2style; gulp;",
+    "submodules-update": "npm install file:submodules/broccoli-html-editor file:submodules/broccoli-field-table file:submodules/node-broccoli-processor file:submodules/node-broccoli-styleguide-generator file:submodules/node-px2dt-localdata-access file:submodules/node-express-pickles2 file:submodules/node-pickles2-contents-editor file:submodules/node-pickles2-module-editor file:submodules/node-px2agent file:submodules/px2style file:submodules/node-utils79 file:submodules/node-command-queue; gulp;",
     "build": "node ./build.js"
   },
   "author": "Tomoya Koyanagi",

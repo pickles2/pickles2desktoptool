@@ -160,6 +160,12 @@ new (function($, window){
 					});
 				},
 				function(it1, data){
+					var CommandQueueCtrl = require('./index_files/CommandQueueCtrl.js');
+					_this.commandQueueCtrl = new CommandQueueCtrl(_this, window);
+					it1.next();
+				},
+				function(it1, data){
+
 					(function(){
 						// node-webkit の標準的なメニューを出す
 						var win = _nw_gui.Window.get();
@@ -919,6 +925,7 @@ new (function($, window){
 	 * ログをファイルに出力
 	 */
 	this.log = function( msg ){
+		console.info(msg);
 		return px.px2dtLDA.log(msg);
 	}
 
@@ -966,7 +973,7 @@ new (function($, window){
 	/**
 	 * アプリケーションを初期化
 	 */
-	$(function(){
+	$(window).on('load', function(){
 		_it79.fnc({}, [
 			function(it, arg){
 				// init

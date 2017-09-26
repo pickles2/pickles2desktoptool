@@ -31,6 +31,9 @@ gulp.task("client-libs", function() {
 	gulp.src(["node_modules/px2style/dist/**/*"])
 		.pipe(gulp.dest( './app/common/px2style/dist/' ))
 	;
+	gulp.src(["node_modules/command-queue/dist/**/*"])
+		.pipe(gulp.dest( './app/common/command-queue/dist/' ))
+	;
 });
 
 

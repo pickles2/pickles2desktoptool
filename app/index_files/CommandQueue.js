@@ -9,7 +9,7 @@ module.exports = function(px, window){
 	this.server = new (require('command-queue'))({
 		'cd': {'default': process.cwd()},
 		'allowedCommands': [],
-		'checkCommand': function(cmd, callback){
+		'preprocess': function(cmd, callback){
 			// console.log(cmd);
 			callback(cmd);
 		},
@@ -47,7 +47,7 @@ module.exports = function(px, window){
 	setTimeout(function(){
 		// TODO: 確認用。用事が済んだら消す。
 		_this.server.addAllowedCommand(['ls', '-la']);
-		_this.client.query(['ls', '-la']);
+		_this.client.addQueueItem(['ls', '-la']);
 	},3000);
 
 	/**

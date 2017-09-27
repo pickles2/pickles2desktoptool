@@ -34,6 +34,15 @@
 					})
 				;
 
+				// --------------------------------------
+				// ボタンアクション設定： Command Queue のメイン端末を開く
+				$('.cont_open-command-queue-main-terminal button')
+					.on('click', function(){
+						px.commandQueue.show();
+						return false;
+					})
+				;
+
 				it1.next();
 			},
 			function(it1, arg){

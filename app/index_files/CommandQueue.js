@@ -3,6 +3,7 @@
  */
 module.exports = function(px, window){
 	var _this = this;
+	var $ = window.jQuery;
 
 	// CommandQueue オブジェクト(Server Side) を生成する。
 	this.server = new (require('command-queue'))({
@@ -32,8 +33,34 @@ module.exports = function(px, window){
 		}
 	);
 
-	// this.server.addAllowedCommand(['ls', '-la']);
-	// this.client.query(['ls', '-la']);
-
+	var $mainTerminal = $('<div class="theme-command-terminal" id="theme-command-terminal">');
+	$mainTerminal__cQ = $('<div class="theme-command-terminal__cQ">');
+	$($mainTerminal).append($mainTerminal__cQ);
+	$('body').append($mainTerminal);
+	var mainTerminal = this.client.createTerminal($mainTerminal__cQ.get(0));
 	// console.log('Command Queue Standby.');
+
+	$mainTerminal.on('click', function(){
+		_this.hide(); // TODO: 一時的な実装
+	});
+
+	setTimeout(function(){
+		// TODO: 確認用。用事が済んだら消す。
+		_this.server.addAllowedCommand(['ls', '-la']);
+		_this.client.query(['ls', '-la']);
+	},3000);
+
+	/**
+	 * メイン端末を表示する
+	 */
+	this.show = function(){
+		$mainTerminal.css({"bottom": 0, "height": "70%"});
+	}
+
+	/**
+	 * メイン端末を隠す
+	 */
+	this.hide = function(){
+		$mainTerminal.css({"bottom": "-70%"});
+	}
 }

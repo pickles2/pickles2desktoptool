@@ -160,8 +160,9 @@ new (function($, window){
 					});
 				},
 				function(it1, data){
-					var CommandQueueCtrl = require('./index_files/CommandQueueCtrl.js');
-					_this.commandQueueCtrl = new CommandQueueCtrl(_this, window);
+					// Command Queue をセットアップ
+					var CommandQueue = require('./index_files/CommandQueue.js');
+					_this.commandQueue = new CommandQueue(_this, window);
 					it1.next();
 				},
 				function(it1, data){

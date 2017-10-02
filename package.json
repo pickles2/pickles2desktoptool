@@ -18,6 +18,7 @@
     "broccoli-processor": "file:submodules/node-broccoli-processor",
     "broccoli-styleguide-generator": "file:submodules/node-broccoli-styleguide-generator",
     "cheerio": "^0.22.0",
+    "command-queue": "file:submodules/node-command-queue",
     "ejs": "^2.5.2",
     "express": "^4.13.0",
     "express-pickles2": "file:submodules/node-express-pickles2",

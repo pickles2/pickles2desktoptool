@@ -31,6 +31,6 @@
 [submodule "submodules/node-broccoli-styleguide-generator"]
 	path = submodules/node-broccoli-styleguide-generator
 	url = https://github.com/broccoli-html-editor/node-broccoli-styleguide-generator.git
-[submodule "submodules/node-command-queue"]
-	path = submodules/node-command-queue
-	url = https://github.com/tomk79/node-command-queue.git
+[submodule "submodules/node-cmd-queue"]
+	path = submodules/node-cmd-queue
+	url = https://github.com/tomk79/node-cmd-queue.git

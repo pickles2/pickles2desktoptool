@@ -5,8 +5,8 @@ module.exports = function(px, window){
 	var _this = this;
 	var $ = window.jQuery;
 
-	// CommandQueue オブジェクト(Server Side) を生成する。
-	this.server = new (require('command-queue'))({
+	// CmdQueue オブジェクト(Server Side) を生成する。
+	this.server = new (require('cmd-queue'))({
 		'cd': {'default': process.cwd()},
 		'allowedCommands': [],
 		'preprocess': function(cmd, callback){
@@ -22,8 +22,8 @@ module.exports = function(px, window){
 		}
 	});
 
-	// CommandQueue オブジェクト(Client Side) を生成する。
-	this.client = new window.CommandQueue(
+	// CmdQueue オブジェクト(Client Side) を生成する。
+	this.client = new window.CmdQueue(
 		{
 			'gpiBridge': function(message, done){
 				_this.server.gpi(message, function(result){

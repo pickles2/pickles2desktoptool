@@ -487,8 +487,8 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	 * 基本的には px.execComposer() をラップするメソッドですが、
 	 * cwd オプションを自動的に付与する点が異なります。
 	 *
-	 * @param  {[type]} cmd  [description]
-	 * @param  {[type]} opts [description]
+	 * @param  {Array}  cmd  `php`, `composer` を含まないコマンドオプションの配列
+	 * @param  {Object} opts [description]
 	 * @return {[type]}      [description]
 	 */
 	this.execComposer = function( cmd, opts ){

@@ -528,8 +528,8 @@ new (function($, window){
 	 * node-php-bin の PHP などを考慮して、
 	 * -c, -d オプションの解決を自動的にやっている前提で、
 	 * composer コマンドを実行します。
-	 * @param  {[type]} cmd  [description]
-	 * @param  {[type]} opts [description]
+	 * @param  {Array}  cmd  `php`, `composer` を含まないコマンドオプションの配列
+	 * @param  {Object} opts [description]
 	 * @return {[type]}      [description]
 	 */
 	this.execComposer = function( cmd, opts ){

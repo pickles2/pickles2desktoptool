@@ -10,7 +10,30 @@ module.exports = function(px, window){
 		'cd': {'default': process.cwd()},
 		'allowedCommands': [],
 		'preprocess': function(cmd, callback){
-			// console.log(cmd);
+			if(cmd.command[0] == 'php'){
+				// PHPコマンドの仲介処理
+				var phpCmd = JSON.parse( JSON.stringify(cmd.command) );
+				phpCmd.shift();
+				px.nodePhpBin.script(
+					phpCmd ,
+					{
+						'cwd': cmd.cd
+					} ,
+					{
+						'success': function(data){
+							cmd.stdout(data);
+						},
+						'error': function(data){
+							cmd.stderr(data);
+						},
+						'complete': function(data, error, code){
+							cmd.complete(code);
+						}
+					}
+				);
+				return false;
+			}
+
 			callback(cmd);
 		},
 		'gpiBridge': function(message, done){
@@ -46,8 +69,7 @@ module.exports = function(px, window){
 
 	setTimeout(function(){
 		// TODO: 確認用。用事が済んだら消す。
-		_this.server.addAllowedCommand(['ls', '-la']);
-		_this.client.addQueueItem(['ls', '-la']);
+		_this.client.addQueueItem(['php', '-v']);
 	},3000);
 
 	/**

@@ -10,6 +10,29 @@ module.exports = function(px, window){
 		'cd': {'default': process.cwd()},
 		'allowedCommands': [],
 		'preprocess': function(cmd, callback){
+			if(cmd.command[0] == 'composer'){
+				// Composerコマンドの仲介処理
+				cmd.command[0] = px.cmd(cmd.command[0]);
+				var phpCmd = JSON.parse( JSON.stringify(cmd.command) );
+				px.nodePhpBin.script(
+					phpCmd ,
+					{
+						'cwd': cmd.cd
+					} ,
+					{
+						'success': function(data){
+							cmd.stdout(data);
+						},
+						'error': function(data){
+							cmd.stderr(data);
+						},
+						'complete': function(data, error, code){
+							cmd.complete(code);
+						}
+					}
+				);
+				return false;
+			}
 			if(cmd.command[0] == 'php'){
 				// PHPコマンドの仲介処理
 				var phpCmd = JSON.parse( JSON.stringify(cmd.command) );

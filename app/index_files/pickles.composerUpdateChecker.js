@@ -88,47 +88,69 @@ module.exports = function( px, callback ) {
 			'status': 'checking'
 		};
 
-		setTimeout(function(){
-			// console.info('Checking composer update --dry-run');
-			px.execComposer(
-				['update', '--dry-run'],
-				{
-					'cwd': composerRootDir,
-					'success': function(data){
-						// console.log('composer update: success');
-						// console.log(data);
-					},
-					'error': function(data){
-						// console.log('composer update: error');
-						// console.log(data);
-					},
-					'complete': function(data, error, code){
-						// console.log('-- composer update: complete --');
-						// console.log(data, error, code);
-						var result = php.trim(data);
-						var status = 'nothing_todo';
-						if( code ){
-							status = 'error';
-						}else if( result.match( new RegExp( '\- Updating .*? to', 'g' ) ) ){
-							status = 'update_found';
-						}else if( result.match( new RegExp( 'Nothing to install or update$' ) ) ){
-							status = 'nothing_todo';
-						}
-						_this.checkStatus[composerRootDir].status = status;
-						_this.checkStatus[composerRootDir].result = result;
+		new Promise(function(rlv){rlv();})
+			.then(function(){ return new Promise(function(rlv, rjt){
+				var data = '';
 
-						if( _this.checkStatus[composerRootDir].status == 'update_found' ){
-							console.info('composerUpdateChecker: update_found ('+_this.checkStatus[composerRootDir].name+')');
-							px.message(_this.checkStatus[composerRootDir].name + ' の composer パッケージのいくつかに、新しいバージョンが見つかりました。 いますぐ更新することをお勧めします。');
-						}
+				// console.info('Checking composer update --dry-run');
+				px.commandQueue.client.addQueueItem(
+					['composer', 'update', '--dry-run'],
+					{
+						'cdName': composerRootDir, // コマンド実行時のカレントディレクトリ。サーバーサイドのオプション `cd` と突き合わせられる。
+						'tags': ['composer-update-check'], // 端末が表示をフィルタリングするために用いるタグ。
+						'accept': function(queueId){
+							// キュー発行の完了イベントハンドラ
+							// 注意: キューに追加した時点で呼ばれます。コマンドの実行完了イベントではありません。
+							// 発行したキューのID文字列が返されます。
+							console.log(queueId);
+						},
+						'open': function(message){
+							// 登録したキューが実行開始されるときに呼ばれるコールバック
+						},
+						'stdout': function(message){
+							// 登録したコマンドの標準出力を受け取るコールバック
+							for(var idx in message.data){
+								data += message.data[idx];
+							}
+						},
+						'stderr': function(message){
+							// 登録したコマンドの標準エラー出力を受け取るコールバック
+							for(var idx in message.data){
+								data += message.data[idx];
+							}
+						},
+						'close': function(message){
+							// 登録したコマンドが実行完了したときに呼ばれるコールバック
+							var code = message.data;
+							// var error = undefined;
+							// console.log('-- composer update: complete --');
+							// console.log(data, error, code);
+							var result = php.trim(data);
+							var status = 'nothing_todo';
+							if( code ){
+								status = 'error';
+							}else if( result.match( new RegExp( '\- Updating .*? to', 'g' ) ) ){
+								status = 'update_found';
+							}else if( result.match( new RegExp( 'Nothing to install or update$' ) ) ){
+								status = 'nothing_todo';
+							}
+							_this.checkStatus[composerRootDir].status = status;
+							_this.checkStatus[composerRootDir].result = result;
 
-						// console.log(_this.checkStatus);
-						callback( _this.checkStatus[composerRootDir] );
-						return;
+							if( _this.checkStatus[composerRootDir].status == 'update_found' ){
+								console.info('composerUpdateChecker: update_found ('+_this.checkStatus[composerRootDir].name+')');
+								px.message(_this.checkStatus[composerRootDir].name + ' の composer パッケージのいくつかに、新しいバージョンが見つかりました。 いますぐ更新することをお勧めします。');
+							}
+
+							// console.log(_this.checkStatus);
+							callback( _this.checkStatus[composerRootDir] );
+							return;
+						}
 					}
-				}
-			);
-		}, 0);
+				);
+
+			}); })
+		;
 		return;
 	}
 

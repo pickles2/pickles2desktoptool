@@ -49,10 +49,6 @@ module.exports = function( px, callback ) {
 
 		var composerRootDir = pj.get_realpath_composer_root();
 		var status = pj.status();
-		// console.log(pj);
-		// console.log(status);
-		// console.log(composerRootDir);
-		// console.log(_this.checkStatus);
 
 		if( !status.isPxStandby ){
 			// プロジェクトの準備が不十分なら、チェックしないで返す。
@@ -61,7 +57,6 @@ module.exports = function( px, callback ) {
 		}
 
 		var now = Date.now();
-		// console.log(now);
 		var interval = 1*60*60*1000; // 1時間以内にチェックしてたら再チェックしない
 		if( _this.checkStatus[composerRootDir] ){
 			if( _this.checkStatus[composerRootDir].status == 'checking' ){
@@ -91,40 +86,27 @@ module.exports = function( px, callback ) {
 		new Promise(function(rlv){rlv();})
 			.then(function(){ return new Promise(function(rlv, rjt){
 				var data = '';
-
-				// console.info('Checking composer update --dry-run');
 				px.commandQueue.client.addQueueItem(
 					['composer', 'update', '--dry-run'],
 					{
-						'cdName': composerRootDir, // コマンド実行時のカレントディレクトリ。サーバーサイドのオプション `cd` と突き合わせられる。
-						'tags': ['composer-update-check'], // 端末が表示をフィルタリングするために用いるタグ。
+						'cdName': 'default',
+						'tags': ['composer-update-check'],
 						'accept': function(queueId){
-							// キュー発行の完了イベントハンドラ
-							// 注意: キューに追加した時点で呼ばれます。コマンドの実行完了イベントではありません。
-							// 発行したキューのID文字列が返されます。
-							console.log(queueId);
 						},
 						'open': function(message){
-							// 登録したキューが実行開始されるときに呼ばれるコールバック
 						},
 						'stdout': function(message){
-							// 登録したコマンドの標準出力を受け取るコールバック
 							for(var idx in message.data){
 								data += message.data[idx];
 							}
 						},
 						'stderr': function(message){
-							// 登録したコマンドの標準エラー出力を受け取るコールバック
 							for(var idx in message.data){
 								data += message.data[idx];
 							}
 						},
 						'close': function(message){
-							// 登録したコマンドが実行完了したときに呼ばれるコールバック
 							var code = message.data;
-							// var error = undefined;
-							// console.log('-- composer update: complete --');
-							// console.log(data, error, code);
 							var result = php.trim(data);
 							var status = 'nothing_todo';
 							if( code ){
@@ -142,7 +124,6 @@ module.exports = function( px, callback ) {
 								px.message(_this.checkStatus[composerRootDir].name + ' の composer パッケージのいくつかに、新しいバージョンが見つかりました。 いますぐ更新することをお勧めします。');
 							}
 
-							// console.log(_this.checkStatus);
 							callback( _this.checkStatus[composerRootDir] );
 							return;
 						}

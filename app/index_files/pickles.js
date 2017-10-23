@@ -161,7 +161,7 @@ new (function($, window){
 				},
 				function(it1, data){
 					// Command Queue をセットアップ
-					var CommandQueue = require('./index_files/CommandQueue.js');
+					var CommandQueue = require('./index_files/cmdQueueCtrl.js');
 					_this.commandQueue = new CommandQueue(_this, window);
 					it1.next();
 				},
@@ -714,6 +714,7 @@ new (function($, window){
 
 		if( typeof(_selectedProject) != typeof(0) ){
 			appName = '';
+			px.commandQueue.server.setCurrentDir( 'default', process.cwd() ); // current dir を初期化
 		}else if( !appName && typeof(_selectedProject) == typeof(0) ){
 			appName = 'fncs/home/index.html';
 		}

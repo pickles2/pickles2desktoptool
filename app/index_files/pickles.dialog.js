@@ -200,7 +200,7 @@
 		dlgOpt.buttons = [
 			$('<button>')
 				.text('OK')
-				.click(function(){
+				.on('click', function(){
 					opt.complete(stdout);
 					px.closeDialog();
 					// $dialog.remove();

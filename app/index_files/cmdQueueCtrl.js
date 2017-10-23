@@ -14,6 +14,7 @@ module.exports = function(px, window){
 				// Composerコマンドの仲介処理
 				cmd.command[0] = px.cmd(cmd.command[0]);
 				var phpCmd = JSON.parse( JSON.stringify(cmd.command) );
+console.log(cmd);
 				px.nodePhpBin.script(
 					phpCmd ,
 					{

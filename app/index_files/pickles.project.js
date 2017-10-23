@@ -20,6 +20,12 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 
 		new Promise(function(rlv){rlv();})
 			.then(function(){ return new Promise(function(rlv, rjt){
+				// cmdQueue にカレントディレクトリ情報をセット
+				px.commandQueue.server.setCurrentDir( 'default', pj.get('path') );
+				rlv();
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
 
 				// px2agent から プロジェクト情報を生成
 				var px2agentOption = {

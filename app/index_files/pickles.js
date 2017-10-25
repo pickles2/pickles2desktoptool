@@ -5,6 +5,8 @@ new (function($, window){
 	// node.js
 	this.process = process;
 
+	this.cwd = process.cwd();
+
 	// NW.js
 	this.nw = nw;
 	this.nwWindow = nw.Window.get();

@@ -16,12 +16,13 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	/**
 	 * projectオブジェクトを初期化
 	 */
-	function init(pj){
+	function init(){
+		var pj = _this;
 
 		new Promise(function(rlv){rlv();})
 			.then(function(){ return new Promise(function(rlv, rjt){
 				// cmdQueue にカレントディレクトリ情報をセット
-				px.commandQueue.server.setCurrentDir( 'default', pj.get('path') );
+				px.commandQueue.server.setCurrentDir( 'default', _this.get('path') );
 				rlv();
 				return;
 			}); })
@@ -35,16 +36,16 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 				};
 				// console.log(px2agentOption);
 				_px2proj = px.px2agent.createProject(
-					_path.resolve( pj.get('path') + '/' + pj.get('entry_script') ) ,
+					_path.resolve( _this.get('path') + '/' + _this.get('entry_script') ) ,
 					px2agentOption
 				);
-				pj.px2proj = _px2proj;
+				_this.px2proj = _px2proj;
 
 				rlv();
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
-				pj.updateProjectStatus(function( tmpStatus ){
+				_this.updateProjectStatus(function( tmpStatus ){
 					_projectStatus = tmpStatus;
 					rlv();
 				});
@@ -53,7 +54,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 			.then(function(){ return new Promise(function(rlv, rjt){
 				if( !_projectStatus.pathExists || !_projectStatus.entryScriptExists || !_projectStatus.vendorDirExists || !_projectStatus.composerJsonExists ){
 					_px2proj = false;
-					pj.px2proj = _px2proj;
+					_this.px2proj = _px2proj;
 					rlv();
 					return;
 				}
@@ -93,21 +94,18 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 				/**
 				 * px.site
 				 */
-				pj.site = new (require('./pickles.project.site.js'))(px, pj, function(){
+				_this.site = new (require('./pickles.project.site.js'))(px, _this, function(){
 					rlv();
 				});
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
 				// composer パッケージの更新をチェックする。
-				px.composerUpdateChecker.check(pj, function(checked){
-					// console.log('composerUpdateChecker.check() done.', checked.status);
-				});
+				px.composerUpdateChecker.check(_this, function(checked){});
 				rlv();
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
-				// console.log('project "' + _this.projectInfo.name + '" (projectId: ' + _this.projectId + ') initialized.');
 				cbStandby();
 				rlv();
 				return;
@@ -1421,7 +1419,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	}
 
 	// オブジェクトを初期化
-	init(this);
+	init();
 	return this;
 
 };

@@ -14,7 +14,12 @@ module.exports = function(px, window){
 				// Composerコマンドの仲介処理
 				cmd.command[0] = px.cmd(cmd.command[0]);
 				var phpCmd = JSON.parse( JSON.stringify(cmd.command) );
-console.log(cmd);
+
+				var tmpCd = cmd.cd;
+				if( tmpCd ){
+					process.chdir( tmpCd );
+				}
+
 				px.nodePhpBin.script(
 					phpCmd ,
 					{
@@ -32,12 +37,19 @@ console.log(cmd);
 						}
 					}
 				);
+				process.chdir( px.cwd );
 				return false;
 			}
 			if(cmd.command[0] == 'php'){
 				// PHPコマンドの仲介処理
 				var phpCmd = JSON.parse( JSON.stringify(cmd.command) );
 				phpCmd.shift();
+
+				var tmpCd = cmd.cd;
+				if( tmpCd ){
+					process.chdir( tmpCd );
+				}
+
 				px.nodePhpBin.script(
 					phpCmd ,
 					{
@@ -55,6 +67,7 @@ console.log(cmd);
 						}
 					}
 				);
+				process.chdir( px.cwd );
 				return false;
 			}
 
@@ -74,7 +87,7 @@ console.log(cmd);
 		{
 			'gpiBridge': function(message, done){
 				_this.server.gpi(message, function(result){
-					console.log(result);
+					done(result);
 				});
 			}
 		}

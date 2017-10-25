@@ -23,6 +23,8 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 			.then(function(){ return new Promise(function(rlv, rjt){
 				// cmdQueue にカレントディレクトリ情報をセット
 				px.commandQueue.server.setCurrentDir( 'default', _this.get('path') );
+				px.commandQueue.server.setCurrentDir( 'git', _this.get_realpath_git_root() );
+				px.commandQueue.server.setCurrentDir( 'composer', _this.get_realpath_composer_root() );
 				rlv();
 				return;
 			}); })

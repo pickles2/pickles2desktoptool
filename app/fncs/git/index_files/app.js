@@ -20,7 +20,7 @@ window.contApp = new (function(){
 			$cont
 				.append( $($('#template-toInitialize-message').html()) )
 				.append( $btnGitStatus
-					.click( function(){ git_init(this); } )
+					.on('click', function(){ git_init(this); } )
 					.text('gitを初期化する')
 					.css({
 						'width':'100%'
@@ -38,7 +38,7 @@ window.contApp = new (function(){
 			// gitリポジトリが存在する場合
 			$cont
 				.append( $btnGitStatus
-					.click( function(){ git_status(this); } )
+					.on('click', function(){ git_status(this); } )
 					.text('ステータスを表示する')
 					.css({
 						'width':'100%'
@@ -59,24 +59,41 @@ window.contApp = new (function(){
 		$(btn).attr('disabled', 'disabled');
 		var pj = px.getCurrentProject();
 		$('.cont_console').text('');
-		window.px.utils.spawn('git',
-			['init'],
+
+		var stdout = '';
+		px.commandQueue.client.addQueueItem(
+			[
+				'git',
+				'init'
+			],
 			{
-				cd: pj.get('path'),
-				success: function(data){
-					$('.cont_console').text(
-						$('.cont_console').text() + data
-					);
-				} ,
-				error: function(data){
-					$('.cont_console').text(
-						$('.cont_console').text() + data
-					);
-				} ,
-				complete: function(code){
+				'cdName': 'default',　// この時点で .git が存在しないので、 ルートディレクトリは `git` ではなく `default`。
+				'tags': [
+					'pj-'+pj.get('id'),
+					'git-init'
+				],
+				'accept': function(queueId){
+					// console.log(queueId);
+				},
+				'open': function(message){
+				},
+				'stdout': function(message){
+					for(var idx in message.data){
+						stdout += message.data[idx];
+					}
+					$('.cont_console').text(stdout);
+				},
+				'stderr': function(message){
+					for(var idx in message.data){
+						stdout += message.data[idx];
+					}
+					$('.cont_console').text(stdout);
+				},
+				'close': function(message){
 					$(btn).removeAttr('disabled');
 					px.message( 'gitを初期化しました。' );
 					px.subapp('fncs/git/index.html');
+					return;
 				}
 			}
 		);
@@ -86,16 +103,42 @@ window.contApp = new (function(){
 		$(btn).attr('disabled', 'disabled');
 		var pj = px.getCurrentProject();
 		$('.cont_console').text('');
-		px.execDialog(
-			'git status',
+
+
+		var stdout = '';
+		px.commandQueue.client.addQueueItem(
+			[
+				'git',
+				'status'
+			],
 			{
-				cd: pj.get_realpath_git_root(),
-				title: '$ git status',
-				description: $('<p>').text('gitのステータス状態を表示します。'),
-				complete: function(stdout){
+				'cdName': 'git',
+				'tags': [
+					'pj-'+pj.get('id'),
+					'git-status'
+				],
+				'accept': function(queueId){
+					// console.log(queueId);
+				},
+				'open': function(message){
+				},
+				'stdout': function(message){
+					for(var idx in message.data){
+						stdout += message.data[idx];
+					}
+					$('.cont_console').text(stdout);
+				},
+				'stderr': function(message){
+					for(var idx in message.data){
+						stdout += message.data[idx];
+					}
+					$('.cont_console').text(stdout);
+				},
+				'close': function(message){
 					$('.cont_console').text( stdout );
 					$(btn).removeAttr('disabled').focus();
 					px.message( 'gitのステータス表示を完了しました。' );
+					return;
 				}
 			}
 		);

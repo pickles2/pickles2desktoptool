@@ -54,8 +54,11 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 				'2.0.*'
 			],
 			{
-				'cdName': 'default',
-				'tags': ['composer-create-project'],
+				'cdName': 'default', // この時点で composer.json は存在しないので、ルートディレクトリは `composer` ではなく `default`。
+				'tags': [
+					'pj-'+pj.get('id'),
+					'composer-create-project'
+				],
 				'accept': function(queueId){
 					// console.log(queueId);
 				},

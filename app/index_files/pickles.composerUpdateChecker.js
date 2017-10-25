@@ -89,8 +89,11 @@ module.exports = function( px, callback ) {
 				px.commandQueue.client.addQueueItem(
 					['composer', 'update', '--dry-run'],
 					{
-						'cdName': 'default',
-						'tags': ['composer-update-check'],
+						'cdName': 'composer',
+						'tags': [
+							'pj-'+pj.get('id'),
+							'composer-update-check'
+						],
 						'accept': function(queueId){
 						},
 						'open': function(message){

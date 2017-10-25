@@ -10,7 +10,38 @@ module.exports = function(px, window){
 		'cd': {'default': process.cwd()},
 		'allowedCommands': [],
 		'preprocess': function(cmd, callback){
+			if(cmd.command[0] == 'git'){
+				// --------------------------------------
+				// gitコマンドの仲介処理
+				cmd.command[0] = px.cmd(cmd.command[0]);
+				var gitCmd = JSON.parse( JSON.stringify(cmd.command) );
+				gitCmd.shift();
+
+				var tmpCd = cmd.cd;
+				if( tmpCd ){
+					process.chdir( tmpCd );
+				}
+
+				window.px.utils.spawn(px.cmd('git'),
+					gitCmd,
+					{
+						cd: cmd.cd,
+						success: function(data){
+							cmd.stdout(data);
+						} ,
+						error: function(data){
+							cmd.stdout(data);
+						} ,
+						complete: function(code){
+							cmd.complete(code);
+						}
+					}
+				);
+				process.chdir( px.cwd );
+				return false;
+			}
 			if(cmd.command[0] == 'composer'){
+				// --------------------------------------
 				// Composerコマンドの仲介処理
 				cmd.command[0] = px.cmd(cmd.command[0]);
 				var phpCmd = JSON.parse( JSON.stringify(cmd.command) );
@@ -41,6 +72,7 @@ module.exports = function(px, window){
 				return false;
 			}
 			if(cmd.command[0] == 'php'){
+				// --------------------------------------
 				// PHPコマンドの仲介処理
 				var phpCmd = JSON.parse( JSON.stringify(cmd.command) );
 				phpCmd.shift();

@@ -37,7 +37,7 @@ window.contApp.installer.git = new (function( px, contApp ){
 		dlgOpt.buttons = [
 			$('<button>')
 				.text('OK')
-				.click(function(){
+				.on('click', function(){
 					// これがセットアップ完了の最後の処理
 					px.closeDialog();
 					opt.complete();

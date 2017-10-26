@@ -5,7 +5,6 @@ module.exports = function( px, callback ) {
 	callback = callback || function(){};
 	var _this = this;
 	var utils79 = require('utils79');
-	var php = require('phpjs');
 	this.px = px;
 	this.checkStatus = {};
 
@@ -85,32 +84,27 @@ module.exports = function( px, callback ) {
 
 		new Promise(function(rlv){rlv();})
 			.then(function(){ return new Promise(function(rlv, rjt){
-				var data = '';
-				px.commandQueue.client.addQueueItem(
-					['composer', 'update', '--dry-run'],
+
+				// $ composer update --dry-run
+				// この処理は、cmd-queue の行列待ちをしません。
+				// これはユーザーの認識の外で自動的に実行される処理で、
+				// かつ長い時間を要する場合があるコマンドです。
+				// ユーザーが知らない処理のために、ユーザーが実行したい処理が待ち状態になるのは使い勝手が悪いので、
+				// 行列待ちはしないことにしました。
+				px.execComposer(
+					['update', '--dry-run'],
 					{
-						'cdName': 'composer',
-						'tags': [
-							'pj-'+pj.get('id'),
-							'composer-update-check'
-						],
-						'accept': function(queueId){
+						'cwd': composerRootDir,
+						'success': function(data){
+							console.log('composer update: success');
+							console.log(data);
 						},
-						'open': function(message){
+						'error': function(data){
+							console.log('composer update: error');
+							console.log(data);
 						},
-						'stdout': function(message){
-							for(var idx in message.data){
-								data += message.data[idx];
-							}
-						},
-						'stderr': function(message){
-							for(var idx in message.data){
-								data += message.data[idx];
-							}
-						},
-						'close': function(message){
-							var code = message.data;
-							var result = php.trim(data);
+						'complete': function(data, error, code){
+							var result = utils79.trim(data);
 							var status = 'nothing_todo';
 							if( code ){
 								status = 'error';
@@ -126,7 +120,6 @@ module.exports = function( px, callback ) {
 								console.info('composerUpdateChecker: update_found ('+_this.checkStatus[composerRootDir].name+')');
 								px.message(_this.checkStatus[composerRootDir].name + ' の composer パッケージのいくつかに、新しいバージョンが見つかりました。 いますぐ更新することをお勧めします。');
 							}
-
 							callback( _this.checkStatus[composerRootDir] );
 							return;
 						}

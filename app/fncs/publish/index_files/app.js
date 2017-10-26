@@ -310,10 +310,7 @@ module.exports = function(contApp, px, $){
 
 		var phase;
 
-		// console.log(opts);
-
 		function updateView(data){
-			// console.log(data);
 			try {
 				var data = data.toString();
 				var rows = data.split(new RegExp('(\r\n|\r|\n)+'));
@@ -359,11 +356,23 @@ module.exports = function(contApp, px, $){
 			}
 		}
 
+		var px2cmd_options = '';
+		px2cmd_options += 'path_region='+encodeURIComponent(opts.path_region);
+		for(var idx in opts.paths_region){
+			px2cmd_options += '&paths_region[]='+encodeURIComponent(opts.paths_region[idx]);
+		}
+		for(var idx in opts.paths_ignore){
+			px2cmd_options += '&paths_ignore[]='+encodeURIComponent(opts.paths_ignore[idx]);
+		}
+		if(opts.keep_cache){
+			px2cmd_options += '&keep_cache=1';
+		}
+
 		px.commandQueue.client.addQueueItem(
 			[
 				'php',
 				px.path.resolve(_pj.get('path'), _pj.get('entry_script')),
-				'/?PX=publish.run'
+				'/?PX=publish.run&'+px2cmd_options
 			],
 			{
 				'cdName': 'default',
@@ -383,7 +392,6 @@ module.exports = function(contApp, px, $){
 					updateView(message.data.join(''));
 				},
 				'close': function(message){
-					// console.log(data);
 					clearTimeout(_timer);
 					setTimeout(function(){
 						px.progress.close();
@@ -393,24 +401,6 @@ module.exports = function(contApp, px, $){
 				}
 			}
 		);
-
-		// _pj.px2proj.publish({
-		// 	"path_region": opts.path_region,
-		// 	"paths_region": opts.paths_region,
-		// 	"paths_ignore": opts.paths_ignore,
-		// 	"keep_cache": opts.keep_cache,
-		// 	"success": function(data){
-		// 		updateView(data);
-		// 	},
-		// 	"complete":function(data){
-		// 		// console.log(data);
-		// 		clearTimeout(_timer);
-		// 		setTimeout(function(){
-		// 			px.progress.close();
-		// 			opts.complete(true);
-		// 		}, 3000);
-		// 	}
-		// });
 
 	} // this.init();
 

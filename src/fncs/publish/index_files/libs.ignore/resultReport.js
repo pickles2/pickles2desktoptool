@@ -2,7 +2,6 @@
  * Publish: resultReport.js
  */
 module.exports = function(contApp, px, $){
-// window.contApp.resultReport = new (function(px, $){
 	var _this = this;
 
 	var $results, $rows, $summaries, $spentTime, $totalFileCount, $errorMessage;
@@ -196,10 +195,7 @@ module.exports = function(contApp, px, $){
 			}
 		]).start({});
 
-	}// this.init();
-
-
+	} // this.init();
 
 	return this;
-// })(px, $);
 }

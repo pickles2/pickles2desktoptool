@@ -1,15 +1,16 @@
 @charset "utf-8";
 
-.contents button{
-	width: 100%;
-	margin-left:0; margin-right: 0;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-}
-
-.contents .cont_canvas{
-	overflow: auto;
+.contents{
+	button{
+		width: 100%;
+		margin-left:0; margin-right: 0;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+	.cont_canvas{
+		overflow: auto;
+	}
 }
 
 .cont_canvas{
@@ -24,17 +25,17 @@
 	position: absolute;
 	bottom: 70px; right: 50px;
 	line-height: 0;
-}
-.cont_results-total_file_count strong{
-	font-size: 500%;
+	strong{
+		font-size: 500%;
+	}
 }
 .cont_results-spentTime{
 	position: absolute;
 	bottom: 50px; right: 50px;
 	line-height: 0;
-}
-.cont_results-spentTime span{
-	font-weight:bold;
+	span{
+		font-weight:bold;
+	}
 }
 
 .cont_results-rows{
@@ -56,12 +57,10 @@
 	font-weight: bold;
 }
 
-/**
- * エラーがある場合の表示
- */
+// エラーがある場合の表示
 .cont_results.cont_results-error{
 	background: #fff6f6;
-}
-.cont_results.cont_results-error .cont_results-errorMessage{
-	display: block;
+	.cont_results-errorMessage{
+		display: block;
+	}
 }

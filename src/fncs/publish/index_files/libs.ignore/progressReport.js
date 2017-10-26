@@ -1,8 +1,8 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
- * Publish: app.progressReport.js
+ * Publish: progressReport.js
  */
-window.contApp.progressReport = new (function(px, $){
+module.exports = function(contApp, px, $){
+// window.contApp.progressReport = new (function(px, $){
 	var _this = this;
 	var _pj = px.getCurrentProject();
 	var $results, $phase, $currentTask, $timer, $row, $progressBar;
@@ -11,7 +11,7 @@ window.contApp.progressReport = new (function(px, $){
 	/**
 	 * レポート表示の初期化
 	 */
-	this.init = function( contApp, $canvas, opts ){
+	this.init = function( $canvas, opts ){
 		px.progress.start();
 
 		$results = $( $('#template-before_publish-progress').html() );
@@ -93,6 +93,5 @@ window.contApp.progressReport = new (function(px, $){
 
 	return this;
 
-})(px, $);
-
-},{}]},{},[1])
+// })(px, $);
+}

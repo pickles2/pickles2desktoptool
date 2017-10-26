@@ -9,6 +9,9 @@ window.contApp = new (function(px, $){
 	var _status;
 	var _patterns;
 
+	this.resultReport = new(require('../../../fncs/publish/index_files/libs.ignore/resultReport.js'))(this, px, $);
+	this.progressReport = new(require('../../../fncs/publish/index_files/libs.ignore/progressReport.js'))(this, px, $);
+
 	/**
 	 * initialize
 	 */
@@ -64,7 +67,7 @@ window.contApp = new (function(px, $){
 					$cont.find('.cont_canvas')
 						.height( $(window).height() - $('.container').eq(0).height() - $cont.find('.cont_buttons').height() - 20 )
 					;
-					_this.resultReport.init( _this, $cont.find('.cont_canvas') );
+					_this.resultReport.init( $cont.find('.cont_canvas') );
 				}else{
 					// パブリッシュ前だったら
 					$cont.append( $('#template-before_publish').html() );
@@ -183,7 +186,6 @@ window.contApp = new (function(px, $){
 						px.closeDialog();
 
 						_this.progressReport.init(
-							_this,
 							$cont,
 							{
 								"path_region": path_region,

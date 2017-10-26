@@ -180,7 +180,7 @@ window.contApp = new (function( px ){
 	 */
 	this.commitContents = function( page_path ){
 		this.gitUi.commit('contents', {'page_path': page_path}, function(result){
-			console.log('(コミット完了しました)');
+			console.log('(コミットを実行しました)', result);
 		});
 		return this;
 	}
@@ -191,7 +191,7 @@ window.contApp = new (function( px ){
 	 */
 	this.logContents = function( page_path ){
 		this.gitUi.log('contents', {'page_path': page_path}, function(result){
-			console.log('(コミットログを表示しました)');
+			console.log('(コミットログを表示しました)', result);
 		});
 		return this;
 	}

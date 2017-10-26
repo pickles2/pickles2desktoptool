@@ -72,17 +72,17 @@ function px2dtGitUi(px, pj){
 		function gitCommit(div, options, commitComment, callback){
 			switch( div ){
 				case 'contents':
-					_this.git.commitContents([options.page_path, commitComment], function(){
-						callback();
+					_this.git.commitContents([options.page_path, commitComment], function(result){
+						callback(result);
 					});
 					break;
 				case 'sitemaps':
-					_this.git.commitSitemap([commitComment], function(){
-						callback();
+					_this.git.commitSitemap([commitComment], function(result){
+						callback(result);
 					});
 					break;
 				default:
-					callback();
+					callback(false);
 					break;
 			}
 			return;
@@ -133,8 +133,13 @@ function px2dtGitUi(px, pj){
 							px.progress.start({'blindness': true, 'showProgressBar': true});
 							var commitComment = $commitComment.val();
 							// console.log(commitComment);
-							gitCommit(div, options, commitComment, function(){
-								alert('コミットしました。');
+							gitCommit(div, options, commitComment, function(result){
+								console.log(result);
+								if(result){
+									alert('コミットしました。');
+								}else{
+									alert('コミットに失敗しました。しばらくしてから、もう一度お試しください。');
+								}
 								px.progress.close();
 								px.closeDialog();
 								callback();
@@ -255,7 +260,7 @@ function px2dtGitUi(px, pj){
 											.addClass('px2-btn')
 											.addClass('px2-btn--primary')
 											.text('このバージョンまでロールバックする')
-											.click(function(){
+											.on('click', function(){
 												if( !confirm('この操作は現在の ' + divDb[div].label + ' の変更を破棄します。よろしいですか？') ){
 													return;
 												}
@@ -267,9 +272,9 @@ function px2dtGitUi(px, pj){
 													if( result ){
 														alert('ロールバックを完了しました。');
 													}else{
+														console.error('[ERROR] ロールバックは失敗しました。', err);
 														alert('[ERROR] ロールバックは失敗しました。');
 														alert(err);
-														console.error('ERROR: ' + err);
 													}
 													px.progress.close();
 												});

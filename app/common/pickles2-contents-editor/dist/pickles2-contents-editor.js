@@ -22369,7 +22369,7 @@ module.exports = function(px2ce){
 		$elmInstanceTreeView,
 		$elmInstancePathView;
 
-	var show_instanceTreeView = true;
+	var show_instanceTreeView = false;
 
 	function getCanvasPageUrl(){
 		if( px2ce.target_mode == 'theme_layout' ){

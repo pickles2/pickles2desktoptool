@@ -38,7 +38,8 @@ module.exports = function(px, window){
 					}
 				);
 				process.chdir( px.cwd );
-				return false;
+				callback(false);
+				return;
 			}
 			if(cmd.command[0] == 'composer'){
 				// --------------------------------------
@@ -69,7 +70,8 @@ module.exports = function(px, window){
 					}
 				);
 				process.chdir( px.cwd );
-				return false;
+				callback(false);
+				return;
 			}
 			if(cmd.command[0] == 'php'){
 				// --------------------------------------
@@ -100,7 +102,8 @@ module.exports = function(px, window){
 					}
 				);
 				process.chdir( px.cwd );
-				return false;
+				callback(false);
+				return;
 			}
 
 			callback(cmd);

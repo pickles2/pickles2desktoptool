@@ -3213,42 +3213,75 @@ module.exports = function(_options){
 	}
 
 	/**
-	 * Queueを追加する
+	 * QueueItemを追加する
 	 */
 	this.push = function(data){
-		var newQueueId;
+		var newQueueItemId;
 		while(1){
 			var microtimestamp = (new Date).getTime();
-			newQueueId = microtimestamp + '-' + md5( microtimestamp );
-			if( status[newQueueId] ){
-				// 登録済みの Queue ID は発行不可
+			newQueueItemId = microtimestamp + '-' + md5( microtimestamp );
+			if( status[newQueueItemId] ){
+				// 登録済みの Queue Item ID は発行不可
 				continue;
 			}
 			break;
 		}
 
-		var rtn = queue.push({
-			'id': newQueueId,
+		queue.push({
+			'id': newQueueItemId,
 			'data': data
 		});
-		status[newQueueId] = 1; // 1 = 実行待ち, 2 = 実行中, undefined = 未登録 または 実行済み
+		status[newQueueItemId] = 1; // 1 = 実行待ち, 2 = 実行中, undefined = 未登録 または 実行済み
 
 		runQueue(); // キュー処理をキックする
-		return newQueueId;
+		return newQueueItemId;
+	}
+
+	/**
+	 * QueueItemを更新する
+	 */
+	this.update = function(queueItemId, data){
+		var st = this.checkStatus(queueItemId);
+		if(st != 'waiting'){
+			// 待ち状態でなければ更新できない
+			return false;
+		}
+		for(var idx in queue){
+			if(queue[idx].id == queueItemId){
+				queue[idx].data = data;
+				break;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * QueueItemを削除する
+	 */
+	this.remove = function(queueItemId){
+		var st = this.checkStatus(queueItemId);
+		if(st != 'waiting'){
+			// 待ち状態でなければ削除できない
+			return false;
+		}
+		status[queueItemId] = 99; // <- removed
+		return true;
 	}
 
 	/**
 	 * 状態を確認する
 	 */
-	this.checkStatus = function(queueId){
-		var st = status[queueId];
-		switch(status[queueId]){
+	this.checkStatus = function(queueItemId){
+		var st = status[queueItemId];
+		switch(status[queueItemId]){
 			case 1:
 				return 'waiting'; break;
 			case 2:
 				return 'progressing'; break;
+			case 99:
+				return 'removed'; break;
 		}
-		return 'undefined';
+		return 'undefined'; // <- 未定義および完了済みを含む
 	}
 
 	/**
@@ -3309,13 +3342,20 @@ module.exports = function(_options){
 			}
 
 			var currentData = shift();
-			// console.log(currentData, queue);
-			// console.log(threadNumber);
+
+			if(status[currentData.id] == 99){
+				// 削除された Queue Item
+				status[currentData.id] = undefined; delete(status[currentData.id]); // <- 処理済み にステータスを変更
+				threads[threadNumber].active = false; // 予約したスレッドを解放
+				runQueue();
+				return;
+			}
+
 
 			// ステータスを 実行中 に変更
 			status[currentData.id] = 2;
 
-			// 予約したスレッドに、Queue ID を記憶する
+			// 予約したスレッドに、Queue Item ID を記憶する
 			threads[threadNumber].active = currentData.id;
 
 			// 実行

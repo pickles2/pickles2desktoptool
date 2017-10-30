@@ -128,15 +128,22 @@ module.exports = function(px, window){
 		}
 	);
 
-	var $mainTerminal = $('<div class="theme-command-terminal" id="theme-command-terminal">');
-	$mainTerminal__cQ = $('<div class="theme-command-terminal__cQ">');
-	$($mainTerminal).append($mainTerminal__cQ);
+	var terminalTemplate = px.fs.readFileSync('./app/index_files/cmdQueueCtrl_files/templates/main.html').toString();
+	var $mainTerminal = $(terminalTemplate);
+	var $mainTerminal__main = $mainTerminal.find('.theme-command-terminal__main');
+	var $mainTerminal__cQ = $mainTerminal.find('.theme-command-terminal__cQ');
 	$('body').append($mainTerminal);
 	var mainTerminal = this.client.createTerminal($mainTerminal__cQ.get(0));
 	// console.log('Command Queue Standby.');
 
 	$mainTerminal.on('click', function(){
-		_this.hide(); // TODO: 一時的な実装
+		_this.hide();
+	});
+	$mainTerminal.find('.theme-command-terminal__main').on('click', function(e){
+		e.stopPropagation();
+	});
+	$mainTerminal.find('button.theme-command-terminal__btn-close').on('click', function(){
+		_this.hide();
 	});
 
 	setTimeout(function(){
@@ -148,13 +155,17 @@ module.exports = function(px, window){
 	 * メイン端末を表示する
 	 */
 	this.show = function(){
-		$mainTerminal.css({"bottom": 0, "height": "70%"});
+		$mainTerminal.css({"display":"block"});
+		$mainTerminal__main.css({"bottom": 0, "height": "70%"});
 	}
 
 	/**
 	 * メイン端末を隠す
 	 */
 	this.hide = function(){
-		$mainTerminal.css({"bottom": "-70%"});
+		$mainTerminal__main.css({"bottom": "-70%"});
+		setTimeout(function(){
+			$mainTerminal.css({"display":"none"});
+		}, 300);
 	}
 }

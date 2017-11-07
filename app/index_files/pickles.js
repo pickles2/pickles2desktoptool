@@ -72,6 +72,8 @@ new (function($, window){
 	this.twig = _twig;
 	var _ejs = require('ejs');
 	this.ejs = _ejs;
+	var _csv = require('csv');
+	this.csv = _csv;
 
 	var _appServer = require('./index_files/app_server.js');
 

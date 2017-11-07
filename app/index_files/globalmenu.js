@@ -139,15 +139,6 @@ module.exports = function(px){
 		}
 	});
 	_menu.push({
-		"label":px.lb.get('menu.moveContents'),
-		"cond":"pxStandby",
-		"area":"shoulder",
-		"app":"fncs/movecontents/index.html",
-		"click": function(){
-			px.subapp($(this).data('app'));
-		}
-	});
-	_menu.push({
 		"label":px.lb.get('menu.search'),
 		"cond":"pxStandby",
 		"area":"shoulder",
@@ -180,8 +171,27 @@ module.exports = function(px){
 		"area":"shoulder",
 		"app":"fncs/contents_processor/index.html",
 		"click": function(){
-			px.subapp($(this).data('app'));}
-		});
+			px.subapp($(this).data('app'));
+		}
+	});
+	// _menu.push({
+	// 	"label":px.lb.get('menu.moveContents'),
+	// 	"cond":"pxStandby",
+	// 	"area":"shoulder",
+	// 	"app":"fncs/movecontents/index.html",
+	// 	"click": function(){
+	// 		px.subapp($(this).data('app'));
+	// 	}
+	// });
+	_menu.push({
+		"label":px.lb.get('menu.moveContents'),
+		"cond":"pxStandby",
+		"area":"shoulder",
+		"app":"fncs/move_contents/index.html",
+		"click": function(){
+			px.subapp($(this).data('app'));
+		}
+	});
 	_menu.push({
 		"label":px.lb.get('menu.updateGuiContents'),
 		"cond":"pxStandby",

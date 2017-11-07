@@ -1,6 +1,8 @@
 new (function($, window){
 	// pickles
-	window.px = _this = this;
+	var _this = this;
+	window.px = this;
+	this.px2style = window.px2style;
 
 	// node.js
 	this.process = process;

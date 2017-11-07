@@ -66,7 +66,7 @@ window.contApp = new (function(px){
 			var $canvasContent = $('<div>');
 			var $pre = $('<pre>');
 			$canvasContent.append($pre);
-			px2style.modal(
+			px.px2style.modal(
 				{
 					"title": "コンテンツを移動",
 					"body": $canvasContent,
@@ -76,7 +76,7 @@ window.contApp = new (function(px){
 							.attr("disabled","disabled")
 							.on('click', function(){
 								$cont.find('button').removeAttr("disabled");
-								px2style.closeModal(function(){});
+								px.px2style.closeModal(function(){});
 							})
 					]
 				},

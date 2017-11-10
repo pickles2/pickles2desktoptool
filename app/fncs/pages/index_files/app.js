@@ -4657,7 +4657,9 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 															return;
 														}
 														app.loadPreview( app.getCurrentPagePath(), {"force":true}, function(){
-															px.closeDialog();
+															_this.redraw(pj_info, {}, function(){
+																px.closeDialog();
+															});
 														} );
 													}
 												);
@@ -4741,7 +4743,9 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 														return;
 													}
 													app.loadPreview( app.getCurrentPagePath(), {"force":true}, function(){
-														px.closeDialog();
+														_this.redraw(pj_info, {}, function(){
+															px.closeDialog();
+														});
 													} );
 												} )
 											}),

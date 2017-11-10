@@ -22612,6 +22612,13 @@ module.exports = function(px2ce){
 	}
 
 	/**
+	 * broccoli client オブジェクトを取得する
+	 */
+	_this.getBroccoliClient = function(){
+		return broccoli;
+	}
+
+	/**
 	 * window.resize イベントハンドラ
 	 */
 	_this.redraw = function( callback ){
@@ -23622,6 +23629,13 @@ module.exports = function(px2ce){
 				);
 			});
 			return;
+		}
+
+		/**
+		 * エディタオブジェクトを取得する
+		 */
+		this.getEditor = function(){
+			return editor;
 		}
 
 		/**

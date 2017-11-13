@@ -131,24 +131,6 @@ window.contApp = new (function( px ){
 				});
 			} ,
 			function(it1, arg){
-				var editor = pickles2ContentsEditor.getEditor();
-				if( editor.getBroccoliClient ){
-					// nw@0.26.1 にアップデートしたとき、
-					// broccoli-html-editor で copy, paste, cut イベントを拾えなくなっていたので、
-					// 明示的にイベントを渡すようにした。
-					$(window).on('copy', function(){
-						editor.getBroccoliClient().copy();
-					});
-					$(window).on('paste', function(){
-						editor.getBroccoliClient().paste();
-					});
-					$(window).on('cut', function(){
-						editor.getBroccoliClient().cut();
-					});
-				}
-				it1.next(arg);
-			} ,
-			function(it1, arg){
 				px.progress.close();
 				console.info('standby!!');
 			}

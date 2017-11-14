@@ -188,11 +188,17 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 					})
 					.removeAttr('disabled')
 				;
-				$bs3btn.find('button.btn--resources').eq(0)
-					.attr({'data-path': prop.pageInfo.path})
-					// .text('リソース')
+				$bs3btn.find('button.btn--preview').eq(0)
+					// .text( 'ブラウザでプレビュー' )
+					.attr({
+						'data-path': prop.pageInfo.path ,
+						'href':'javascript:;'
+					})
 					.on('click', function(){
-						app.openResourcesDirectory( $(this).attr('data-path') );
+						var $this = $(this);
+						px.preview.serverStandby(function(){
+							px.utils.openURL( px.preview.getUrl( $this.attr('data-path') ) );
+						});
 						return false;
 					})
 					.removeAttr('disabled')
@@ -200,7 +206,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 				if( prop.pathType == 'alias' ){
 					// エイリアスの場合は操作できない
 					$bs3btn.find('button.btn--edit').eq(0).attr({'disabled':'disabled'});
-					$bs3btn.find('button.btn--resources').eq(0).attr({'disabled':'disabled'});
+					$bs3btn.find('button.btn--preview').eq(0).attr({'disabled':'disabled'});
 				}
 
 				$dropdownMenu = $bs3btn.find('ul.cont_page-dropdown-menu');
@@ -253,65 +259,60 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 					;
 				}
 
-				$dropdownMenu
-					.append( $('<li>')
-						.append( $('<a>')
-							.text( 'ブラウザでプレビュー' )
-							.attr({
-								'data-path': prop.pageInfo.path ,
-								'href':'javascript:;'
-							})
-							.on('click', function(){
-								$bs3btn.find('.dropdown-toggle').click();
-								var $this = $(this);
-								px.preview.serverStandby(function(){
-									px.utils.openURL( px.preview.getUrl( $this.attr('data-path') ) );
-								});
-								return false;
-							})
-						)
-					)
-				;
-				$dropdownMenu
-					.append( $('<li>')
-						.append( $('<a>')
-							.text( 'コンテンツのソースコードを表示' )
-							.attr({
-								'data-path': prop.pageInfo.path ,
-								'href':'javascript:;'
-							})
-							.on('click', function(){
-								$bs3btn.find('.dropdown-toggle').click();
-								var pathCont = pj.findPageContent( $(this).attr('data-path') );
-								if( !px.utils79.is_file(pj.get_realpath_controot()+pathCont) ){
-									console.error('コンテンツファイルが存在しません。', pathCont);
-									alert('コンテンツファイルが存在しません。');
+				if( contProcType != '.not_exists' ){
+					$dropdownMenu
+						.append( $('<li>')
+							.append( $('<a>')
+								.attr({'data-path': prop.pageInfo.path})
+								.text('リソースフォルダを開く')
+								.on('click', function(){
+									$bs3btn.find('.dropdown-toggle').click();
+									app.openResourcesDirectory( $(this).attr('data-path') );
 									return false;
-								}
-								var src = px.fs.readFileSync( pj.get_realpath_controot()+pathCont );
-								px.dialog({
-									title: 'コンテンツのソースコードを表示',
-									body: $('<div>')
-										.append( $('<p>').text('ソースの閲覧・確認ができます。ここで編集はできません。'))
-										.append( $('<p>').text('GUI編集されたコンテンツの場合は、編集後にビルドされたソースが表示されています。'))
-										.append( $('<p>')
-											.append( $('<textarea class="form-control">')
-												.val(src)
-												.attr({'readonly':true})
-												.css({
-													'width':'100%',
-													'height':300,
-													'font-size': 14,
-													'font-family': 'monospace'
-												})
-											)
-										)
-								});
-								return false;
-							})
+								})
+								.removeAttr('disabled')
+							)
 						)
-					)
-				;
+						.append( $('<li>')
+							.append( $('<a>')
+								.text( 'コンテンツのソースコードを表示' )
+								.attr({
+									'data-path': prop.pageInfo.path ,
+									'href':'javascript:;'
+								})
+								.on('click', function(){
+									$bs3btn.find('.dropdown-toggle').click();
+									var pathCont = pj.findPageContent( $(this).attr('data-path') );
+									if( !px.utils79.is_file(pj.get_realpath_controot()+pathCont) ){
+										console.error('コンテンツファイルが存在しません。', pathCont);
+										alert('コンテンツファイルが存在しません。');
+										return false;
+									}
+									var src = px.fs.readFileSync( pj.get_realpath_controot()+pathCont );
+									px.dialog({
+										title: 'コンテンツのソースコードを表示',
+										body: $('<div>')
+											.append( $('<p>').text('ソースの閲覧・確認ができます。ここで編集はできません。'))
+											.append( $('<p>').text('GUI編集されたコンテンツの場合は、編集後にビルドされたソースが表示されています。'))
+											.append( $('<p>')
+												.append( $('<textarea class="form-control">')
+													.val(src)
+													.attr({'readonly':true})
+													.css({
+														'width':'100%',
+														'height':300,
+														'font-size': 14,
+														'font-family': 'monospace'
+													})
+												)
+											)
+									});
+									return false;
+								})
+							)
+						)
+					;
+				}
 
 				it.next(prop);
 			} ,

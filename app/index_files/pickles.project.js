@@ -11,6 +11,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	var _path = require('path');
 	var _pjError = [];
 	var _projectStatus = null;
+	var _px2package = {};
 
 
 	/**
@@ -20,6 +21,31 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 		var pj = _this;
 
 		new Promise(function(rlv){rlv();})
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// px2package 情報を読み込み
+				try {
+					var strJson = px.fs.readFileSync(_this.get_realpath_composer_root()+'/composer.json').toString();
+					var json = JSON.parse(strJson);
+					_px2package = json.extra.px2package;
+					if( !_px2package.type && _px2package[0] ){
+						// 配列に定義されている場合、要素を検索し、最初に現れた project を採用する
+						for(var idx in _px2package){
+							if( _px2package[idx].type == 'project' ){
+								_px2package = _px2package[idx];
+								break;
+							}
+						}
+					}
+				} catch (e) {
+					_px2package = {
+						'type': 'project',
+						'path': '.px_execute.php',
+						'path_homedir': 'px-files/'
+					};
+				}
+				rlv();
+				return;
+			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
 				// cmdQueue にカレントディレクトリ情報をセット
 				px.commandQueue.server.setCurrentDir( 'default', _this.get('path') );
@@ -331,6 +357,18 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 
 	/** プロジェクト情報を取得する */
 	this.get = function(key){
+		if(key == 'entry_script' && !this.projectInfo[key]){
+			if(_px2package.path){
+				return _px2package.path;
+			}
+			return '.px_execute.php';
+		}
+		if(key == 'home_dir' && !this.projectInfo[key]){
+			if(_px2package.path_homedir){
+				return _px2package.path_homedir;
+			}
+			return 'px-files/';
+		}
 		return this.projectInfo[key];
 	}
 

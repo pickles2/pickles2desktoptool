@@ -363,10 +363,10 @@ new (function($, window){
 		opt.complete = opt.complete||function(){};
 
 		if( typeof(projectInfo.home_dir) != typeof('') || !projectInfo.home_dir.length ){
-			projectInfo.home_dir = 'px-files/'
+			projectInfo.home_dir = '';
 		}
 		if( typeof(projectInfo.entry_script) != typeof('') || !projectInfo.entry_script.length ){
-			projectInfo.entry_script = '.px_execute.php'
+			projectInfo.entry_script = '';
 		}
 
 		var isError = false;

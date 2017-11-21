@@ -12,6 +12,8 @@ new (function($, window){
 	// NW.js
 	this.nw = nw;
 	this.nwWindow = nw.Window.get();
+	this.nwWindow.moveTo(0, 0);
+	this.nwWindow.resizeTo(window.parent.screen.width, window.parent.screen.height);
 
 	// jQuery
 	this.$ = $;

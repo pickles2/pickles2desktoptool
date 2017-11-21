@@ -413,7 +413,7 @@ window.contApp = new (function( px ){
 				$('<a>')
 					.html('&times;')
 					.attr('href', 'javascript:;')
-					.click( function(){
+					.on('click', function(){
 						// if(!confirm('編集中の内容は破棄されます。エディタを閉じますか？')){ return false; }
 						_this.closeEditor();
 					} )
@@ -460,7 +460,10 @@ window.contApp = new (function( px ){
 		$('body')
 			.css({'overflow':'auto'})
 		;
-		_this.loadPreview( _currentPagePath, {'force':true}, function(){} );
+		_this.loadPreview( _currentPagePath, {'force':true}, function(){
+			pageDraw.redraw(_currentPageInfo, {}, function(){
+			});
+		} );
 		return this;
 	} // closeEditor()
 

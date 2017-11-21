@@ -23,20 +23,8 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 		new Promise(function(rlv){rlv();})
 			.then(function(){ return new Promise(function(rlv, rjt){
 				// px2package 情報を読み込み
-				try {
-					var strJson = px.fs.readFileSync(_this.get_realpath_composer_root()+'/composer.json').toString();
-					var json = JSON.parse(strJson);
-					_px2package = json.extra.px2package;
-					if( !_px2package.type && _px2package[0] ){
-						// 配列に定義されている場合、要素を検索し、最初に現れた project を採用する
-						for(var idx in _px2package){
-							if( _px2package[idx].type == 'project' ){
-								_px2package = _px2package[idx];
-								break;
-							}
-						}
-					}
-				} catch (e) {
+				_px2package = px.px2dtLDA.project(projectId).px2package().getPrimaryProject();
+				if(_px2package === false){
 					_px2package = {
 						'type': 'project',
 						'path': '.px_execute.php',

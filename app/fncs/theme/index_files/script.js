@@ -3992,74 +3992,81 @@ window.contApp = new (function(){
 			return;
 		}
 
-		this.closeEditor();//一旦閉じる
+		px.preview.serverStandby( function(result){
+			if(result === false){
+				px.message('プレビューサーバーの起動に失敗しました。');
+				return;
+			}
 
-		// プログレスモード表示
-		px.progress.start({
-			'blindness':true,
-			'showProgressBar': true
-		});
+			_this.closeEditor();//一旦閉じる
 
-		$elms.editor = $('<div>')
-			.css({
-				'position':'fixed',
-				'top':0,
-				'left':0 ,
-				'z-index': '1000',
-				'width':'100%',
-				'height':$(window).height()
-			})
-			.append(
-				$('<iframe>')
-					//↓エディタ自体は別のHTMLで実装
-					.attr( 'src', '../../mods/editor/index.html'
-						+'?theme_id='+encodeURIComponent( themeId )
-						+'&layout_id='+encodeURIComponent( layoutId )
-					)
-					.css({
-						'border':'0px none',
-						'width':'100%',
-						'height':'100%'
-					})
-			)
-			.append(
-				$('<a>')
-					.html('&times;')
-					.attr('href', 'javascript:;')
-					.on( 'click', function(){
-						// if(!confirm('編集中の内容は破棄されます。エディタを閉じますか？')){ return false; }
-						_this.closeEditor();
-					} )
-					.css({
-						'position':'absolute',
-						'bottom':5,
-						'right':5,
-						'font-size':'18px',
-						'color':'#333',
-						'background-color':'#eee',
-						'border-radius':'0.5em',
-						'border':'1px solid #333',
-						'text-align':'center',
-						'opacity':0.4,
-						'width':'1.5em',
-						'height':'1.5em',
-						'text-decoration': 'none'
-					})
-					.hover(function(){
-						$(this).animate({
-							'opacity':1
-						});
-					}, function(){
-						$(this).animate({
-							'opacity':0.4
-						});
-					})
-			)
-		;
-		$('body')
-			.append($elms.editor)
-			.css({'overflow':'hidden'})
-		;
+			// プログレスモード表示
+			px.progress.start({
+				'blindness':true,
+				'showProgressBar': true
+			});
+
+			$elms.editor = $('<div>')
+				.css({
+					'position':'fixed',
+					'top':0,
+					'left':0 ,
+					'z-index': '1000',
+					'width':'100%',
+					'height':$(window).height()
+				})
+				.append(
+					$('<iframe>')
+						//↓エディタ自体は別のHTMLで実装
+						.attr( 'src', '../../mods/editor/index.html'
+							+'?theme_id='+encodeURIComponent( themeId )
+							+'&layout_id='+encodeURIComponent( layoutId )
+						)
+						.css({
+							'border':'0px none',
+							'width':'100%',
+							'height':'100%'
+						})
+				)
+				.append(
+					$('<a>')
+						.html('&times;')
+						.attr('href', 'javascript:;')
+						.on( 'click', function(){
+							// if(!confirm('編集中の内容は破棄されます。エディタを閉じますか？')){ return false; }
+							_this.closeEditor();
+						} )
+						.css({
+							'position':'absolute',
+							'bottom':5,
+							'right':5,
+							'font-size':'18px',
+							'color':'#333',
+							'background-color':'#eee',
+							'border-radius':'0.5em',
+							'border':'1px solid #333',
+							'text-align':'center',
+							'opacity':0.4,
+							'width':'1.5em',
+							'height':'1.5em',
+							'text-decoration': 'none'
+						})
+						.hover(function(){
+							$(this).animate({
+								'opacity':1
+							});
+						}, function(){
+							$(this).animate({
+								'opacity':0.4
+							});
+						})
+				)
+			;
+			$('body')
+				.append($elms.editor)
+				.css({'overflow':'hidden'})
+			;
+		} );
 
 		// px.progress.close();
 		return;

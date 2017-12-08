@@ -22369,7 +22369,7 @@ module.exports = function(px2ce){
 		$elmInstanceTreeView,
 		$elmInstancePathView;
 
-	var show_instanceTreeView = true;
+	var show_instanceTreeView = false;
 
 	function getCanvasPageUrl(){
 		if( px2ce.target_mode == 'theme_layout' ){
@@ -22609,6 +22609,13 @@ module.exports = function(px2ce){
 		// });
 		callback(true);
 		return;
+	}
+
+	/**
+	 * broccoli client オブジェクトを取得する
+	 */
+	_this.getBroccoliClient = function(){
+		return broccoli;
 	}
 
 	/**
@@ -23622,6 +23629,13 @@ module.exports = function(px2ce){
 				);
 			});
 			return;
+		}
+
+		/**
+		 * エディタオブジェクトを取得する
+		 */
+		this.getEditor = function(){
+			return editor;
 		}
 
 		/**

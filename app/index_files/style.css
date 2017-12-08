@@ -48,6 +48,7 @@ body {
     .theme-header__shoulder-menu button {
       background: #f9f9f9;
       border: none;
+      border-radius: 0;
       border-left: 1px solid #00a0e6;
       position: absolute;
       top: 0;
@@ -222,3 +223,32 @@ body {
   .cont_top_footer a {
     color: #333;
     text-decoration: underline; }
+
+.theme-command-terminal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9000;
+  height: 100%;
+  width: 100%;
+  display: none;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.5); }
+  .theme-command-terminal__main {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    bottom: -70%;
+    left: 0;
+    height: 70%;
+    width: 100%;
+    overflow: hidden;
+    transition: bottom 0.3s ease-out 0s;
+    background-color: #fefefe; }
+  .theme-command-terminal__title-bar {
+    padding: 4px 1em;
+    border-top: 1px solid #f0f0f0; }
+  .theme-command-terminal__cQ {
+    position: relative;
+    flex-grow: 1;
+    width: 100%; }

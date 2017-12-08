@@ -1,13 +1,19 @@
 new (function($, window){
 	// pickles
-	window.px = _this = this;
+	var _this = this;
+	window.px = this;
+	this.px2style = window.px2style;
 
 	// node.js
 	this.process = process;
 
+	this.cwd = process.cwd();
+
 	// NW.js
 	this.nw = nw;
 	this.nwWindow = nw.Window.get();
+	this.nwWindow.moveTo(0, 0);
+	this.nwWindow.resizeTo(window.parent.screen.width, window.parent.screen.height);
 
 	// jQuery
 	this.$ = $;
@@ -70,6 +76,8 @@ new (function($, window){
 	this.twig = _twig;
 	var _ejs = require('ejs');
 	this.ejs = _ejs;
+	var _csv = require('csv');
+	this.csv = _csv;
 
 	var _appServer = require('./index_files/app_server.js');
 
@@ -160,6 +168,13 @@ new (function($, window){
 					});
 				},
 				function(it1, data){
+					// Command Queue をセットアップ
+					var CommandQueue = require('./index_files/cmdQueueCtrl.js');
+					_this.commandQueue = new CommandQueue(_this, window);
+					it1.next();
+				},
+				function(it1, data){
+
 					(function(){
 						// node-webkit の標準的なメニューを出す
 						var win = _nw_gui.Window.get();
@@ -350,10 +365,10 @@ new (function($, window){
 		opt.complete = opt.complete||function(){};
 
 		if( typeof(projectInfo.home_dir) != typeof('') || !projectInfo.home_dir.length ){
-			projectInfo.home_dir = 'px-files/'
+			projectInfo.home_dir = '';
 		}
 		if( typeof(projectInfo.entry_script) != typeof('') || !projectInfo.entry_script.length ){
-			projectInfo.entry_script = '.px_execute.php'
+			projectInfo.entry_script = '';
 		}
 
 		var isError = false;
@@ -521,8 +536,8 @@ new (function($, window){
 	 * node-php-bin の PHP などを考慮して、
 	 * -c, -d オプションの解決を自動的にやっている前提で、
 	 * composer コマンドを実行します。
-	 * @param  {[type]} cmd  [description]
-	 * @param  {[type]} opts [description]
+	 * @param  {Array}  cmd  `php`, `composer` を含まないコマンドオプションの配列
+	 * @param  {Object} opts [description]
 	 * @return {[type]}      [description]
 	 */
 	this.execComposer = function( cmd, opts ){
@@ -707,6 +722,7 @@ new (function($, window){
 
 		if( typeof(_selectedProject) != typeof(0) ){
 			appName = '';
+			px.commandQueue.server.setCurrentDir( 'default', process.cwd() ); // current dir を初期化
 		}else if( !appName && typeof(_selectedProject) == typeof(0) ){
 			appName = 'fncs/home/index.html';
 		}
@@ -919,6 +935,7 @@ new (function($, window){
 	 * ログをファイルに出力
 	 */
 	this.log = function( msg ){
+		console.info(msg);
 		return px.px2dtLDA.log(msg);
 	}
 
@@ -966,7 +983,7 @@ new (function($, window){
 	/**
 	 * アプリケーションを初期化
 	 */
-	$(function(){
+	$(window).on('load', function(){
 		_it79.fnc({}, [
 			function(it, arg){
 				// init

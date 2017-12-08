@@ -5,19 +5,48 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 	 * インストールを実行
 	 */
 	this.install = function( pj, param, opt ){
-		var path = pj.get('path');
-		if( px.utils.isFile( path+'/.DS_Store' ) ){
-			px.fs.unlinkSync( path+'/.DS_Store' );
+		var realpath = pj.get('path');
+		if( px.utils.isFile( realpath+'/.DS_Store' ) ){
+			px.fs.unlinkSync( realpath+'/.DS_Store' );
 		}
-		if( px.utils.isFile( path+'/Thumbs.db' ) ){
-			px.fs.unlinkSync( path+'/Thumbs.db' );
+		if( px.utils.isFile( realpath+'/Thumbs.db' ) ){
+			px.fs.unlinkSync( realpath+'/Thumbs.db' );
 		}
-
 		var $msg = $('<div>');
-		px.spawnDialog(
-			px.cmd('php'),
+
+		var $preCont = $('<div>');
+		var $pre = $('<pre>')
+			.css({
+				'height':'12em',
+				'overflow':'auto'
+			})
+			.append( $preCont
+				.addClass('selectable')
+				.text('実行中...')
+			)
+		;
+		var dlgOpt = {
+			'title': 'Pickles 2 プロジェクトのセットアップ',
+			'body': $('<div>')
+				.append( $msg.text('Pickles 2 プロジェクトをセットアップしています。この処理はしばらく時間がかかります。') )
+				.append( $pre ),
+			'buttons': [
+				$('<button>')
+					.text('OK')
+					.on('click', function(){
+						px.closeDialog();
+						opt.complete();
+					})
+					.attr({'disabled':'disabled'})
+			]
+		};
+		$dialog = px.dialog( dlgOpt );
+
+
+		var stdout = '';
+		px.commandQueue.client.addQueueItem(
 			[
-				px.cmd('composer'),
+				'composer',
 				'create-project',
 				'--no-interaction',
 				'pickles2/preset-get-start-pickles2',
@@ -25,24 +54,37 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 				'2.0.*'
 			],
 			{
-				cd: path,
-				title: 'Pickles 2 プロジェクトのセットアップ',
-				description: $msg.text('Pickles 2 プロジェクトをセットアップしています。この処理はしばらく時間がかかります。'),
-				success: function(data){
-				} ,
-				error: function(data){
-					// px.message('ERROR: '+data);
-					// $msg.text('ERROR: '+data);
-					px.log('Composer Setup Error: '+ data);
-				} ,
-				cmdComplete: function(code){
-					$msg.text('Pickles 2 プロジェクトのセットアップが完了しました。');
+				'cdName': 'default', // この時点で composer.json は存在しないので、ルートディレクトリは `composer` ではなく `default`。
+				'tags': [
+					'pj-'+pj.get('id'),
+					'composer-create-project'
+				],
+				'accept': function(queueId){
+					// console.log(queueId);
 				},
-				complete: function(dataFin){
+				'open': function(message){
+				},
+				'stdout': function(message){
+					for(var idx in message.data){
+						stdout += message.data[idx];
+					}
+					$preCont.text(stdout);
+				},
+				'stderr': function(message){
+					for(var idx in message.data){
+						stdout += message.data[idx];
+					}
+					$preCont.text(stdout);
+				},
+				'close': function(message){
+					dlgOpt.buttons[0].removeAttr('disabled').focus();
+					$msg.text('Pickles 2 プロジェクトのセットアップが完了しました。');
 					opt.complete();
+					return;
 				}
 			}
 		);
+
 		return this;
 	}
 

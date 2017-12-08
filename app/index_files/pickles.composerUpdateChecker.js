@@ -5,7 +5,6 @@ module.exports = function( px, callback ) {
 	callback = callback || function(){};
 	var _this = this;
 	var utils79 = require('utils79');
-	var php = require('phpjs');
 	this.px = px;
 	this.checkStatus = {};
 
@@ -49,10 +48,6 @@ module.exports = function( px, callback ) {
 
 		var composerRootDir = pj.get_realpath_composer_root();
 		var status = pj.status();
-		// console.log(pj);
-		// console.log(status);
-		// console.log(composerRootDir);
-		// console.log(_this.checkStatus);
 
 		if( !status.isPxStandby ){
 			// プロジェクトの準備が不十分なら、チェックしないで返す。
@@ -61,7 +56,6 @@ module.exports = function( px, callback ) {
 		}
 
 		var now = Date.now();
-		// console.log(now);
 		var interval = 1*60*60*1000; // 1時間以内にチェックしてたら再チェックしない
 		if( _this.checkStatus[composerRootDir] ){
 			if( _this.checkStatus[composerRootDir].status == 'checking' ){
@@ -88,47 +82,52 @@ module.exports = function( px, callback ) {
 			'status': 'checking'
 		};
 
-		setTimeout(function(){
-			// console.info('Checking composer update --dry-run');
-			px.execComposer(
-				['update', '--dry-run'],
-				{
-					'cwd': composerRootDir,
-					'success': function(data){
-						// console.log('composer update: success');
-						// console.log(data);
-					},
-					'error': function(data){
-						// console.log('composer update: error');
-						// console.log(data);
-					},
-					'complete': function(data, error, code){
-						// console.log('-- composer update: complete --');
-						// console.log(data, error, code);
-						var result = php.trim(data);
-						var status = 'nothing_todo';
-						if( code ){
-							status = 'error';
-						}else if( result.match( new RegExp( '\- Updating .*? to', 'g' ) ) ){
-							status = 'update_found';
-						}else if( result.match( new RegExp( 'Nothing to install or update$' ) ) ){
-							status = 'nothing_todo';
-						}
-						_this.checkStatus[composerRootDir].status = status;
-						_this.checkStatus[composerRootDir].result = result;
+		new Promise(function(rlv){rlv();})
+			.then(function(){ return new Promise(function(rlv, rjt){
 
-						if( _this.checkStatus[composerRootDir].status == 'update_found' ){
-							console.info('composerUpdateChecker: update_found ('+_this.checkStatus[composerRootDir].name+')');
-							px.message(_this.checkStatus[composerRootDir].name + ' の composer パッケージのいくつかに、新しいバージョンが見つかりました。 いますぐ更新することをお勧めします。');
-						}
+				// $ composer update --dry-run
+				// この処理は、cmd-queue の行列待ちをしません。
+				// これはユーザーの認識の外で自動的に実行される処理で、
+				// かつ長い時間を要する場合があるコマンドです。
+				// ユーザーが知らない処理のために、ユーザーが実行したい処理が待ち状態になるのは使い勝手が悪いので、
+				// 行列待ちはしないことにしました。
+				px.execComposer(
+					['update', '--dry-run'],
+					{
+						'cwd': composerRootDir,
+						'success': function(data){
+							console.log('composer update: success');
+							console.log(data);
+						},
+						'error': function(data){
+							console.log('composer update: error');
+							console.log(data);
+						},
+						'complete': function(data, error, code){
+							var result = utils79.trim(data);
+							var status = 'nothing_todo';
+							if( code ){
+								status = 'error';
+							}else if( result.match( new RegExp( '\- Updating .*? to', 'g' ) ) ){
+								status = 'update_found';
+							}else if( result.match( new RegExp( 'Nothing to install or update$' ) ) ){
+								status = 'nothing_todo';
+							}
+							_this.checkStatus[composerRootDir].status = status;
+							_this.checkStatus[composerRootDir].result = result;
 
-						// console.log(_this.checkStatus);
-						callback( _this.checkStatus[composerRootDir] );
-						return;
+							if( _this.checkStatus[composerRootDir].status == 'update_found' ){
+								console.info('composerUpdateChecker: update_found ('+_this.checkStatus[composerRootDir].name+')');
+								px.message(_this.checkStatus[composerRootDir].name + ' の composer パッケージのいくつかに、新しいバージョンが見つかりました。 いますぐ更新することをお勧めします。');
+							}
+							callback( _this.checkStatus[composerRootDir] );
+							return;
+						}
 					}
-				}
-			);
-		}, 0);
+				);
+
+			}); })
+		;
 		return;
 	}
 

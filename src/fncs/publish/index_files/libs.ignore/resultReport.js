@@ -1,7 +1,7 @@
 /**
- * Publish: app.resultReport.js
+ * Publish: resultReport.js
  */
-window.contApp.resultReport = new (function(px, $){
+module.exports = function(contApp, px, $){
 	var _this = this;
 
 	var $results, $rows, $summaries, $spentTime, $totalFileCount, $errorMessage;
@@ -9,7 +9,7 @@ window.contApp.resultReport = new (function(px, $){
 	/**
 	 * レポート表示の初期化
 	 */
-	this.init = function( contApp, $canvas ){
+	this.init = function( $canvas ){
 
 		$results = $( $('#template-after_publish-canvas').html() );
 		$canvas.append( $results );
@@ -195,9 +195,7 @@ window.contApp.resultReport = new (function(px, $){
 			}
 		]).start({});
 
-	}// this.init();
-
-
+	} // this.init();
 
 	return this;
-})(px, $);
+}

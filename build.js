@@ -8,15 +8,43 @@ var packageJson = require('./package.json');
 var phpjs = require('phpjs');
 var date = new Date();
 var appName = packageJson.name;
+var versionSign = packageJson.version;
 var platforms = [
 	'osx64',
 	// 'win64',
 	'win32',
 	'linux64'
 ];
+function pad(str, len){
+	str += '';
+	str = phpjs.str_pad(str, len, '0', 'STR_PAD_LEFT');
+	return str;
+}
+function getTimeString(){
+	var date = new Date();
+	return date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
+}
+function writeLog(row){
+	fs.appendFile( __dirname+'/build/buildlog.txt', row+"\n" ,'utf8', function(err){
+		if(err){
+			console.error(err);
+		}
+	} );
+	console.log(row);
+}
 
+if( packageJson.version.match(new RegExp('\\+(?:[a-zA-Z0-9\\_\\-\\.]+\\.)?nb$')) ){
+	versionSign += '-'+pad(date.getFullYear(),4)+pad(date.getMonth()+1, 2)+pad(date.getDate(), 2);
+	versionSign += '-'+pad(date.getHours(),2)+pad(date.getMinutes(), 2);
+	packageJson.version = versionSign;
+	// 一時的なバージョン番号を付与した package.json を作成し、
+	// もとのファイルを リネームしてとっておく。
+	// ビルドが終わった後に元に戻す。
+	require('fs').renameSync('./package.json', './package.json.orig');
+	require('fs').writeFileSync('./package.json', JSON.stringify(packageJson, null, 2));
+}
 
-console.log('== build "'+appName+'" ==');
+console.log('== build "'+appName+'" v'+versionSign+' ==');
 
 console.log('Cleanup...');
 (function(base){
@@ -32,18 +60,6 @@ console.log('Cleanup...');
 })( __dirname+'/build/' );
 console.log('');
 
-function getTimeString(){
-	var date = new Date();
-	return date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
-}
-function writeLog(row){
-	fs.appendFile( __dirname+'/build/buildlog.txt', row+"\n" ,'utf8', function(err){
-		if(err){
-			console.error(err);
-		}
-	} );
-	console.log(row);
-}
 writeLog( getTimeString() );
 
 writeLog('Build...');
@@ -157,21 +173,16 @@ nw.on('log',  writeLog);
 // Build returns a promise
 nw.build().then(function () {
 
+	if( require('fs').existsSync('./package.json.orig') ){
+		// 一時的なバージョン番号を付与した package.json を削除し、
+		// もとのファイルに戻す。
+		require('fs').renameSync('./package.json.orig', './package.json');
+	}
+
 	writeLog('all build done!');
 	writeLog( getTimeString() );
 
 	(function(){
-		var versionSign = packageJson.version;
-		function pad(str, len){
-			str += '';
-			str = phpjs.str_pad(str, len, '0', 'STR_PAD_LEFT');
-			return str;
-		}
-		if( packageJson.version.match(new RegExp('\\+(?:[a-zA-Z0-9\\_\\-\\.]+\\.)?nb$')) ){
-			versionSign += '-'+pad(date.getFullYear(),4)+pad(date.getMonth()+1, 2)+pad(date.getDate(), 2);
-			versionSign += '-'+pad(date.getHours(),2)+pad(date.getMinutes(), 2);
-		}
-
 		it79.fnc({}, [
 			function(itPj, param){
 				it79.ary(

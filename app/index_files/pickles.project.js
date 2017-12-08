@@ -11,14 +11,37 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	var _path = require('path');
 	var _pjError = [];
 	var _projectStatus = null;
+	var _px2package = {};
 
 
 	/**
 	 * projectオブジェクトを初期化
 	 */
-	function init(pj){
+	function init(){
+		var pj = _this;
 
 		new Promise(function(rlv){rlv();})
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// px2package 情報を読み込み
+				_px2package = px.px2dtLDA.project(projectId).px2package().getPrimaryProject();
+				if(_px2package === false){
+					_px2package = {
+						'type': 'project',
+						'path': '.px_execute.php',
+						'path_homedir': 'px-files/'
+					};
+				}
+				rlv();
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// cmdQueue にカレントディレクトリ情報をセット
+				px.commandQueue.server.setCurrentDir( 'default', _this.get('path') );
+				px.commandQueue.server.setCurrentDir( 'git', _this.get_realpath_git_root() );
+				px.commandQueue.server.setCurrentDir( 'composer', _this.get_realpath_composer_root() );
+				rlv();
+				return;
+			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
 
 				// px2agent から プロジェクト情報を生成
@@ -29,16 +52,16 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 				};
 				// console.log(px2agentOption);
 				_px2proj = px.px2agent.createProject(
-					_path.resolve( pj.get('path') + '/' + pj.get('entry_script') ) ,
+					_path.resolve( _this.get('path') + '/' + _this.get('entry_script') ) ,
 					px2agentOption
 				);
-				pj.px2proj = _px2proj;
+				_this.px2proj = _px2proj;
 
 				rlv();
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
-				pj.updateProjectStatus(function( tmpStatus ){
+				_this.updateProjectStatus(function( tmpStatus ){
 					_projectStatus = tmpStatus;
 					rlv();
 				});
@@ -47,7 +70,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 			.then(function(){ return new Promise(function(rlv, rjt){
 				if( !_projectStatus.pathExists || !_projectStatus.entryScriptExists || !_projectStatus.vendorDirExists || !_projectStatus.composerJsonExists ){
 					_px2proj = false;
-					pj.px2proj = _px2proj;
+					_this.px2proj = _px2proj;
 					rlv();
 					return;
 				}
@@ -87,21 +110,18 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 				/**
 				 * px.site
 				 */
-				pj.site = new (require('./pickles.project.site.js'))(px, pj, function(){
+				_this.site = new (require('./pickles.project.site.js'))(px, _this, function(){
 					rlv();
 				});
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
 				// composer パッケージの更新をチェックする。
-				px.composerUpdateChecker.check(pj, function(checked){
-					// console.log('composerUpdateChecker.check() done.', checked.status);
-				});
+				px.composerUpdateChecker.check(_this, function(checked){});
 				rlv();
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
-				// console.log('project "' + _this.projectInfo.name + '" (projectId: ' + _this.projectId + ') initialized.');
 				cbStandby();
 				rlv();
 				return;
@@ -325,6 +345,18 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 
 	/** プロジェクト情報を取得する */
 	this.get = function(key){
+		if(key == 'entry_script' && !this.projectInfo[key]){
+			if(_px2package.path){
+				return _px2package.path;
+			}
+			return '.px_execute.php';
+		}
+		if(key == 'home_dir' && !this.projectInfo[key]){
+			if(_px2package.path_homedir){
+				return _px2package.path_homedir;
+			}
+			return 'px-files/';
+		}
 		return this.projectInfo[key];
 	}
 
@@ -487,8 +519,8 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	 * 基本的には px.execComposer() をラップするメソッドですが、
 	 * cwd オプションを自動的に付与する点が異なります。
 	 *
-	 * @param  {[type]} cmd  [description]
-	 * @param  {[type]} opts [description]
+	 * @param  {Array}  cmd  `php`, `composer` を含まないコマンドオプションの配列
+	 * @param  {Object} opts [description]
 	 * @return {[type]}      [description]
 	 */
 	this.execComposer = function( cmd, opts ){
@@ -1415,7 +1447,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	}
 
 	// オブジェクトを初期化
-	init(this);
+	init();
 	return this;
 
 };

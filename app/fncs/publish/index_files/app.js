@@ -1,3 +1,4 @@
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
  * Publish: app.js
  */
@@ -8,6 +9,9 @@ window.contApp = new (function(px, $){
 	var $cont;
 	var _status;
 	var _patterns;
+
+	this.resultReport = new(require('../../../fncs/publish/index_files/libs.ignore/resultReport.js'))(this, px, $);
+	this.progressReport = new(require('../../../fncs/publish/index_files/libs.ignore/progressReport.js'))(this, px, $);
 
 	/**
 	 * initialize
@@ -64,7 +68,7 @@ window.contApp = new (function(px, $){
 					$cont.find('.cont_canvas')
 						.height( $(window).height() - $('.container').eq(0).height() - $cont.find('.cont_buttons').height() - 20 )
 					;
-					_this.resultReport.init( _this, $cont.find('.cont_canvas') );
+					_this.resultReport.init( $cont.find('.cont_canvas') );
 				}else{
 					// パブリッシュ前だったら
 					$cont.append( $('#template-before_publish').html() );
@@ -183,7 +187,6 @@ window.contApp = new (function(px, $){
 						px.closeDialog();
 
 						_this.progressReport.init(
-							_this,
 							$cont,
 							{
 								"path_region": path_region,
@@ -279,3 +282,334 @@ window.contApp = new (function(px, $){
 
 	return this;
 })(px, $);
+
+},{"../../../fncs/publish/index_files/libs.ignore/progressReport.js":2,"../../../fncs/publish/index_files/libs.ignore/resultReport.js":3}],2:[function(require,module,exports){
+/**
+ * Publish: progressReport.js
+ */
+module.exports = function(contApp, px, $){
+	var _this = this;
+	var _pj = px.getCurrentProject();
+	var $results, $phase, $currentTask, $timer, $row, $progressBar;
+	var _timer;
+
+	/**
+	 * レポート表示の初期化
+	 */
+	this.init = function( $canvas, opts ){
+		px.progress.start();
+
+		$results = $( $('#template-before_publish-progress').html() );
+		$timer = $results.find('.cont_progress-timer');
+		$row = $results.find('.cont_progress-row');
+		$phase = $results.find('.cont_progress-phase').css({'font-weight':'bold'});
+		$currentTask = $results.find('.cont_progress-currentTask');
+		$progressBar = $results.find('.cont_progress-bar [role=progressbar]');
+		$canvas.html('').append( $results );
+
+
+		var phase;
+
+		function updateView(data){
+			try {
+				var data = data.toString();
+				var rows = data.split(new RegExp('(\r\n|\r|\n)+'));
+			} catch (e) {
+			}
+			for( var idx in rows ){
+				var row = px.php.trim( rows[idx] );
+				if( typeof(row) !== typeof('') || !row.length ){
+					continue;
+				}
+				if( row.match( new RegExp('^\\#\\#([\\s\\S]+)$') ) ){
+					phase = px.php.trim( RegExp.$1 );
+					if( phase == 'Start publishing' ){
+						$phase.text( 'Publishing...' );
+						(function(){
+							var startTimestamp = (new Date).getTime();
+							function updateTimer(){
+								var time = (new Date).getTime() - startTimestamp;
+								$timer.text( Math.floor(time/1000) + ' sec' );
+								_timer = setTimeout( updateTimer, 25 );
+							}
+							updateTimer();
+						})();
+					}else{
+						$phase.text( phase );
+					}
+				}else if( phase == 'Start publishing' ){
+					if( row.match( new RegExp('^([0-9]+)\\/([0-9]+)$') ) ){
+						$currentTask.text( RegExp.$1 +' / '+ RegExp.$2 );
+						var per = RegExp.$1/RegExp.$2*100;
+						$progressBar.attr({'aria-valuenow':per}).css({'width':per+'%'});
+					}else if( row.match( new RegExp('^\\/([\\s\\S]+)$') ) ){
+						$row.text(row);
+					}
+				}else if( phase == 'Clearing caches' ){
+					$row.text(row);
+				}else if( phase == 'Making list' ){
+					$row.text(row);
+				}else{
+					$row.text('');
+				}
+				// console.log( row );
+			}
+		}
+
+		var px2cmd_options = '';
+		px2cmd_options += 'path_region='+encodeURIComponent(opts.path_region);
+		for(var idx in opts.paths_region){
+			px2cmd_options += '&paths_region[]='+encodeURIComponent(opts.paths_region[idx]);
+		}
+		for(var idx in opts.paths_ignore){
+			px2cmd_options += '&paths_ignore[]='+encodeURIComponent(opts.paths_ignore[idx]);
+		}
+		if(opts.keep_cache){
+			px2cmd_options += '&keep_cache=1';
+		}
+
+		px.commandQueue.client.addQueueItem(
+			[
+				'php',
+				px.path.resolve(_pj.get('path'), _pj.get('entry_script')),
+				'/?PX=publish.run&'+px2cmd_options
+			],
+			{
+				'cdName': 'default',
+				'tags': [
+					'pj-'+_pj.get('id'),
+					'pickles2-publish'
+				],
+				'accept': function(queueId){
+					// console.log(queueId);
+				},
+				'open': function(message){
+				},
+				'stdout': function(message){
+					updateView(message.data.join(''));
+				},
+				'stderr': function(message){
+					updateView(message.data.join(''));
+				},
+				'close': function(message){
+					clearTimeout(_timer);
+					setTimeout(function(){
+						px.progress.close();
+						opts.complete(true);
+					}, 3000);
+					return;
+				}
+			}
+		);
+
+	} // this.init();
+
+
+	return this;
+
+}
+
+},{}],3:[function(require,module,exports){
+/**
+ * Publish: resultReport.js
+ */
+module.exports = function(contApp, px, $){
+	var _this = this;
+
+	var $results, $rows, $summaries, $spentTime, $totalFileCount, $errorMessage;
+
+	/**
+	 * レポート表示の初期化
+	 */
+	this.init = function( $canvas ){
+
+		$results = $( $('#template-after_publish-canvas').html() );
+		$canvas.append( $results );
+
+		$rows = $results.find('.cont_results-rows');
+		$summaries = $results.find('.cont_results-summaries');
+		$spentTime = $results.find('.cont_results-spentTime span');
+		$totalFileCount = $results.find('.cont_results-total_file_count strong');
+		$errorMessage = $results.find('.cont_results-errorMessage');
+
+		px.utils.iterateFnc([
+			function( it, arg ){
+				// d3.csv( contApp.getRealpathPublishDir()+"publish_log.csv", function(error, csv){
+				// 	arg.publishLogCsv = csv;
+				// 	it.next(arg);
+				// });
+
+				d3.csv( 'file://'+contApp.getRealpathPublishDir()+"publish_log.csv" )
+					.row(function(d) {
+						var rtn = {};
+						rtn.datetime = d['datetime'];
+						rtn.path = d['path'];
+						rtn.procType = d['proc_type'];
+						rtn.statusCode = d['status_code'];
+						return rtn;
+					})
+					.get(function(error, csv) {
+						// console.log(csv);
+						arg.publishLogCsv = csv;
+						it.next(arg);
+					})
+				;
+			} ,
+			function( it, arg ){
+				var status = contApp.getStatus();
+				arg.alertLogCsv = [];
+				if( !status.alertLogExists ){
+					it.next(arg);
+					return;
+				}
+				d3.csv( 'file://'+contApp.getRealpathPublishDir()+"alert_log.csv" )
+					.row(function(d) {
+						var rtn = {};
+						rtn.datetime = d['datetime'];
+						rtn.path = d['path'];
+						rtn.errorMessage = d['error_message'];
+						return rtn;
+					})
+					.get(function(error, csv) {
+						// console.log(csv);
+						arg.alertLogCsv = csv;
+						it.next(arg);
+					})
+				;
+			} ,
+			function( it, arg ){
+				var status = contApp.getStatus();
+				var count = arg.publishLogCsv.length;
+				var startDateTime = arg.publishLogCsv[0].datetime;
+				var endDateTime = arg.publishLogCsv[arg.publishLogCsv.length-1].datetime;
+				var time = Date.parse( endDateTime ) - Date.parse( startDateTime );
+
+				function updateTotalFileCounter( count, i ){
+					i ++;
+					var t = 50;
+					if( t == i ){
+						// 全量完了
+						$totalFileCount.text( count );
+
+						if( status.alertLogExists ){
+							$results.addClass('cont_results-error');
+							$errorMessage
+								.text( arg.alertLogCsv.length + '件のエラーが検出されています。' )
+							;
+						}
+						return;
+					}
+					$totalFileCount.text( Math.round(count/t*i) );
+					setTimeout( function(){ updateTotalFileCounter( count, i ); }, 2 );
+				}
+				updateTotalFileCounter( count, 0 );
+
+				function updateSpentTime( time, i ){
+					i ++;
+					var t = 35;
+					if( t == i ){
+						// 全量完了
+						$spentTime.text( time + ' sec' );
+						return;
+					}
+					$spentTime.text( Math.round(time/t*i) + ' sec' );
+					setTimeout( function(){ updateSpentTime( time, i ); }, 4 );
+				}
+				updateSpentTime( (time/1000), 0 );
+
+
+				var rows = [];
+				var summaries = {
+					'procTypes': {} ,
+					'statusCodes': {}
+				};
+				// d3.select( $canvas.get(0) ).html(arg.publishLogCsv);
+
+				px.utils.iterate(
+					arg.publishLogCsv,
+					function( it2, row2, idx2 ){
+
+						// 行データ
+						rows.push( row2 );
+						(function(){
+							return;// ← 開発中コメントアウト
+							var li = d3.select( $rows.find('table').get(0) ).selectAll('tr');
+							var update = li
+								.data(rows)
+								// .html(function(d, i){
+								// 	return '<td>'+(i+1) + '</td><td>' + d['* path']+'</td>';
+								// })
+							;
+							update.enter()
+								.append('tr')
+								.html(function(d, i){
+									var html = '';
+									html += '<th>'+(i+1) + '</th>';
+									html += '<td>'+d.path+'</td>';
+									html += '<td>'+d.procType+'</td>';
+									html += '<td>'+d.statusCode+'</td>';
+									return html;
+								})
+							;
+							update.exit()
+								.remove()//消す
+							;
+						})();
+
+
+
+						// 統計
+						if( !summaries.procTypes[row2.procType] ){ summaries.procTypes[row2.procType] = 0; };
+						summaries.procTypes[row2.procType] ++;
+
+						if( !summaries.statusCodes[row2.statusCode] ){ summaries.statusCodes[row2.statusCode] = 0; };
+						summaries.statusCodes[row2.statusCode] ++;
+						// console.log(summaries);
+
+						(function(){
+							var table = d3.select( $summaries.find('table').get(0) );
+							table.select('tr.cont_procTypes td')
+								.data([summaries.procTypes])
+								.html(
+									function(d, i){
+										var ul = $('<ul>');
+										for( var idx in d ){
+											ul.append( $('<li>').text( idx + ': ' + d[idx] ) );
+										}
+										return ul.html();
+									}
+								)
+							;
+							table.select('tr.cont_statusCodes td')
+								.data([summaries.statusCodes])
+								.html(
+									function(d, i){
+										var ul = $('<ul>');
+										for( var idx in d ){
+											ul.append( $('<li>').text( idx + ': ' + d[idx] ) );
+										}
+										return ul.html();
+									}
+								)
+							;
+						})();
+
+						setTimeout( function(){
+							it2.next();
+						}, 0 );
+
+					} ,
+					function(){
+						it.next(arg);
+					}
+				);
+
+			}
+		]).start({});
+
+	} // this.init();
+
+	return this;
+}
+
+},{}]},{},[1])

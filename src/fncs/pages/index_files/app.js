@@ -180,7 +180,7 @@ window.contApp = new (function( px ){
 	 */
 	this.commitContents = function( page_path ){
 		this.gitUi.commit('contents', {'page_path': page_path}, function(result){
-			console.log('(コミット完了しました)');
+			console.log('(コミットを実行しました)', result);
 		});
 		return this;
 	}
@@ -191,7 +191,7 @@ window.contApp = new (function( px ){
 	 */
 	this.logContents = function( page_path ){
 		this.gitUi.log('contents', {'page_path': page_path}, function(result){
-			console.log('(コミットログを表示しました)');
+			console.log('(コミットログを表示しました)', result);
 		});
 		return this;
 	}
@@ -206,6 +206,7 @@ window.contApp = new (function( px ){
 		switch( previewLocation.href ){
 			case 'blank':
 			case 'about:blank':
+			case 'data:text/html,chromewebdata': // <- サーバーが立ち上がってないとき、chromeがこのURLを返す模様
 				return;
 		}
 		var to = previewLocation.pathname;
@@ -236,6 +237,7 @@ window.contApp = new (function( px ){
 	 */
 	this.goto = function( page_path, options, callback ){
 		// console.log('=-=-=-=-=-=-=-=-=-=-=-=-=-=-= goto');
+		// console.log(_currentPagePath, page_path);
 		callback = callback || function(){};
 		options = options || {};
 		if(page_path === undefined){
@@ -293,6 +295,13 @@ window.contApp = new (function( px ){
 			pageDraw.redraw( _currentPageInfo, options, function(){
 				if( _currentPageInfo.path_type == 'alias' ){
 					// エイリアスはロードしない
+					px.progress.close();
+					callback();
+					return;
+				}
+
+				if( !_currentPageInfo.page_info ){
+					// ページ情報が正常にロードされていない場合
 					px.progress.close();
 					callback();
 					return;
@@ -404,7 +413,7 @@ window.contApp = new (function( px ){
 				$('<a>')
 					.html('&times;')
 					.attr('href', 'javascript:;')
-					.click( function(){
+					.on('click', function(){
 						// if(!confirm('編集中の内容は破棄されます。エディタを閉じますか？')){ return false; }
 						_this.closeEditor();
 					} )
@@ -451,7 +460,10 @@ window.contApp = new (function( px ){
 		$('body')
 			.css({'overflow':'auto'})
 		;
-		_this.loadPreview( _currentPagePath, {'force':true}, function(){} );
+		_this.loadPreview( _currentPagePath, {'force':true}, function(){
+			pageDraw.redraw(_currentPageInfo, {}, function(){
+			});
+		} );
 		return this;
 	} // closeEditor()
 

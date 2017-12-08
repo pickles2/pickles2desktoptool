@@ -29,6 +29,7 @@ window.contApp = new (function( px ){
 					pickles2ModuleEditor.init(
 						{
 							'elmCanvas': $content.get(0), // <- 編集画面を描画するための器となる要素
+							'lang': px.getDb().language,
 							'preview':{ // プレビュー用サーバーの情報を設定します。
 								'origin': 'http://127.0.0.1:8081'
 							},

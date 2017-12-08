@@ -31,13 +31,13 @@ window.contApp.installer.git = new (function( px, contApp ){
 		var dlgOpt = {};
 		dlgOpt.title = 'Pickles 2 のセットアップ';
 		dlgOpt.body = $('<div>')
-			.append( $msg.text('Gitリポジトリからクローンしています。この処理はしばらく時間がかかります。') )
+			.append( $msg.text('しばらくお待ちください。') )
 			.append( $pre )
 		;
 		dlgOpt.buttons = [
 			$('<button>')
 				.text('OK')
-				.click(function(){
+				.on('click', function(){
 					// これがセットアップ完了の最後の処理
 					px.closeDialog();
 					opt.complete();
@@ -49,56 +49,89 @@ window.contApp.installer.git = new (function( px, contApp ){
 
 		px.utils.iterateFnc([
 			function(it, prop){
-				// `$ git clone` しています。
-				// px.git.Clone(prop.param.repositoryUrl, path)
-				// 	.then(function(repository) {
-				// 		// Work with the repository object here.
-				// 		it.next(prop);
-				// 	})
-				// ;
-
-				px.utils.spawn(
-					px.cmd('git'), ['clone', param.repositoryUrl, './'],
+				$msg.text('Gitリポジトリからクローンしています。この処理はしばらく時間がかかります。')
+				px.commandQueue.client.addQueueItem(
+					[
+						'git',
+						'clone',
+						param.repositoryUrl,
+						'./'
+					],
 					{
-						cd: path,
-						success: function(data){
-							stdout += data;
+						'cdName': 'default', // この時点で .git は存在しないので、ルートディレクトリは `git` ではなく `default`。
+						'tags': [
+							'pj-'+pj.get('id'),
+							'composer-create-project'
+						],
+						'accept': function(queueId){
+							// console.log(queueId);
+						},
+						'open': function(message){
+						},
+						'stdout': function(message){
+							for(var idx in message.data){
+								stdout += message.data[idx];
+							}
 							$pre.text(stdout);
-						} ,
-						error: function(data){
-							stdout += data;
+						},
+						'stderr': function(message){
+							var errMsg = '';
+							for(var idx in message.data){
+								errMsg += message.data[idx];
+							}
+							stdout += errMsg;
 							$pre.text(stdout);
-							px.log('Composer Setup Error: '+ data);
-						} ,
-						complete: function(code){
+							px.log('git clone Error: '+ errMsg);
+						},
+						'close': function(message){
 							it.next(prop);
+							return;
 						}
 					}
 				);
 
 			} ,
 			function(it, prop){
-				$msg.text('composer をセットアップしています。この処理はしばらく時間がかかります。');
-				var path_composer = pj.get_realpath_composer_root();
-				px.utils.spawn(
-					px.cmd('php'),
-					[px.cmd('composer'), 'install', '--no-interaction'],
+				px.commandQueue.server.setCurrentDir('composer', pj.get_realpath_composer_root());
+				px.commandQueue.server.setCurrentDir('git', pj.get_realpath_git_root());
+				$msg.text('composer により依存パッケージをセットアップしています。この処理はしばらく時間がかかります。');
+
+				px.commandQueue.client.addQueueItem(
+					[
+						'composer',
+						'install',
+						'--no-interaction'
+					],
 					{
-						cd: path_composer,
-						success: function(data){
-							stdout += data;
-							$pre.text(stdout);
-						} ,
-						error: function(data){
-							stdout += data;
-							$pre.text(stdout);
-							px.log('Composer Setup Error: '+ data);
-						} ,
-						cmdComplete: function(code){
-							$msg.text('Pickles のセットアップが完了しました。');
+						'cdName': 'composer',
+						'tags': [
+							'pj-'+pj.get('id'),
+							'composer-create-project'
+						],
+						'accept': function(queueId){
+							// console.log(queueId);
 						},
-						complete: function(dataFin){
+						'open': function(message){
+						},
+						'stdout': function(message){
+							for(var idx in message.data){
+								stdout += message.data[idx];
+							}
+							$pre.text(stdout);
+						},
+						'stderr': function(message){
+							var errMsg = '';
+							for(var idx in message.data){
+								errMsg += message.data[idx];
+							}
+							stdout += errMsg;
+							$pre.text(stdout);
+							px.log('composer install Error: '+ errMsg);
+						},
+						'close': function(message){
+							$msg.text('Pickles のセットアップが完了しました。');
 							it.next(prop);
+							return;
 						}
 					}
 				);

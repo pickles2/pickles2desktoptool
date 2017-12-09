@@ -940,6 +940,56 @@ new (function($, window){
 	}
 
 	/**
+	 * 診断ツール
+	 */
+	this.healthCheck = function(){
+		var Px2DtHealthCheck = require('px2dt-health-check');
+		var $body = $('<div>'
+			+'<div class="px2-loading"></div>'
+			+'</div>');
+		var $result = $('<div>'
+			+'<p>次のテキストを選択してコピーするか、<a href="javascript:;">ファイルに保存</a>してください。</p>'
+			+'<p>お使いのコンピューター内部の情報を含む場合があります。取り扱いにご注意ください。</p>'
+			+'<p><textarea class="form-control" readonly="readonly" style="height: 340px;"></textarea></p>'
+			+'</div>');
+		var $textarea = $result.find('textarea');
+
+		px2style.modal(
+			{
+				title: '診断ツール',
+				body: $body
+			},
+			function(){
+				var px2DtHealthCheck = new Px2DtHealthCheck();
+				px2DtHealthCheck.checkDt(
+					_path_data_dir,
+					_selectedProject,
+					function(result){
+						console.info('--- px2dt-health-check - result', result);
+						var filename = 'pickles2-debug.json';
+						var jsonString = JSON.stringify(result, null, "\t");
+						$body.html('').append($result);
+						$textarea.val(jsonString);
+						$result.find('a').on('click', function(e){
+	 						// ファイルとして保存する
+							var blob = new Blob([ jsonString ], { "type" : "text/json" });
+							if (window.navigator.msSaveBlob) {
+								window.navigator.msSaveBlob(blob, filename);
+
+								// msSaveOrOpenBlobの場合はファイルを保存せずに開ける
+								window.navigator.msSaveOrOpenBlob(blob, filename);
+							} else {
+								$(this).attr('download', filename);
+								this.href = window.URL.createObjectURL(blob);
+							}
+						});
+					}
+				);
+			}
+		);
+	}
+
+	/**
 	 * アプリケーションを終了する
 	 */
 	this.exit = function(){

@@ -306,6 +306,7 @@
 					</div>
 				</div><!-- /.row -->
 				<p><button class="px2-btn" onclick="px.deselectProject(); px.subapp(); return false;">ダッシュボードへ戻る</button></p>
+				<p><button class="px2-btn" onclick="px.healthCheck(); return false;">診断ツール</button></p>
 				<p><button class="px2-btn px2-btn--danger" onclick="if(confirm('このプロジェクトを削除してよろしいですか？')){px.deleteProject( px.getCurrentProject().projectId, function(){px.subapp();} );} return false;">このプロジェクトを削除</button></p>
 				<hr />
 				<address class="center">---</address>

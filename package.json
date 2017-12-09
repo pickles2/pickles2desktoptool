@@ -7,7 +7,7 @@
   "scripts": {
     "preinstall": "git submodule update --init --recursive --force",
     "start": "nw",
-    "submodules-update": "npm install file:submodules/broccoli-html-editor file:submodules/broccoli-field-table file:submodules/node-broccoli-processor file:submodules/node-broccoli-styleguide-generator file:submodules/node-px2dt-localdata-access file:submodules/node-express-pickles2 file:submodules/node-pickles2-contents-editor file:submodules/node-pickles2-module-editor file:submodules/node-px2agent file:submodules/px2style file:submodules/node-utils79 file:submodules/node-cmd-queue; gulp;",
+    "submodules-update": "npm install file:submodules/broccoli-html-editor file:submodules/broccoli-field-table file:submodules/node-broccoli-processor file:submodules/node-broccoli-styleguide-generator file:submodules/node-px2dt-localdata-access file:submodules/node-px2dt-health-check file:submodules/node-express-pickles2 file:submodules/node-pickles2-contents-editor file:submodules/node-pickles2-module-editor file:submodules/node-px2agent file:submodules/px2style file:submodules/node-utils79 file:submodules/node-cmd-queue; gulp;",
     "build": "node ./build.js"
   },
   "author": "Tomoya Koyanagi",
@@ -38,6 +38,7 @@
     "pickles2-contents-editor": "file:submodules/node-pickles2-contents-editor",
     "pickles2-module-editor": "file:submodules/node-pickles2-module-editor",
     "px2agent": "file:submodules/node-px2agent",
+    "px2dt-health-check": "file:submodules/node-px2dt-health-check",
     "px2dt-localdata-access": "file:submodules/node-px2dt-localdata-access",
     "px2style": "file:submodules/px2style",
     "semver": "^5.3.0",

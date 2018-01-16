@@ -7,7 +7,7 @@
   "scripts": {
     "preinstall": "git submodule update --init --recursive --force",
     "start": "nw",
-    "submodules-update": "npm install file:submodules/broccoli-html-editor file:submodules/broccoli-field-table file:submodules/node-broccoli-processor file:submodules/node-broccoli-styleguide-generator file:submodules/node-px2dt-localdata-access file:submodules/node-px2dt-health-check file:submodules/node-express-pickles2 file:submodules/node-pickles2-contents-editor file:submodules/node-pickles2-module-editor file:submodules/node-px2agent file:submodules/px2style file:submodules/node-utils79 file:submodules/node-cmd-queue; gulp;",
+    "submodules-update": "npm install file:submodules/broccoli-html-editor file:submodules/broccoli-field-table file:submodules/node-broccoli-processor file:submodules/node-broccoli-styleguide-generator file:submodules/node-px2dt-localdata-access file:submodules/node-px2dt-health-check file:submodules/node-express-pickles2 file:submodules/node-pickles2-contents-editor file:submodules/node-pickles2-module-editor file:submodules/node-px2agent file:submodules/px2style file:submodules/node-utils79 file:submodules/node-cmd-queue file:submodules/node-git-parser; gulp;",
     "build": "node ./build.js"
   },
   "author": "Tomoya Koyanagi",
@@ -25,6 +25,7 @@
     "express-pickles2": "file:submodules/node-express-pickles2",
     "file-stream-rotator": "0.0.7",
     "fs-extra": "^0.24.0",
+    "git-parser": "file:submodules/node-git-parser",
     "glob": "^5.0.10",
     "iterate79": "^1.1.0",
     "jquery": "^2.1.4",

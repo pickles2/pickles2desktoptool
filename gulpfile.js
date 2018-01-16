@@ -34,6 +34,9 @@ gulp.task("client-libs", function() {
 	gulp.src(["node_modules/cmd-queue/dist/**/*"])
 		.pipe(gulp.dest( './app/common/cmd-queue/dist/' ))
 	;
+	gulp.src(["node_modules/git-parser/dist/**/*"])
+		.pipe(gulp.dest( './app/common/git-parser/dist/' ))
+	;
 });
 
 

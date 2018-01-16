@@ -37,3 +37,6 @@
 [submodule "submodules/node-px2dt-health-check"]
 	path = submodules/node-px2dt-health-check
 	url = https://github.com/tomk79/node-px2dt-health-check.git
+[submodule "submodules/node-git-parser"]
+	path = submodules/node-git-parser
+	url = https://github.com/tomk79/node-git-parser.git

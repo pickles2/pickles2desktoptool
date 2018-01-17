@@ -621,11 +621,14 @@ new (function($, window){
 	this.openInTextEditor = function( path ){
 		var pathEditor = '';
 		var targetType = null;
+		var externalAppName;
 		if( this.utils.isDirectory(path) ){
 			targetType = 'dir';
+			externalAppName = 'texteditorForDir';
 			pathEditor = this.getDb().apps.texteditorForDir;
 		}else if( px.utils.isFile(path) ){
 			targetType = 'file';
+			externalAppName = 'texteditor';
 			pathEditor = this.getDb().apps.texteditor;
 		}else{
 			alert('編集対象のパスが存在しません。'+"\n"+path);
@@ -639,25 +642,7 @@ new (function($, window){
 			console.error('ERROR: '+'外部テキストエディタが設定されていないか、存在しません。');
 			return false;
 		}
-		if(_platform=='win'){
-			px.utils.spawn(
-				pathEditor,
-				[
-					path
-				],
-				{}
-			);
-		}else{
-			px.utils.spawn(
-				px.cmd('open'),
-				[
-					path,
-					'-a',
-					pathEditor
-				],
-				{}
-			);
-		}
+		px.px2dtLDA.startApp(externalAppName, {PATH: path});
 		return true;
 	}
 

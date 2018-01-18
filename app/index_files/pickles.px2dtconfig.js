@@ -24,13 +24,15 @@
 		$tpl.find('[name=network_appserver_port]').val( px.getDb().network.appserver.port ).attr({'placeholder':px.packageJson.pickles2.network.appserver.port});
 		$tpl.find('[name=apps_texteditor]').val( px.getDb().apps.texteditor );
 		$tpl.find('[name=apps_texteditor_for_dir]').val( px.getDb().apps.texteditorForDir );
+		$tpl.find('[name=apps_git_client]').val( px.getDb().apps.gitClient );
 		$tpl.find('[name=language]').val( px.getDb().language );
 
 		var fileInputs = [
 			'php',
 			'git',
 			'apps_texteditor',
-			'apps_texteditor_for_dir'
+			'apps_texteditor_for_dir',
+			'apps_git_client'
 		];
 		for(var idx in fileInputs){
 			if( px.getPlatform()=='win' ){
@@ -70,6 +72,7 @@
 						px.getDb().network.appserver.port = $tpl.find('[name=network_appserver_port]').val();
 						px.getDb().apps.texteditor = $tpl.find('[name=apps_texteditor]').val();
 						px.getDb().apps.texteditorForDir = $tpl.find('[name=apps_texteditor_for_dir]').val();
+						px.getDb().apps.gitClient = $tpl.find('[name=apps_git_client]').val();
 						px.getDb().language = $tpl.find('[name=language]').val();
 						px.save(function(){
 							px.closeDialog();

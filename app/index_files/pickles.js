@@ -637,9 +637,36 @@ new (function($, window){
 		}
 
 		var msgSudgestSetting = _appName+'設定 メニューから、アプリケーション "外部テキストエディタ'+(targetType=='dir'?'(ディレクトリを開く)':'')+'" を設定してください。';
-		if( !this.getDb().apps || ( !pathEditor.length && !this.utils.isDirectory(pathEditor) ) ){
+		if( !this.getDb().apps || ( !pathEditor.length && !this.utils.isDirectory(pathEditor) && !this.utils.isFile(pathEditor) ) ){
 			alert('外部テキストエディタが設定されていないか、存在しません。' + "\n" + msgSudgestSetting);
 			console.error('ERROR: '+'外部テキストエディタが設定されていないか、存在しません。');
+			return false;
+		}
+		px.px2dtLDA.startApp(externalAppName, {PATH: path});
+		return true;
+	}
+
+	/**
+	 * 外部Gitクライアントで開く
+	 */
+	this.openInGitClient = function( path ){
+		var pathEditor = '';
+		var targetType = null;
+		var externalAppName;
+		if( this.utils.isDirectory(path) ){
+			targetType = 'dir';
+			externalAppName = 'gitClient';
+			pathEditor = this.getDb().apps.gitClient;
+		}else{
+			alert('編集対象のパスが存在しません。'+"\n"+path);
+			console.error('ERROR: '+'編集対象のパスが存在しません。'+"\n"+path);
+			return false;
+		}
+
+		var msgSudgestSetting = _appName+'設定 メニューから、アプリケーション "外部Gitクライアント" を設定してください。';
+		if( !this.getDb().apps || ( !pathEditor.length && !this.utils.isDirectory(pathEditor) && !this.utils.isFile(pathEditor) ) ){
+			alert('外部Gitクライアントが設定されていないか、存在しません。' + "\n" + msgSudgestSetting);
+			console.error('ERROR: '+'外部Gitクライアントが設定されていないか、存在しません。');
 			return false;
 		}
 		px.px2dtLDA.startApp(externalAppName, {PATH: path});

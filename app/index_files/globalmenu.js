@@ -94,6 +94,15 @@ module.exports = function(px){
 		}
 	});
 	_menu.push({
+		"label":px.lb.get('menu.openInGitClient'),
+		"cond":"homeDirExists",
+		"area":"shoulder",
+		"app":null,
+		"click": function(){
+			px.openInGitClient( px.getCurrentProject().get('path') );
+		}
+	});
+	_menu.push({
 		"label":px.lb.get('menu.openInTerminal'),
 		"cond":"homeDirExists",
 		"area":"shoulder",

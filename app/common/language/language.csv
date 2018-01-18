@@ -9,6 +9,7 @@ menu.dashboard,Dashboard,ダッシュボード,控制版面,控制版面
 menu.openFolder,Open Folder,フォルダを開く,打开文件夹,打開文件夾
 menu.openInBrowser,Open in Browser,ブラウザで開く,在浏览器中打开,在瀏覽器中打開
 menu.openInTexteditor,Open in Text editor,テキストエディタで開く,在Text editor中打开,在Text editor中打開
+menu.openInGitClient,Open in Git client,Gitクライアントで開く,在Git client中打开,在Git client中打開
 menu.openInTerminal,Open in Terminal,コマンドラインで開く,在Terminal中打开,在Terminal中打開
 menu.projectConfig,Project Config(config.php),プロジェクト共有設定(config.php),项目设定(config.php),項目設定(config.php)
 menu.composer,composer,composer,composer,composer

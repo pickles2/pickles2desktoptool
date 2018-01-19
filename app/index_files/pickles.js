@@ -146,6 +146,8 @@ new (function($, window){
 	var $header, $footer, $main, $contents, $shoulderMenu;
 	var _menu = [];
 
+	this.cookie = $.cookie;
+
 	/**
 	 * アプリケーションの初期化
 	 */
@@ -865,6 +867,9 @@ new (function($, window){
 		var cpj_s = null;
 		if( cpj !== null ){
 			cpj_s = cpj.status()
+		}
+		if(!$shoulderMenu){
+			return;
 		}
 
 		$('.theme-header__gmenu').html( $('<ul>')

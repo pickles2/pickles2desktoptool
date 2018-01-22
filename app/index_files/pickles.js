@@ -325,6 +325,25 @@ new (function($, window){
 	this.save = function(callback){
 		callback = callback || function(){};
 		px.px2dtLDA.save(function(){
+			// プロジェクト別のアプリケーションデータを削除する
+			var pjAll = px.px2dtLDA.getProjectAll();
+			var pjAllIds = {};
+			for(let idx in pjAll){
+				pjAllIds[pjAll[idx].id] = true;
+			}
+			var baseDir = px.px2dtLDA.getAppDataDir('px2dt');
+			var filelist = px.fs.readdirSync(baseDir);
+			for(let idx in filelist){
+				var filename = filelist[idx];
+				var filenamePjId = filelist.replace(/\.[a-zA-Z0-9]+$/, '');
+				try {
+					if( !pjAllIds[filenamePjId] ){
+						px.fs.removeSync(baseDir+'/'+filename);
+					}
+				} catch (e) {
+				}
+			}
+
 			callback();
 		});
 		return;

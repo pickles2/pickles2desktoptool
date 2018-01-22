@@ -43,6 +43,13 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
+				// appdataオブジェクトを生成
+				_this.appdata = new (require('./pickles.project.appdata.js'))(px, _this, function(){
+					rlv();
+				});
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
 
 				// px2agent から プロジェクト情報を生成
 				var px2agentOption = {

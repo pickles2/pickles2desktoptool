@@ -7,6 +7,7 @@ module.exports = function( px, pj, callbackOnStandby ) {
 	var _this = this;
 	var pathAppDataDir;
 	var appData = {};
+	callbackOnStandby = callbackOnStandby || function(){};
 
 	function init(){
 		new Promise(function(rlv){rlv();})
@@ -46,6 +47,7 @@ module.exports = function( px, pj, callbackOnStandby ) {
 	 * 変更を保存する
 	 */
 	this.save = function(callback){
+		callback = callback || function(){};
 		var jsonSrc = JSON.stringify( appData, null, "\t" );
 		px.fs.writeFileSync(pathAppDataDir+'/'+pj.projectInfo.id+'.json', jsonSrc);
 		callback();

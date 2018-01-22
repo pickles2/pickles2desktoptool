@@ -90,6 +90,28 @@ window.contApp = new (function(px, $){
 	 */
 	this.publish = function(){
 		var $body = $( $('#template-dialog_publish_options').html() );
+		try {
+			if(_pj.appdata.get().publishOption.last){
+				var path_region = [_pj.appdata.get().publishOption.last.path_region];
+				path_region = path_region.concat(_pj.appdata.get().publishOption.last.paths_region);
+				try {
+					$body.find('textarea[name=path_region]').val( path_region.join("\n") );
+				} catch (e) {
+					$body.find('textarea[name=path_region]').val( '/' );
+				}
+				try {
+					$body.find('textarea[name=paths_ignore]').val( _pj.appdata.get().publishOption.last.paths_ignore.join("\n") );
+				} catch (e) {
+					$body.find('textarea[name=paths_ignore]').val( '' );
+				}
+				try {
+					$body.find('input[name=keep_cache]').prop("checked", !!(_pj.appdata.get().publishOption.last.keep_cache));
+				} catch (e) {
+					$body.find('input[name=keep_cache]').prop("checked", false);
+				}
+			}
+		} catch (e) {
+		}
 
 		(function(){
 			// パブリッシュパターンの選択UIを作る
@@ -151,7 +173,7 @@ window.contApp = new (function(px, $){
 					.text('パブリッシュを実行する')
 					.attr({'type':'submit'})
 					.addClass('px2-btn px2-btn--primary')
-					.click(function(){
+					.on('click', function(){
 						var str_paths_region_val = $body.find('textarea[name=path_region]').val();
 						var str_paths_region = '';
 						var tmp_ary_paths_region = str_paths_region_val.split(new RegExp('\r\n|\r|\n','g'));
@@ -185,6 +207,15 @@ window.contApp = new (function(px, $){
 						var keep_cache = ( $body.find('input[name=keep_cache]:checked').val() ? 1 : 0 );
 
 						px.closeDialog();
+
+						_pj.appdata.get().publishOption = _pj.appdata.get().publishOption || {};
+						_pj.appdata.get().publishOption.last = {
+							"path_region": path_region,
+							"paths_region": ary_paths_region,
+							"paths_ignore": ary_paths_ignore,
+							"keep_cache": keep_cache
+						};
+						_pj.appdata.save(function(){});
 
 						_this.progressReport.init(
 							$cont,

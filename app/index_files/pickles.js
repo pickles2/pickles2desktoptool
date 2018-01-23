@@ -335,10 +335,10 @@ new (function($, window){
 			var filelist = px.fs.readdirSync(baseDir);
 			for(let idx in filelist){
 				var filename = filelist[idx];
-				var filenamePjId = filelist.replace(/\.[a-zA-Z0-9]+$/, '');
+				var filenamePjId = filename.replace(/\.[a-zA-Z0-9]+$/g, '');
 				try {
 					if( !pjAllIds[filenamePjId] ){
-						px.fs.removeSync(baseDir+'/'+filename);
+						px.fs.unlinkSync(baseDir+'/'+filename);
 					}
 				} catch (e) {
 				}

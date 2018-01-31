@@ -65,8 +65,7 @@ Mac で Windows 版をビルドするにあたり、次の環境が必要です�
 
 - GUI編集で、 elseifフィールド と elseフィールド を使えるようになった。
 - GUI編集で、 moduleフィールド、 loopフィールドに `maxLength` を追加。
-- GUI編集で、 moduleフィールドに `enabledChildren` を追加。
-- GUI編集で、 モジュールの `info.json` 仕様に `enabledParents` を追加。
+- GUI編集で、 moduleフィールドに `enabledChildren` を、モジュールの `info.json` 仕様に `enabledParents` を追加。親子関係の定義ができるようになった。
 - プロジェクトの診断情報の表示機能を追加。
 - 外部テキストエディタの設定で、 `$PATH` を使えるようになった。
 - 外部Gitクライアントで開く機能を追加。

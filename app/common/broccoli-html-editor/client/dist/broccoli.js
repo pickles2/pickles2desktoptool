@@ -1503,8 +1503,8 @@ module.exports = function(broccoli){
 			newData = JSON.parse( JSON.stringify(modId) );
 		}
 
-		var containerInstancePath = this.parseInstancePath( containerInstancePath );
-		// console.log( containerInstancePath );
+		var aryPath = this.parseInstancePath( containerInstancePath );
+		// console.log( aryPath );
 
 		function set_r( aryPath, data, newData ){
 			// console.log( data );
@@ -1546,8 +1546,8 @@ module.exports = function(broccoli){
 					}
 					if(newDataModTpl.info.enabledParents.length){
 						var tmpIsEnabledParent = false;
-						for(var idx in newDataModTpl.info.enabledParents){
-							if(newDataModTpl.info.enabledParents[idx] == modTpl.id){
+						for(var tmpIdx in newDataModTpl.info.enabledParents){
+							if(newDataModTpl.info.enabledParents[tmpIdx] == modTpl.id){
 								tmpIsEnabledParent = true;
 								break;
 							}
@@ -1560,8 +1560,8 @@ module.exports = function(broccoli){
 					}
 					if(modTpl.fields[fieldName].enabledChildren.length){
 						var tmpIsEnabledChild = false;
-						for(var idx in modTpl.fields[fieldName].enabledChildren){
-							if(modTpl.fields[fieldName].enabledChildren[idx] == newDataModTpl.id){
+						for(var tmpIdx in modTpl.fields[fieldName].enabledChildren){
+							if(modTpl.fields[fieldName].enabledChildren[tmpIdx] == newDataModTpl.id){
 								tmpIsEnabledChild = true;
 								break;
 							}
@@ -1569,6 +1569,20 @@ module.exports = function(broccoli){
 						if(!tmpIsEnabledChild){
 							// 挿入可能な子指定の条件に合致しないため、追加できない
 							broccoli.message('このモジュールは追加できません。');
+							return false;
+						}
+					}
+					if(newDataModTpl.info.enabledBowls.length){
+						var tmpIsEnabledBowl = false;
+						for(var tmpIdx in newDataModTpl.info.enabledBowls){
+							if( containerInstancePath.match( new RegExp('^\\/bowl\\.' + (newDataModTpl.info.enabledBowls[tmpIdx]) + '\\/') ) ){
+								tmpIsEnabledBowl = true;
+								break;
+							}
+						}
+						if(!tmpIsEnabledBowl){
+							// 挿入可能なbowl指定の条件に合致しないため、追加できない
+							broccoli.message('このモジュールは、指定されたBowlの中には追加できません。');
 							return false;
 						}
 					}
@@ -1601,7 +1615,7 @@ module.exports = function(broccoli){
 			return false;
 		} // set_r()
 
-		var result = set_r( containerInstancePath, _contentsSourceData, newData );
+		var result = set_r( aryPath, _contentsSourceData, newData );
 
 		cb(result);
 
@@ -2204,6 +2218,7 @@ module.exports = function(broccoli, targetElm, callback){
 	var btIconOpened = '<span class="glyphicon glyphicon-menu-down"></span> ';
 
 	var hasParents = {};
+	var hasSystemParents = {};
 	var childrenIndex = {};
 
 	// カテゴリの階層を描画
@@ -2260,7 +2275,7 @@ module.exports = function(broccoli, targetElm, callback){
 					it1.next();
 					return;
 				}
-				if( hasParents[mod.moduleId] ){
+				if( hasParents[mod.moduleId] && !hasSystemParents[mod.moduleId] ){
 					// 親指定を持っている場合は非表示
 					it1.next();
 					return;
@@ -2489,6 +2504,10 @@ module.exports = function(broccoli, targetElm, callback){
 										var parsedParentModuleId = broccoli.parseModuleId(parentModId);
 										childrenIndex[parentModId] = childrenIndex[parentModId] || {};
 										childrenIndex[parentModId][mod.moduleId] = mod;
+
+										if( parentModId.match(/^_sys\//) ){
+											hasSystemParents[mod.moduleId] = true;
+										}
 									}
 								}
 							}catch(e){

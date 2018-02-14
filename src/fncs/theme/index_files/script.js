@@ -190,6 +190,11 @@ window.contApp = new (function(){
 				$('.contents').find('.cont-layout-list a button').on('click', function(e){
 					e.stopPropagation();
 				});
+				$('.contents').find('a').on('click', function(e){
+					var href = this.href;
+					px.utils.openURL( href );
+					return false;
+				});
 				it1.next(arg);
 			}
 		]);

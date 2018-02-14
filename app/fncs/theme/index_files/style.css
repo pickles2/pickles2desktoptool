@@ -30,8 +30,16 @@
   width: 220px;
   max-width: 100%; }
   .contents .cont-theme-home-readme__thumb img {
-    width: 220px;
-    height: 220px; }
+    width: 100%; }
+  @media all and (max-width: 580px) {
+    .contents .cont-theme-home-readme__thumb {
+      width: 100px; } }
+
+.contents .cont-theme-home-readme__readme {
+  margin-left: 240px; }
+  @media all and (max-width: 580px) {
+    .contents .cont-theme-home-readme__readme {
+      margin-left: 120px; } }
 
 .contents .cont-theme-home-readme:after {
   content: " ";

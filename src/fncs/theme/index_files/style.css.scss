@@ -39,8 +39,16 @@
 			width: 220px;
 			max-width: 100%;
 			img{
-				width: 220px;
-				height: 220px;
+				width: 100%;
+			}
+			@media all and (max-width:580px){
+				width: 100px;
+			}
+		}
+		&__readme{
+			margin-left: 240px;
+			@media all and (max-width:580px){
+				margin-left: 120px;
 			}
 		}
 		&:after{

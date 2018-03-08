@@ -14,6 +14,7 @@ Copy `Pickles2.app` to your Application Folder.
 ```
 $ git clone https://github.com/pickles2/app-pickles2.git
 $ cd app-pickles2
+$ git submodule update --init --recursive --force
 $ npm install
 $ composer install
 ```

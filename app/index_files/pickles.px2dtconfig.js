@@ -27,6 +27,18 @@
 		$tpl.find('[name=apps_git_client]').val( px.getDb().apps.gitClient );
 		$tpl.find('[name=language]').val( px.getDb().language );
 
+		// placeholder
+		var placeholder = '';
+		if( px.getPlatform()=='win' ){
+			placeholder = '"C:\\path\\to\\your\\application.exe" $PATH';
+		}else if( px.getPlatform()=='mac' ){
+			placeholder = 'open $PATH -a "/path/to/your/application.app"';
+		}
+		$tpl.find('[name=apps_texteditor]').attr({'placeholder': placeholder} );
+		$tpl.find('[name=apps_texteditor_for_dir]').attr({'placeholder': placeholder} );
+		$tpl.find('[name=apps_git_client]').attr({'placeholder': placeholder} );
+
+
 		var fileInputs = [
 			'php',
 			'git',

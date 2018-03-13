@@ -12,6 +12,7 @@ Copy `Pickles2.app` to your Application Folder.
 ### Initial Setup for develop
 
 ```
+$ npm install -g gulp
 $ git clone https://github.com/pickles2/app-pickles2.git
 $ cd app-pickles2
 $ git submodule update --init --recursive --force
@@ -29,6 +30,20 @@ $ npm run submodules-update
 
 ```
 $ npm start
+```
+
+`npm start` でエラーが起きる場合は以下を試してください。
+
+```
+$ npm install nw
+$ npm start
+```
+
+
+### Task Runner
+
+```
+$ gulp watch
 ```
 
 

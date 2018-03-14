@@ -2,6 +2,7 @@
 Thumbs.db
 node_modules
 composer.lock
+package-lock.json
 /vendor/
 /cache/
 /build/

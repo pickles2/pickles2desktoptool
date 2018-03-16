@@ -77,7 +77,7 @@ Mac で Windows 版をビルドするにあたり、次の環境が必要です�
 
 ## 更新履歴 - Change log
 
-### Pickles 2 v2.0.0-beta.19 (20??年??月??日)
+### Pickles 2 v2.0.0-beta.19 (2018年3月27日)
 
 - GUI編集で、 elseifフィールド と elseフィールド を使えるようになった。
 - GUI編集で、 moduleフィールド、 loopフィールドに `maxLength` を追加。

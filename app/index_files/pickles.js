@@ -270,7 +270,14 @@ new (function($, window){
 				function(it1, data){
 					// setup "node-php-bin"
 					px.NodePhpBin = require('node-php-bin');
-					px.nodePhpBinOptions = {};
+					px.nodePhpBinOptions = {
+						// パスが通った php コマンドで初期化
+						// ※ 2018-03-26 @tomk79
+						// 　macOS の ElCapitan 以降、 openssl と libxml2 が利用できない環境があり、
+						// 　node-php-bin 内蔵の php の利用を一時中断することになった。
+						'bin': 'php' ,
+						'ini': null
+					};
 					if( px.px2dtLDA.db.commands && px.px2dtLDA.db.commands['php'] ){
 						px.nodePhpBinOptions = {
 							'bin': px.px2dtLDA.db.commands['php'] ,

@@ -85,7 +85,7 @@ window.contApp = new (function( px ){
 							// broccoliは、バックグラウンドで様々なデータ通信を行います。
 							// GPIは、これらのデータ通信を行うための汎用的なAPIです。
 							_pj.execPx2(
-								'/?PX=px2dthelper.px2ce.gpi&data='+utils79.base64_encode( JSON.stringify(input) ),
+								'/?PX=px2dthelper.px2ce.gpi&appMode=desktop&data='+encodeURIComponent( utils79.base64_encode( JSON.stringify(input) ) ),
 								{
 									complete: function(rtn){
 										try{

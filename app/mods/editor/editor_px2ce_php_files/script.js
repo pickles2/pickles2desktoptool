@@ -19645,7 +19645,7 @@ window.contApp = new (function( px ){
 	var utils79 = require('utils79');
 	var php = require('phpjs');
 	var _pj = px.getCurrentProject();
-	var pickles2ContentsEditor = new Pickles2ContentsEditor(); // px2ce client
+	var pickles2ContentsEditor; // px2ce client
 	var resizeTimer;
 	var realpathThemeCollectionDir;
 
@@ -19687,6 +19687,56 @@ window.contApp = new (function( px ){
 				}
 				// console.log(arg);
 				it1.next(arg);
+			},
+			function(it1, arg){
+				// クライアントリソースをロード
+				_pj.execPx2(
+					arg.page_path+'?PX=px2dthelper.px2ce.client_resources',
+					{
+						complete: function(resources){
+							try{
+								resources = JSON.parse(resources);
+							}catch(e){
+								console.error(e);
+							}
+							it79.ary(
+								resources.css,
+								function(it2, row, idx){
+									var link = document.createElement('link');
+									link.addEventListener('load', function(){
+										it2.next();
+									});
+									$('head').append(link);
+									link.rel = 'stylesheet';
+									link.href = 'file://'+row;
+								},
+								function(){
+									it79.ary(
+										resources.js,
+										function(it3, row, idx){
+											var script = document.createElement('script');
+											script.addEventListener('load', function(){
+												it3.next();
+											});
+											$('head').append(script);
+											script.src = 'file://'+row;
+										},
+										function(){
+											it1.next(arg);
+										}
+									);
+								}
+							);
+
+						}
+					}
+				);
+			},
+			function(it1, arg){
+				setTimeout(function(){
+					pickles2ContentsEditor = new Pickles2ContentsEditor(); // px2ce client
+					it1.next(arg);
+				}, 500);
 			},
 			function(it1, arg){
 				if( arg.target_mode == 'theme_layout' ){

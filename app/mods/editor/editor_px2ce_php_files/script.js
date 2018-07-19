@@ -19704,7 +19704,7 @@ window.contApp = new (function( px ){
 							try{
 								resources = JSON.parse(resources);
 							}catch(e){
-								console.error(e);
+								console.error('Failed to parse JSON "client_resources".', e);
 							}
 							it79.ary(
 								resources.css,
@@ -19781,7 +19781,7 @@ window.contApp = new (function( px ){
 							// GPI(General Purpose Interface) Bridge
 							// broccoliは、バックグラウンドで様々なデータ通信を行います。
 							// GPIは、これらのデータ通信を行うための汎用的なAPIです。
-							var tmpFileName = 'tmp_filename.json';
+							var tmpFileName = '__tmp_'+utils79.md5( Date.now() )+'.json';
 							px.fs.writeFileSync( realpathDataDir+tmpFileName, JSON.stringify(input) );
 							_pj.execPx2(
 								arg.page_path+'?PX=px2dthelper.px2ce.gpi&appMode=desktop&data_filename='+encodeURIComponent( tmpFileName ),

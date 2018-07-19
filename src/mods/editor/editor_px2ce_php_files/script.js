@@ -6,6 +6,7 @@ window.contApp = new (function( px ){
 	var php = require('phpjs');
 	var _pj = px.getCurrentProject();
 	var pickles2ContentsEditor; // px2ce client
+	var realpathDataDir;
 	var resizeTimer;
 	var realpathThemeCollectionDir;
 
@@ -35,7 +36,13 @@ window.contApp = new (function( px ){
 				fitWindowSize(function(){
 					it1.next(arg);
 				});
-
+			},
+			function(it1, arg){
+				_pj.px2dthelperGetAll('/', {}, function(px2all){
+					realpathDataDir = px2all.realpath_homedir+'_sys/ram/data/';
+					it1.next(arg);
+				});
+				// console.log(arg);
 			},
 			function(it1, arg){
 				if( _param.page_path ){
@@ -134,8 +141,10 @@ window.contApp = new (function( px ){
 							// GPI(General Purpose Interface) Bridge
 							// broccoliは、バックグラウンドで様々なデータ通信を行います。
 							// GPIは、これらのデータ通信を行うための汎用的なAPIです。
+							var tmpFileName = 'tmp_filename.json';
+							px.fs.writeFileSync( realpathDataDir+tmpFileName, JSON.stringify(input) );
 							_pj.execPx2(
-								arg.page_path+'?PX=px2dthelper.px2ce.gpi&appMode=desktop&data='+encodeURIComponent( utils79.base64_encode( JSON.stringify(input) ) ),
+								arg.page_path+'?PX=px2dthelper.px2ce.gpi&appMode=desktop&data_filename='+encodeURIComponent( tmpFileName ),
 								{
 									complete: function(rtn){
 										try{
@@ -143,6 +152,7 @@ window.contApp = new (function( px ){
 										}catch(e){
 											console.error('Failed to parse JSON String -> ' + rtn);
 										}
+										px.fs.unlinkSync( realpathDataDir+tmpFileName );
 										callback( rtn );
 									}
 								}

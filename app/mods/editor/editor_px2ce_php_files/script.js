@@ -19740,10 +19740,8 @@ window.contApp = new (function( px ){
 				);
 			},
 			function(it1, arg){
-				setTimeout(function(){
-					pickles2ContentsEditor = new Pickles2ContentsEditor(); // px2ce client
-					it1.next(arg);
-				}, 500);
+				pickles2ContentsEditor = new Pickles2ContentsEditor(); // px2ce client
+				it1.next(arg);
 			},
 			function(it1, arg){
 				if( arg.target_mode == 'theme_layout' ){
@@ -19784,7 +19782,7 @@ window.contApp = new (function( px ){
 							var tmpFileName = '__tmp_'+utils79.md5( Date.now() )+'.json';
 							px.fs.writeFileSync( realpathDataDir+tmpFileName, JSON.stringify(input) );
 							_pj.execPx2(
-								arg.page_path+'?PX=px2dthelper.px2ce.gpi&appMode=desktop&data_filename='+encodeURIComponent( tmpFileName ),
+								arg.page_path+'?PX=px2dthelper.px2ce.gpi&appMode=desktop&target_mode='+encodeURIComponent(arg.target_mode)+'&data_filename='+encodeURIComponent( tmpFileName ),
 								{
 									complete: function(rtn){
 										try{

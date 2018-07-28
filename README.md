@@ -81,6 +81,7 @@ Mac で Windows 版をビルドするにあたり、次の環境が必要です�
 
 - GUI編集で、 if フィールドが、 canvas モード描画時でも常に finalize モードで出力された値を評価するように変更した。
 - gutEngine 設定で `broccoli-html-editor-php` に対応。PHPに移植されたGUI編集エンジンを利用可能になった。
+- スタイルガイドジェネレータが `finalize.php` に対応した。
 
 ### Pickles 2 v2.0.0-beta.19 (2018年4月6日)
 

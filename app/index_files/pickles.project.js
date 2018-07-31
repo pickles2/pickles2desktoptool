@@ -778,17 +778,44 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 				return;
 			}
 
-			// console.log('=-=-=-=-=-=-=', pj.getGuiEngineName());
+			var guiEngine = pj.getGuiEngineName();
 
-			// broccoli-html-editor
-			pj.createBroccoliServer(pagePath, function(broccoli){
-				broccoli.updateContents(
-					function(result){
-						callback(result);
+			if(guiEngine == 'broccoli-html-editor-php'){
+				// broccoli-html-editor-php (PHP版) の処理
+				var options = {
+					'api': 'broccoliBridge',
+					'forBroccoli': {
+						'api': 'updateContents',
+						'options': {
+							'lang': 'ja'
+						}
+					},
+					'page_path': pagePath
+				};
+				options = px.utils79.base64_encode(JSON.stringify(options));
+				var PxCommand = 'PX=px2dthelper.px2ce.gpi&appMode=desktop&data='+encodeURIComponent(options);
+
+				_px2proj.query(
+					pj.getConcretePath(pagePath)+'?'+PxCommand, {
+						"output": "json",
+						"complete": function(data, code){
+							// console.log(data, code);
+							var rtn = JSON.parse(data);
+							callback(rtn);
+							return;
+						}
 					}
 				);
-			});
-
+			}else{
+				// broccoli-html-editor (旧JS版) の処理
+				pj.createBroccoliServer(pagePath, function(broccoli){
+					broccoli.updateContents(
+						function(result){
+							callback(result);
+						}
+					);
+				});
+			}
 		});
 		return this;
 	}// buildGuiEditContent()

@@ -800,7 +800,10 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 						"output": "json",
 						"complete": function(data, code){
 							// console.log(data, code);
-							var rtn = JSON.parse(data);
+							var rtn = false;
+							try{
+								rtn = JSON.parse(data);
+							}catch(e){}
 							callback(rtn);
 							return;
 						}

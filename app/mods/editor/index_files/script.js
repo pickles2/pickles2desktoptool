@@ -31,12 +31,8 @@ window.contApp = new (function( px ){
 	 */
 	function openEditor(){
 		var url = './editor_px2ce.html?';
-		var conf = _pj.getConfig();
-		var guiEngine = 'broccoli-html-editor';
+		var guiEngine = _pj.getGuiEngineName();
 
-		try{
-			guiEngine = conf.plugins.px2dt.guiEngine;
-		}catch(e){}
 		if(guiEngine == 'broccoli-html-editor-php'){
 			url = './editor_px2ce_php.html?'
 		}

@@ -745,6 +745,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	 * - broccoli-html-editor = 新エンジン broccoli (default)
 	 */
 	this.getGuiEngineName = function(){
+		var engineName = 'broccoli-html-editor';
 		try {
 			var conf = this.getConfig();
 			if( conf && conf.plugins && conf.plugins.px2dt && conf.plugins.px2dt.guiEngine ){
@@ -753,13 +754,16 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 						console.error('[Notice] guiEngine "legacy" is a obsoleted option. Selected "broccoli-html-editor" instead.');
 						// return conf.plugins.px2dt.guiEngine;
 						break;
+					case 'broccoli-html-editor-php':
+						engineName = 'broccoli-html-editor-php';
+						break;
 					default:
 						break;
 				}
 			}
 		} catch (e) {
 		}
-		return 'broccoli-html-editor';
+		return engineName;
 	}
 
 	/**
@@ -773,6 +777,8 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 				callback(false);
 				return;
 			}
+
+			// console.log('=-=-=-=-=-=-=', pj.getGuiEngineName());
 
 			// broccoli-html-editor
 			pj.createBroccoliServer(pagePath, function(broccoli){

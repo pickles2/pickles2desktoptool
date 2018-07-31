@@ -54,6 +54,16 @@
 		 */
 		this.serverStandby = function( callback ){
 			callback = callback || function(){};
+			var pj = px.getCurrentProject();
+			if( pj ){
+				// 外部のサーバーを利用するプロジェクトの場合
+				var px2dtLDA_Pj = px.px2dtLDA.project(pj.projectId);
+				var external_preview_server_origin = px2dtLDA_Pj.getExtendedData('external_preview_server_origin');
+				if( typeof(external_preview_server_origin)==typeof('') && external_preview_server_origin.match(/^https?\:\/\//i) ){
+					callback(true);
+					return this;
+				}
+			}
 			_previewServer.start(this.getPort(), function(result){
 				if(result === false){
 					console.error('プレビューサーバーの起動に失敗しました。');

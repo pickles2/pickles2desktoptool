@@ -51,6 +51,12 @@ window.contApp = new (function( px ){
 										console.error('Failed to parse JSON "client_resources".', e);
 										console.error(resources);
 									}
+									for( var idx in client_resources.css ){
+										client_resources.css[idx] = 'file://'+client_resources.css[idx];
+									}
+									for( var idx in client_resources.js ){
+										client_resources.js[idx] = 'file://'+client_resources.js[idx];
+									}
 									it1.next(arg);
 								}
 							}
@@ -85,7 +91,7 @@ window.contApp = new (function( px ){
 							});
 							$('head').append(link);
 							link.rel = 'stylesheet';
-							link.href = 'file://'+row;
+							link.href = row;
 						},
 						function(){
 							it79.ary(
@@ -96,7 +102,7 @@ window.contApp = new (function( px ){
 										it3.next();
 									});
 									$('head').append(script);
-									script.src = 'file://'+row;
+									script.src = row;
 								},
 								function(){
 									it1.next(arg);

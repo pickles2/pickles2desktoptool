@@ -1121,9 +1121,19 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 		callback = callback || function(){};
 		var BroccoliProcessor = require('broccoli-processor');
 
+		var broccoliProcessorOptions = {};
+		if( this.getGuiEngineName() == 'broccoli-html-editor-php' ){
+			broccoliProcessorOptions.rebuild = function(callbackRebuild){
+				// console.log('=-=-=-=-=-= callbackRebuild', page_path);
+				_this.buildGuiEditContent(page_path, function(){
+					callbackRebuild();
+				});
+			}
+		}
+
 		this.createPickles2ContentsEditorServer( page_path, {}, function(px2ce){
 			px2ce.createBroccoli(function(broccoli){
-				var broccoliProcessor = new BroccoliProcessor(broccoli, {});
+				var broccoliProcessor = new BroccoliProcessor(broccoli, broccoliProcessorOptions);
 				callback( broccoliProcessor );
 			});
 		} );

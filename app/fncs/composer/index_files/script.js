@@ -84,12 +84,14 @@ window.cont_selfupdate_conposer = function(btn){
  */
 window.cont_update_proj = function(btn){
 	$(btn).attr('disabled', 'disabled');
+	$('#cont_update input[name=composer-force-update]').attr('disabled', 'disabled');
 	var isForceUpdate = $('#cont_update input[name=composer-force-update]').prop("checked");
 
 	$('#cont_update .cont_console').html('');
 
 	it79.fnc({}, [
 		function(it1){
+			// 強制的更新の処理
 			if( !isForceUpdate ){
 				it1.next();
 				return;
@@ -101,6 +103,7 @@ window.cont_update_proj = function(btn){
 			$('#cont_update .cont_console').text(
 				$('#cont_update .cont_console').text() + 'Removing `vendor` directory...'
 			);
+			// vendorフォルダを削除する
 			fsEx.remove(cont_realpathVendorDir, function(){
 				$('#cont_update .cont_console').text(
 					$('#cont_update .cont_console').text() + 'done'+"\n"
@@ -110,6 +113,7 @@ window.cont_update_proj = function(btn){
 			return;
 		},
 		function(it1){
+			// composer update
 			pj.execComposer(
 				['update', '--no-interaction'],
 				{
@@ -128,7 +132,15 @@ window.cont_update_proj = function(btn){
 						// 	$('.cont_console').text() + code
 						// );
 						$(btn).removeAttr('disabled');
+						$('#cont_update input[name=composer-force-update]').removeAttr('disabled');
 						px.composerUpdateChecker.clearStatus( pj, function(){
+							if(code){
+								alert(
+									'composer が正常に終了しませんでした。(Exit Status Code: '+code+')'+"\n"
+									+'出力内容を参考に `composer.json` の内容を確認して再度お試しください。'+"\n"
+									+'または、「強制的に更新する」オプションを有効にして再実行すると解決する場合があります。'+"\n"
+								);
+							}
 							px.message( 'composer update 完了しました。' );
 						} );
 					}

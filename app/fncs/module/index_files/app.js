@@ -22,6 +22,32 @@ window.contApp = new (function( px ){
 		it79.fnc({},
 			[
 				function(it1, arg){
+					// broccoli-html-editor-php エンジン利用環境の要件を確認
+					if( pj.getGuiEngineName() == 'broccoli-html-editor-php' ){
+						pj.checkPxCmdVersion(
+							{
+								px2dthelperVersion: '>=2.0.8'
+							},
+							function(){
+								// API設定OK
+								it1.next(arg);
+							},
+							function( errors ){
+								// API設定が不十分な場合のエラー処理
+								var html = px.utils.bindEjs(
+									px.fs.readFileSync('app/common/templates/broccoli-html-editor-php-is-not-available.html').toString(),
+									{errors: errors}
+								);
+								$('.contents').html( html );
+								// エラーだったらここで離脱。
+								return;
+							}
+						);
+						return;
+					}
+					it1.next(arg);
+				},
+				function(it1, arg){
 					$content = $('.contents');
 					pxConf = pj.getConfig();
 					try{

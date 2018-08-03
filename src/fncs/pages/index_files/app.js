@@ -26,6 +26,7 @@ window.contApp = new (function( px ){
 		callback = callback || function(){};
 		it79.fnc({},[
 			function(it1, arg){
+				// 依存APIのバージョンを確認
 				_this.pj.checkPxCmdVersion(
 					{
 						apiVersion: '>=2.0.30',
@@ -47,6 +48,33 @@ window.contApp = new (function( px ){
 						return;
 					}
 				);
+			},
+			function(it1, arg){
+				// broccoli-html-editor-php エンジン利用環境の要件を確認
+				if( _this.pj.getGuiEngineName() == 'broccoli-html-editor-php' ){
+					_this.pj.checkPxCmdVersion(
+						{
+							px2dthelperVersion: '>=2.0.8'
+						},
+						function(){
+							// API設定OK
+							it1.next(arg);
+						},
+						function( errors ){
+							// API設定が不十分な場合のエラー処理
+							var html = px.utils.bindEjs(
+								px.fs.readFileSync('app/common/templates/broccoli-html-editor-php-is-not-available.html').toString(),
+								{errors: errors}
+							);
+							$('.contents').html( html );
+							// エラーだったらここで離脱。
+							callback();
+							return;
+						}
+					);
+					return;
+				}
+				it1.next();
 			},
 			function(it1, arg){
 				$elms.editor = $('<div>');

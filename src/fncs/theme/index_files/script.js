@@ -37,6 +37,29 @@ window.contApp = new (function(){
 			},
 			function(it1, arg){
 				// --------------------------------------
+				// broccoli-html-editor-php エンジン利用環境の要件を確認
+				if( pj.getGuiEngineName() == 'broccoli-html-editor-php' ){
+					pj.checkPxCmdVersion(
+						{
+							px2dthelperVersion: '>=2.0.8'
+						},
+						function(){
+							// API設定OK
+							it1.next(arg);
+						},
+						function( errors ){
+							// broccoli-html-editor-php が利用不可
+							_this.pageBroccoliHtmlEditorPhpIsNotAvailable(errors);
+							callback();
+							return;
+						}
+					);
+					return;
+				}
+				it1.next();
+			},
+			function(it1, arg){
+				// --------------------------------------
 				// Pickles 2 の各種情報から、
 				// テーマプラグインの一覧を取得
 				pj.px2dthelperGetAll('/', {}, function(result){
@@ -542,6 +565,21 @@ window.contApp = new (function(){
 
 		var html = px.utils.bindEjs(
 			px.fs.readFileSync('app/fncs/theme/index_files/templates/not-enough-api-version.html').toString(),
+			{'errors': errors}
+		);
+		$('.contents').html( html );
+	}
+
+	/**
+	 * broccoli-html-editor-php が利用不可
+	 */
+	this.pageBroccoliHtmlEditorPhpIsNotAvailable = function( errors ){
+		// ↓このケースでは、 `realpathThemeCollectionDir` を返すAPIが利用できないため、
+		// 　古い方法でパスを求める。
+		realpathThemeCollectionDir = pj.get('path')+'/'+pj.get('home_dir')+'/themes/';
+
+		var html = px.utils.bindEjs(
+			px.fs.readFileSync('app/common/templates/broccoli-html-editor-php-is-not-available.html').toString(),
 			{'errors': errors}
 		);
 		$('.contents').html( html );

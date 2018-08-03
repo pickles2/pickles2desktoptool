@@ -293,6 +293,11 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
+				status.guiEngineName = _this.getGuiEngineName();
+				rlv();
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
 				// console.log(status);
 				callback(status);
 				return;

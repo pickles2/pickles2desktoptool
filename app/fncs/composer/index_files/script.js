@@ -2,17 +2,22 @@
 window.px = window.parent.px;
 
 var pj = px.getCurrentProject();
-var cont_pathComposerJson = pj.get('path')+'composer.json';
+var fsEx = px.fsEx;
+var cont_realpathComposerRoot = pj.get('path');
 var CodeMirrorInstans;
+var it79 = px.it79;
+var utils79 = px.utils79;
 if( px.utils.isDirectory( pj.get_realpath_composer_root() ) ){
-	cont_pathComposerJson = pj.get_realpath_composer_root()+'composer.json';
+	cont_realpathComposerRoot = pj.get_realpath_composer_root();
 }
+var cont_realpathComposerJson = cont_realpathComposerRoot+'composer.json';
+var cont_realpathVendorDir = cont_realpathComposerRoot+'vendor/';
 
 window.cont_init = function(){
 	// bootstrap
 	$('*').tooltip();
 
-	px.fs.readFile(cont_pathComposerJson, function(err, src){
+	px.fs.readFile(cont_realpathComposerJson, function(err, src){
 		if(err){
 			px.message(err);
 		}
@@ -41,6 +46,9 @@ window.cont_init = function(){
 
 }
 
+/**
+ * composer self-update
+ */
 window.cont_selfupdate_conposer = function(btn){
 	$(btn).attr('disabled', 'disabled');
 	$('#cont_maintenance .cont_console').html('');
@@ -71,35 +79,69 @@ window.cont_selfupdate_conposer = function(btn){
 	);
 }
 
+/**
+ * composer update
+ */
 window.cont_update_proj = function(btn){
 	$(btn).attr('disabled', 'disabled');
+	var isForceUpdate = $('#cont_update input[name=composer-force-update]').prop("checked");
+
 	$('#cont_update .cont_console').html('');
-	pj.execComposer(
-		['update', '--no-interaction'],
-		{
-			success: function(data){
-				$('#cont_update .cont_console').text(
-					$('#cont_update .cont_console').text() + data
-				);
-			} ,
-			error: function(data){
-				$('#cont_update .cont_console').text(
-					$('#cont_update .cont_console').text() + data
-				);
-			} ,
-			complete: function(data, error, code){
-				// $('.cont_console').text(
-				// 	$('.cont_console').text() + code
-				// );
-				$(btn).removeAttr('disabled');
-				px.composerUpdateChecker.clearStatus( pj, function(){
-					px.message( 'composer update 完了しました。' );
-				} );
+
+	it79.fnc({}, [
+		function(it1){
+			if( !isForceUpdate ){
+				it1.next();
+				return;
 			}
+			if(!utils79.is_dir(cont_realpathVendorDir)){
+				it1.next();
+				return;
+			}
+			$('#cont_update .cont_console').text(
+				$('#cont_update .cont_console').text() + 'Removing `vendor` directory...'
+			);
+			fsEx.remove(cont_realpathVendorDir, function(){
+				$('#cont_update .cont_console').text(
+					$('#cont_update .cont_console').text() + 'done'+"\n"
+				);
+				it1.next();
+			});
+			return;
+		},
+		function(it1){
+			pj.execComposer(
+				['update', '--no-interaction'],
+				{
+					success: function(data){
+						$('#cont_update .cont_console').text(
+							$('#cont_update .cont_console').text() + data
+						);
+					} ,
+					error: function(data){
+						$('#cont_update .cont_console').text(
+							$('#cont_update .cont_console').text() + data
+						);
+					} ,
+					complete: function(data, error, code){
+						// $('.cont_console').text(
+						// 	$('.cont_console').text() + code
+						// );
+						$(btn).removeAttr('disabled');
+						px.composerUpdateChecker.clearStatus( pj, function(){
+							px.message( 'composer update 完了しました。' );
+						} );
+					}
+				}
+			);
+			return;
 		}
-	);
+	]);
 }
 
+/**
+ * composer install
+ */
 window.cont_install_proj = function(btn){
 	$(btn).attr('disabled', 'disabled');
 	$('#cont_status .cont_console').html('');
@@ -125,6 +167,9 @@ window.cont_install_proj = function(btn){
 	);
 }
 
+/**
+ * composer show
+ */
 window.cont_show_packages = function(btn, opt){
 	$(btn).attr('disabled', 'disabled');
 	$('#cont_status .cont_console').html('');
@@ -158,7 +203,7 @@ window.cont_save_composerJson = function(form){
 	var src = $form.find('textarea').val();
 
 	src = JSON.parse( JSON.stringify( src ) );
-	px.fs.writeFile( cont_pathComposerJson, src, {encoding:'utf8'}, function(err){
+	px.fs.writeFile( cont_realpathComposerJson, src, {encoding:'utf8'}, function(err){
 		if(err){
 			px.message( 'composer.json の保存に失敗しました。' );
 		}else{

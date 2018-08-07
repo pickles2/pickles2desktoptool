@@ -893,6 +893,17 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 			return;
 		}
 
+		// モジュールの一覧を整理
+		var paths_module_template = _pj.getConfig().plugins.px2dt.paths_module_template || {};
+		if( _pj.getConfig().plugins.px2dt.path_module_templates_dir ){
+			var realpath_module_templates_dir = require('path').resolve( _pj.get('path'), _pj.get('entry_script'), '..', _pj.getConfig().plugins.px2dt.path_module_templates_dir)+'/';
+			var modulePackageNames = px.fs.readdirSync(realpath_module_templates_dir);
+			for(var idx in modulePackageNames){
+				if(!px.utils79.is_dir(realpath_module_templates_dir+modulePackageNames[idx]+'/')){ continue; }
+				paths_module_template[modulePackageNames[idx]] = realpath_module_templates_dir+modulePackageNames[idx]+'/';
+			}
+		}
+
 		_pj.px2proj.realpath_files(page_path, '', function(realpath){
 			realpathDataDir = path.resolve(realpath, 'guieditor.ignore')+'/';
 
@@ -914,7 +925,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 					broccoli.init(
 						{
 							'appMode': 'desktop', // 'web' or 'desktop'. default to 'web'
-							'paths_module_template': _pj.getConfig().plugins.px2dt.paths_module_template ,
+							'paths_module_template': paths_module_template ,
 							'documentRoot': documentRoot,
 							'pathHtml': page_path,
 							'pathResourceDir': pathResourceDir,

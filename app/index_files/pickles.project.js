@@ -1030,6 +1030,48 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 
 		var broccoliProcessorOptions = {};
 		if( this.getGuiEngineName() == 'broccoli-html-editor-php' ){
+			broccoliProcessorOptions.saveResourceDb = function(resourceDb, callbackSaveResourceDb){
+				// console.log('=-=-=-=-=-= callbackSaveResourceDb', page_path);
+				_this.px2dthelperGetAll('/', {}, function(px2all){
+					px.it79.ary(
+						resourceDb,
+						function( itAry, resInfo, resKey ){
+							// console.log(resKey, resInfo);
+							var realpathDataDir = px2all.realpath_homedir+'_sys/ram/data/';
+							var gpiOptions = {
+								'api': 'broccoliBridge',
+								'forBroccoli': {
+									'api': 'resourceMgr.updateResource',
+									'options': {
+										'resKey': resKey,
+										'resInfo': resInfo,
+										'lang': 'ja'
+									}
+								},
+								'page_path': page_path
+							};
+
+							var tmpFileName = '__tmp_'+px.utils79.md5( Date.now() )+'.json';
+							px.fs.writeFileSync( realpathDataDir+tmpFileName, JSON.stringify(gpiOptions) );
+							var PxCommand = 'PX=px2dthelper.px2ce.gpi&appMode=desktop&data_filename='+encodeURIComponent(tmpFileName);
+							_px2proj.query(
+								_this.getConcretePath(page_path)+'?'+PxCommand, {
+									"output": "json",
+									"complete": function(data, code){
+										console.log('------result:', data, code);
+										px.fs.unlinkSync( realpathDataDir+tmpFileName );
+										itAry.next();
+										return;
+									}
+								}
+							);
+						},
+						function(){
+							callbackSaveResourceDb(true);
+						}
+					);
+				});
+			}
 			broccoliProcessorOptions.rebuild = function(callbackRebuild){
 				// console.log('=-=-=-=-=-= callbackRebuild', page_path);
 				_this.buildGuiEditContent(page_path, function(){

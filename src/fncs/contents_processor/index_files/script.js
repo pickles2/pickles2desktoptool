@@ -214,6 +214,10 @@ window.contApp = new (function(px){
 					it1.next(data);
 				},
 				function(it1, data){
+					$('*').tooltip();
+					it1.next(data);
+				},
+				function(it1, data){
 					$(window).scrollTop(0);
 					$('form input[name=target_path]').focus();
 					it1.next(data);

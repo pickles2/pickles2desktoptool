@@ -561,7 +561,7 @@ new (function($, window){
 			return px.px2dtLDA.db.commands[cmd];
 		}
 		if( cmd == 'php' ){
-			return require('node-php-bin').get().getPath();
+			return this.nodePhpBin.getPath();
 		}
 		return cmd;
 	}

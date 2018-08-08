@@ -98,6 +98,7 @@ window.contApp = new (function( px ){
 							js: [
 								'../../common/broccoli-html-editor/client/dist/broccoli.js',
 								'../../common/pickles2-contents-editor/dist/pickles2-contents-editor.js',
+								'../../common/pickles2-contents-editor/dist/libs/broccoli-field-table/dist/broccoli-field-table.js',
 								'../../common/pickles2-module-editor/dist/pickles2-module-editor.js'
 							]
 						};

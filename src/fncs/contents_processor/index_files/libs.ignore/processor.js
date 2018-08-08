@@ -99,7 +99,7 @@ module.exports = function(app, px, pj, pathHomeDir, pathLogFileName, $progressMe
 					.text(fileProgressCounter+'/'+pageListFullCount)
 					.css({"width": Number(fileProgressCounter/pageListFullCount*100)+'%'})
 				;
-				$pre.text( $pre.text() + sitemapRow.path );
+				$pre.text( $pre.text() + "\n" + sitemapRow.path );
 
 				log("\n"+'---- page('+fileProgressCounter+'/'+pageListFullCount+'): '+pagePath); // コンテンツの加工処理開始 (を、ログファイルに記録)
 
@@ -140,7 +140,7 @@ module.exports = function(app, px, pj, pathHomeDir, pathLogFileName, $progressMe
 						function(it2, arg2){
 							// HTML拡張子のみ抽出
 							var Extension = pj.get_path_proc_type( arg2.pageInfo.path );
-							$pre.text( $pre.text() + ' -> ' + Extension );
+							$pre.text( $pre.text() + "\n" + ' -> Extension: ' + Extension );
 							log('Extension: '+Extension);
 							switch( Extension ){
 								case 'html':
@@ -157,8 +157,8 @@ module.exports = function(app, px, pj, pathHomeDir, pathLogFileName, $progressMe
 						} ,
 						function(it2, arg2){
 							pj.getPageContentEditorMode( arg2.pageInfo.path, function(procType){
-								log('EditorMode: '+procType);
-								$pre.text( $pre.text() + ' -> ' + procType );
+								log('EditorMode: ' + procType);
+								$pre.text( $pre.text() + "\n" + ' -> ' + 'EditorMode: ' + procType );
 								switch( procType ){
 									case '.not_exists':
 										$pre.text( $pre.text() + ' -> SKIP' );

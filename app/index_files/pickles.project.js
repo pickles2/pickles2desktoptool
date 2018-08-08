@@ -1033,9 +1033,10 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 			broccoliProcessorOptions.rebuild = function(callbackRebuild){
 				// console.log('=-=-=-=-=-= callbackRebuild', page_path);
 				_this.buildGuiEditContent(page_path, function(){
-					callbackRebuild();
+					callbackRebuild(true);
 				});
 			}
+			broccoliProcessorOptions.jsonIndentSize = 4;
 		}
 
 		this.createPickles2ContentsEditorServer( page_path, {}, function(px2ce){

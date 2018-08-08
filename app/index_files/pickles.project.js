@@ -963,15 +963,28 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 		try {
 			var confCustomFields = this.getConfig().plugins.px2dt.guieditor.custom_fields;
 			for(var fieldName in confCustomFields){
-				if( confCustomFields[fieldName].frontend.file && confCustomFields[fieldName].frontend.function ){
-					var pathJs = _path.resolve(entryScript, '..', confCustomFields[fieldName].frontend.file);
-					rtn.push( 'file://'+pathJs );
+				var file = confCustomFields[fieldName].frontend.file;
+				var dir = confCustomFields[fieldName].frontend.dir;
+				var fnc = confCustomFields[fieldName].frontend.function;
+				if( file && fnc ){
+					if( typeof(file) == typeof('') ){
+						file = [file];
+					}
+					for(var idx in file){
+						var filePath = '.';
+						if( typeof(dir) == typeof('') && px.utils79.is_dir(require('path').resolve(entryScript, '..', dir)) ){
+							filePath = dir;
+						}
+						var pathJs = require('path').resolve(entryScript, '..', filePath, file[idx]);
+						rtn.push( 'file://'+pathJs );
+					}
 				}
 			}
 
 		} catch (e) {
+			console.error(e);
 		}
-		// console.log(rtn);
+		// console.log('=-=-=-=-=-=-=-=-=-=', rtn);
 
 		return rtn;
 	}

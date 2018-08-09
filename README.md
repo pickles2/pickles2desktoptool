@@ -79,7 +79,7 @@ Mac で Windows 版をビルドするにあたり、次の環境が必要です�
 
 ### Pickles 2 v2.0.0-beta.20 (リリース日未定)
 
-- gutEngine 設定で `broccoli-html-editor-php` に対応。PHPに移植されたGUI編集エンジンを利用可能になった。
+- guiEngine 設定で `broccoli-html-editor-php` に対応。PHPに移植されたGUI編集エンジンを利用可能になった。
 - スタイルガイドジェネレータが `finalize.php` に対応した。
 - JS版GUI編集で、 if フィールドが、 canvas モード描画時でも常に finalize モードで出力された値を評価するように変更した。
 - 外部のサーバーを設定したプロジェクトで、内蔵サーバーを起動してしまうことがある不具合を修正。

@@ -77,7 +77,7 @@ Mac で Windows 版をビルドするにあたり、次の環境が必要です�
 
 ## 更新履歴 - Change log
 
-### Pickles 2 v2.0.0-beta.20 (リリース日未定)
+### Pickles 2 v2.0.0-beta.20 (2018年8月30日)
 
 - guiEngine 設定で `broccoli-html-editor-php` に対応。PHPに移植されたGUI編集エンジンを利用可能になった。
 - スタイルガイドジェネレータが `finalize.php` に対応した。

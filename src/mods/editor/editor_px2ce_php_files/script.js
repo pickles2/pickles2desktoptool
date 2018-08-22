@@ -139,12 +139,16 @@ window.contApp = new (function( px ){
 							// GPI(General Purpose Interface) Bridge
 							// broccoliは、バックグラウンドで様々なデータ通信を行います。
 							// GPIは、これらのデータ通信を行うための汎用的なAPIです。
+
+							// console.log('=-----=-----=', input);
+							// var testTimestamp = (new Date()).getTime();
 							var tmpFileName = '__tmp_'+utils79.md5( Date.now() )+'.json';
 							px.fs.writeFileSync( realpathDataDir+tmpFileName, JSON.stringify(input) );
 							_pj.execPx2(
 								arg.page_path+'?PX=px2dthelper.px2ce.gpi&appMode=desktop&target_mode='+encodeURIComponent(arg.target_mode)+'&data_filename='+encodeURIComponent( tmpFileName ),
 								{
 									complete: function(rtn){
+										// console.log('--- returned(millisec)', (new Date()).getTime() - testTimestamp);
 										try{
 											rtn = JSON.parse(rtn);
 										}catch(e){

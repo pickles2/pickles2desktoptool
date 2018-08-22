@@ -22508,15 +22508,8 @@ module.exports = function(px2ce){
 
 		new Promise(function(rlv){rlv();})
 			.then(function(){ return new Promise(function(rlv, rjt){
-				px2ce.gpiBridge(
-					{
-						'api': 'getProjectConf'
-					},
-					function(_px2conf){
-						px2conf = _px2conf;
-						rlv();
-					}
-				);
+				px2conf = px2ce.getBootupInfomations().projectConf;
+				rlv();
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
 				pagesByLayout = [];
@@ -22524,16 +22517,8 @@ module.exports = function(px2ce){
 					rlv();
 					return;
 				}
-				px2ce.gpiBridge(
-					{
-						'api': 'getPagesByLayout',
-						'layout_id': px2ce.layout_id
-					},
-					function(pages){
-						pagesByLayout = pages;
-						rlv();
-					}
-				);
+				pagesByLayout = px2ce.getBootupInfomations().pagesByLayout;
+				rlv();
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
 				toolbar.init({
@@ -22627,9 +22612,9 @@ module.exports = function(px2ce){
 			.then(function(){ return new Promise(function(rlv, rjt){
 				// 初期化が完了すると呼びだされるコールバック関数です。
 				setKeyboardEvent(function(){
-					_this.redraw(function(){
-						// broccoli.redraw();
-					});
+					// _this.redraw(function(){
+					// 	// broccoli.redraw();
+					// });
 
 					rlv();
 				});
@@ -23353,6 +23338,7 @@ module.exports = function(px2ce){
 
 		var serverConfig;
 		var editor;
+		var bootupInfomations;
 
 		var LangBank = require('langbank');
 		this.lb = {};
@@ -23409,84 +23395,78 @@ module.exports = function(px2ce){
 					function(it1, data){
 						_this.gpiBridge(
 							{
-								'api':'getConfig'
+								'page_path':_this.page_path,
+								'api':'getBootupInfomations'
 							} ,
-							function(config){
-								// console.log(config);
-								serverConfig = config;
-								_this.target_mode = config.target_mode;
-								_this.theme_id = config.theme_id;
-								_this.layout_id = config.layout_id;
+							function(_bootupInfomations){
+								bootupInfomations = _bootupInfomations;
+								console.log('=----=----=', bootupInfomations);
+								serverConfig = bootupInfomations.conf;
+
 								it1.next(data);
 							}
 						);
+					},
+					function(it1, data){
+						// config
+						serverConfig = bootupInfomations.conf;
+						_this.target_mode = serverConfig.target_mode;
+						_this.theme_id = serverConfig.theme_id;
+						_this.layout_id = serverConfig.layout_id;
+						it1.next(data);
 					} ,
 					function(it1, data){
-						_this.gpiBridge(
-							{
-								'api':'getLanguageCsv'
-							} ,
-							function(csv){
-								// console.log(csv);
-								_this.lb = new LangBank(csv, function(){
-									console.log('pickles2-contents-editor: set language "'+_this.options.lang+'"');
-									_this.lb.setLang( _this.options.lang );
-									// console.log( _this.lb.get('ui_label.close') );
+						var csv = bootupInfomations.languageCsv;
+						_this.lb = new LangBank(csv, function(){
+							console.log('pickles2-contents-editor: set language "'+_this.options.lang+'"');
+							_this.lb.setLang( _this.options.lang );
+							// console.log( _this.lb.get('ui_label.close') );
+							it1.next(data);
+						});
+					} ,
+					function(it1, data){
+						var editorMode = bootupInfomations.editorMode;
+						console.log(editorMode);
+						var editorOption = {
+							'editorMode': editorMode,
+							'serverConfig': serverConfig
+						};
+						switch(editorMode){
+							case '.page_not_exists':
+								// ページ自体が存在しない。
+								$canvas.html('<p>ページが存在しません。</p>');
+								it1.next(data);
+								break;
+
+							case '.not_exists':
+								// コンテンツが存在しない
+								$canvas.html('<p>コンテンツが存在しません。</p>');
+								editor = new (require('./editor/not_exists/not_exists.js'))(_this);
+								editor.init(editorOption, function(){
 									it1.next(data);
 								});
-							}
-						);
-					} ,
-					function(it1, data){
-						_this.gpiBridge(
-							{
-								'page_path':_this.page_path,
-								'api':'checkEditorMode'
-							},
-							function(editorMode){
-								// console.log(editorMode);
-								var editorOption = {
-									'editorMode': editorMode,
-									'serverConfig': serverConfig
-								};
-								switch(editorMode){
-									case '.page_not_exists':
-										// ページ自体が存在しない。
-										$canvas.html('<p>ページが存在しません。</p>');
-										it1.next(data);
-										break;
+								break;
 
-									case '.not_exists':
-										// コンテンツが存在しない
-										$canvas.html('<p>コンテンツが存在しません。</p>');
-										editor = new (require('./editor/not_exists/not_exists.js'))(_this);
-										editor.init(editorOption, function(){
-											it1.next(data);
-										});
-										break;
+							case 'html.gui':
+								// broccoli
+								$canvas.html('<p>GUIエディタを起動します。</p>');
+								editor = new (require('./editor/broccoli/broccoli.js'))(_this);
+								editor.init(editorOption, function(){
+									it1.next(data);
+								});
+								break;
 
-									case 'html.gui':
-										// broccoli
-										$canvas.html('<p>GUIエディタを起動します。</p>');
-										editor = new (require('./editor/broccoli/broccoli.js'))(_this);
-										editor.init(editorOption, function(){
-											it1.next(data);
-										});
-										break;
-
-									case 'html':
-									case 'md':
-									default:
-										// defaultテキストエディタ
-										$canvas.html('<p>テキストエディタを起動します。</p>');
-										editor = new (require('./editor/default/default.js'))(_this);
-										editor.init(editorOption, function(){
-											it1.next(data);
-										});
-										break;
-								}
-							}
-						);
+							case 'html':
+							case 'md':
+							default:
+								// defaultテキストエディタ
+								$canvas.html('<p>テキストエディタを起動します。</p>');
+								editor = new (require('./editor/default/default.js'))(_this);
+								editor.init(editorOption, function(){
+									it1.next(data);
+								});
+								break;
+						}
 					} ,
 					function(it1, data){
 						callback();
@@ -23579,45 +23559,33 @@ module.exports = function(px2ce){
 
 			new Promise(function(rlv){rlv();})
 				.then(function(){ return new Promise(function(rlv, rjt){
-					px2ce.gpiBridge(
-						{
-							'api': 'getProjectConf'
-						},
-						function(_px2conf){
-							px2conf = _px2conf;
-							rlv();
-						}
-					);
+					px2conf = bootupInfomations.projectConf;
+					rlv();
 				}); })
 				.then(function(){ return new Promise(function(rlv, rjt){
 					// プロジェクトが拡張するフィールド
 					// クライアントサイドのライブラリをロードしておく
-					px2ce.gpiBridge(
-						{
-							'api': 'loadCustomFieldsClientSideLibs'
+					var scripts = bootupInfomations.customFieldsClientSideLibs;
+					it79.ary(scripts,
+						function(itAry, scriptUrl, idx){
+							var scr = document.createElement('script');
+							scr.src = scriptUrl;
+							scr.onload = function(e){
+								// console.log('custom script loaded.', this, e);
+								itAry.next();
+							};
+							// console.log(scr);
+							scr.onerror = function(e){
+								console.error('custom script NOT loaded.', this, e);
+								itAry.next();
+							};
+							document.body.appendChild(scr);
 						},
-						function(scripts){
-							it79.ary(scripts,
-								function(itAry, scriptUrl, idx){
-									var scr = document.createElement('script');
-									scr.src = scriptUrl;
-									scr.onload = function(e){
-										// console.log('custom script loaded.', this, e);
-										itAry.next();
-									};
-									// console.log(scr);
-									scr.onerror = function(e){
-										console.error('custom script NOT loaded.', this, e);
-										itAry.next();
-									};
-									document.body.appendChild(scr);
-								},
-								function(){
-									rlv();
-								}
-							);
+						function(){
+							rlv();
 						}
 					);
+
 				}); })
 				.then(function(){ return new Promise(function(rlv, rjt){
 					// フィールドを拡張
@@ -23762,6 +23730,13 @@ module.exports = function(px2ce){
 		*/
 		this.gpiBridge = function(data, callback){
 			return this.options.gpiBridge(data, callback);
+		}
+
+		/**
+		 * 初期起動時にロードした情報を取得する
+		 */
+		this.getBootupInfomations = function(){
+			return bootupInfomations;
 		}
 
 		/**

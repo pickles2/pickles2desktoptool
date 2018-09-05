@@ -667,6 +667,46 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 				it.next(prop);
 			} ,
 			function(it, prop){
+				if( prop.pathType == 'alias' || contProcType == '.not_exists' ){
+					it.next(prop);
+					return;
+				}
+
+				$dropdownMenu
+					.append( $('<li>')
+						.append( $('<a>')
+							.text( 'このページを単体でパブリッシュ' )
+							.attr({
+								'data-path': prop.pageInfo.path ,
+								'data-proc_type': contProcType ,
+								'href':'javascript:;'
+							})
+							.on('click', function(){
+								$bs3btn.find('.dropdown-toggle').click();
+								var $this = $(this);
+								var page_path = $this.attr('data-path');
+								var PxCommand = 'PX=px2dthelper.publish_single_page';
+								px.progress.start({"showProgressBar":true, 'blindness':true});
+								pj.px2proj.query(
+									pj.getConcretePath(page_path)+'?'+PxCommand, {
+										"output": "json",
+										"complete": function(data, code){
+											console.log('------result:', data, code);
+											alert('完了しました。');
+											px.progress.close();
+											return;
+										}
+									}
+								);
+
+								return false;
+							})
+						)
+					)
+				;
+				it.next(prop);
+			} ,
+			function(it, prop){
 				if( prop.pathType == 'alias' ){
 					it.next(prop);
 					return;

@@ -510,7 +510,7 @@ window.contApp = new (function( px ){
 		var $workspaceContainer = $('.cont_workspace_container');
 		$workspaceContainer
 			.css({
-				'height': $(window).innerHeight() - $('.container').outerHeight() - $elms.commentView.outerHeight() - $elms.workspaceSearch.outerHeight() - heightBreadcrumb - 20,
+				'height': $(window).innerHeight() - $('.container').outerHeight() - ( $elms.commentView.is(':visible') ? $elms.commentView.outerHeight() + 10 : 0 ) - $elms.workspaceSearch.outerHeight() - heightBreadcrumb - 20,
 				'margin-top': 10
 			})
 		;
@@ -521,7 +521,7 @@ window.contApp = new (function( px ){
 		;
 		$elms.preview
 			.css({
-				'height': $('.cont_workspace_container').parent().outerHeight() - $elms.pageinfo.outerHeight() - heightBreadcrumb
+				'height': $workspaceContainer.parent().outerHeight() - $elms.pageinfo.outerHeight() - heightBreadcrumb
 			})
 		;
 

@@ -123,10 +123,12 @@ module.exports = function(app, px, pj){
 		callback = callback || function(){};
 		if(!px.utils.isFile( realpath_comment_file )){
 			$commentView.text('no comment.');
+			$commentView.hide();
 
 			callback(true);
 			return;
 		}
+		$commentView.show();
 		$commentView.text('コメントをロードしています...');
 		px.fs.readFile(realpath_comment_file, {'encoding':'utf8'}, function(err, data){
 			var html = px.utils.markdown( data );

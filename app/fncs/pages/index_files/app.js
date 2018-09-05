@@ -3950,7 +3950,7 @@ window.contApp = new (function( px ){
 		var $workspaceContainer = $('.cont_workspace_container');
 		$workspaceContainer
 			.css({
-				'height': $(window).innerHeight() - $('.container').outerHeight() - $elms.commentView.outerHeight() - $elms.workspaceSearch.outerHeight() - heightBreadcrumb - 20,
+				'height': $(window).innerHeight() - $('.container').outerHeight() - ( $elms.commentView.is(':visible') ? $elms.commentView.outerHeight() + 10 : 0 ) - $elms.workspaceSearch.outerHeight() - heightBreadcrumb - 20,
 				'margin-top': 10
 			})
 		;
@@ -3961,7 +3961,7 @@ window.contApp = new (function( px ){
 		;
 		$elms.preview
 			.css({
-				'height': $('.cont_workspace_container').parent().outerHeight() - $elms.pageinfo.outerHeight() - heightBreadcrumb
+				'height': $workspaceContainer.parent().outerHeight() - $elms.pageinfo.outerHeight() - heightBreadcrumb
 			})
 		;
 
@@ -4104,10 +4104,12 @@ module.exports = function(app, px, pj){
 		callback = callback || function(){};
 		if(!px.utils.isFile( realpath_comment_file )){
 			$commentView.text('no comment.');
+			$commentView.hide();
 
 			callback(true);
 			return;
 		}
+		$commentView.show();
 		$commentView.text('コメントをロードしています...');
 		px.fs.readFile(realpath_comment_file, {'encoding':'utf8'}, function(err, data){
 			var html = px.utils.markdown( data );

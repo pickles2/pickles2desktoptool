@@ -22,7 +22,7 @@ module.exports = function(px, window){
 					process.chdir( tmpCd );
 				}
 
-				window.px.utils.spawn(px.cmd('git'),
+				var proc = window.px.utils.spawn(px.cmd('git'),
 					gitCmd,
 					{
 						cd: cmd.cd,
@@ -37,6 +37,7 @@ module.exports = function(px, window){
 						}
 					}
 				);
+				_this.server.setPid( cmd.queueItemInfo.id, proc.pid );
 				process.chdir( px.cwd );
 				callback(false);
 				return;
@@ -52,7 +53,7 @@ module.exports = function(px, window){
 					process.chdir( tmpCd );
 				}
 
-				px.nodePhpBin.script(
+				var proc = px.nodePhpBin.script(
 					phpCmd ,
 					{
 						'cwd': cmd.cd
@@ -69,6 +70,7 @@ module.exports = function(px, window){
 						}
 					}
 				);
+				_this.server.setPid( cmd.queueItemInfo.id, proc.pid );
 				process.chdir( px.cwd );
 				callback(false);
 				return;
@@ -84,7 +86,7 @@ module.exports = function(px, window){
 					process.chdir( tmpCd );
 				}
 
-				px.nodePhpBin.script(
+				var proc = px.nodePhpBin.script(
 					phpCmd ,
 					{
 						'cwd': cmd.cd
@@ -101,6 +103,7 @@ module.exports = function(px, window){
 						}
 					}
 				);
+				_this.server.setPid( cmd.queueItemInfo.id, proc.pid );
 				process.chdir( px.cwd );
 				callback(false);
 				return;

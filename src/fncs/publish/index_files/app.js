@@ -57,6 +57,18 @@ window.contApp = new (function(px, $){
 				} );
 			} ,
 			function(it, arg){
+				px.commandQueue.client.createTerminal(null, {
+					"tags": [
+						'pj-'+_pj.get('id'),
+						'pickles2-publish'
+					],
+					"write": function(message){
+						console.log('terminal message', message);
+					}
+				});
+				it.next(arg);
+			} ,
+			function(it, arg){
 				_status = arg;
 				if( _status.applockExists ){
 					// パブリッシュ中だったら

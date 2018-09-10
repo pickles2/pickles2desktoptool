@@ -58,6 +58,18 @@ window.contApp = new (function(px, $){
 				} );
 			} ,
 			function(it, arg){
+				px.commandQueue.client.createTerminal(null, {
+					"tags": [
+						'pj-'+_pj.get('id'),
+						'pickles2-publish'
+					],
+					"write": function(message){
+						console.log('terminal message', message);
+					}
+				});
+				it.next(arg);
+			} ,
+			function(it, arg){
 				_status = arg;
 				if( _status.applockExists ){
 					// パブリッシュ中だったら
@@ -328,7 +340,7 @@ module.exports = function(contApp, px, $){
 	 * レポート表示の初期化
 	 */
 	this.init = function( $canvas, opts ){
-		px.progress.start();
+		// px.progress.start();
 
 		$results = $( $('#template-before_publish-progress').html() );
 		$timer = $results.find('.cont_progress-timer');
@@ -425,7 +437,7 @@ module.exports = function(contApp, px, $){
 				'close': function(message){
 					clearTimeout(_timer);
 					setTimeout(function(){
-						px.progress.close();
+						// px.progress.close();
 						opts.complete(true);
 					}, 3000);
 					return;

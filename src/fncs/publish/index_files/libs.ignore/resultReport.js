@@ -9,10 +9,19 @@ module.exports = function(contApp, px, $){
 	/**
 	 * レポート表示の初期化
 	 */
-	this.init = function( $canvas ){
+	this.init = function(){
+		$mainView = $('#cont_after_publish');
+		if( !$mainView.is(':visible') ){
+			$('.cont_main_view').hide();
+			$mainView.show();
+		}
 
-		$results = $( $('#template-after_publish-canvas').html() );
-		$canvas.append( $results );
+		$canvas = $('.cont_canvas');
+		$results = $canvas;
+		$canvas
+			.height( $(window).height() - $('.container').eq(0).height() - $('.cont_buttons').height() - 20 )
+		;
+
 
 		$rows = $results.find('.cont_results-rows');
 		$summaries = $results.find('.cont_results-summaries');
@@ -20,7 +29,7 @@ module.exports = function(contApp, px, $){
 		$totalFileCount = $results.find('.cont_results-total_file_count strong');
 		$errorMessage = $results.find('.cont_results-errorMessage');
 
-		px.utils.iterateFnc([
+		px.it79.fnc({}, [
 			function( it, arg ){
 				// d3.csv( contApp.getRealpathPublishDir()+"publish_log.csv", function(error, csv){
 				// 	arg.publishLogCsv = csv;
@@ -44,6 +53,7 @@ module.exports = function(contApp, px, $){
 				;
 			} ,
 			function( it, arg ){
+
 				var status = contApp.getStatus();
 				arg.alertLogCsv = [];
 				if( !status.alertLogExists ){
@@ -193,7 +203,7 @@ module.exports = function(contApp, px, $){
 				);
 
 			}
-		]).start({});
+		]);
 
 	} // this.init();
 

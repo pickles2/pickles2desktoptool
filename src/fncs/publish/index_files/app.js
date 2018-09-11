@@ -9,8 +9,8 @@ window.contApp = new (function(px, $){
 	var _status;
 	var _patterns;
 
-	this.resultReport = new(require('../../../fncs/publish/index_files/libs.ignore/resultReport.js'))(this, px, $);
 	this.progressReport = new(require('../../../fncs/publish/index_files/libs.ignore/progressReport.js'))(this, px, $);
+	this.resultReport = new(require('../../../fncs/publish/index_files/libs.ignore/resultReport.js'))(this, px, $);
 
 	/**
 	 * initialize
@@ -31,32 +31,33 @@ window.contApp = new (function(px, $){
 		} catch (e) {
 		}
 
-		px.utils.iterateFnc([
-			function(it, arg){
-				px.fs.exists( _realpathPublishDir+'applock.txt', function(result){
-					arg.applockExists = result;
-					it.next(arg);
-				} );
+		px.it79.fnc({}, [
+			function(it){
+				$cont.append( $('#template-main_view').html() ).find('.cont_main_view').hide();
+				_this.progressReport.init($cont);
+				it.next();
 			} ,
-			function(it, arg){
-				px.fs.exists( _realpathPublishDir+'publish_log.csv', function(result){
-					arg.publishLogExists = result;
-					it.next(arg);
-				} );
+			function(it){
+				checkPublishStatus(function(status){
+					_status = status;
+					it.next();
+				});
 			} ,
-			function(it, arg){
-				px.fs.exists( _realpathPublishDir+'alert_log.csv', function(result){
-					arg.alertLogExists = result;
-					it.next(arg);
-				} );
+			function(it){
+				if( _status.applockExists ){
+					// パブリッシュ中だったら
+					$cont.find('#cont_on_publish').show();
+				}else if( _status.publishLogExists && _status.htdocsExists ){
+					// パブリッシュが完了していたら
+					$cont.find('#cont_after_publish').show();
+					_this.resultReport.init();
+				}else{
+					// パブリッシュ前だったら
+					$cont.find('#cont_before_publish').show();
+				}
+				it.next();
 			} ,
-			function(it, arg){
-				px.fs.exists( _realpathPublishDir+'htdocs/', function(result){
-					arg.htdocsExists = result;
-					it.next(arg);
-				} );
-			} ,
-			function(it, arg){
+			function(it){
 				px.commandQueue.client.createTerminal(null, {
 					"tags": [
 						'pj-'+_pj.get('id'),
@@ -64,36 +65,85 @@ window.contApp = new (function(px, $){
 					],
 					"write": function(message){
 						console.log('terminal message', message);
+						if(message.command == 'open'){
+
+						}else if(message.command == 'stdout'){
+							_this.progressReport.updateView(message.data.join(''));
+						}else if(message.command == 'close'){
+							// _this.progressReport.updateView(message.data.join(''));
+							_this.resultReport.init();
+						}
 					}
 				});
-				it.next(arg);
+				it.next();
 			} ,
-			function(it, arg){
-				_status = arg;
-				if( _status.applockExists ){
-					// パブリッシュ中だったら
-					$cont.append( $('#template-on_publish').html() );
-				}else if( _status.publishLogExists && _status.htdocsExists ){
-					// パブリッシュが完了していたら
-					$cont.append( $('#template-after_publish').html() );
-					$cont.find('.cont_canvas')
-						.height( $(window).height() - $('.container').eq(0).height() - $cont.find('.cont_buttons').height() - 20 )
-					;
-					_this.resultReport.init( $cont.find('.cont_canvas') );
-				}else{
-					// パブリッシュ前だったら
-					$cont.append( $('#template-before_publish').html() );
-				}
-				// console.log(arg);
-				it.next(arg);
-			} ,
-			function(it, arg){
+			function(it){
 				setTimeout(function(){
 					px.progress.close();
-					it.next(arg);
+					it.next();
 				}, 10);
 			}
-		]).start({});
+		]);
+	}
+
+	/**
+	 * パブリッシュの状態を調べる
+	 */
+	function checkPublishStatus(callback){
+		callback = callback || function(){};
+		var status = {};
+		px.it79.fnc({}, [
+			function(it){
+				px.fs.exists( _realpathPublishDir+'applock.txt', function(result){
+					status.applockExists = result;
+					it.next();
+				} );
+			} ,
+			function(it){
+				status.pid = null;
+				status.lastUpdateDateTime = null;
+				if(!status.applockExists){
+					it.next();
+					return;
+				}
+				px.fs.readFile( _realpathPublishDir+'applock.txt', function(err, data){
+					if(err){
+						it.next();
+						return;
+					}
+					var src = data.toString();
+					if(src.match(/ProcessID\=([0-9]*)/)){
+						status.pid = Number(RegExp.$1);
+					}
+					if(src.match(/([0-9]*\-[0-9]{2}\-[0-9]{2} [0-9]{2}\:[0-9]{2}\:[0-9]{2})/)){
+						status.lastUpdateDateTime = RegExp.$1;
+					}
+					it.next();
+				} );
+			} ,
+			function(it){
+				px.fs.exists( _realpathPublishDir+'publish_log.csv', function(result){
+					status.publishLogExists = result;
+					it.next();
+				} );
+			} ,
+			function(it){
+				px.fs.exists( _realpathPublishDir+'alert_log.csv', function(result){
+					status.alertLogExists = result;
+					it.next();
+				} );
+			} ,
+			function(it){
+				px.fs.exists( _realpathPublishDir+'htdocs/', function(result){
+					status.htdocsExists = result;
+					it.next();
+				} );
+			} ,
+			function(it){
+				callback(status);
+			}
+		]);
+		return;
 	}
 
 	/**
@@ -217,6 +267,7 @@ window.contApp = new (function(px, $){
 
 						var keep_cache = ( $body.find('input[name=keep_cache]:checked').val() ? 1 : 0 );
 
+						// パブリッシュ条件入力ダイアログを閉じる
 						px.closeDialog();
 
 						_pj.appdata.get().publishOption = _pj.appdata.get().publishOption || {};
@@ -228,16 +279,44 @@ window.contApp = new (function(px, $){
 						};
 						_pj.appdata.save(function(){});
 
-						_this.progressReport.init(
-							$cont,
+						var px2cmd_options = '';
+						px2cmd_options += 'path_region='+encodeURIComponent(path_region);
+						for(var idx in ary_paths_region){
+							px2cmd_options += '&paths_region[]='+encodeURIComponent(ary_paths_region[idx]);
+						}
+						for(var idx in ary_paths_ignore){
+							px2cmd_options += '&paths_ignore[]='+encodeURIComponent(ary_paths_ignore[idx]);
+						}
+						if(keep_cache){
+							px2cmd_options += '&keep_cache=1';
+						}
+
+						px.commandQueue.client.addQueueItem(
+							[
+								'php',
+								px.path.resolve(_pj.get('path'), _pj.get('entry_script')),
+								'/?PX=publish.run&'+px2cmd_options
+							],
 							{
-								"path_region": path_region,
-								"paths_region": ary_paths_region,
-								"paths_ignore": ary_paths_ignore,
-								"keep_cache": keep_cache,
-								"complete": function(){
+								'cdName': 'default',
+								'tags': [
+									'pj-'+_pj.get('id'),
+									'pickles2-publish'
+								],
+								'accept': function(queueId){
+									// console.log(queueId);
+								},
+								'open': function(message){
+								},
+								'stdout': function(message){
+									// _this.updateView(message.data.join(''));
+								},
+								'stderr': function(message){
+									// _this.updateView(message.data.join(''));
+								},
+								'close': function(message){
 									px.message( 'パブリッシュを完了しました。' );
-									init();
+									return;
 								}
 							}
 						);
@@ -245,7 +324,7 @@ window.contApp = new (function(px, $){
 				$('<button>')
 					.text(px.lb.get('ui_label.cancel'))
 					.addClass('px2-btn')
-					.click(function(){
+					.on('click', function(){
 						px.closeDialog();
 					})
 			]

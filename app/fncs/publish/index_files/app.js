@@ -7,7 +7,6 @@ window.contApp = new (function(px, $){
 	var _this = this;
 	var _pj, _realpathPublishDir;
 	var $cont;
-	var _status;
 	var _patterns;
 
 	this.progressReport = new(require('../../../fncs/publish/index_files/libs.ignore/progressReport.js'))(this, px, $);
@@ -39,24 +38,20 @@ window.contApp = new (function(px, $){
 				it.next();
 			} ,
 			function(it){
-				checkPublishStatus(function(status){
-					_status = status;
+				_this.checkPublishStatus(function(status){
+					if( status.applockExists ){
+						// パブリッシュ中だったら
+						$cont.find('#cont_on_publish').show();
+					}else if( status.publishLogExists && status.htdocsExists ){
+						// パブリッシュが完了していたら
+						$cont.find('#cont_after_publish').show();
+						_this.resultReport.init();
+					}else{
+						// パブリッシュ前だったら
+						$cont.find('#cont_before_publish').show();
+					}
 					it.next();
 				});
-			} ,
-			function(it){
-				if( _status.applockExists ){
-					// パブリッシュ中だったら
-					$cont.find('#cont_on_publish').show();
-				}else if( _status.publishLogExists && _status.htdocsExists ){
-					// パブリッシュが完了していたら
-					$cont.find('#cont_after_publish').show();
-					_this.resultReport.init();
-				}else{
-					// パブリッシュ前だったら
-					$cont.find('#cont_before_publish').show();
-				}
-				it.next();
 			} ,
 			function(it){
 				px.commandQueue.client.createTerminal(null, {
@@ -65,14 +60,27 @@ window.contApp = new (function(px, $){
 						'pickles2-publish'
 					],
 					"write": function(message){
-						console.log('terminal message', message);
+						// console.log('terminal message', message);
 						if(message.command == 'open'){
-
+							$('.cont_main_view').hide();
+							$('#cont_before_publish-progress').show();
 						}else if(message.command == 'stdout'){
 							_this.progressReport.updateView(message.data.join(''));
 						}else if(message.command == 'close'){
-							// _this.progressReport.updateView(message.data.join(''));
-							_this.resultReport.init();
+							_this.checkPublishStatus(function(status){
+								$('.cont_main_view').hide();
+								if( status.applockExists ){
+									// パブリッシュ中だったら
+									$cont.find('#cont_on_publish').show();
+								}else if( status.publishLogExists && status.htdocsExists ){
+									// パブリッシュが完了していたら
+									$cont.find('#cont_after_publish').show();
+									_this.resultReport.init();
+								}else{
+									// パブリッシュ前だったら
+									$cont.find('#cont_before_publish').show();
+								}
+							});
 						}
 					}
 				});
@@ -90,7 +98,7 @@ window.contApp = new (function(px, $){
 	/**
 	 * パブリッシュの状態を調べる
 	 */
-	function checkPublishStatus(callback){
+	this.checkPublishStatus = function(callback){
 		callback = callback || function(){};
 		var status = {};
 		px.it79.fnc({}, [
@@ -379,13 +387,6 @@ window.contApp = new (function(px, $){
 	}
 
 	/**
-	 * ステータスを取得
-	 */
-	this.getStatus = function(){
-		return _status;
-	}
-
-	/**
 	 * パブリッシュディレクトリのパスを取得
 	 */
 	this.getRealpathPublishDir = function(){
@@ -495,6 +496,7 @@ module.exports = function(contApp, px, $){
 	var _this = this;
 
 	var $results, $rows, $summaries, $spentTime, $totalFileCount, $errorMessage;
+	var publishStatus;
 
 	/**
 	 * レポート表示の初期化
@@ -543,10 +545,15 @@ module.exports = function(contApp, px, $){
 				;
 			} ,
 			function( it, arg ){
+				contApp.checkPublishStatus(function(res){
+					publishStatus = res;
+					it.next(arg);
+				});
+			} ,
+			function( it, arg ){
 
-				var status = contApp.getStatus();
 				arg.alertLogCsv = [];
-				if( !status.alertLogExists ){
+				if( !publishStatus.alertLogExists ){
 					it.next(arg);
 					return;
 				}
@@ -566,7 +573,6 @@ module.exports = function(contApp, px, $){
 				;
 			} ,
 			function( it, arg ){
-				var status = contApp.getStatus();
 				var count = arg.publishLogCsv.length;
 				var startDateTime = arg.publishLogCsv[0].datetime;
 				var endDateTime = arg.publishLogCsv[arg.publishLogCsv.length-1].datetime;
@@ -579,7 +585,7 @@ module.exports = function(contApp, px, $){
 						// 全量完了
 						$totalFileCount.text( count );
 
-						if( status.alertLogExists ){
+						if( publishStatus.alertLogExists ){
 							$results.addClass('cont_results-error');
 							$errorMessage
 								.text( arg.alertLogCsv.length + '件のエラーが検出されています。' )

@@ -5,6 +5,7 @@ module.exports = function(contApp, px, $){
 	var _this = this;
 
 	var $results, $rows, $summaries, $spentTime, $totalFileCount, $errorMessage;
+	var publishStatus;
 
 	/**
 	 * レポート表示の初期化
@@ -53,10 +54,15 @@ module.exports = function(contApp, px, $){
 				;
 			} ,
 			function( it, arg ){
+				contApp.checkPublishStatus(function(res){
+					publishStatus = res;
+					it.next(arg);
+				});
+			} ,
+			function( it, arg ){
 
-				var status = contApp.getStatus();
 				arg.alertLogCsv = [];
-				if( !status.alertLogExists ){
+				if( !publishStatus.alertLogExists ){
 					it.next(arg);
 					return;
 				}
@@ -76,7 +82,6 @@ module.exports = function(contApp, px, $){
 				;
 			} ,
 			function( it, arg ){
-				var status = contApp.getStatus();
 				var count = arg.publishLogCsv.length;
 				var startDateTime = arg.publishLogCsv[0].datetime;
 				var endDateTime = arg.publishLogCsv[arg.publishLogCsv.length-1].datetime;
@@ -89,7 +94,7 @@ module.exports = function(contApp, px, $){
 						// 全量完了
 						$totalFileCount.text( count );
 
-						if( status.alertLogExists ){
+						if( publishStatus.alertLogExists ){
 							$results.addClass('cont_results-error');
 							$errorMessage
 								.text( arg.alertLogCsv.length + '件のエラーが検出されています。' )

@@ -4,23 +4,24 @@
 module.exports = function(contApp, px, $){
 	var _this = this;
 
-	var $results, $rows, $summaries, $spentTime, $totalFileCount, $errorMessage;
+	var $scene, $results, $rows, $summaries, $spentTime, $totalFileCount, $errorMessage;
 	var publishStatus;
 
 	/**
 	 * レポート表示の初期化
 	 */
 	this.init = function(){
-		$mainView = $('#cont_after_publish');
-		if( !$mainView.is(':visible') ){
-			$('.cont_main_view').hide();
-			$mainView.show();
+		$scene = $('#cont_after_publish');
+		if( !$scene.is(':visible') ){
+			$('.cont_scene').hide();
+			$scene.show();
 		}
+		$scene.find('.cont_results-error').removeClass('cont_results-error');
 
-		$canvas = $('.cont_canvas');
-		$results = $canvas;
+		$canvas = $scene.find('.cont_canvas');
+		$results = $canvas.find('.cont_results');
 		$canvas
-			.height( $(window).height() - $('.container').eq(0).height() - $('.cont_buttons').height() - 20 )
+			.height( $(window).height() - $('.container').eq(0).height() - $scene.find('.cont_buttons').height() - 20 )
 		;
 
 
@@ -32,11 +33,6 @@ module.exports = function(contApp, px, $){
 
 		px.it79.fnc({}, [
 			function( it, arg ){
-				// d3.csv( contApp.getRealpathPublishDir()+"publish_log.csv", function(error, csv){
-				// 	arg.publishLogCsv = csv;
-				// 	it.next(arg);
-				// });
-
 				d3.csv( 'file://'+contApp.getRealpathPublishDir()+"publish_log.csv" )
 					.row(function(d) {
 						var rtn = {};
@@ -55,6 +51,7 @@ module.exports = function(contApp, px, $){
 			} ,
 			function( it, arg ){
 				contApp.checkPublishStatus(function(res){
+					// console.log(res);
 					publishStatus = res;
 					it.next(arg);
 				});
@@ -66,6 +63,7 @@ module.exports = function(contApp, px, $){
 					it.next(arg);
 					return;
 				}
+
 				d3.csv( 'file://'+contApp.getRealpathPublishDir()+"alert_log.csv" )
 					.row(function(d) {
 						var rtn = {};
@@ -134,32 +132,6 @@ module.exports = function(contApp, px, $){
 
 						// 行データ
 						rows.push( row2 );
-						(function(){
-							return;// ← 開発中コメントアウト
-							var li = d3.select( $rows.find('table').get(0) ).selectAll('tr');
-							var update = li
-								.data(rows)
-								// .html(function(d, i){
-								// 	return '<td>'+(i+1) + '</td><td>' + d['* path']+'</td>';
-								// })
-							;
-							update.enter()
-								.append('tr')
-								.html(function(d, i){
-									var html = '';
-									html += '<th>'+(i+1) + '</th>';
-									html += '<td>'+d.path+'</td>';
-									html += '<td>'+d.procType+'</td>';
-									html += '<td>'+d.statusCode+'</td>';
-									return html;
-								})
-							;
-							update.exit()
-								.remove()//消す
-							;
-						})();
-
-
 
 						// 統計
 						if( !summaries.procTypes[row2.procType] ){ summaries.procTypes[row2.procType] = 0; };

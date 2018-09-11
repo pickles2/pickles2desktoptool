@@ -35,69 +35,73 @@
 		<script src="./index_files/app.progressReport.js"></script>
 
 		<!-- ========== templates ========== -->
-		<script id="template-main_view" type="text/template">
-			<div class="cont_main_view" id="cont_before_publish">
+		<script id="template-scenes" type="text/template">
+			<div class="cont_scene" id="cont_before_publish">
 				<div class="unit center">
 					<p>パブリッシュは実行されていません。</p>
 					<p>次のボタンを押して、パブリッシュを実行します。</p>
 					<p><button class="px2-btn px2-btn--primary" onclick="contApp.publish(); return false;">パブリッシュする</button></p>
 				</div>
 			</div>
-			<div class="cont_main_view" id="cont_before_publish-progress">
-				<div class="unit cont_progress">
-					<div class="center">
-						<p>パブリッシュしています。</p>
-						<p>そのまましばらくお待ちください...</p>
-						<div class="cont_progress-phase"></div>
-						<div class="cont_progress-row"></div>
-						<div class="cont_progress-timer"></div>
-						<div class="cont_progress-currentTask"></div>
-						<div class="cont_progress-bar">
-							<div class="progress progress-striped active">
-								<div class="progress-bar"  role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
-									<span class="sr-only">0% Complete</span>
+			<div class="cont_scene" id="cont_after_publish-zero_files">
+				<div class="unit center">
+					<p>パブリッシュを実行しましたが、何も出力されませんでした。</p>
+					<p>パブリッシュ対象範囲に何も含まれていない可能性があります。</p>
+					<p>次のボタンを押し、パブリッシュ範囲の設定を変えてもう一度パブリッシュを実行してみてください。</p>
+					<p><button class="px2-btn px2-btn--primary" onclick="contApp.publish(); return false;">パブリッシュする</button></p>
+				</div>
+			</div>
+			<div class="cont_scene" id="cont_before_publish-progress">
+				<div class="cont_canvas">
+					<div class="unit cont_progress">
+						<div class="center">
+							<p>パブリッシュしています。</p>
+							<p>そのまましばらくお待ちください...</p>
+							<div class="cont_progress-phase"></div>
+							<div class="cont_progress-row"></div>
+							<div class="cont_progress-timer"></div>
+							<div class="cont_progress-currentTask"></div>
+							<div class="cont_progress-bar">
+								<div class="progress progress-striped active">
+									<div class="progress-bar"  role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+										<span class="sr-only">0% Complete</span>
+									</div>
 								</div>
 							</div>
 						</div>
-						<div class="cont_progress-cancel"><button class="px2-btn" onclick="contApp.cancel(); return false;">キャンセル</button></div>
-					</div>
-				</div>
-			</div>
-			<div class="cont_main_view" id="cont_after_publish">
-				<div class="cont_canvas">
-					<div class="cont_results">
-						<div class="cont_results-total_file_count">total: <strong>---</strong> files.</div>
-						<div class="cont_results-errorMessage"></div>
-						<div class="cont_results-spentTime">time: <span>--:--:--</span></div>
-						<!--
-						<div class="cont_results-rows">
-							<table class="def">
-							</table>
-						</div>
-						<div class="cont_results-summaries">
-							<table class="def">
-								<tr class="cont_procTypes"><th>Process Type</th><td></td></tr>
-								<tr class="cont_statusCodes"><th>Status Code</th><td></td></tr>
-							</table>
-						</div>
-						-->
 					</div>
 				</div>
 				<div class="cont_buttons">
 					<div class="btn-group btn-group-justified" role="group">
 						<div class="btn-group" role="group">
-							<p><button class="px2-btn" onclick="contApp.publish(); return false;">もう一度パブリッシュする</button></p>
-						</div>
-						<div class="btn-group" role="group">
-							<p><button class="px2-btn" onclick="contApp.open_publish_tmp_dir(); return false;">一時パブリッシュデータを開く</button></p>
-						</div>
-						<div class="btn-group" role="group">
-							<p><button class="px2-btn px2-btn--primary" onclick="contApp.open_publish_dir(); return false;">パブリッシュ先ディレクトリを開く</button></p>
+							<button class="px2-btn px2-btn--block" onclick="contApp.cancel(); return false;">キャンセル</button>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div class="cont_main_view" id="cont_on_publish">
+			<div class="cont_scene" id="cont_after_publish">
+				<div class="cont_canvas">
+					<div class="cont_results">
+						<div class="cont_results-messageBox">
+							<div class="cont_results-total_file_count">total: <strong>---</strong> files.</div>
+							<div class="cont_results-errorMessage"></div>
+							<div class="cont_results-spentTime">time: <span>--:--:--</span></div>
+							<p><button class="px2-btn px2-btn--primary px2-btn--lg" onclick="contApp.open_publish_dir(); return false;">パブリッシュされたファイルを確認する</button></p>
+							<ul class="horizontal">
+								<li class="horizontal-li"><a href="javascript:contApp.open_publish_tmp_dir();" class="px2-link px2-link--burette">パブリッシュレポート</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="cont_buttons">
+					<div class="btn-group btn-group-justified" role="group">
+						<div class="btn-group" role="group">
+							<button class="px2-btn px2-btn--block" onclick="contApp.publish(); return false;">もう一度パブリッシュする</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="cont_scene" id="cont_on_publish">
 				<p>ただいまパブリッシュプロセスが進行しています。</p>
 				<p>しばらくお待ち下さい...。</p>
 				<p><a href="javascript:;" onclick="contApp.toggle_how_to_recovery_on_publish('.cont_recovery_on_publish',this);return false;" class="glyphicon glyphicon-menu-right">しばらく待ってもこの状態から復旧しない場合は...&lt;詳細&gt;</a></p>

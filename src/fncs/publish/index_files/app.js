@@ -8,6 +8,7 @@ window.contApp = new (function(px, $){
 	var $cont;
 	var _patterns;
 	var currentQueueId;
+	var justClosedNow;
 
 	this.progressReport = new(require('../../../fncs/publish/index_files/libs.ignore/progressReport.js'))(this, px, $);
 	this.resultReport = new(require('../../../fncs/publish/index_files/libs.ignore/resultReport.js'))(this, px, $);
@@ -33,7 +34,7 @@ window.contApp = new (function(px, $){
 
 		px.it79.fnc({}, [
 			function(it){
-				$cont.append( $('#template-main_view').html() ).find('.cont_main_view').hide();
+				$cont.append( $('#template-scenes').html() ).find('.cont_scene').hide();
 				_this.progressReport.init($cont);
 				it.next();
 			} ,
@@ -62,7 +63,7 @@ window.contApp = new (function(px, $){
 					"write": function(message){
 						// console.log('terminal message', message);
 						if(message.command == 'open'){
-							$('.cont_main_view').hide();
+							$('.cont_scene').hide();
 							$('#cont_before_publish-progress').show();
 							currentQueueId = message.queueItemInfo.id;
 						}else if(message.command == 'stdout'){
@@ -71,7 +72,7 @@ window.contApp = new (function(px, $){
 						}else if(message.command == 'close'){
 							currentQueueId = undefined;
 							_this.checkPublishStatus(function(status){
-								$('.cont_main_view').hide();
+								$('.cont_scene').hide();
 								if( status.applockExists ){
 									// パブリッシュ中だったら
 									$cont.find('#cont_on_publish').show();
@@ -82,8 +83,13 @@ window.contApp = new (function(px, $){
 									_this.progressReport.resetView();
 								}else{
 									// パブリッシュ前だったら
-									$cont.find('#cont_before_publish').show();
+									if(justClosedNow){
+										$cont.find('#cont_after_publish-zero_files').show();
+									}else{
+										$cont.find('#cont_before_publish').show();
+									}
 								}
+								justClosedNow = undefined;
 							});
 						}
 					}
@@ -330,6 +336,7 @@ window.contApp = new (function(px, $){
 									// _this.updateView(message.data.join(''));
 								},
 								'close': function(message){
+									justClosedNow = true;
 									px.message( 'パブリッシュを完了しました。' );
 									return;
 								}
@@ -408,13 +415,22 @@ window.contApp = new (function(px, $){
 	}
 
 
-	$(window).load(function(){
-		init();
-	});
-	$(window).resize(function(){
-		$('.cont_canvas')
-			.height( $(window).height() - $('.container').eq(0).height() - $cont.find('.cont_buttons').height() - 20 )
+	function windowResized(){
+		$('.contents')
+			.height( $(window).height() - $('.container').eq(0).height() - 10 )
 		;
+		$('.cont_canvas')
+			.height( $(window).height() - $('.container').eq(0).height() - $cont.find('.cont_buttons').eq(0).height() - 20 )
+		;
+	}
+
+	$(window).on('load', function(){
+		init();
+		windowResized();
+
+		$(window).on('resize', function(){
+			windowResized();
+		});
 	});
 
 	return this;

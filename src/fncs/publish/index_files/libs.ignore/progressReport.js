@@ -38,7 +38,7 @@ module.exports = function(contApp, px, $){
 	this.updateView = function(data){
 
 		if( !$results.is(':visible') ){
-			$('.cont_main_view').hide();
+			$('.cont_scene').hide();
 			$results.show();
 		}
 

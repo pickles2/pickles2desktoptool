@@ -56,7 +56,9 @@ window.contApp = new (function(px, $){
 				});
 			} ,
 			function(it){
+				px.commandQueue.client.destroyTerminal('publish');
 				px.commandQueue.client.createTerminal(null, {
+					"name": "publish",
 					"tags": [
 						'pj-'+_pj.get('id'),
 						'pickles2-publish'

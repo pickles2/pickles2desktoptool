@@ -7,6 +7,7 @@ window.contApp = new (function(px, $){
 	var _pj, _realpathPublishDir;
 	var $cont;
 	var _patterns;
+	var currentQueueId;
 
 	this.progressReport = new(require('../../../fncs/publish/index_files/libs.ignore/progressReport.js'))(this, px, $);
 	this.resultReport = new(require('../../../fncs/publish/index_files/libs.ignore/resultReport.js'))(this, px, $);
@@ -63,9 +64,12 @@ window.contApp = new (function(px, $){
 						if(message.command == 'open'){
 							$('.cont_main_view').hide();
 							$('#cont_before_publish-progress').show();
+							currentQueueId = message.queueItemInfo.id;
 						}else if(message.command == 'stdout'){
 							_this.progressReport.updateView(message.data.join(''));
+							currentQueueId = message.queueItemInfo.id;
 						}else if(message.command == 'close'){
+							currentQueueId = undefined;
 							_this.checkPublishStatus(function(status){
 								$('.cont_main_view').hide();
 								if( status.applockExists ){
@@ -75,6 +79,7 @@ window.contApp = new (function(px, $){
 									// パブリッシュが完了していたら
 									$cont.find('#cont_after_publish').show();
 									_this.resultReport.init();
+									_this.progressReport.resetView();
 								}else{
 									// パブリッシュ前だったら
 									$cont.find('#cont_before_publish').show();
@@ -109,7 +114,7 @@ window.contApp = new (function(px, $){
 			} ,
 			function(it){
 				status.pid = null;
-				status.lastUpdateDateTime = null;
+				status.lastPublishStartedDateTime = null;
 				if(!status.applockExists){
 					it.next();
 					return;
@@ -124,7 +129,7 @@ window.contApp = new (function(px, $){
 						status.pid = Number(RegExp.$1);
 					}
 					if(src.match(/([0-9]*\-[0-9]{2}\-[0-9]{2} [0-9]{2}\:[0-9]{2}\:[0-9]{2})/)){
-						status.lastUpdateDateTime = RegExp.$1;
+						status.lastPublishStartedDateTime = RegExp.$1;
 					}
 					it.next();
 				} );
@@ -299,6 +304,7 @@ window.contApp = new (function(px, $){
 							px2cmd_options += '&keep_cache=1';
 						}
 
+						// パブリッシュコマンドを発行する
 						px.commandQueue.client.addQueueItem(
 							[
 								'php',
@@ -313,6 +319,7 @@ window.contApp = new (function(px, $){
 								],
 								'accept': function(queueId){
 									// console.log(queueId);
+									currentQueueId = queueId;
 								},
 								'open': function(message){
 								},
@@ -339,6 +346,14 @@ window.contApp = new (function(px, $){
 		});
 
 		return true;
+	}
+
+	/**
+	 * パブリッシュを中断する
+	 */
+	this.cancel = function(){
+		px.commandQueue.client.killQueueItem(currentQueueId);
+		px.fs.unlinkSync( _realpathPublishDir+'applock.txt' );
 	}
 
 	/**

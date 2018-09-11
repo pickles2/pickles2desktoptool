@@ -6,6 +6,7 @@ module.exports = function(contApp, px, $){
 	var _pj = px.getCurrentProject();
 	var $results, $phase, $currentTask, $timer, $row, $progressBar;
 	var phase;
+	var _timer;
 
 	/**
 	 * レポート表示の初期化
@@ -17,6 +18,18 @@ module.exports = function(contApp, px, $){
 		$phase = $results.find('.cont_progress-phase').css({'font-weight':'bold'});
 		$currentTask = $results.find('.cont_progress-currentTask');
 		$progressBar = $results.find('.cont_progress-bar [role=progressbar]');
+	}
+
+	/**
+	 * 進捗画面をリセットする
+	 */
+	this.resetView = function(){
+		clearTimeout(_timer);
+		$phase.text('');
+		$currentTask.text('');
+		$row.text('');
+		$timer.text('');
+		$progressBar.attr({'aria-valuenow':0}).css({'width':'0%'});
 	}
 
 	/**
@@ -68,6 +81,12 @@ module.exports = function(contApp, px, $){
 				$row.text(row);
 			}else if( phase == 'Making list' ){
 				$row.text(row);
+			}else if( phase == 'Sync to publish directory.' ){
+				clearTimeout(_timer);
+				$row.text('');
+			}else if( phase == 'done.' ){
+				clearTimeout(_timer);
+				$row.text('');
 			}else{
 				$row.text('');
 			}

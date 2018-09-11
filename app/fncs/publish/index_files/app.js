@@ -8,6 +8,7 @@ window.contApp = new (function(px, $){
 	var _pj, _realpathPublishDir;
 	var $cont;
 	var _patterns;
+	var currentQueueId;
 
 	this.progressReport = new(require('../../../fncs/publish/index_files/libs.ignore/progressReport.js'))(this, px, $);
 	this.resultReport = new(require('../../../fncs/publish/index_files/libs.ignore/resultReport.js'))(this, px, $);
@@ -64,9 +65,12 @@ window.contApp = new (function(px, $){
 						if(message.command == 'open'){
 							$('.cont_main_view').hide();
 							$('#cont_before_publish-progress').show();
+							currentQueueId = message.queueItemInfo.id;
 						}else if(message.command == 'stdout'){
 							_this.progressReport.updateView(message.data.join(''));
+							currentQueueId = message.queueItemInfo.id;
 						}else if(message.command == 'close'){
+							currentQueueId = undefined;
 							_this.checkPublishStatus(function(status){
 								$('.cont_main_view').hide();
 								if( status.applockExists ){
@@ -76,6 +80,7 @@ window.contApp = new (function(px, $){
 									// パブリッシュが完了していたら
 									$cont.find('#cont_after_publish').show();
 									_this.resultReport.init();
+									_this.progressReport.resetView();
 								}else{
 									// パブリッシュ前だったら
 									$cont.find('#cont_before_publish').show();
@@ -110,7 +115,7 @@ window.contApp = new (function(px, $){
 			} ,
 			function(it){
 				status.pid = null;
-				status.lastUpdateDateTime = null;
+				status.lastPublishStartedDateTime = null;
 				if(!status.applockExists){
 					it.next();
 					return;
@@ -125,7 +130,7 @@ window.contApp = new (function(px, $){
 						status.pid = Number(RegExp.$1);
 					}
 					if(src.match(/([0-9]*\-[0-9]{2}\-[0-9]{2} [0-9]{2}\:[0-9]{2}\:[0-9]{2})/)){
-						status.lastUpdateDateTime = RegExp.$1;
+						status.lastPublishStartedDateTime = RegExp.$1;
 					}
 					it.next();
 				} );
@@ -300,6 +305,7 @@ window.contApp = new (function(px, $){
 							px2cmd_options += '&keep_cache=1';
 						}
 
+						// パブリッシュコマンドを発行する
 						px.commandQueue.client.addQueueItem(
 							[
 								'php',
@@ -314,6 +320,7 @@ window.contApp = new (function(px, $){
 								],
 								'accept': function(queueId){
 									// console.log(queueId);
+									currentQueueId = queueId;
 								},
 								'open': function(message){
 								},
@@ -340,6 +347,14 @@ window.contApp = new (function(px, $){
 		});
 
 		return true;
+	}
+
+	/**
+	 * パブリッシュを中断する
+	 */
+	this.cancel = function(){
+		px.commandQueue.client.killQueueItem(currentQueueId);
+		px.fs.unlinkSync( _realpathPublishDir+'applock.txt' );
 	}
 
 	/**
@@ -415,6 +430,7 @@ module.exports = function(contApp, px, $){
 	var _pj = px.getCurrentProject();
 	var $results, $phase, $currentTask, $timer, $row, $progressBar;
 	var phase;
+	var _timer;
 
 	/**
 	 * レポート表示の初期化
@@ -426,6 +442,18 @@ module.exports = function(contApp, px, $){
 		$phase = $results.find('.cont_progress-phase').css({'font-weight':'bold'});
 		$currentTask = $results.find('.cont_progress-currentTask');
 		$progressBar = $results.find('.cont_progress-bar [role=progressbar]');
+	}
+
+	/**
+	 * 進捗画面をリセットする
+	 */
+	this.resetView = function(){
+		clearTimeout(_timer);
+		$phase.text('');
+		$currentTask.text('');
+		$row.text('');
+		$timer.text('');
+		$progressBar.attr({'aria-valuenow':0}).css({'width':'0%'});
 	}
 
 	/**
@@ -477,6 +505,12 @@ module.exports = function(contApp, px, $){
 				$row.text(row);
 			}else if( phase == 'Making list' ){
 				$row.text(row);
+			}else if( phase == 'Sync to publish directory.' ){
+				clearTimeout(_timer);
+				$row.text('');
+			}else if( phase == 'done.' ){
+				clearTimeout(_timer);
+				$row.text('');
 			}else{
 				$row.text('');
 			}

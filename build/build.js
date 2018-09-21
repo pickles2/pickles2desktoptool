@@ -4,7 +4,7 @@ var utils79 = require('utils79');
 var it79 = require('iterate79');
 var NwBuilder = require('nw-builder');
 var zipFolder = require('zip-folder');
-var packageJson = require('./package.json');
+var packageJson = require('../package.json');
 var phpjs = require('phpjs');
 var date = new Date();
 var appName = packageJson.name;
@@ -16,6 +16,11 @@ var platforms = [
 	'linux64'
 ];
 var APPLE_IDENTITY = null;
+if( utils79.is_file( './apple_identity.txt' ) ){
+	APPLE_IDENTITY = fs.readFileSync('./apple_identity.txt').toString();
+	APPLE_IDENTITY = utils79.trim(APPLE_IDENTITY);
+}
+
 function pad(str, len){
 	str += '';
 	str = phpjs.str_pad(str, len, '0', 'STR_PAD_LEFT');

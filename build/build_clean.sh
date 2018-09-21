@@ -3,6 +3,17 @@
 TMP_DIR_PREFIX="_tmp_build_px2dt_";
 TMP_DIR_NAME=$(date '+%Y%m%d_%H%M%S');
 REPOSITORY_URL="https://github.com/pickles2/app-pickles2.git";
+APPLE_IDENTITY;
+
+while getopts i: OPT
+do
+    case $OPT in
+        "i" ) APPLE_IDENTITY="$OPTARG" ;;
+    esac
+done
+
+shift `expr $OPTIND - 1`
+
 BRANCH_NAME=$1;
 if [ ! $1 ]; then
     BRANCH_NAME="develop";
@@ -13,6 +24,9 @@ echo "build Start!";
 echo "temporary dir = ~/${TMP_DIR_PREFIX}${TMP_DIR_NAME}/"
 echo "repository = ${REPOSITORY_URL}"
 echo "branch name = ${BRANCH_NAME}"
+if [ $APPLE_IDENTITY ]; then
+    echo "Apple IDENTITY = ${APPLE_IDENTITY}"
+fi
 echo $(date '+%Y/%m/%d %H:%M:%S');
 
 sleep 1s; echo ""; echo "=-=-=-=-=-=-=-=-=-= making build directory";
@@ -32,6 +46,13 @@ npm install --only=production;
 
 sleep 1s; echo ""; echo "=-=-=-=-=-=-=-=-=-= npm install nw-builder";
 npm install nw-builder;
+
+if [ $APPLE_IDENTITY ]; then
+    sleep 1s; echo ""; echo "=-=-=-=-=-=-=-=-=-= Saving Apple IDENTITY";
+    echo "${APPLE_IDENTITY}";
+    echo ${APPLE_IDENTITY} > ~/${TMP_DIR_PREFIX}${TMP_DIR_NAME}/apple_identity.txt
+    sleep 1s; echo "";
+fi
 
 sleep 1s; echo ""; echo "=-=-=-=-=-=-=-=-=-= npm run build";
 npm run build;

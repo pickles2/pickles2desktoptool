@@ -6,3 +6,4 @@ package-lock.json
 /vendor/
 /cache/
 /build/dist/
+apple_identity.txt

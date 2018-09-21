@@ -59,7 +59,7 @@ $ npm run build
 ### Build application cleanly
 
 ```
-$ sh build/build_clean.sh {$branch_or_version}
+$ sh build/build_clean.sh [-i ${AppleIdentity}] {$branch_or_version}
 ```
 
 ユーザーのホームディレクトリにZIPファイルが出力されます。

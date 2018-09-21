@@ -31,7 +31,7 @@ function getTimeString(){
 	return date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
 }
 function writeLog(row){
-	fs.appendFile( __dirname+'/build/dist/buildlog.txt', row+"\n" ,'utf8', function(err){
+	fs.appendFile( __dirname+'/dist/buildlog.txt', row+"\n" ,'utf8', function(err){
 		if(err){
 			console.error(err);
 		}
@@ -63,7 +63,7 @@ console.log('Cleanup...');
 			fsX.unlinkSync(base+'/'+ls[idx]);
 		}
 	}
-})( __dirname+'/build/dist/' );
+})( __dirname+'/dist/' );
 console.log('');
 
 writeLog( getTimeString() );
@@ -215,8 +215,8 @@ nw.build().then(function () {
 					function(it2, platformName, idx){
 						writeLog('[platform: '+platformName+'] Zipping...');
 						zipFolder(
-							__dirname + '/build/dist/'+appName+'/'+platformName+'/',
-							__dirname + '/build/dist/'+appName+'-'+versionSign+'-'+platformName+'.zip',
+							__dirname + '/dist/'+appName+'/'+platformName+'/',
+							__dirname + '/dist/'+appName+'-'+versionSign+'-'+platformName+'.zip',
 							function(err) {
 								if(err) {
 									writeLog('ERROR!', err);
@@ -234,7 +234,7 @@ nw.build().then(function () {
 			},
 			function(itPj, param){
 				writeLog('cleanup...');
-				fsX.removeSync(__dirname+'/build/dist/'+appName+'/');
+				fsX.removeSync(__dirname+'/dist/'+appName+'/');
 				itPj.next(param);
 			},
 			function(itPj, param){

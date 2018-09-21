@@ -5,4 +5,4 @@ composer.lock
 package-lock.json
 /vendor/
 /cache/
-/build/
+/build/dist/

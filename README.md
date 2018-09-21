@@ -54,12 +54,12 @@ $ php docs/help/htdocs/.px_execute.php /?PX=publish.run
 $ npm run build
 ```
 
-`./build/` にZIPファイルが出力されます。
+`./build/dist/` にZIPファイルが出力されます。
 
 ### Build application cleanly
 
 ```
-$ sh materials/build_clean.sh {$branch_or_version}
+$ sh build/build_clean.sh {$branch_or_version}
 ```
 
 ユーザーのホームディレクトリにZIPファイルが出力されます。

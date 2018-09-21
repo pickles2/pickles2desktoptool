@@ -15,6 +15,7 @@ var platforms = [
 	'win32',
 	'linux64'
 ];
+var APPLE_IDENTITY = null;
 function pad(str, len){
 	str += '';
 	str = phpjs.str_pad(str, len, '0', 'STR_PAD_LEFT');
@@ -25,7 +26,7 @@ function getTimeString(){
 	return date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
 }
 function writeLog(row){
-	fs.appendFile( __dirname+'/build/buildlog.txt', row+"\n" ,'utf8', function(err){
+	fs.appendFile( __dirname+'/build/dist/buildlog.txt', row+"\n" ,'utf8', function(err){
 		if(err){
 			console.error(err);
 		}
@@ -57,7 +58,7 @@ console.log('Cleanup...');
 			fsX.unlinkSync(base+'/'+ls[idx]);
 		}
 	}
-})( __dirname+'/build/' );
+})( __dirname+'/build/dist/' );
 console.log('');
 
 writeLog( getTimeString() );
@@ -185,18 +186,37 @@ nw.build().then(function () {
 	(function(){
 		it79.fnc({}, [
 			function(itPj, param){
+				if( !APPLE_IDENTITY ){
+					itPj.next(param);
+					return;
+				}
+				var proc = require('child_process').spawn(
+					'codesign',
+					[
+						'--deep',
+						'-s', APPLE_IDENTITY,
+						'./build/dist/Pickles2.app'
+					],
+					{}
+				);
+				proc.on('close', function(){
+					itPj.next(param);
+				});
+			},
+			function(itPj, param){
+				// ZIP Apps.
 				it79.ary(
 					platforms,
 					function(it2, platformName, idx){
 						writeLog('[platform: '+platformName+'] Zipping...');
 						zipFolder(
-							__dirname + '/build/'+appName+'/'+platformName+'/',
-							__dirname + '/build/'+appName+'-'+versionSign+'-'+platformName+'.zip',
+							__dirname + '/build/dist/'+appName+'/'+platformName+'/',
+							__dirname + '/build/dist/'+appName+'-'+versionSign+'-'+platformName+'.zip',
 							function(err) {
 								if(err) {
 									writeLog('ERROR!', err);
 								} else {
-									writeLog('success. - '+'./build/'+appName+'-'+versionSign+'-'+platformName+'.zip');
+									writeLog('success. - '+'./build/dist/'+appName+'-'+versionSign+'-'+platformName+'.zip');
 								}
 								it2.next();
 							}
@@ -209,7 +229,7 @@ nw.build().then(function () {
 			},
 			function(itPj, param){
 				writeLog('cleanup...');
-				fsX.removeSync(__dirname+'/build/'+appName+'/');
+				fsX.removeSync(__dirname+'/build/dist/'+appName+'/');
 				itPj.next(param);
 			},
 			function(itPj, param){

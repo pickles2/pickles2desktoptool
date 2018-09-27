@@ -420,14 +420,6 @@ new (function($, window){
 			errorMsg.path = 'path is required as a existed directory path.';
 			isError = true;
 		}
-		if( typeof(projectInfo.home_dir) != typeof('') || !projectInfo.home_dir.length ){
-			errorMsg.home_dir = 'home directory is required.';
-			isError = true;
-		}
-		if( typeof(projectInfo.entry_script) != typeof('') || !projectInfo.entry_script.length ){
-			errorMsg.entry_script = 'entry_script is required.';
-			isError = true;
-		}
 		if( isError ){
 			opt.error(errorMsg);
 			opt.complete();

@@ -254,15 +254,36 @@ window.contApp = new (function(){
 					.text('OK')
 					.addClass('px2-btn--primary')
 					.on('click', function(){
-						var data = px2dtLDA_pj.get();
-						data.home_dir = $form.find('[name=pj_home_dir]').val()
-						px2dtLDA_pj.setName($form.find('[name=pj_name]').val());
+						var projectInfo = px2dtLDA_pj.get();
+
+						var pj_name = $form.find('[name=pj_name]').val();
+						var pj_path = $form.find('[name=pj_path]').val();
+
+						var isError = false;
+						var errorMsg = {};
+				
+						if( typeof(pj_name) != typeof('') || !pj_name.length ){
+							errorMsg.name = 'name is required.';
+							isError = true;
+						}
+						if( typeof(pj_path) != typeof('') || !pj_path.length ){
+							// 指定されていなければ現状維持 (=入力エラーではない)
+						}else if( !px.fs.existsSync(pj_path) ){
+							errorMsg.path = 'path is required as a existed directory path.';
+							isError = true;
+						}
+						if( isError ){
+							return false;
+						}
+				
+						px2dtLDA_pj.setName(pj_name);
+						if( pj_path.length ){
+							px2dtLDA_pj.setPath(pj_path);
+						}
+						projectInfo.home_dir = $form.find('[name=pj_home_dir]').val()
 						px2dtLDA_pj.setEntryScript($form.find('[name=pj_entry_script]').val());
 						var external_preview_server_origin = $form.find('[name=pj_external_preview_server_origin]').val();
 						px2dtLDA_pj.setExtendedData('external_preview_server_origin', (external_preview_server_origin || undefined));
-						if( $form.find('[name=pj_path]').val().length ){
-							px2dtLDA_pj.setPath($form.find('[name=pj_path]').val());
-						}
 
 						px.save(function(){
 							px.closeDialog();

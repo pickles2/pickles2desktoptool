@@ -406,22 +406,9 @@ new (function($, window){
 			projectInfo.entry_script = '';
 		}
 
-		var isError = false;
-		var errorMsg = {};
-
-		if( typeof(projectInfo.name) != typeof('') || !projectInfo.name.length ){
-			errorMsg.name = 'name is required.';
-			isError = true;
-		}
-		if( typeof(projectInfo.path) != typeof('') || !projectInfo.path.length ){
-			errorMsg.path = 'path is required.';
-			isError = true;
-		}else if( !px.fs.existsSync(projectInfo.path) ){
-			errorMsg.path = 'path is required as a existed directory path.';
-			isError = true;
-		}
-		if( isError ){
-			opt.error(errorMsg);
+		var result = this.validateProjectInfo(projectInfo);
+		if( result.isError ){
+			opt.error(result.errorMsg);
 			opt.complete();
 			return false;
 		}
@@ -441,6 +428,51 @@ new (function($, window){
 	}
 
 	/**
+	 * プロジェクト情報の入力値を検証する
+	 */
+	this.validateProjectInfo = function(projectInfo){
+		var result = {
+			isError: false,
+			errorMsg: {}
+		};
+
+		// name
+		if( typeof(projectInfo.name) != typeof('') || !projectInfo.name.length ){
+			result.errorMsg.name = 'name は必須項目です。 name is required.';
+			result.isError = true;
+		}
+
+		// path
+		if( typeof(projectInfo.path) != typeof('') || !projectInfo.path.length ){
+			result.errorMsg.path = 'path は必須項目です。 path is required.';
+			result.isError = true;
+		}else if( !px.utils79.is_dir(projectInfo.path) ){
+			result.errorMsg.path = '存在するディレクトリを選択してください。 path is required as a existed directory path.';
+			result.isError = true;
+		}else if( !px.utils79.is_file(projectInfo.path+'/composer.json') ){
+			var path_filelist = require('fs').readdirSync(projectInfo.path);
+			var filelist_length = 0;
+			for(var i in path_filelist){
+				switch( path_filelist[i] ){
+					case '.DS_Store':
+					case 'Thumbs.db':
+					case 'composer.json':
+						break;
+					default:
+						filelist_length ++;
+						break;
+				}
+			}
+			if( filelist_length ){
+				result.errorMsg.path = '内容が空のディレクトリか、または composer.json が置かれているディレクトリを選択してください。';
+				result.isError = true;
+			}
+		}
+	
+		return result;
+	}
+
+	/**
 	 * プロジェクト情報を更新する
 	 */
 	this.updateProject = function(projectId, projectInfo){
@@ -448,6 +480,12 @@ new (function($, window){
 			return false;
 		}
 		projectInfo = JSON.parse( JSON.stringify( projectInfo ) );
+
+		var result = this.validateProjectInfo(projectInfo);
+		if( result.isError ){
+			return false;
+		}
+
 		px.px2dtLDA.db.projects[projectId] = projectInfo;
 		return true;
 	}

@@ -9,10 +9,28 @@ function cont_createProject(form){
 	pj.entry_script = $(form).find('[name=pj_entry_script]').val();
 	// pj.vcs = $(form).find('[name=pj_vcs]').val();
 
-	var _fs = require('fs');
-	if( !px.utils.isDirectory(pj.path) ){
+	if( !px.utils79.is_dir(pj.path) ){
 		alert('存在するディレクトリを選択してください。');
 		return false;
+	}
+	var path_filelist = require('fs').readdirSync(pj.path);
+	if( !px.utils79.is_file(pj.path+'/composer.json') ){
+		var filelist_length = 0;
+		for(var i in path_filelist){
+			switch( path_filelist[i] ){
+				case '.DS_Store':
+				case 'Thumbs.db':
+				case 'composer.json':
+					break;
+				default:
+					filelist_length ++;
+					break;
+			}
+		}
+		if( filelist_length ){
+			alert('内容が空のディレクトリか、または composer.json が置かれているディレクトリを選択してください。');
+			return false;
+		}
 	}
 
 	if( pj.path.match(new RegExp('[^a-zA-Z0-9\\/\\-\\_\\.\\@\\:\\;\\\\]')) ){

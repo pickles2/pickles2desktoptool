@@ -169,7 +169,21 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 				status.pathContainsFileCount = false;
 				if( status.pathExists ){
 					try {
-						status.pathContainsFileCount = px.fs.readdirSync(_this.get('path')).length;
+						status.pathContainsFileCount = (function(){
+							var filelist = px.fs.readdirSync(_this.get('path'));
+							var filelist_length = 0;
+							for(var i in filelist){
+								switch( filelist[i] ){
+									case '.DS_Store':
+									case 'Thumbs.db':
+										break;
+									default:
+										filelist_length ++;
+										break;
+								}
+							}
+							return filelist_length;
+						})();
 					} catch (e) {
 					}
 				}

@@ -32,15 +32,11 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 				.append( $pre ),
 			'buttons': [
 				$('<button>')
-					.text('OK')
-					.on('click', function(){
-						px.closeDialog();
-						opt.complete();
-					})
+					.text('セットアップしています...')
 					.attr({'disabled':'disabled'})
 			]
 		};
-		$dialog = px.dialog( dlgOpt );
+		px.dialog( dlgOpt );
 
 
 		var stdout = '';
@@ -77,9 +73,18 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 					$preCont.text(stdout);
 				},
 				'close': function(message){
+					if( message.data !== 0 ){
+						$msg.text('セットアップが正常に完了できませんでした。もう一度お試しください。');
+						dlgOpt.buttons[0].text('閉じる');
+					}else{
+						$msg.text('Pickles 2 プロジェクトのセットアップが完了しました。');
+						dlgOpt.buttons[0].text('OK');
+					}
 					dlgOpt.buttons[0].removeAttr('disabled').focus();
-					$msg.text('Pickles 2 プロジェクトのセットアップが完了しました。');
-					opt.complete();
+					dlgOpt.buttons[0].on('click', function(){
+						px.closeDialog();
+						opt.complete();
+					});
 					return;
 				}
 			}

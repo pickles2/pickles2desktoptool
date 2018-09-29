@@ -339,7 +339,11 @@ window.contApp = new (function(px, $){
 								},
 								'close': function(message){
 									justClosedNow = true;
-									px.message( 'パブリッシュを完了しました。' );
+									if(message.data !== 0){
+										px.message( 'パブリッシュが正常に完了できませんでした。ご確認ください。' );
+									}else{
+										px.message( 'パブリッシュを完了しました。' );
+									}
 									return;
 								}
 							}

@@ -127,19 +127,6 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 
 						px.it79.fnc({}, [
 							function(it1){
-								if( !finalizeOptions.git_init ){
-									// Gitリポジトリの初期化をスキップする場合
-									it1.next();
-									return;
-								}
-								finalize_git_init(function(result){
-									if( !result ){
-										alert('Gitの初期化に失敗しました。');
-									}
-									it1.next();
-								});
-							},
-							function(it1){
 								finalize_composerJson(finalizeOptions, function(result){
 									if( !result ){
 										alert('composer.json の初期化に失敗しました。');
@@ -151,6 +138,19 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 								finalize_readme(function(result){
 									if( !result ){
 										alert('README.md の初期化に失敗しました。');
+									}
+									it1.next();
+								});
+							},
+							function(it1){
+								if( !finalizeOptions.git_init ){
+									// Gitリポジトリの初期化をスキップする場合
+									it1.next();
+									return;
+								}
+								finalize_git_init(function(result){
+									if( !result ){
+										alert('Gitの初期化に失敗しました。');
 									}
 									it1.next();
 								});
@@ -169,29 +169,91 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 	}
 
 	/**
-	 * Gitリポジトリを初期化する
-	 */
-	function finalize_git_init( callback ){
-		var path_git_root = _this.pj.get('path');
-		// alert(path_git_root);
-		callback(true);
-	}
-
-	/**
 	 * composer.json を初期化する
 	 */
 	function finalize_composerJson( finalizeOptions, callback ){
-		var name = _this.pj.get('name');
-		// alert(finalizeOptions.composer_package_name);
-		callback(true);
+		var realpath_composerRoot = _this.pj.get_realpath_composer_root();
+		var realpath_composerJson = realpath_composerRoot+'composer.json';
+		var composerJson = false;
+		(function(){
+			try{
+				var json = px.fs.readFileSync(realpath_composerJson);
+				json = JSON.parse(json);
+					// MEMO: 2018-10-01
+					// JSON.parse() した時点で、 項目の並び順が変わってしまう。
+					// 本当はもとの並び順を維持して書き換えたいところだが、
+					// いまのところ、順番を維持してパースする方法が見つかっていない。
+				composerJson = json;
+			}catch(e){}
+		})();
+		var pj_name = _this.pj.get('name');
+
+		delete(composerJson.name);
+		delete(composerJson.description);
+		delete(composerJson.license);
+		delete(composerJson.authors);
+
+		if( finalizeOptions.composer_package_name ){
+			composerJson.name = finalizeOptions.composer_package_name;
+		}
+		if( pj_name ){
+			composerJson.description = pj_name;
+		}
+
+		composerJson.extra = composerJson.extra || {};
+		composerJson.extra.px2package = composerJson.extra.px2package || {};
+		var px2package = false;
+		if( composerJson.extra.px2package.type == 'project' ){
+			// px2package が 単体で既定されている場合。
+			px2package = composerJson.extra.px2package;
+		}else if( composerJson.extra.px2package[0] ){
+			// 複数の px2package が 既定されている場合。
+			for( var i in composerJson.extra.px2package ){
+				if( composerJson.extra.px2package[i].type == 'project' ){
+					// 1件目を採用する
+					px2package = composerJson.extra.px2package[i];
+					break;
+				}
+			}
+		}
+		if( px2package === false ){
+			// 既定されていなければ定義する。
+			composerJson.extra.px2package = {
+				'name': '',
+				'path': '.px_execute.php',
+				'path_homedir': 'px-files/',
+				'type': 'project'
+			};
+			px2package = composerJson.extra.px2package;
+		}
+		px2package.name = pj_name;
+
+		var newJsonSrc = JSON.stringify(composerJson, null, 4);
+
+		px.fs.writeFile(realpath_composerJson, newJsonSrc, function(err){
+			if(err){
+				console.error('Failed to write composer.json:', err);
+			}
+			callback(!err);
+		});
+		return;
 	}
 
 	/**
 	 * README.md を初期化する
 	 */
 	function finalize_readme( callback ){
-		var name = _this.pj.get('name');
-		// alert(name);
+		var pj_name = _this.pj.get('name');
+		// alert(pj_name);
+		callback(true);
+	}
+
+	/**
+	 * Gitリポジトリを初期化する
+	 */
+	function finalize_git_init( callback ){
+		var path_git_root = _this.pj.get('path');
+		// alert(path_git_root);
 		callback(true);
 	}
 

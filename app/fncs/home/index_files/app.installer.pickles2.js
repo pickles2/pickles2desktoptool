@@ -243,17 +243,46 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 	 * README.md を初期化する
 	 */
 	function finalize_readme( callback ){
+		var realpath_root = _this.pj.get('path');
 		var pj_name = _this.pj.get('name');
-		// alert(pj_name);
-		callback(true);
+
+		if( !px.utils79.is_dir(realpath_root) ){
+			alert('ディレクトリが存在しません。');
+			console.error('Failed to write README.md:', 'ディレクトリが存在しません。');
+			callback(false);
+			return;
+		}
+
+		// 既存のREADMEをすべて削除する
+		var ls = px.fs.readdirSync(realpath_root);
+		for(var idx in ls){
+			var tmpFileBaseName = ls[idx];
+			if( tmpFileBaseName.match(/^readme\.[\s\S]*$/i) ){
+				px.fs.unlinkSync( realpath_root+'/'+tmpFileBaseName );
+			}
+		}
+
+		var README = '';
+		README += '# Project "'+pj_name+'"'+"\n";
+		README += "\n";
+		README += 'この README は、プロジェクトオーナーによって書き換えられることが望まれています。'+"\n";
+		README += 'プロジェクトの共有知識を記述するための場として活用してください。'+"\n";
+
+		px.fs.writeFile(realpath_root+'/README.md', README, function(err){
+			if(err){
+				console.error('Failed to write README.md:', err);
+			}
+			callback(!err);
+		});
+		return;
 	}
 
 	/**
 	 * Gitリポジトリを初期化する
 	 */
 	function finalize_git_init( callback ){
-		var path_git_root = _this.pj.get('path');
-		// alert(path_git_root);
+		var realpath_git_root = _this.pj.get('path');
+		// alert(realpath_git_root);
 		callback(true);
 	}
 

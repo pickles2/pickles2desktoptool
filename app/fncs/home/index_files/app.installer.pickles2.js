@@ -311,7 +311,7 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 						// $('.cont_console').text(stdout);
 					},
 					'close': function(message){
-						console.log(stdout);
+						// console.log(stdout);
 						if( message.data ){
 							alert(phase+' が正常に終了できませんでした。');
 						}
@@ -366,18 +366,35 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 			},
 			function(it1){
 				// 全部コミット 1 - git add
-				executeCommand([
-					'git',
-					'add',
-					'-f',
-					'common/px_resources/.gitkeep',
-					'px-files/_sys/ram/applock/.gitkeep',
-					'px-files/_sys/ram/caches/.gitkeep',
-					'px-files/_sys/ram/data/.gitkeep',
-					'px-files/_sys/ram/publish/.gitkeep'
-				], function(){
-					it1.next();
+				var realpath_base = _this.pj.get('path');
+
+				_this.pj.px2dthelperGetAll('/', {'filter': false}, function(pjInfo){
+					console.log(pjInfo);
+
+					var public_cache_dir = pjInfo.config.public_cache_dir;
+					public_cache_dir = public_cache_dir.replace( /^[\/\\]*/, '' );
+					public_cache_dir = public_cache_dir.replace( /[\/\\]*$/, '/' );
+
+					var pathPublicCacheDir = require('path').relative(realpath_base, pjInfo.realpath_docroot+'/'+public_cache_dir);
+					pathPublicCacheDir = './'+pathPublicCacheDir+'/';
+
+					var pathHomeDir = require('path').relative(realpath_base, pjInfo.realpath_homedir);
+					pathHomeDir = './'+pathHomeDir+'/';
+
+					executeCommand([
+						'git',
+						'add',
+						'-f',
+						pathPublicCacheDir+'.gitkeep',
+						pathHomeDir+'_sys/ram/applock/.gitkeep',
+						pathHomeDir+'_sys/ram/caches/.gitkeep',
+						pathHomeDir+'_sys/ram/data/.gitkeep',
+						pathHomeDir+'_sys/ram/publish/.gitkeep'
+					], function(){
+						it1.next();
+					});
 				});
+
 			},
 			function(it1){
 				// 全部コミット 2 - git commit

@@ -124,6 +124,8 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 							"composer_package_name": $body.find('input[name=options_composer_package_name]').val(),
 							"git_init": $body.find('input[name=options_git_init]:checked').val()
 						};
+						px.closeDialog();
+						px.progress.start({"showProgressBar":true, 'blindness':true});
 
 						px.it79.fnc({}, [
 							function(it1){
@@ -156,7 +158,7 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 								});
 							},
 							function(it1){
-								px.closeDialog();
+								px.progress.close();
 								opt.complete();
 								it1.next();
 							}
@@ -326,6 +328,7 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 		px.it79.fnc({}, [
 			function(it1){
 				// git init
+				console.log('initialize .git');
 				executeCommand([
 					'git',
 					'init'
@@ -335,6 +338,7 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 			},
 			function(it1){
 				// まずは README.md をコミット 1 - git add
+				console.log('Commit README.md');
 				executeCommand([
 					'git',
 					'add',
@@ -355,7 +359,8 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 				});
 			},
 			function(it1){
-				// 全部コミット 1 - git add
+				// 全部コミット - git add
+				console.log('Commit all files');
 				executeCommand([
 					'git',
 					'add',
@@ -365,11 +370,21 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 				});
 			},
 			function(it1){
-				// 全部コミット 1 - git add
+				// 一旦プロジェクトをリロード
+				console.log('Reload project...');
+				px.loadProject(function(){
+					console.log('Reloaded.');
+					_this.pj = px.getCurrentProject();
+					it1.next();
+				});
+			},
+			function(it1){
+				// 全部コミット - git add (ignoreされたファイルを追加)
+				console.log('Commit ignored files');
 				var realpath_base = _this.pj.get('path');
 
 				_this.pj.px2dthelperGetAll('/', {'filter': false}, function(pjInfo){
-					console.log(pjInfo);
+					// console.log(pjInfo);
 
 					var public_cache_dir = pjInfo.config.public_cache_dir;
 					public_cache_dir = public_cache_dir.replace( /^[\/\\]*/, '' );
@@ -397,7 +412,7 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 
 			},
 			function(it1){
-				// 全部コミット 2 - git commit
+				// 全部コミット - git commit
 				executeCommand([
 					'git',
 					'commit',
@@ -408,6 +423,7 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 				});
 			},
 			function(it1){
+				console.log('Initialize .git: done.');
 				callback(true);
 				it1.next();
 			}

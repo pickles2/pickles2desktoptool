@@ -281,9 +281,121 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 	 * Gitリポジトリを初期化する
 	 */
 	function finalize_git_init( callback ){
-		var realpath_git_root = _this.pj.get('path');
-		// alert(realpath_git_root);
-		callback(true);
+
+		function executeCommand(cmdAry, callback){
+			var stdout = '';
+			var phase = cmdAry.join(' ');
+			px.commandQueue.client.addQueueItem(
+				cmdAry,
+				{
+					'cdName': 'default',
+					'tags': [
+						'pj-'+_this.pj.get('id'),
+						'git-init'
+					],
+					'accept': function(queueId){
+						// console.log(queueId);
+					},
+					'open': function(message){
+					},
+					'stdout': function(message){
+						for(var idx in message.data){
+							stdout += message.data[idx];
+						}
+						// $('.cont_console').text(stdout);
+					},
+					'stderr': function(message){
+						for(var idx in message.data){
+							stdout += message.data[idx];
+						}
+						// $('.cont_console').text(stdout);
+					},
+					'close': function(message){
+						console.log(stdout);
+						if( message.data ){
+							alert(phase+' が正常に終了できませんでした。');
+						}
+						callback();
+						return;
+					}
+				}
+			);
+			return;
+		}
+
+		px.it79.fnc({}, [
+			function(it1){
+				// git init
+				executeCommand([
+					'git',
+					'init'
+				], function(){
+					it1.next();
+				});
+			},
+			function(it1){
+				// まずは README.md をコミット 1 - git add
+				executeCommand([
+					'git',
+					'add',
+					'README.md'
+				], function(){
+					it1.next();
+				});
+			},
+			function(it1){
+				// まずは README.md をコミット 2 - git commit
+				executeCommand([
+					'git',
+					'commit',
+					'-m',
+					'Initial Commit'
+				], function(){
+					it1.next();
+				});
+			},
+			function(it1){
+				// 全部コミット 1 - git add
+				executeCommand([
+					'git',
+					'add',
+					'.'
+				], function(){
+					it1.next();
+				});
+			},
+			function(it1){
+				// 全部コミット 1 - git add
+				executeCommand([
+					'git',
+					'add',
+					'-f',
+					'common/px_resources/.gitkeep',
+					'px-files/_sys/ram/applock/.gitkeep',
+					'px-files/_sys/ram/caches/.gitkeep',
+					'px-files/_sys/ram/data/.gitkeep',
+					'px-files/_sys/ram/publish/.gitkeep'
+				], function(){
+					it1.next();
+				});
+			},
+			function(it1){
+				// 全部コミット 2 - git commit
+				executeCommand([
+					'git',
+					'commit',
+					'-m',
+					'add Pickles 2 files, from "Get Start Pickles 2!"'
+				], function(){
+					it1.next();
+				});
+			},
+			function(it1){
+				callback(true);
+				it1.next();
+			}
+		]);
+
 	}
 
 })( window.px, window.contApp );

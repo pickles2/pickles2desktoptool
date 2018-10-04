@@ -349,8 +349,12 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 			},
 			function(it1){
 				// まずは README.md をコミット 2 - git commit
-				var commitComment = 'Initial Commit';
-				_this.pj.git().commit([[], commitComment], function(result){
+				executeCommand([
+					'git',
+					'commit',
+					'-m',
+					'Initial Commit'
+				], function(){
 					it1.next();
 				});
 			},
@@ -409,8 +413,12 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 			},
 			function(it1){
 				// 全部コミット - git commit
-				var commitComment = 'add Pickles 2 files, from "Get Start Pickles 2!"';
-				_this.pj.git().commit([[], commitComment], function(result){
+				executeCommand([
+					'git',
+					'commit',
+					'-m',
+					'add Pickles 2 files, from "Get Start Pickles 2!"'
+				], function(){
 					it1.next();
 				});
 			},

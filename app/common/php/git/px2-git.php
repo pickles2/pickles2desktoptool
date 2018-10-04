@@ -76,8 +76,10 @@ class px2git{
 		switch( $this->method ){
 			case 'status':
 			case 'status_contents':
+			case 'commit':
 			case 'commit_sitemaps':
 			case 'commit_contents':
+			case 'commit_all':
 			case 'log':
 			case 'log_contents':
 			case 'log_sitemaps':

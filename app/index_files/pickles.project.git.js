@@ -86,6 +86,12 @@ module.exports = function( px, pj ) {
 	}
 
 	/**
+	 * 任意のファイルをコミットする
+	 * @return {[type]} [description]
+	 */
+	this.commit = new apiGen('commit');
+
+	/**
 	 * サイトマップをコミットする
 	 * @return {[type]} [description]
 	 */
@@ -96,6 +102,12 @@ module.exports = function( px, pj ) {
 	 * @return {[type]} [description]
 	 */
 	this.commitContents = new apiGen('commit_contents');
+
+	/**
+	 * すべての差分をコミットする
+	 * @return {[type]} [description]
+	 */
+	this.commitAll = new apiGen('commit_all');
 
 	/**
 	 * git status

@@ -1,7 +1,8 @@
 (function(px, $, window){
+	var $tpl;
 
 	px.editPx2DTConfig = function(){
-		var $tpl = $( $('#template-editPx2DTConfig').html() );
+		$tpl = $( $('#template-editPx2DTConfig').html() );
 
 		if( !px.getDb().commands ){ px.getDb().commands = {}; }
 
@@ -39,6 +40,7 @@
 		$tpl.find('[name=apps_git_client]').attr({'placeholder': placeholder} );
 
 
+		// ファイル選択のインターフェイス
 		var fileInputs = [
 			'php',
 			'git',
@@ -68,6 +70,8 @@
 			}
 		}
 
+		// --------------------------------------
+		// ダイアログを開く
 		px.dialog({
 			title: px.packageJson.window.title+" "+px.lb.get('menu.desktoptoolConfig') ,
 			body: $tpl ,
@@ -76,7 +80,7 @@
 					.text(px.lb.get('ui_label.ok'))
 					.addClass('px2-btn')
 					.addClass('px2-btn--primary')
-					.click(function(){
+					.on('click', function(){
 						px.getDb().commands.php = $tpl.find('[name=php]').val();
 						px.getDb().commands.git = $tpl.find('[name=git]').val();
 						px.getDb().network.preview.port = $tpl.find('[name=network_preview_port]').val();
@@ -94,11 +98,164 @@
 				$('<button>')
 					.text(px.lb.get('ui_label.cancel'))
 					.addClass('px2-btn')
-					.click(function(){
+					.on('click', function(){
 						px.closeDialog();
 					})
 			]
 		});
+
+		// コマンドパスの状態更新
+		$tpl.find('[name=php]').on('change', function(){ updateCommandPathStatus('php') });
+		$tpl.find('[name=git]').on('change', function(){ updateCommandPathStatus('git') });
+		updateCommandPathStatus('php');
+		updateCommandPathStatus('git');
+	}
+
+	/**
+	 * コマンドパスの状態更新
+	 * @param {*} cmd 
+	 */
+	function updateCommandPathStatus(cmd){
+		var cmdPath = $tpl.find('[name='+cmd+']').val();
+		if(!cmdPath){ cmdPath = cmd; }
+		var $status = $('.'+cmd+'__status');
+		$status.html('');
+
+
+		px.it79.fnc({}, [
+			function(it1){
+				var msg = '';
+
+				px.utils.spawn(
+					( px.getPlatform()=='win' ? 'where' : 'which' ),
+					[
+						cmdPath
+					],
+					{
+						success: function(msgRow){
+							// console.log(msgRow.toString());
+							msg += msgRow.toString();
+						},
+						error: function(msgRow){
+							// console.error(msgRow.toString());
+							msg += msgRow.toString();
+						},
+						complete: function(quitCode){
+							// console.log(quitCode);
+							if( !msg ){
+								$status.append('<span>コマンドが見つかりません。パスを確認してください。</span>');
+								return;
+							}
+							$status.append('<span>path</span>');
+							$status.append($('<pre>')
+								.html(msg)
+							);
+							it1.next();
+						}
+					}
+				);
+
+			} ,
+			function(it1){
+				var msg = '';
+
+				px.utils.spawn(
+					cmdPath,
+					[
+						'--version'
+					],
+					{
+						success: function(msgRow){
+							// console.log(msgRow.toString());
+							msg += msgRow.toString();
+						},
+						error: function(msgRow){
+							// console.error(msgRow.toString());
+							msg += msgRow.toString();
+						},
+						complete: function(quitCode){
+							// console.log(quitCode);
+							$status.append('<span>version</span>');
+							$status.append($('<pre>')
+								.html(msg)
+							);
+							it1.next();
+						}
+					}
+				);
+			} ,
+			function(it1){
+				if( cmd != 'git' ){
+					it1.next();
+					return;
+				}
+
+				var msg = '';
+
+				px.utils.spawn(
+					cmdPath,
+					[
+						'config',
+						'--global',
+						'user.name'
+					],
+					{
+						success: function(msgRow){
+							// console.log(msgRow.toString());
+							msg += msgRow.toString();
+						},
+						error: function(msgRow){
+							// console.error(msgRow.toString());
+							msg += msgRow.toString();
+						},
+						complete: function(quitCode){
+							// console.log(quitCode);
+							$status.append('<span>git config --global user.name</span>');
+							$status.append($('<pre>')
+								.html(msg)
+							);
+							it1.next();
+						}
+					}
+				);
+			} ,
+			function(it1){
+				if( cmd != 'git' ){
+					it1.next();
+					return;
+				}
+
+				var msg = '';
+
+				px.utils.spawn(
+					cmdPath,
+					[
+						'config',
+						'--global',
+						'user.email'
+					],
+					{
+						success: function(msgRow){
+							// console.log(msgRow.toString());
+							msg += msgRow.toString();
+						},
+						error: function(msgRow){
+							// console.error(msgRow.toString());
+							msg += msgRow.toString();
+						},
+						complete: function(quitCode){
+							// console.log(quitCode);
+							$status.append('<span>git config --global user.email</span>');
+							$status.append($('<pre>')
+								.html(msg)
+							);
+							it1.next();
+						}
+					}
+				);
+			}
+		]);
+
 	}
 
 })(px, jQuery, window);

@@ -91,7 +91,9 @@
 						px.getDb().apps.gitClient = $tpl.find('[name=apps_git_client]').val();
 						px.getDb().language = $tpl.find('[name=language]').val();
 						px.save(function(){
-							px.closeDialog();
+							updateGitUserConfig(function(){
+								px.closeDialog();
+							});
 						});
 					}
 				) ,
@@ -113,7 +115,6 @@
 
 	/**
 	 * コマンドパスの状態更新
-	 * @param {*} cmd 
 	 */
 	function updateCommandPathStatus(cmd){
 		var cmdPath = $tpl.find('[name='+cmd+']').val();
@@ -210,9 +211,16 @@
 						},
 						complete: function(quitCode){
 							// console.log(quitCode);
-							$status.append('<span>git config --global user.name</span>');
-							$status.append($('<pre>')
-								.html(msg)
+							$status.append('<span>user.name (global)</span>');
+							$status.append($('<div>')
+								.append( $('<input />')
+									.attr({
+										'type': 'text',
+										'name': 'git_config_user_name'
+									})
+									.addClass('form-control')
+									.val(msg)
+								)
 							);
 							it1.next();
 						}
@@ -245,9 +253,16 @@
 						},
 						complete: function(quitCode){
 							// console.log(quitCode);
-							$status.append('<span>git config --global user.email</span>');
-							$status.append($('<pre>')
-								.html(msg)
+							$status.append('<span>user.email (global)</span>');
+							$status.append($('<div>')
+								.append( $('<input />')
+									.attr({
+										'type': 'text',
+										'name': 'git_config_user_email'
+									})
+									.addClass('form-control')
+									.val(msg)
+								)
 							);
 							it1.next();
 						}
@@ -256,6 +271,91 @@
 			}
 		]);
 
+	}
+
+	/**
+	 * gitのユーザー情報設定を更新する
+	 */
+	function updateGitUserConfig(callback){
+		callback = callback || function(){};
+
+		var cmdPath = $tpl.find('[name=git]').val();
+		if(!cmdPath){ cmdPath = 'git'; }
+
+
+		px.it79.fnc({}, [
+			function(it1){
+				var userName = $tpl.find('[name=git_config_user_name]').val();
+				if( !userName ){
+					it1.next();
+					return;
+				}
+
+				var msg = '';
+
+				px.utils.spawn(
+					cmdPath,
+					[
+						'config',
+						'--global',
+						'user.name',
+						userName
+					],
+					{
+						success: function(msgRow){
+							// console.log(msgRow.toString());
+							msg += msgRow.toString();
+						},
+						error: function(msgRow){
+							// console.error(msgRow.toString());
+							msg += msgRow.toString();
+						},
+						complete: function(quitCode){
+							// console.log(quitCode);
+							console.log(msg);
+							it1.next();
+						}
+					}
+				);
+			} ,
+			function(it1){
+				var userEmail = $tpl.find('[name=git_config_user_email]').val();
+				if( !userEmail ){
+					it1.next();
+					return;
+				}
+
+				var msg = '';
+
+				px.utils.spawn(
+					cmdPath,
+					[
+						'config',
+						'--global',
+						'user.email',
+						userEmail
+					],
+					{
+						success: function(msgRow){
+							// console.log(msgRow.toString());
+							msg += msgRow.toString();
+						},
+						error: function(msgRow){
+							// console.error(msgRow.toString());
+							msg += msgRow.toString();
+						},
+						complete: function(quitCode){
+							// console.log(quitCode);
+							console.log(msg);
+							it1.next();
+						}
+					}
+				);
+			} ,
+			function(it1){
+				callback();
+			}
+		]);
 	}
 
 })(px, jQuery, window);

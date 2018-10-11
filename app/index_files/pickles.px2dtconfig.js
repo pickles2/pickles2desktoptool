@@ -216,7 +216,8 @@
 								.append( $('<input />')
 									.attr({
 										'type': 'text',
-										'name': 'git_config_user_name'
+										'name': 'git_config_user_name',
+										'placeholder': msg
 									})
 									.addClass('form-control')
 									.val(msg)
@@ -258,7 +259,8 @@
 								.append( $('<input />')
 									.attr({
 										'type': 'text',
-										'name': 'git_config_user_email'
+										'name': 'git_config_user_email',
+										'placeholder': msg
 									})
 									.addClass('form-control')
 									.val(msg)

@@ -116,9 +116,9 @@ new (function($, window){
 	var _platform = (function(){
 		var platform = 'unknown';
 		console.log('platform:', process.platform);
-		if(process.platform == 'win32')return 'win';
-		if(process.platform == 'darwin')return 'mac';
-		if(process.platform == 'linux')return 'linux';
+		if(process.platform == 'win32'){return 'win';}
+		if(process.platform == 'darwin'){return 'mac';}
+		if(process.platform == 'linux'){return 'linux';}
 		console.log('unknown platform:', process.platform);
 		return platform;
 	})();
@@ -154,7 +154,7 @@ new (function($, window){
 	function init(callback){
 		_it79.fnc({},
 			[
-				function(it1, data){
+				function(it1){
 					// データディレクトリを初期化
 					px.px2dtLDA.initDataDir(function(result){
 						if( !result ){
@@ -172,17 +172,17 @@ new (function($, window){
 						px.px2dtLDA.db.network.appserver.port = px.px2dtLDA.db.network.appserver.port || _packageJson.pickles2.network.appserver.port;
 
 						px.px2dtLDA.save(function(){
-							it1.next(data);
+							it1.next();
 						});
 					});
 				},
-				function(it1, data){
+				function(it1){
 					// Command Queue をセットアップ
 					var CommandQueue = require('./index_files/cmdQueueCtrl.js');
 					_this.commandQueue = new CommandQueue(_this, window);
 					it1.next();
 				},
-				function(it1, data){
+				function(it1){
 
 					(function(){
 						// node-webkit の標準的なメニューを出す
@@ -213,7 +213,7 @@ new (function($, window){
 					it1.next();
 					return;
 				},
-				function(it1, data){
+				function(it1){
 					// 各国語言語切替機能のロード
 					var LangBank = require('langbank');
 					px.lb = new LangBank( require('path').resolve('./app/common/language/language.csv'), function(){
@@ -223,7 +223,7 @@ new (function($, window){
 					}); // new LangBank()
 					return;
 				},
-				function(it1, data){
+				function(it1){
 					// ヒント機能のロード
 					var Px2Hint = require('./index_files/pickles.hint.js');
 					px.hint = new Px2Hint( px, require('path').resolve('./app/common/language/hint.csv'), function(){
@@ -232,14 +232,14 @@ new (function($, window){
 					}); // new LangBank()
 					return;
 				},
-				function(it1, data){
+				function(it1){
 					// file watcher
 					var FileWatcher = require('./index_files/pickles.watcher.js');
 					px.watcher = new FileWatcher( px );
 					it1.next();
 					return;
 				},
-				function(it1, data){
+				function(it1){
 					// db.json の読み込み
 					px.load(function(){
 						it1.next();
@@ -247,14 +247,14 @@ new (function($, window){
 					}); // px.load()
 					return;
 				},
-				function(it1, data){
+				function(it1){
 					var ComposerUpdateChecker = require('./index_files/pickles.composerUpdateChecker.js');
 					px.composerUpdateChecker = new ComposerUpdateChecker( px, function(){
 						it1.next();
 					});
 					return;
 				},
-				function(it1, data){
+				function(it1){
 					// CSS拡張
 					$('head').append( $('<style>')
 						.html(
@@ -267,7 +267,7 @@ new (function($, window){
 					it1.next();
 					return;
 				},
-				function(it1, data){
+				function(it1){
 					// setup "node-php-bin"
 					px.NodePhpBin = require('node-php-bin');
 					px.nodePhpBinOptions = {
@@ -288,13 +288,13 @@ new (function($, window){
 					it1.next();
 					return;
 				},
-				function(it1, data){
+				function(it1){
 					// メニュー設定
 					var gmenu = require('./index_files/globalmenu.js');
 					_menu = new gmenu(px);
-					it1.next(data);
+					it1.next();
 				},
-				function(it1, data){
+				function(it1){
 					// 開発者のための隠しコマンド
 					// Ctrl + Opt + R で トップフレームを再読込する
 					$(window).on('keypress', function(e){
@@ -303,9 +303,9 @@ new (function($, window){
 							window.location.href='./index.html';
 						}
 					});
-					it1.next(data);
+					it1.next();
 				},
-				function(it1, data){
+				function(it1){
 					callback();
 				}
 

@@ -85,18 +85,21 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 				'close': function(message){
 					if( message.data !== 0 ){
 						$msg.text('セットアップが正常に完了できませんでした。もう一度お試しください。');
-						dlgOpt.buttons[0].text('閉じる');
-						dlgOpt.buttons[0].on('click', function(){
-							px.closeDialog();
-							opt.complete();
-						});
+						dlgOpt.buttons[0]
+							.text('閉じる')
+							.on('click', function(){
+								px.closeDialog();
+								opt.complete();
+							});
 					}else{
 						$msg.text('Pickles 2 プロジェクトのセットアップが完了しました。');
-						dlgOpt.buttons[0].text('次へ');
-						dlgOpt.buttons[0].on('click', function(){
-							px.closeDialog();
-							setup_finalize_option_dialog(opt);
-						});
+						dlgOpt.buttons[0]
+							.text('次へ')
+							.addClass('px2-btn--primary')
+							.on('click', function(){
+								px.closeDialog();
+								setup_finalize_option_dialog(opt);
+							});
 					}
 					dlgOpt.buttons[0].removeAttr('disabled').focus();
 					return;
@@ -111,62 +114,141 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 	 */
 	function setup_finalize_option_dialog(opt){
 		var $body = $('<div>');
-		$body.append( $('#template-installer-pickles2-setup-finalize-option').html() );
+		var gitUser = {};
 
-		var dlgOpt = {
-			'title': 'Pickles 2 プロジェクトのセットアップ',
-			'body': $body,
-			'buttons': [
-				$('<button>')
-					.text('OK')
-					.on('click', function(e){
-						var finalizeOptions = {
-							"composer_package_name": $body.find('input[name=options_composer_package_name]').val(),
-							"git_init": $body.find('input[name=options_git_init]:checked').val()
-						};
-						px.closeDialog();
-						px.progress.start({"showProgressBar":true, 'blindness':true});
+		px.it79.fnc({}, [
+			function(it1){
+				gitUser.name = '';
 
-						px.it79.fnc({}, [
-							function(it1){
-								finalize_composerJson(finalizeOptions, function(result){
-									if( !result ){
-										alert('composer.json の初期化に失敗しました。');
+				px.utils.spawn(
+					px.cmd('git'),
+					[
+						'config',
+						'--global',
+						'user.name'
+					],
+					{
+						success: function(msgRow){
+							// console.log(msgRow.toString());
+							gitUser.name += msgRow.toString();
+						},
+						error: function(msgRow){
+							// console.error(msgRow.toString());
+							gitUser.name += msgRow.toString();
+						},
+						complete: function(quitCode){
+							// console.log(quitCode);
+							it1.next();
+						}
+					}
+				);
+			},
+			function(it1){
+				gitUser.email = '';
+
+				px.utils.spawn(
+					px.cmd('git'),
+					[
+						'config',
+						'--global',
+						'user.email'
+					],
+					{
+						success: function(msgRow){
+							console.log(msgRow.toString());
+							gitUser.email += msgRow.toString();
+						},
+						error: function(msgRow){
+							console.error(msgRow.toString());
+							gitUser.email += msgRow.toString();
+						},
+						complete: function(quitCode){
+							console.log(quitCode);
+							it1.next();
+						}
+					}
+				);
+			},
+			function(it1){
+				$body.append( $('#template-installer-pickles2-setup-finalize-option').html() );
+
+				var dlgOpt = {
+					'title': 'Pickles 2 プロジェクトのセットアップ',
+					'body': $body,
+					'buttons': [
+						$('<button>')
+							.text('OK')
+							.addClass('px2-btn--primary')
+							.on('click', function(e){
+								var finalizeOptions = {
+									"composer_package_name": $body.find('input[name=options_composer_package_name]').val(),
+									"git_init": $body.find('input[name=options_git_init]:checked').val(),
+									"git_init_username": $body.find('input[name=options_git_init_username]').val(),
+									"git_init_email": $body.find('input[name=options_git_init_email]').val()
+								};
+								if(finalizeOptions.git_init){
+									if( !finalizeOptions.git_init_username ){
+										alert('Gitユーザー名が空白です。');
+										return;
 									}
-									it1.next();
-								});
-							},
-							function(it1){
-								finalize_readme(function(result){
-									if( !result ){
-										alert('README.md の初期化に失敗しました。');
+									if( !finalizeOptions.git_init_email ){
+										alert('Gitユーザーのメールアドレスが空白です。');
+										return;
 									}
-									it1.next();
-								});
-							},
-							function(it1){
-								if( !finalizeOptions.git_init ){
-									// Gitリポジトリの初期化をスキップする場合
-									it1.next();
-									return;
 								}
-								finalize_git_init(function(result){
-									if( !result ){
-										alert('Gitの初期化に失敗しました。');
+
+								px.closeDialog();
+								px.progress.start({"showProgressBar":true, 'blindness':true});
+
+								px.it79.fnc({}, [
+									function(it1){
+										finalize_composerJson(finalizeOptions, function(result){
+											if( !result ){
+												alert('composer.json の初期化に失敗しました。');
+											}
+											it1.next();
+										});
+									},
+									function(it1){
+										finalize_readme(function(result){
+											if( !result ){
+												alert('README.md の初期化に失敗しました。');
+											}
+											it1.next();
+										});
+									},
+									function(it1){
+										if( !finalizeOptions.git_init ){
+											// Gitリポジトリの初期化をスキップする場合
+											it1.next();
+											return;
+										}
+										finalize_git_init(finalizeOptions, function(result){
+											if( !result ){
+												alert('Gitの初期化に失敗しました。');
+											}
+											it1.next();
+										});
+									},
+									function(it1){
+										px.progress.close();
+										opt.complete();
+										it1.next();
 									}
-									it1.next();
-								});
-							},
-							function(it1){
-								px.progress.close();
-								opt.complete();
-								it1.next();
-							}
-						]);
-					})
-			]
-		};
-		px.dialog( dlgOpt );
+								]);
+							})
+					]
+				};
+				px.dialog( dlgOpt );
+
+				it1.next();
+			},
+			function(it1){
+				$body.find('input[name=options_git_init_username]').val( px.utils79.trim(gitUser.name) );
+				$body.find('input[name=options_git_init_email]').val( px.utils79.trim(gitUser.email) );
+				it1.next();
+			}
+		]);
 		return;
 	}
 
@@ -282,7 +364,7 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 	/**
 	 * Gitリポジトリを初期化する
 	 */
-	function finalize_git_init( callback ){
+	function finalize_git_init( finalizeOptions, callback ){
 
 		function executeCommand(cmdAry, callback){
 			var stdout = '';
@@ -332,6 +414,32 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 				executeCommand([
 					'git',
 					'init'
+				], function(){
+					it1.next();
+				});
+			},
+			function(it1){
+				// ユーザー名を登録
+				console.log('git config --global user.name');
+				executeCommand([
+					'git',
+					'config',
+					'--global',
+					'user.name',
+					finalizeOptions.git_init_username
+				], function(){
+					it1.next();
+				});
+			},
+			function(it1){
+				// メールアドレスを登録
+				console.log('git config --global user.email');
+				executeCommand([
+					'git',
+					'config',
+					'--global',
+					'user.email',
+					finalizeOptions.git_init_email
 				], function(){
 					it1.next();
 				});

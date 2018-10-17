@@ -33,7 +33,8 @@
 			<div>
 				<form action="javascript:;" method="get">
 					<p class="center">
-						プロジェクトのルート・ディレクトリが見つかりません。<br />もう一度選択してください。<br />
+						プロジェクトのルート・ディレクトリが見つかりません。<br />
+						もう一度選択してください。<br />
 					</p>
 					<table class="def" style="width:100%;">
 						<tr>
@@ -51,7 +52,8 @@
 			<div>
 				<form action="javascript:;" method="get">
 					<p class="center">
-						プロジェクトの Entry Script が見つかりません。<br />プロジェクト情報の設定内容を確認してください。<br />
+						プロジェクトの Entry Script が見つかりません。<br />
+						プロジェクト情報の設定内容を確認してください。<br />
 					</p>
 					<p class="center">
 						<button class="px2-btn px2-btn--primary">プロジェクト情報を編集する</button>
@@ -249,7 +251,7 @@
 			</div>
 		</script>
 		<script type="text/template" id="template-installer-pickles2-setup-finalize-option">
-			<div>
+			<div style="margin-bottom: 1em;">
 				<table class="form_elements" style="width:100%;">
 					<colgroup><col width="30%" /><col width="70%" /></colgroup>
 					<tr>
@@ -262,10 +264,22 @@
 							<div class="overflow:hidden;"><input type="text" name="options_composer_package_name" value="" placeholder="" class="form-control" /></div>
 						</td>
 					</tr>
+					<tr>
+						<th>Gitリポジトリ</th>
+						<td>
+							<p>このオプションを有効にすると、自動的に gitローカルリポジトリが作成され、最初のコミットが作成されます。</p>
+							<p>バージョン管理をしない場合、または Git以外のツールを使ってバージョン管理する場合は、このオプションをオフにしてください。</p>
+							<p>通常は、オンにされることをお勧めします。</p>
+							<div class="options_git_init"></div>
+							<p><label><input type="checkbox" name="options_git_init" value="1" checked="checked" /> Gitリポジトリを初期化する</label></p>
+							<p>コミットの名義情報を入力してください。この値は git のグローバル設定領域に登録されます。</p>
+							<p>UserName</p>
+							<p class="overflow:hidden;"><input type="text" name="options_git_init_username" value="" placeholder="" class="form-control" /></p>
+							<p>E-mail</p>
+							<p class="overflow:hidden;"><input type="text" name="options_git_init_email" value="" placeholder="" class="form-control" /></p>
+						</td>
+					</tr>
 				</table>
-				<ul>
-					<li><label><input type="checkbox" name="options_git_init" value="1" checked="checked" /> Gitリポジトリを初期化する</label></li>
-				</ul>
 			</div>
 		</script>
 		<script type="text/template" id="template-status-table">

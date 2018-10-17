@@ -59,7 +59,7 @@
 					})
 					.hide()
 				;
-				$tpl.find('.'+fileInputs[idx]+'__file').click(function(){
+				$tpl.find('.'+fileInputs[idx]+'__file').on('click', function(){
 					var name = $(this).attr('class');
 					$('[name='+name+']').click();
 				});
@@ -95,8 +95,7 @@
 								px.closeDialog();
 							});
 						});
-					}
-				) ,
+					}) ,
 				$('<button>')
 					.text(px.lb.get('ui_label.cancel'))
 					.addClass('px2-btn')
@@ -120,12 +119,12 @@
 		var cmdPath = $tpl.find('[name='+cmd+']').val();
 		if(!cmdPath){ cmdPath = cmd; }
 		var $status = $('.'+cmd+'__status');
-		$status.html('');
+		$status.html('<p style="height: 6em; text-align: center;">Please wait...</p>');
 
 
 		px.it79.fnc({}, [
 			function(it1){
-				var msg = '';
+				var cmdRealPath = '';
 
 				px.utils.spawn(
 					( px.getPlatform()=='win' ? 'where' : 'which' ),
@@ -135,22 +134,24 @@
 					{
 						success: function(msgRow){
 							// console.log(msgRow.toString());
-							msg += msgRow.toString();
+							cmdRealPath += msgRow.toString();
 						},
 						error: function(msgRow){
 							// console.error(msgRow.toString());
-							msg += msgRow.toString();
+							cmdRealPath += msgRow.toString();
 						},
 						complete: function(quitCode){
 							// console.log(quitCode);
-							if( !msg ){
+							// console.log(cmdRealPath);
+							if( !cmdRealPath ){
+								$status.html('');
 								$status.append('<span>コマンドが見つかりません。パスを確認してください。</span>');
 								return;
 							}
-							$status.append('<span>path</span>');
-							$status.append($('<pre>')
-								.html(msg)
-							);
+							// $status.append('<span>path</span>');
+							// $status.append($('<pre style="max-width: 100%; overflow: auto;">')
+							// 	.html(cmdRealPath)
+							// );
 							it1.next();
 						}
 					}
@@ -158,7 +159,7 @@
 
 			} ,
 			function(it1){
-				var msg = '';
+				var varsionString = '';
 
 				px.utils.spawn(
 					cmdPath,
@@ -167,18 +168,23 @@
 					],
 					{
 						success: function(msgRow){
-							// console.log(msgRow.toString());
-							msg += msgRow.toString();
+							console.log(msgRow.toString());
+							varsionString += msgRow.toString();
 						},
 						error: function(msgRow){
-							// console.error(msgRow.toString());
-							msg += msgRow.toString();
+							console.error(msgRow.toString());
+							varsionString += msgRow.toString();
 						},
 						complete: function(quitCode){
 							// console.log(quitCode);
+							$status.html('');
+							if( quitCode ){
+								$status.append('<span class="error">コマンドが見つかりません。パスを確認してください。</span>');
+								return;
+							}
 							$status.append('<span>version</span>');
-							$status.append($('<pre>')
-								.html(msg)
+							$status.append($('<pre style="max-width: 100%; overflow: auto;">')
+								.html(varsionString)
 							);
 							it1.next();
 						}

@@ -1,6 +1,6 @@
 {
   "name": "Pickles2",
-  "version": "2.0.0-beta.21+nb",
+  "version": "2.0.0-beta.21+releasepreview.1.nb",
   "description": "",
   "private": true,
   "main": "app/index.html",

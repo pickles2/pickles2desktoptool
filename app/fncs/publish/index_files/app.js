@@ -341,7 +341,7 @@ window.contApp = new (function(px, $){
 								'close': function(message){
 									justClosedNow = true;
 									if(message.data !== 0){
-										px.message( 'パブリッシュが正常に完了できなかった可能性があります。ご確認ください。' );
+										px.message( 'パブリッシュが正常に完了できませんでした。ご確認ください。' );
 									}else{
 										px.message( 'パブリッシュを完了しました。' );
 									}

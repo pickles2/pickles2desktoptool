@@ -40,3 +40,6 @@
 [submodule "submodules/node-git-parser"]
 	path = submodules/node-git-parser
 	url = https://github.com/tomk79/node-git-parser.git
+[submodule "submodules/node-remote-finder"]
+	path = submodules/node-remote-finder
+	url = https://github.com/tomk79/node-remote-finder.git

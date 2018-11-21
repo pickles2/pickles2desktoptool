@@ -22,6 +22,7 @@ menu.styleguideGenerator,"Style Guide Generator",スタイルガイド生成,,
 menu.contentsProcessor,Contents Processor,コンテンツを一括加工,,
 menu.updateGuiContents,Update all GUI Edited Contents,GUI編集コンテンツを一括再構成,更新全部GUI编辑内容,更新全部GUI編輯內容
 menu.clearcache,Clear Cache,キャッシュを消去,清除缓存,清除緩存
+menu.filesAndFolders,Files and Folders,ファイルとフォルダ,,
 menu.systemInfo,System Information,システム情報,系统信息,系統信息
 menu.desktoptoolConfig,"Application Config","アプリケーション設定",桌面工具设定,桌面工具設定
 menu.help,Help,ヘルプ,帮助,幫助

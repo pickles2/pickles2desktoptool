@@ -183,15 +183,6 @@ module.exports = function(px){
 			px.subapp($(this).data('app'));
 		}
 	});
-	// _menu.push({
-	// 	"label":px.lb.get('menu.moveContents'),
-	// 	"cond":"pxStandby",
-	// 	"area":"shoulder",
-	// 	"app":"fncs/movecontents/index.html",
-	// 	"click": function(){
-	// 		px.subapp($(this).data('app'));
-	// 	}
-	// });
 	_menu.push({
 		"label":px.lb.get('menu.moveContents'),
 		"cond":"pxStandby",
@@ -215,6 +206,15 @@ module.exports = function(px){
 		"cond":"pxStandby",
 		"area":"shoulder",
 		"app":"fncs/clearcache/index.html",
+		"click": function(){
+			px.subapp($(this).data('app'));
+		}
+	});
+	_menu.push({
+		"label":px.lb.get('menu.filesAndFolders'),
+		"cond":"pxStandby",
+		"area":"shoulder",
+		"app":"fncs/files_and_folders/index.html",
 		"click": function(){
 			px.subapp($(this).data('app'));
 		}

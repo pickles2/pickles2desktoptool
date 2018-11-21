@@ -643,7 +643,10 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	 */
 	this.findPageContent = function( pagePath ){
 		var pageInfo = this.site.getPageInfo( pagePath );
-		var contLocalpath = pageInfo.content;
+		var contLocalpath = pagePath;
+		if( pageInfo ){
+			contLocalpath = pageInfo.content;
+		}
 
 		for( var tmpExt in _config.funcs.processor ){
 			if( px.fs.existsSync( this.get_realpath_controot()+'/'+contLocalpath+'.'+ tmpExt) ){

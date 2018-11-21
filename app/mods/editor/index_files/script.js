@@ -10,9 +10,9 @@ window.contApp = new (function( px ){
 	var _themeInfo = null;
 	if( _param.page_path ){
 		_pageInfo = _pj.site.getPageInfo( _param.page_path );
-		if( !_pageInfo ){
-			alert('ERROR: Undefined page path.'); return this;
-		}
+		// if( !_pageInfo ){
+		// 	alert('ERROR: Undefined page path.'); return this;
+		// }
 	}else if( _param.theme_id && _param.layout_id ){
 		_themeInfo = {
 			'theme_id': _param.theme_id,

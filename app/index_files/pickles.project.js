@@ -123,6 +123,15 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
+				// remote-finder (=ファイルとフォルダ)
+				// Server Side
+				_this.remoteFinder = new (require('remote-finder'))({
+					"default": _this.get('path')
+				});
+				rlv();
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
 				// composer パッケージの更新をチェックする。
 				px.composerUpdateChecker.check(_this, function(checked){});
 				rlv();

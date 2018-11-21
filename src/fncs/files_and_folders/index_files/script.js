@@ -1,43 +1,27 @@
 window.px = window.parent.px;
 
-window.cont_clearcache = function(btn){
-	$(btn).attr('disabled', 'disabled');
+$(window).on('load', function(){
 	var pj = px.getCurrentProject();
-	$('.cont_console').text('');
-	var $msg = $('<div>');
-
-	px.commandQueue.client.addQueueItem(
-		[
-			'php',
-			px.path.resolve(pj.get('path'), pj.get('entry_script')),
-			'/?PX=clearcache'
-		],
+	var remoteFinder = new RemoteFinder(
+		document.getElementById('cont_finder'),
 		{
-			'cdName': 'default',
-			'tags': [
-				'pj-'+pj.get('id'),
-				'pickles2-clearcache'
-			],
-			'accept': function(queueId){
-				// console.log(queueId);
+			"gpiBridge": function(input, callback){
+				// console.log(input);
+				pj.remoteFinder.gpi(input, function(result){
+					callback(result);
+				});
 			},
-			'open': function(message){
-			},
-			'stdout': function(message){
-				$('.cont_console').text(
-					$('.cont_console').text() + message.data.join('')
-				);
-			},
-			'stderr': function(message){
-				$('.cont_console').text(
-					$('.cont_console').text() + message.data.join('')
-				);
-			},
-			'close': function(message){
-				$(btn).removeAttr('disabled');
-				px.message( 'キャッシュをクリアしました。' );
-				return;
+			"open": function(fileinfo, callback){
+				// console.log(fileinfo);
+				var realpath = require('path').resolve(pj.get('path'), './'+fileinfo.path);
+				var src = px.fs.readFileSync(realpath);
+				alert(src);
+				callback(true);
 			}
 		}
 	);
-}
+	// console.log(remoteFinder);
+	remoteFinder.init('/', {}, function(){
+		console.log('ready.');
+	});
+});

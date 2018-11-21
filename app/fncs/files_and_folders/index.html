@@ -25,6 +25,10 @@
 		<!-- normalize & FESS -->
 		<link rel="stylesheet" href="../../common/styles/contents.css" type="text/css" />
 
+		<!-- remote-finder.js -->
+		<link rel="stylesheet" href="../../common/remote-finder/dist/remote-finder.css" type="text/css" />
+		<script src="../../common/remote-finder/dist/remote-finder.js"></script>
+
 		<!-- Local Resources -->
 		<link rel="stylesheet" href="./index_files/style.css" type="text/css" />
 		<script src="./index_files/script.js"></script>
@@ -37,11 +41,7 @@
 		</div>
 		<div class="contents">
 			<div class="container">
-
-				<p><button class="px2-btn px2-btn--primary px2-btn--block" onclick="cont_clearcache(this); return false;">Pickles 2 のキャッシュをクリアする</button></p>
-				<pre class="cont_console" style="max-height:360px;">console:
-</pre>
-
+				<div id="cont_finder"></div>
 			</div>
 		</div>
 	</body>

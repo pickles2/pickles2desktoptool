@@ -21,18 +21,18 @@
         width: auto;
         height: 100%; }
   .remote-finder__file-list-submenu {
-    margin: 0;
-    padding: 0;
+    margin: 0 !important;
+    padding: 0 !important;
     position: absolute;
     top: 0;
     right: 0;
     display: none; }
     .remote-finder__file-list-submenu > li {
-      display: block;
+      display: inline-block;
       margin: 0;
       padding: 0;
       list-style-type: none;
-      border-bottom: 1px solid #999; }
+      border: none; }
       .remote-finder__file-list-submenu > li:last-child {
         border-bottom: none; }
       .remote-finder__file-list-submenu > li > a {

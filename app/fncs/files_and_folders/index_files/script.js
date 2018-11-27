@@ -313,6 +313,38 @@ window.contApp = new (function( px ){
 						callback(result);
 					});
 				},
+				"mkfile": function(current_dir, callback){
+					var $body = $('<div>').html( $('#template-mkfile').html() );
+					function submitForm(){
+						px2style.closeModal();
+						var filename = $body.find('[name=filename]').val();
+						if( !filename ){ return; }
+						callback( filename );
+					}
+					$body.find('form').on('submit', function(){
+						submitForm();
+					});
+					$body.find('.cont_current_dir').text(current_dir);
+					px2style.modal({
+						'title': 'Create new File',
+						'body': $body,
+						'buttons': [
+							$('<button class="px2-btn">')
+								.text('Cancel')
+								.on('click', function(e){
+									px2style.closeModal();
+								}),
+							$('<button class="px2-btn px2-btn--primary">')
+								.text('OK')
+								.on('click', function(e){
+									submitForm();
+								})
+						],
+						'width': '460px'
+					}, function(){
+						$body.find('[name=filename]').focus();
+					});
+				},
 				"open": function(fileinfo, callback){
 					// console.log(fileinfo);
 					var realpath = require('path').resolve(_pj.get('path'), './'+fileinfo.path);
@@ -348,6 +380,11 @@ window.contApp = new (function( px ){
 							break;
 					}
 					callback(true);
+				},
+				"remove": function(target_item, callback){
+					if(confirm('本当に削除してよろしいですか？'+"\n"+target_item)){
+						callback();
+					}
 				}
 			}
 		);

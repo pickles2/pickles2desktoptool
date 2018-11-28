@@ -9842,16 +9842,20 @@ module.exports = function(Px2style){
 			options.title = options.title||'';
 			options.body = options.body||$('<div>');
 			options.buttons = options.buttons||[
-				$('<button class="px2-btn px2-btn--primary">')
+				$('<button type="submit" class="px2-btn px2-btn--primary">')
 					.text('OK')
 					.on('click', function(e){
 						_this.closeModal();
 					})
 			];
 			options.target = options.target||$('body');
+			options.form = options.form||false;
 
 			var tpl = '';
 			tpl += '<div class="px2-modal">';
+			if(options.form){
+				tpl += '<form>';
+			}
 			tpl += ' <div class="px2-modal__dialog">';
 			tpl += '  <div class="px2-modal__header">';
 			tpl += '      <div class="px2-modal__title"></div>';
@@ -9859,9 +9863,21 @@ module.exports = function(Px2style){
 			tpl += '  <div class="px2-modal__body"><div class="px2-modal__body-inner"></div></div>';
 			tpl += '  <div class="px2-modal__footer"></div>';
 			tpl += ' </div>';
+			if(options.form){
+				tpl += '</form>';
+			}
 			tpl += '</div>';
 
 			$modal = $(tpl);
+
+			if(options.form){
+				$modal.find('form').attr({
+					'action': options.form.action || 'javascript:;',
+					'method': options.form.method || 'post'
+				}).on('submit', options.form.submit || function(){
+					_this.closeModal();
+				});
+			}
 
 			var $title = $modal.find('.px2-modal__title');
 			$title.append( options.title );

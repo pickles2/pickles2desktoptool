@@ -33,6 +33,7 @@
 		<link rel="stylesheet" href="./index_files/style.css" type="text/css" />
 		<script src="./index_files/script.js"></script>
 
+		<!-- Template: mkfile dialog -->
 		<script id="template-mkfile" type="text/template">
 <p>Current Directory</p>
 <div>
@@ -46,6 +47,19 @@
 	<p>GUI編集モード</p>
 	<div>
 		<p><label><input type="checkbox" name="is_guieditor" value="1" checked="checked" /> GUI編集モードを有効にする</label></p>
+	</div>
+</div>
+		</script>
+
+		<!-- Template: remove dialog -->
+		<script id="template-remove" type="text/template">
+<p>本当に削除してよろしいですか？</p>
+<div>
+	<pre class="cont_target_item"></pre>
+</div>
+<div class="cont_contents_option" style="display: none;">
+	<div>
+		<p><label><input type="checkbox" name="is_remove_files_too" value="1" checked="checked" /> リソースファイルもあわせて削除する</label></p>
 	</div>
 </div>
 		</script>

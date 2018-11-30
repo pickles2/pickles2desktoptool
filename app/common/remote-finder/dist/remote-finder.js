@@ -28,6 +28,9 @@ window.RemoteFinder = function($elm, options){
 		return;
 	};
 	options.remove = options.remove || function(path_target, callback){
+		if( !confirm('Really?') ){
+			return;
+		}
 		callback();
 		return;
 	};
@@ -178,6 +181,10 @@ window.RemoteFinder = function($elm, options){
 				'options': options
 			},
 			function(result){
+				if( !result.result ){
+					alert( result.message );
+					return;
+				}
 				$elm.innerHTML = '';
 				// callback(result);
 				var $ul = document.createElement('ul');
@@ -226,23 +233,23 @@ window.RemoteFinder = function($elm, options){
 
 
 				// contained file and folders
-				for( var idx in result ){
+				for( var idx in result.list ){
 					var $li = document.createElement('li');
 					var $a = document.createElement('a');
-					$a.textContent = result[idx].name;
+					$a.textContent = result.list[idx].name;
 					$a.href = 'javascript:;';
-					$a.setAttribute('data-filename', result[idx].name);
-					$a.setAttribute('data-path', path + result[idx].name);
+					$a.setAttribute('data-filename', result.list[idx].name);
+					$a.setAttribute('data-path', path + result.list[idx].name);
 					$submenu = document.createElement('ul');
 					$submenu.classList.add('remote-finder__file-list-submenu');
-					if(result[idx].type == 'dir'){
+					if(result.list[idx].type == 'dir'){
 						$a.textContent += '/';
 						$a.addEventListener('click', function(e){
 							var filename = this.getAttribute('data-filename');
 							_this.init( path+filename+'/' );
 						});
 
-					}else if(result[idx].type == 'file'){
+					}else if(result.list[idx].type == 'file'){
 						$a.addEventListener('click', function(e){
 							var path = this.getAttribute('data-path');
 							_this.open( path, function(res){} );
@@ -251,7 +258,7 @@ window.RemoteFinder = function($elm, options){
 
 					$menu = document.createElement('button');
 					$menu.textContent = 'rename';
-					$menu.setAttribute('data-filename', result[idx].name);
+					$menu.setAttribute('data-filename', result.list[idx].name);
 					$menu.addEventListener('click', function(e){
 						e.stopPropagation();
 						var filename = this.getAttribute('data-filename');
@@ -265,7 +272,7 @@ window.RemoteFinder = function($elm, options){
 
 					$menu = document.createElement('button');
 					$menu.textContent = 'delete';
-					$menu.setAttribute('data-filename', result[idx].name);
+					$menu.setAttribute('data-filename', result.list[idx].name);
 					$menu.addEventListener('click', function(e){
 						e.stopPropagation();
 						var filename = this.getAttribute('data-filename');

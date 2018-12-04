@@ -127,6 +127,12 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 				// Server Side
 				_this.remoteFinder = new (require('remote-finder'))({
 					"default": _this.get('path')
+				},{
+					"paths_readonly": [
+						'*/.git/*',
+						'*/.svn/*',
+						'*/vendor/*'
+					]
 				});
 				rlv();
 				return;

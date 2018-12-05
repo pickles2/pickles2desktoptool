@@ -48,7 +48,7 @@ module.exports = function(contApp, px, _pj, $){
 							.on('click', function(e){
 								px2style.closeModal();
 							}),
-						$('<button class="px2-btn px2-btn--danger">')
+						$('<button class="px2-btn px2-btn--primary">')
 							.text('移動する')
 					],
 					'form': {

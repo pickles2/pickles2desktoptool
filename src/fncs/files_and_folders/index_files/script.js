@@ -8,6 +8,7 @@ window.contApp = new (function( px ){
 	var mkfile = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/mkfile.js'))(this, px, _pj, $);
 	var open = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/open.js'))(this, px, _pj, $);
 	var remove = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/remove.js'))(this, px, _pj, $);
+	var rename = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/rename.js'))(this, px, _pj, $);
 
 	/**
 	 * 初期化
@@ -24,6 +25,7 @@ window.contApp = new (function( px ){
 				},
 				"mkfile": mkfile.mkfile,
 				"open": open.open,
+				"rename": rename.rename,
 				"remove": remove.remove
 			}
 		);

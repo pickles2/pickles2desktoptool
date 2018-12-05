@@ -12,7 +12,7 @@ module.exports = function(contApp, px, _pj, $){
 			}else{
 				$body.find('.cont_html_ext_option').hide();
 			}
-		})
+		});
 		px2style.modal({
 			'title': 'Create new File',
 			'body': $body,

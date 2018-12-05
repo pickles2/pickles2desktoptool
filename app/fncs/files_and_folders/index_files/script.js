@@ -302,6 +302,7 @@ window.contApp = new (function( px ){
 	var mkfile = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/mkfile.js'))(this, px, _pj, $);
 	var open = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/open.js'))(this, px, _pj, $);
 	var remove = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/remove.js'))(this, px, _pj, $);
+	var rename = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/rename.js'))(this, px, _pj, $);
 
 	/**
 	 * 初期化
@@ -318,6 +319,7 @@ window.contApp = new (function( px ){
 				},
 				"mkfile": mkfile.mkfile,
 				"open": open.open,
+				"rename": rename.rename,
 				"remove": remove.remove
 			}
 		);
@@ -444,7 +446,7 @@ window.contApp = new (function( px ){
 
 })( window.parent.px );
 
-},{"../../../fncs/files_and_folders/index_files/libs.ignore/mkfile.js":4,"../../../fncs/files_and_folders/index_files/libs.ignore/open.js":5,"../../../fncs/files_and_folders/index_files/libs.ignore/remove.js":6}],4:[function(require,module,exports){
+},{"../../../fncs/files_and_folders/index_files/libs.ignore/mkfile.js":4,"../../../fncs/files_and_folders/index_files/libs.ignore/open.js":5,"../../../fncs/files_and_folders/index_files/libs.ignore/remove.js":6,"../../../fncs/files_and_folders/index_files/libs.ignore/rename.js":7}],4:[function(require,module,exports){
 /**
  * Files and Folders: mkfile.js
  */
@@ -459,7 +461,7 @@ module.exports = function(contApp, px, _pj, $){
 			}else{
 				$body.find('.cont_html_ext_option').hide();
 			}
-		})
+		});
 		px2style.modal({
 			'title': 'Create new File',
 			'body': $body,
@@ -708,6 +710,113 @@ module.exports = function(contApp, px, _pj, $){
 					},
 					'width': 460
 				}, function(){
+				});
+				it1.next();
+			}
+		]);
+	}
+}
+
+},{}],7:[function(require,module,exports){
+/**
+ * Files and Folders: rename.js
+ */
+module.exports = function(contApp, px, _pj, $){
+	this.rename = function(renameFrom, callback){
+		var is_file;
+		var pageInfoAll;
+		px.it79.fnc({}, [
+			function(it1){
+				is_file = px.utils79.is_file( _pj.get('path')+renameFrom );
+				it1.next();
+			},
+			function(it1){
+				if(!is_file){
+					it1.next();
+					return;
+				}
+				_pj.execPx2(
+					renameFrom+'?PX=px2dthelper.get.all',
+					{
+						complete: function(resources){
+							try{
+								resources = JSON.parse(resources);
+							}catch(e){
+								console.error('Failed to parse JSON "client_resources".', e);
+							}
+							console.log(resources);
+							pageInfoAll = resources;
+							it1.next();
+						}
+					}
+				);
+
+			},
+			function(it1){
+				var $body = $('<div>').html( $('#template-rename').html() );
+				$body.find('.cont_target_item').text(renameFrom);
+				$body.find('[name=rename_to]').val(renameFrom);
+				if(is_file){
+					$body.find('.cont_contents_option').show();
+				}
+				px2style.modal({
+					'title': 'Rename',
+					'body': $body,
+					'buttons': [
+						$('<button type="button" class="px2-btn">')
+							.text('Cancel')
+							.on('click', function(e){
+								px2style.closeModal();
+							}),
+						$('<button class="px2-btn px2-btn--danger">')
+							.text('移動する')
+					],
+					'form': {
+						'submit': function(){
+							px2style.closeModal();
+							var renameTo = $body.find('[name=rename_to]').val();
+							if( !renameTo ){ return; }
+							if( renameTo == renameFrom ){ return; }
+
+							px.it79.fnc({}, [
+								function(it2){
+									if( is_file && $body.find('[name=is_rename_files_too]:checked').val() ){
+										// リソースも一緒に移動する
+										_pj.execPx2(
+											renameTo+'?PX=px2dthelper.get.all',
+											{
+												complete: function(resources){
+													try{
+														resources = JSON.parse(resources);
+													}catch(e){
+														console.error('Failed to parse JSON "client_resources".', e);
+													}
+													// console.log(resources);
+
+													var realpath_files_from = pageInfoAll.realpath_files;
+													var realpath_files_to = resources.realpath_files;
+													if(px.utils79.is_dir(realpath_files_from)){
+														px.fsEx.renameSync( realpath_files_from, realpath_files_to );
+													}
+													it2.next();
+												}
+											}
+										);
+										return;
+									}
+									it2.next();
+								},
+								function(it2){
+									callback(renameFrom, renameTo);
+									it2.next();
+								}
+							]);
+
+						}
+					},
+					'width': 460
+				}, function(){
+					$body.find('[name=rename_to]').focus();
 				});
 				it1.next();
 			}

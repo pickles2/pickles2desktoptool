@@ -187,13 +187,15 @@ window.RemoteFinder = function($elm, options){
 				}
 				$elm.innerHTML = '';
 				// callback(result);
-				var $ul = document.createElement('ul');
-				$ul.classList.add('remote-finder__file-list');
+
+				var $ulMenu = document.createElement('ul');
+				$ulMenu.classList.add('remote-finder__menu');
 
 				// create new file or folder
 				var $li = document.createElement('li');
 				var $a = document.createElement('a');
-				$a.textContent = 'new Folder';
+				$a.textContent = 'New Folder';
+				$a.classList.add('remote-finder__ico-new-folder');
 				$a.href = 'javascript:;';
 				$a.addEventListener('click', function(){
 					_this.mkdir(path, function(){
@@ -201,11 +203,12 @@ window.RemoteFinder = function($elm, options){
 					});
 				});
 				$li.append($a);
-				$ul.append($li);
+				$ulMenu.append($li);
 
 				var $li = document.createElement('li');
 				var $a = document.createElement('a');
-				$a.textContent = 'new File';
+				$a.textContent = 'New File';
+				$a.classList.add('remote-finder__ico-new-file');
 				$a.href = 'javascript:;';
 				$a.addEventListener('click', function(){
 					_this.mkfile(path, function(){
@@ -213,8 +216,12 @@ window.RemoteFinder = function($elm, options){
 					});
 				});
 				$li.append($a);
-				$ul.append($li);
+				$ulMenu.append($li);
 
+				$elm.append($ulMenu);
+
+				var $ul = document.createElement('ul');
+				$ul.classList.add('remote-finder__file-list');
 
 				// parent directory
 				if(path != '/' && path){
@@ -244,16 +251,23 @@ window.RemoteFinder = function($elm, options){
 					$submenu.classList.add('remote-finder__file-list-submenu');
 					if(result.list[idx].type == 'dir'){
 						$a.textContent += '/';
+						$a.classList.add('remote-finder__ico-folder');
 						$a.addEventListener('click', function(e){
 							var filename = this.getAttribute('data-filename');
 							_this.init( path+filename+'/' );
 						});
 
 					}else if(result.list[idx].type == 'file'){
+						$a.classList.add('remote-finder__ico-file');
 						$a.addEventListener('click', function(e){
 							var path = this.getAttribute('data-path');
 							_this.open( path, function(res){} );
 						});
+					}
+
+console.log('=-=-=-=-=', result.list[idx]);
+					if( !result.list[idx].writable ){
+						$a.classList.add('remote-finder__ico-readonly');
 					}
 
 					$menu = document.createElement('button');

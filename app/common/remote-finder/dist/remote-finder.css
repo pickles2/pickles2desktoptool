@@ -3,7 +3,10 @@
   display: flex;
   -ms-flex-direction: column;
       flex-direction: column;
-  background-color: #f9f9f9; }
+  -ms-flex-pack: start;
+      justify-content: flex-start;
+  background-color: #f9f9f9;
+  overflow: hidden; }
   .remote-finder a {
     background-color: #fff;
     color: #333; }
@@ -19,16 +22,22 @@
       background-color: #eee;
       color: #000; }
   .remote-finder__menu {
-    margin: 0;
-    padding: 0;
+    margin: 0 !important;
+    padding: 0 !important;
     display: -ms-flexbox;
     display: flex;
-    border-bottom: 1px solid #666; }
+    border-bottom: 1px solid #666;
+    max-width: 100%;
+    -ms-flex-negative: 0;
+        flex-shrink: 0;
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap; }
     .remote-finder__menu > li {
       margin: 0;
       padding: 0;
       list-style-type: none;
-      border-right: 1px solid #999; }
+      border-right: 1px solid #999;
+      max-width: 100%; }
       .remote-finder__menu > li:last-child {
         border-right: none; }
       .remote-finder__menu > li > a {
@@ -42,10 +51,9 @@
         overflow: hidden;
         white-space: nowrap; }
   .remote-finder__file-list {
-    margin: 0;
-    padding: 0;
-    -ms-flex-positive: 1;
-        flex-grow: 1; }
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: auto; }
     .remote-finder__file-list > li {
       display: block;
       margin: 0;

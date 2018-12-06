@@ -8,7 +8,7 @@ module.exports = function(contApp, px, _pj, $){
 	 */
 	this.open = function(fileinfo, callback){
 		// console.log(fileinfo);
-		var realpath = require('path').resolve(_pj.get('path'), './'+fileinfo.path);
+		var realpath = _pj.get('path')+'/'+fileinfo.path;
 
 		switch( fileinfo.ext ){
 			case 'html':
@@ -57,7 +57,7 @@ module.exports = function(contApp, px, _pj, $){
 		var pxExternalPath = filepath;
 		var is_file;
 		var pageInfoAll;
-		var realpath_file = require('path').resolve(_pj.get('path'), './'+filepath);
+		var realpath_file = _pj.get('path')+'/'+filepath;
 		px.it79.fnc({}, [
 			function(it1){
 				is_file = px.utils79.is_file( realpath_file );

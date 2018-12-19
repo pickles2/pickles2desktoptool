@@ -16,4 +16,5 @@ body {
       display: flex;
       flex-direction: column; }
       body > .contents > .container > #cont_finder {
-        overflow: auto; }
+        overflow: auto;
+        z-index: 1; }

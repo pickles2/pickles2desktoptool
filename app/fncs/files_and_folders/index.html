@@ -51,15 +51,19 @@
 </div>
 		</script>
 
-		<!-- Template: remove dialog -->
-		<script id="template-remove" type="text/template">
-<p>本当に削除してよろしいですか？</p>
+		<!-- Template: copy dialog -->
+		<script id="template-copy" type="text/template">
+<p>Target item</p>
 <div>
 	<pre class="cont_target_item"></pre>
 </div>
+<p>New file name</p>
+<div>
+	<p><input type="text" name="copy_to" value="" class="form-control" /></p>
+</div>
 <div class="cont_contents_option" style="display: none;">
 	<div>
-		<p><label><input type="checkbox" name="is_remove_files_too" value="1" checked="checked" /> リソースファイルもあわせて削除する</label></p>
+		<p><label><input type="checkbox" name="is_copy_files_too" value="1" checked="checked" /> リソースファイルもあわせて複製する</label></p>
 	</div>
 </div>
 		</script>
@@ -77,6 +81,19 @@
 <div class="cont_contents_option" style="display: none;">
 	<div>
 		<p><label><input type="checkbox" name="is_rename_files_too" value="1" checked="checked" /> リソースファイルもあわせて移動する</label></p>
+	</div>
+</div>
+		</script>
+
+		<!-- Template: remove dialog -->
+		<script id="template-remove" type="text/template">
+<p>本当に削除してよろしいですか？</p>
+<div>
+	<pre class="cont_target_item"></pre>
+</div>
+<div class="cont_contents_option" style="display: none;">
+	<div>
+		<p><label><input type="checkbox" name="is_remove_files_too" value="1" checked="checked" /> リソースファイルもあわせて削除する</label></p>
 	</div>
 </div>
 		</script>

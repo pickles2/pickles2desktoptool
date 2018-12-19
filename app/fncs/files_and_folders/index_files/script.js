@@ -301,8 +301,9 @@ window.contApp = new (function( px ){
 	$elms.editor = $('<div>');
 	var mkfile = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/mkfile.js'))(this, px, _pj, $);
 	var open = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/open.js'))(this, px, _pj, $);
-	var remove = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/remove.js'))(this, px, _pj, $);
+	var copy = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/copy.js'))(this, px, _pj, $);
 	var rename = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/rename.js'))(this, px, _pj, $);
+	var remove = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/remove.js'))(this, px, _pj, $);
 
 	/**
 	 * 初期化
@@ -320,6 +321,7 @@ window.contApp = new (function( px ){
 				"mkfile": mkfile.mkfile,
 				"open": open.open,
 				"rename": rename.rename,
+				"copy": copy.copy,
 				"remove": remove.remove
 			}
 		);
@@ -446,7 +448,114 @@ window.contApp = new (function( px ){
 
 })( window.parent.px );
 
-},{"../../../fncs/files_and_folders/index_files/libs.ignore/mkfile.js":4,"../../../fncs/files_and_folders/index_files/libs.ignore/open.js":5,"../../../fncs/files_and_folders/index_files/libs.ignore/remove.js":6,"../../../fncs/files_and_folders/index_files/libs.ignore/rename.js":7}],4:[function(require,module,exports){
+},{"../../../fncs/files_and_folders/index_files/libs.ignore/copy.js":4,"../../../fncs/files_and_folders/index_files/libs.ignore/mkfile.js":5,"../../../fncs/files_and_folders/index_files/libs.ignore/open.js":6,"../../../fncs/files_and_folders/index_files/libs.ignore/remove.js":7,"../../../fncs/files_and_folders/index_files/libs.ignore/rename.js":8}],4:[function(require,module,exports){
+/**
+ * Files and Folders: copy.js
+ */
+module.exports = function(contApp, px, _pj, $){
+	this.copy = function(copyFrom, callback){
+		var is_file;
+		var pageInfoAll;
+		px.it79.fnc({}, [
+			function(it1){
+				is_file = px.utils79.is_file( _pj.get('path')+copyFrom );
+				it1.next();
+			},
+			function(it1){
+				if(!is_file){
+					it1.next();
+					return;
+				}
+				_pj.execPx2(
+					copyFrom+'?PX=px2dthelper.get.all',
+					{
+						complete: function(resources){
+							try{
+								resources = JSON.parse(resources);
+							}catch(e){
+								console.error('Failed to parse JSON "client_resources".', e);
+							}
+							console.log(resources);
+							pageInfoAll = resources;
+							it1.next();
+						}
+					}
+				);
+
+			},
+			function(it1){
+				var $body = $('<div>').html( $('#template-copy').html() );
+				$body.find('.cont_target_item').text(copyFrom);
+				$body.find('[name=copy_to]').val(copyFrom);
+				if(is_file){
+					$body.find('.cont_contents_option').show();
+				}
+				px2style.modal({
+					'title': 'Copy',
+					'body': $body,
+					'buttons': [
+						$('<button type="button" class="px2-btn">')
+							.text('Cancel')
+							.on('click', function(e){
+								px2style.closeModal();
+							}),
+						$('<button class="px2-btn px2-btn--primary">')
+							.text('複製する')
+					],
+					'form': {
+						'submit': function(){
+							px2style.closeModal();
+							var copyTo = $body.find('[name=copy_to]').val();
+							if( !copyTo ){ return; }
+							if( copyTo == copyFrom ){ return; }
+
+							px.it79.fnc({}, [
+								function(it2){
+									if( is_file && $body.find('[name=is_copy_files_too]:checked').val() ){
+										// リソースも一緒に複製する
+										_pj.execPx2(
+											copyTo+'?PX=px2dthelper.get.all',
+											{
+												complete: function(resources){
+													try{
+														resources = JSON.parse(resources);
+													}catch(e){
+														console.error('Failed to parse JSON "client_resources".', e);
+													}
+													// console.log(resources);
+
+													var realpath_files_from = pageInfoAll.realpath_files;
+													var realpath_files_to = resources.realpath_files;
+													if(px.utils79.is_dir(realpath_files_from)){
+														px.fsEx.copySync( realpath_files_from, realpath_files_to );
+													}
+													it2.next();
+												}
+											}
+										);
+										return;
+									}
+									it2.next();
+								},
+								function(it2){
+									callback(copyFrom, copyTo);
+									it2.next();
+								}
+							]);
+
+						}
+					},
+					'width': 460
+				}, function(){
+					$body.find('[name=copy_to]').focus();
+				});
+				it1.next();
+			}
+		]);
+	}
+}
+
+},{}],5:[function(require,module,exports){
 /**
  * Files and Folders: mkfile.js
  */
@@ -524,7 +633,7 @@ module.exports = function(contApp, px, _pj, $){
 	}
 }
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /**
  * Files and Folders: open.js
  */
@@ -632,7 +741,7 @@ module.exports = function(contApp, px, _pj, $){
 
 }
 
-},{"path":1}],6:[function(require,module,exports){
+},{"path":1}],7:[function(require,module,exports){
 /**
  * Files and Folders: remove.js
  */
@@ -717,7 +826,7 @@ module.exports = function(contApp, px, _pj, $){
 	}
 }
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /**
  * Files and Folders: rename.js
  */

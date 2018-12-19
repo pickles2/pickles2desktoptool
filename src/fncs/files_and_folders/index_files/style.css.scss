@@ -19,6 +19,7 @@ body{
 			flex-direction: column;
 			> #cont_finder{
 				overflow: auto;
+				z-index: 1;
 			}
 		}
 	}

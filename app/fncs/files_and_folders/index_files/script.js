@@ -650,8 +650,12 @@ module.exports = function(contApp, px, _pj, $){
 			case 'html':
 			case 'htm':
 				px.preview.serverStandby( function(result){
-					filePath2pxExternalPath(fileinfo.path, function(path){
-						contApp.openEditor( path );
+					parsePx2FilePath(fileinfo.path, function(pxExternalPath, path_type){
+						if(path_type == 'contents'){
+							contApp.openEditor( pxExternalPath );
+						}else{
+							px.openInTextEditor( realpath );
+						}
 					});
 				} );
 				break;
@@ -689,10 +693,11 @@ module.exports = function(contApp, px, _pj, $){
 	 * ファイルのパスはこれを一部含んでいる可能性がある。
 	 * これを確認し、必要に応じて除いたパスを返却する。
 	 */
-	function filePath2pxExternalPath( filepath, callback ){
+	function parsePx2FilePath( filepath, callback ){
 		var pxExternalPath = filepath;
 		var is_file;
 		var pageInfoAll;
+		var path_type;
 		var realpath_file = _pj.get('path')+'/'+filepath;
 		px.it79.fnc({}, [
 			function(it1){
@@ -722,6 +727,7 @@ module.exports = function(contApp, px, _pj, $){
 
 			},
 			function(it1){
+				// 外部パスを求める
 				if( realpath_file.indexOf(pageInfoAll.realpath_docroot) === 0 ){
 					pxExternalPath = realpath_file.replace(pageInfoAll.realpath_docroot, '/');
 				}
@@ -732,7 +738,27 @@ module.exports = function(contApp, px, _pj, $){
 				it1.next();
 			},
 			function(it1){
-				callback(pxExternalPath);
+				// パスの種類を求める
+				// theme_collection, home_dir, or contents
+				function normalizePath(path){
+					path = path.replace(/^[a-zA-Z]\:/, '');
+					path = require('path').resolve(path);
+					path = path.split(/[\/\\\\]+/).join('/');
+					return path;
+				}
+				path_type = 'contents';
+				var realpath_target = normalizePath(realpath_file);
+				var realpath_homedir = normalizePath(pageInfoAll.realpath_homedir);
+				var realpath_theme_collection_dir = normalizePath(pageInfoAll.realpath_theme_collection_dir);
+				if( realpath_target.indexOf(realpath_theme_collection_dir) === 0 ){
+					path_type = 'theme_collection';
+				}else if( realpath_target.indexOf(realpath_homedir) === 0 ){
+					path_type = 'home_dir';
+				}
+				it1.next();
+			},
+			function(it1){
+				callback(pxExternalPath, path_type);
 				it1.next();
 			}
 		]);

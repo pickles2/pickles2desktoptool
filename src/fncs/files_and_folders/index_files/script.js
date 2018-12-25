@@ -6,6 +6,7 @@ window.contApp = new (function( px ){
 	var $elms = {};
 	$elms.editor = $('<div>');
 	var mkfile = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/mkfile.js'))(this, px, _pj, $);
+	var mkdir = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/mkdir.js'))(this, px, _pj, $);
 	var open = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/open.js'))(this, px, _pj, $);
 	var copy = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/copy.js'))(this, px, _pj, $);
 	var rename = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/rename.js'))(this, px, _pj, $);
@@ -25,9 +26,10 @@ window.contApp = new (function( px ){
 					});
 				},
 				"mkfile": mkfile.mkfile,
+				"mkdir": mkdir.mkdir,
 				"open": open.open,
-				"rename": rename.rename,
 				"copy": copy.copy,
+				"rename": rename.rename,
 				"remove": remove.remove
 			}
 		);

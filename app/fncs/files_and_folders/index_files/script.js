@@ -300,6 +300,7 @@ window.contApp = new (function( px ){
 	var $elms = {};
 	$elms.editor = $('<div>');
 	var mkfile = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/mkfile.js'))(this, px, _pj, $);
+	var mkdir = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/mkdir.js'))(this, px, _pj, $);
 	var open = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/open.js'))(this, px, _pj, $);
 	var copy = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/copy.js'))(this, px, _pj, $);
 	var rename = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/rename.js'))(this, px, _pj, $);
@@ -319,9 +320,10 @@ window.contApp = new (function( px ){
 					});
 				},
 				"mkfile": mkfile.mkfile,
+				"mkdir": mkdir.mkdir,
 				"open": open.open,
-				"rename": rename.rename,
 				"copy": copy.copy,
+				"rename": rename.rename,
 				"remove": remove.remove
 			}
 		);
@@ -448,7 +450,7 @@ window.contApp = new (function( px ){
 
 })( window.parent.px );
 
-},{"../../../fncs/files_and_folders/index_files/libs.ignore/copy.js":4,"../../../fncs/files_and_folders/index_files/libs.ignore/mkfile.js":5,"../../../fncs/files_and_folders/index_files/libs.ignore/open.js":6,"../../../fncs/files_and_folders/index_files/libs.ignore/remove.js":7,"../../../fncs/files_and_folders/index_files/libs.ignore/rename.js":8}],4:[function(require,module,exports){
+},{"../../../fncs/files_and_folders/index_files/libs.ignore/copy.js":4,"../../../fncs/files_and_folders/index_files/libs.ignore/mkdir.js":5,"../../../fncs/files_and_folders/index_files/libs.ignore/mkfile.js":6,"../../../fncs/files_and_folders/index_files/libs.ignore/open.js":7,"../../../fncs/files_and_folders/index_files/libs.ignore/remove.js":8,"../../../fncs/files_and_folders/index_files/libs.ignore/rename.js":9}],4:[function(require,module,exports){
 /**
  * Files and Folders: copy.js
  */
@@ -557,6 +559,50 @@ module.exports = function(contApp, px, _pj, $){
 
 },{}],5:[function(require,module,exports){
 /**
+ * Files and Folders: mkdir.js
+ */
+module.exports = function(contApp, px, _pj, $){
+	this.mkdir = function(current_dir, callback){
+		var $body = $('<div>').html( $('#template-mkdir').html() );
+		$body.find('.cont_current_dir').text(current_dir);
+		$body.find('[name=dirname]').on('change keyup', function(){
+			var dirname = $body.find('[name=dirname]').val();
+			if( dirname.match(/\.html?$/i) ){
+				$body.find('.cont_html_ext_option').show();
+			}else{
+				$body.find('.cont_html_ext_option').hide();
+			}
+		});
+		px2style.modal({
+			'title': 'Create new Directory',
+			'body': $body,
+			'buttons': [
+				$('<button type="button" class="px2-btn">')
+					.text('Cancel')
+					.on('click', function(e){
+						px2style.closeModal();
+					}),
+				$('<button class="px2-btn px2-btn--primary">')
+					.text('OK')
+			],
+			'form': {
+				'submit': function(){
+					px2style.closeModal();
+					var dirname = $body.find('[name=dirname]').val();
+					if( !dirname ){ return; }
+
+					callback( dirname );
+				}
+			},
+			'width': 460
+		}, function(){
+			$body.find('[name=dirname]').focus();
+		});
+	}
+}
+
+},{}],6:[function(require,module,exports){
+/**
  * Files and Folders: mkfile.js
  */
 module.exports = function(contApp, px, _pj, $){
@@ -633,7 +679,7 @@ module.exports = function(contApp, px, _pj, $){
 	}
 }
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /**
  * Files and Folders: open.js
  */
@@ -767,7 +813,7 @@ module.exports = function(contApp, px, _pj, $){
 
 }
 
-},{"path":1}],7:[function(require,module,exports){
+},{"path":1}],8:[function(require,module,exports){
 /**
  * Files and Folders: remove.js
  */
@@ -852,7 +898,7 @@ module.exports = function(contApp, px, _pj, $){
 	}
 }
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /**
  * Files and Folders: rename.js
  */

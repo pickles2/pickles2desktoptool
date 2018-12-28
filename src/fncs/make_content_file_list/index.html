@@ -27,6 +27,29 @@
 		<script src="./index_files/script.js"></script>
 
 
+		<!-- Template: Form(Step1) -->
+		<script type="text/template" id="template-form-step1">
+			<form action="javascript:;" method="post">
+				<!-- <div>
+					<h2>対象範囲</h2>
+					<p><textarea name="region" class="form-control"></textarea></p>
+				</div>
+				<div>
+					<h2>除外ディレクトリ</h2>
+					<p><textarea name="ignore" class="form-control"></textarea></p>
+				</div>
+				<div>
+					<h2>ファイル名</h2>
+					<p><textarea name="filename" class="form-control"></textarea></p>
+				</div> -->
+				<div>
+					<h2>ファイルリストの保存先</h2>
+					<p><input type="file" name="path_csv_save_to" nwsaveas="filelist.csv" /></p>
+				</div>
+				<div class="cont_table_preview"></div>
+				<p class="mx-auto"><button type="submit" class="px2-btn px2-btn--primary" disabled="disabled">ファイルリストを作成する</button></p>
+			</form>
+		</script>
 	</head>
 	<body>
 		<div class="container">
@@ -34,7 +57,7 @@
 		</div>
 		<div class="contents">
 			<div class="container">
-				<div id="main"></div>
+				<div class="contents" id="main"></div>
 			</div>
 		</div>
 	</body>

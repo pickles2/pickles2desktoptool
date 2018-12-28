@@ -5,8 +5,6 @@ window.contApp = new (function( px ){
 	var $main,
 		$file,
 		$tablePreview;
-	var $elms = {};
-	$elms.editor = $('<div>');
 	var loadedCsv = [];
 	var styleResult = {
 		'success' : {
@@ -48,7 +46,7 @@ window.contApp = new (function( px ){
 			});
 		})
 
-		// コンテンツ移動処理を実行
+		// コンテンツファイル作成処理を実行
 		$main.find('form').on('submit', function(e){
 			$main.find('button').attr("disabled", "disabled");
 			var $btnCompolete = $('<button class="px2-btn px2-btn--primary">');
@@ -79,7 +77,7 @@ window.contApp = new (function( px ){
 			px.it79.ary(
 				loadedCsv,
 				function(it1, row, idx){
-					console.log(idx, row);
+					// console.log(idx, row);
 
 					var nth = Number(idx)+1;
 					var editorMode = row[1];
@@ -88,14 +86,14 @@ window.contApp = new (function( px ){
 						// B列が / から始まる場合、コピー元パスと判断する。
 						command = '/?PX=px2dthelper.copy_content&from='+encodeURIComponent(row[1])+'&to='+encodeURIComponent(row[0]);
 					}
-					console.log(command);
+					// console.log(command);
 
 					_pj.px2proj.query(
 						command,
 						{
 							"output": "json",
 							"complete": function(data, code){
-								console.log(data, code);
+								// console.log(data, code);
 								var result = JSON.parse(data);
 								var styleName = 'success';
 								if( code !== 0 ){
@@ -152,11 +150,6 @@ window.contApp = new (function( px ){
 	 * ウィンドウリサイズイベントハンドラ
 	 */
 	function onWindowResize(){
-		$elms.editor
-			.css({
-				'height': $(window).innerHeight() - 0
-			})
-		;
 	}
 
 })( window.parent.px );

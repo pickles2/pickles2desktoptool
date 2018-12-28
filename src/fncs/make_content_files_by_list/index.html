@@ -22,26 +22,39 @@
 		<link rel="stylesheet" href="../../common/px2style/dist/styles.css" charset="utf-8" />
 		<script src="../../common/px2style/dist/scripts.js" charset="utf-8"></script>
 
-		<!-- normalize & FESS -->
-		<link rel="stylesheet" href="../../common/styles/contents.css" type="text/css" />
-
-		<!-- remote-finder.js -->
-		<link rel="stylesheet" href="../../common/remote-finder/dist/remote-finder.css" type="text/css" />
-		<script src="../../common/remote-finder/dist/remote-finder.js"></script>
-
 		<!-- Local Resources -->
 		<link rel="stylesheet" href="./index_files/style.css" type="text/css" />
 		<script src="./index_files/script.js"></script>
 
+
+		<!-- Template: Form(Step1) -->
+		<script type="text/template" id="template-form-step1">
+			<h2>CSVファイルを選択</h2>
+			<div>
+				<ul>
+					<li>複数のコンテンツファイルを一度に作成することができます。</li>
+					<li>定義列は不要です。次の列定義に従って各行を記述してください。
+						<ul>
+							<li>A列 : 作成するコンテンツのパス</li>
+							<li>B列 : 作成するコンテンツの編集モード(<code>html</code>, <code>html.gui</code>, <code>md</code> のいずれか)、 または複製もとのコンテンツのパス</li>
+						</ul>
+					</li>
+					<li>各コンテンツのリソースフォルダ(<code>*_files</code>)は、コンテンツとともに自動的に作成されます。</li>
+				</ul>
+				<p><input type="file" name="path_csv" /></p>
+			</div>
+			<div class="cont_table_preview"></div>
+			<form action="javascript:;" method="post">
+				<p><button type="submit" class="px2-btn px2-btn--primary" disabled="disabled">コンテンツを作成する</button></p>
+			</form>
+		</script>
 	</head>
 	<body>
 		<div class="container">
 			<h1>コンテンツファイルを一括作成</h1>
 		</div>
-		<div class="contents">
-			<div class="container">
-				<div id="cont_finder"></div>
-			</div>
+		<div class="container">
+			<div class="contents" id="main"></div>
 		</div>
 	</body>
 </html>

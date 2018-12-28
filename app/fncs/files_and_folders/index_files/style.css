@@ -7,7 +7,7 @@ html, body {
 body {
   display: flex;
   flex-direction: column; }
-  body > .contatiner {
+  body > .container {
     flex-shrink: 0; }
   body > .contents {
     display: flex;

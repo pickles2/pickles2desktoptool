@@ -8,6 +8,14 @@ window.contApp = new (function( px ){
 	var $elms = {};
 	$elms.editor = $('<div>');
 	var loadedCsv = [];
+	var styleResult = {
+		'success' : {
+			'background-color': '#dfd'
+		},
+		'failed': {
+			'background-color': '#f99'
+		}
+	};
 
 	/**
 	 * 初期化
@@ -35,7 +43,7 @@ window.contApp = new (function( px ){
 					return;
 				}
 				loadedCsv = data;
-				drawPreviewTable($tablePreview);
+				drawTargetListTable($tablePreview);
 				$main.find('button').removeAttr("disabled");
 			});
 		})
@@ -66,74 +74,50 @@ window.contApp = new (function( px ){
 				}
 			);
 
-			drawPreviewTable($progress);
-
-			// _pj.px2proj.query(
-			// 	'/?PX=px2dthelper.check_editor_mode&path='+encodeURIComponent(pagePath), {
-			// 		"output": "json",
-			// 		"complete": function(data, code){
-			// 			// console.log(data, code);
-			// 			var rtn = JSON.parse(data);
-			// 			callback(rtn);
-			// 			return;
-			// 		}
-			// 	}
-			// );
+			drawTargetListTable($progress);
 
 			px.it79.ary(
 				loadedCsv,
 				function(it1, row, idx){
-					setTimeout(function(){
-						console.log(idx, row);
-						it1.next();
-					}, 500);
+					console.log(idx, row);
+
+					var nth = Number(idx)+1;
+					var editorMode = row[1];
+					var command = row[0]+'?PX=px2dthelper.init_content&editor_mode='+encodeURIComponent(row[1]);
+					if( editorMode.match(/^\//) ){
+						// B列が / から始まる場合、コピー元パスと判断する。
+						command = '/?PX=px2dthelper.copy_content&from='+encodeURIComponent(row[1])+'&to='+encodeURIComponent(row[0]);
+					}
+					console.log(command);
+
+					_pj.px2proj.query(
+						command,
+						{
+							"output": "json",
+							"complete": function(data, code){
+								console.log(data, code);
+								var result = JSON.parse(data);
+								var styleName = 'success';
+								if( code !== 0 ){
+									styleName = 'failed';
+								}
+								if( !result[0] ){
+									styleName = 'failed';
+								}
+
+								$('.cont_target_list tr:nth-child('+nth+') td').css(styleResult[styleName]);
+								$progress.find('.cont_target_list tr:nth-child('+nth+') td').css(styleResult[styleName]);
+								it1.next();
+								return;
+							}
+						}
+					);
+
 				},
 				function(){
 					$btnCompolete.removeAttr("disabled");
 				}
 			);
-
-
-
-			// px.commandQueue.client.addQueueItem(
-			// 	[
-			// 		'php',
-			// 		path_px2_move_contents,
-			// 		utils79.base64_encode(JSON.stringify(param))
-			// 	],
-			// 	{
-			// 		'cdName': 'default',
-			// 		'tags': [
-			// 			'pj-'+pj.get('id'),
-			// 			'project-move-contents'
-			// 		],
-			// 		'accept': function(queueId){
-			// 			// console.log(queueId);
-			// 		},
-			// 		'open': function(message){
-			// 		},
-			// 		'stdout': function(message){
-			// 			for(var idx in message.data){
-			// 				stdout += message.data[idx];
-			// 				$progress.text( $progress.text()+message.data[idx] );
-			// 			}
-			// 		},
-			// 		'stderr': function(message){
-			// 			for(var idx in message.data){
-			// 				stdout += message.data[idx];
-			// 				stderr += message.data[idx];
-			// 				$progress.text( $progress.text()+message.data[idx] );
-			// 			}
-			// 		},
-			// 		'close': function(message){
-			// 			setTimeout(function(){
-			// 				var code = message.data;
-			// 				$btnCompolete.removeAttr("disabled");
-			// 			},500);
-			// 			return;
-			// 		}
-			// 	}
-			// );
 
 		});
 
@@ -145,9 +129,14 @@ window.contApp = new (function( px ){
 	/**
 	 * プレビューテーブルを描画する
 	 */
-	function drawPreviewTable( $div ){
+	function drawTargetListTable( $div ){
 		$div = $($div);
-		var $tbl = $('<table>').addClass('table').css({'width':'100%'});
+		var $tbl = $('<table>')
+			.addClass('cont_target_list')
+			.addClass('table')
+			.css({
+				'width':'100%'
+			});
 		for(var idx in loadedCsv){
 			var $tr = $('<tr>');
 			for(var idx2 in loadedCsv[idx]){

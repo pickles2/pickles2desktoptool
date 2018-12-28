@@ -29,23 +29,23 @@
 
 		<!-- Template: Form(Step1) -->
 		<script type="text/template" id="template-form-step1">
-			<h2>CSVファイルを選択</h2>
-			<div>
-				<ul>
-					<li>複数のコンテンツファイルを一度に作成することができます。</li>
-					<li>定義列は不要です。次の列定義に従って各行を記述してください。
-						<ul>
-							<li>A列 : 作成するコンテンツのパス</li>
-							<li>B列 : 作成するコンテンツの編集モード(<code>html</code>, <code>html.gui</code>, <code>md</code> のいずれか)、 または複製もとのコンテンツのパス</li>
-						</ul>
-					</li>
-					<li>各コンテンツのリソースフォルダ(<code>*_files</code>)は、コンテンツとともに自動的に作成されます。</li>
-				</ul>
-				<p><input type="file" name="path_csv" /></p>
-			</div>
-			<div class="cont_table_preview"></div>
 			<form action="javascript:;" method="post">
-				<p><button type="submit" class="px2-btn px2-btn--primary" disabled="disabled">コンテンツを作成する</button></p>
+				<div>
+					<h2>CSVファイルを選択</h2>
+					<ul>
+						<li>複数のコンテンツファイルを一度に作成することができます。</li>
+						<li>定義列は不要です。次の列定義に従って各行を記述してください。
+							<ul>
+								<li>A列 : 作成するコンテンツのパス</li>
+								<li>B列 : 作成するコンテンツの編集モード(<code>html</code>, <code>html.gui</code>, <code>md</code> のいずれか)、 または複製もとのコンテンツのパス</li>
+							</ul>
+						</li>
+						<li>各コンテンツのリソースフォルダ(<code>*_files</code>)は、コンテンツとともに自動的に作成されます。</li>
+					</ul>
+					<p><input type="file" name="path_csv" /></p>
+				</div>
+				<div class="cont_table_preview"></div>
+				<p class="mx-auto"><button type="submit" class="px2-btn px2-btn--primary" disabled="disabled">コンテンツを作成する</button></p>
 			</form>
 		</script>
 	</head>

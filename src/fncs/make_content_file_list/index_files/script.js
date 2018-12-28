@@ -15,7 +15,9 @@ window.contApp = new (function( px ){
 	var counter = 0;
 	var csvRowTemplate = JSON.stringify({
 		'path': '',
-		'filesize': ''
+		'filesize': '',
+		'editor_mode': '',
+		'path_files': ''
 	});
 	var paths_region_dir = [];
 	var paths_ignore_dir = [];
@@ -152,39 +154,23 @@ window.contApp = new (function( px ){
 						it1.next();
 						return;
 					}
-					var rowTemplate = JSON.parse(csvRowTemplate);
-					rowTemplate.path = path+basename;
 					counter ++;
 					$progress.html(counter);
 
-
-					_pj.px2proj.query(
-						path+basename + '?PX=px2dthelper.get.all',
-						{
-							"output": "json",
-							"complete": function(data, code){
-								// console.log(data, code);
-								var result = JSON.parse(data);
-								console.log(result);
-
-								var stat = px.fs.statSync(path_base+path+basename);
-								rowTemplate.filesize = stat.size;
-
-								// CSV行データを保存
-								var tmpStrRow = '';
-								for(var idx in rowTemplate){
-									var cell = rowTemplate[idx] + "";
-									cell = cell.split('"').join('""');
-									tmpStrRow += '"'+cell+'"' + ',';
-								}
-								px.fs.appendFileSync( pathCsv, tmpStrRow + "\n" );
-
-								it1.next();
-								return;
-							}
+					scanFile( path+basename, function(scanData){
+						// CSV行データを保存
+						var tmpStrRow = '';
+						for(var idx in scanData){
+							var cell = scanData[idx] + "";
+							cell = cell.split('"').join('""');
+							tmpStrRow += '"'+cell+'"' + ',';
 						}
-					);
+						px.fs.appendFileSync( pathCsv, tmpStrRow + "\n" );
+
+						it1.next();
+					} );
 					return;
+
 				}else if( px.utils79.is_dir( path_base+path+basename ) ){
 					if(!is_target_path(path+basename+'/')){
 						it1.next();
@@ -201,6 +187,63 @@ window.contApp = new (function( px ){
 			}
 		);
 		return;
+	}
+
+
+	/**
+	 * ファイルの情報を調べる
+	 */
+	function scanFile(path, callback){
+		var path_base = _pj.get('path');
+		var rowTemplate = JSON.parse(csvRowTemplate);
+		rowTemplate.path = path;
+
+		console.log('---', path);
+
+		px.it79.fnc({}, [
+			function(it1){
+				_pj.px2proj.query(
+					path + '?PX=px2dthelper.get.all',
+					{
+						"output": "json",
+						"complete": function(data, code){
+							// console.log(data, code);
+							var result = JSON.parse(data);
+							// console.log(result);
+
+							var stat = px.fs.statSync(path_base+path);
+							rowTemplate.filesize = stat.size;
+
+							rowTemplate.path_files = result.path_files;
+
+							it1.next();
+							return;
+						}
+					}
+				);
+			},
+			function(it1){
+				_pj.px2proj.query(
+					path + '?PX=px2dthelper.check_editor_mode',
+					{
+						"output": "json",
+						"complete": function(data, code){
+							// console.log(data, code);
+							var result = JSON.parse(data);
+							// console.log(result);
+
+							rowTemplate.editor_mode = result;
+
+							it1.next();
+							return;
+						}
+					}
+				);
+			},
+			function(it1){
+				callback(rowTemplate);
+			}
+		]);
 	}
 
 	/**

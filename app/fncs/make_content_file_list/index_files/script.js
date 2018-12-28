@@ -22,6 +22,11 @@ window.contApp = new (function( px ){
 	});
 	var paths_region_dir = [];
 	var paths_ignore_dir = [];
+	var filenames = [];
+	var escp = [
+		'(', ')', '[', ']', '{', '}',
+		'^', '$', '+'
+	];
 
 	/**
 	 * 初期化
@@ -41,6 +46,7 @@ window.contApp = new (function( px ){
 		$main.find('form').on('submit', function(e){
 			paths_region_dir = parse_paths($main.find('textarea[name=paths_region_dir]').val());
 			paths_ignore_dir = parse_paths($main.find('textarea[name=paths_ignore_dir]').val());
+			filenames = parse_paths($main.find('textarea[name=filenames]').val());
 
 			$main.find('button').attr("disabled", "disabled");
 			var $btnCompolete = $('<button class="px2-btn px2-btn--primary">');
@@ -83,10 +89,18 @@ window.contApp = new (function( px ){
 				},
 				function(){
 					$progress.html(counter);
-					scanDir('/', function(){
-						$btnCompolete.removeAttr("disabled");
-						return;
-					});
+					px.it79.ary(
+						paths_region_dir,
+						function(it1, row, idx){
+							scanDir(row, function(){
+								it1.next();
+							});
+						},
+						function(){
+							$btnCompolete.removeAttr("disabled");
+							return;
+						}
+					);
 				}
 			);
 
@@ -151,7 +165,7 @@ window.contApp = new (function( px ){
 				// console.log(idx, path + basename);
 
 				if( px.utils79.is_file( path_base+path+basename ) ){
-					if(!is_target_path(path+basename)){
+					if(!is_target_path(path, basename)){
 						it1.next();
 						return;
 					}
@@ -173,7 +187,7 @@ window.contApp = new (function( px ){
 					return;
 
 				}else if( px.utils79.is_dir( path_base+path+basename ) ){
-					if(!is_target_path(path+basename+'/')){
+					if(!is_target_path(path, basename+'/')){
 						it1.next();
 						return;
 					}
@@ -251,9 +265,13 @@ window.contApp = new (function( px ){
 	 * パスの指定を解析する
 	 */
 	function parse_paths(strPaths){
-		var paths = strPaths.split(/[\r\n\,]+/);
-		for( var i in paths ){
-			paths[i] = px.utils79.trim(paths[i]);
+		var paths = [];
+		var tmpPaths = strPaths.split(/[\r\n\,]+/);
+		for( var i in tmpPaths ){
+			tmpPaths[i] = px.utils79.trim(tmpPaths[i]);
+			if( tmpPaths[i].length ){
+				paths.push(tmpPaths[i]);
+			}
 		}
 		return paths;
 	}
@@ -261,17 +279,45 @@ window.contApp = new (function( px ){
 	/**
 	 * パスが対象となるディレクトリか調べる
 	 */
-	function is_target_path(path){
+	function is_target_path(path, basename){
 		// 対象範囲に含まれない場合
+		var hit = false;
 		for(var i in paths_region_dir){
-			if( path.indexOf( paths_region_dir[i] ) === -1 ){
-				return false;
+			if( (path+basename).indexOf( paths_region_dir[i] ) === 0 ){
+				hit = true;
+				break;
 			}
+		}
+		if( !hit ){
+			// console.log(path+basename, 'NG 対象範囲に含まれない');
+			return false;
 		}
 
 		// 除外範囲に含まれる場合
 		for(var i in paths_ignore_dir){
-			if( path.indexOf( paths_ignore_dir[i] ) === 0 ){
+			if( (path+basename).indexOf( paths_ignore_dir[i] ) === 0 ){
+				// console.log(path+basename, 'NG 除外範囲に含まれる');
+				return false;
+			}
+		}
+
+		// ファイル名のパターンに当てはまらない場合
+		if( !basename.match(/\//) ){
+			var hit = false;
+			for( var i in filenames ){
+				var ptn = filenames[i];
+				for(var i2 in escp){
+					ptn = ptn.split(escp[i2]).join('\\'+escp[i2]);
+				}
+				ptn = ptn.split(/\*/).join('[\\s\\S]*');
+				ptn = '^'+ptn+'$';
+				if( basename.match( new RegExp(ptn) ) ){
+					hit = true;
+					break;
+				}
+			}
+			if(!hit){
+				// console.log(path+basename, 'NG ファイル名のパターンに当てはまらない');
 				return false;
 			}
 		}

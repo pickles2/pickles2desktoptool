@@ -19,7 +19,8 @@ menu.moveContents,Move Contents,コンテンツを移動する,移动内容,移�
 menu.search,Search,検索,搜索,搜尋
 menu.module,Modules,モジュール,,
 menu.styleguideGenerator,"Style Guide Generator",スタイルガイド生成,,
-menu.mkContentFilesByList,Make Content Files by list,一覧からコンテンツファイルを一括作成,,
+menu.mkContentFilesByList,Make Content Files by list,コンテンツファイルを一括作成,,
+menu.mkContentFileList,Make Content File list,コンテンツファイルリスト作成,,
 menu.contentsProcessor,Contents Processor,コンテンツを一括加工,,
 menu.updateGuiContents,Update all GUI Edited Contents,GUI編集コンテンツを一括再構成,更新全部GUI编辑内容,更新全部GUI編輯內容
 menu.clearcache,Clear Cache,キャッシュを消去,清除缓存,清除緩存

@@ -184,6 +184,15 @@ module.exports = function(px){
 		}
 	});
 	_menu.push({
+		"label":px.lb.get('menu.mkContentFileList'),
+		"cond":"pxStandby",
+		"area":"shoulder",
+		"app":"fncs/make_content_file_list/index.html",
+		"click": function(){
+			px.subapp($(this).data('app'));
+		}
+	});
+	_menu.push({
 		"label":px.lb.get('menu.contentsProcessor'),
 		"cond":"pxStandby",
 		"area":"shoulder",

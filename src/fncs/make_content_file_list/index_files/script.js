@@ -3,14 +3,10 @@ window.contApp = new (function( px ){
 	var _this = this;
 	var _pj = px.getCurrentProject();
 	var $main,
-		$file;
-	var $progress = $('<div>');
-	var $tbl = $('<table>')
-		.addClass('cont_target_list')
-		.addClass('table')
-		.css({
-			'width':'100%'
-		});
+		$file,
+		$msg_counter,
+		$msg_target_dir,
+		$msg_message;
 	var pathCsv;
 	var counter = 0;
 	var csvRowTemplate = JSON.stringify({
@@ -49,10 +45,10 @@ window.contApp = new (function( px ){
 
 			$main.find('button').attr("disabled", "disabled");
 			var $btnCompolete = $('<button class="px2-btn px2-btn--primary">');
-			var $canvasContent = $('<div>');
-			$canvasContent.append($progress);
-			$tbl.html('');
-			$progress.html('').append($tbl);
+			var $canvasContent = $( $('#template-progress').html() );
+			$msg_counter = $canvasContent.find('.msg_counter');
+			$msg_target_dir = $canvasContent.find('.msg_target_dir');
+			$msg_message = $canvasContent.find('.msg_message');
 			counter = 0;
 
 			pathCsv = $file.val();
@@ -87,15 +83,18 @@ window.contApp = new (function( px ){
 					]
 				},
 				function(){
-					$progress.html(counter);
+					$msg_counter.html(counter);
 					px.it79.ary(
 						paths_region_dir,
 						function(it1, row, idx){
+							$msg_target_dir.text(row);
 							scanDir(row, function(){
 								it1.next();
 							});
 						},
 						function(){
+							$msg_target_dir.text('---');
+							$msg_message.text('Finished!');
 							$btnCompolete.removeAttr("disabled");
 							return;
 						}
@@ -169,7 +168,8 @@ window.contApp = new (function( px ){
 						return;
 					}
 					counter ++;
-					$progress.html(counter);
+					$msg_counter.text(counter);
+					$msg_message.text(path+basename);
 
 					scanFile( path+basename, function(scanData){
 						// CSV行データを保存

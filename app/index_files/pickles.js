@@ -1115,11 +1115,7 @@ new (function($, window){
 		px.save(function(){
 			// if(!confirm('exit?')){return;}
 			try {
-				if( _platform == 'win' ){
-					nw.App.closeAllWindows();
-				}else{
-					nw.App.quit();
-				}
+				nw.App.quit();
 			} catch (e) {
 				console.error('Unknown Error on px.exit()');
 			}

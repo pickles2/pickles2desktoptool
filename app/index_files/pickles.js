@@ -12,8 +12,6 @@ new (function($, window){
 	// NW.js
 	this.nw = nw;
 	this.nwWindow = nw.Window.get();
-	this.nwWindow.moveTo(0, 0);
-	this.nwWindow.resizeTo(window.parent.screen.width, window.parent.screen.height);
 
 	// jQuery
 	this.$ = $;
@@ -248,6 +246,32 @@ new (function($, window){
 					return;
 				},
 				function(it1){
+					// ウィンドウ位置とサイズの初期化
+					var db = px.px2dtLDA.getData();
+					var winPosition = {
+						"x": 0,
+						"y": 0,
+						"width": window.screen.width,
+						"height": window.screen.height
+					};
+					try{
+						if( typeof(db.extra.px2dt.windowPosition) === typeof({}) ){
+							winPosition = db.extra.px2dt.windowPosition;
+						}
+					}catch(e){}
+					px.nwWindow.moveTo(winPosition.x, winPosition.y);
+					px.nwWindow.resizeTo(winPosition.width, winPosition.height);
+
+					db.extra = db.extra || {};
+					db.extra.px2dt = db.extra.px2dt || {};
+					db.extra.px2dt.windowPosition = winPosition;
+					px.px2dtLDA.setData(db);
+					px.px2dtLDA.save(function(){
+						it1.next();
+					});
+					return;
+				},
+				function(it1){
 					var ComposerUpdateChecker = require('./index_files/pickles.composerUpdateChecker.js');
 					px.composerUpdateChecker = new ComposerUpdateChecker( px, function(){
 						it1.next();
@@ -331,6 +355,20 @@ new (function($, window){
 	 */
 	this.save = function(callback){
 		callback = callback || function(){};
+
+		var db = px.px2dtLDA.getData();
+		var winPosition = {
+			"x": px.nwWindow.x,
+			"y": px.nwWindow.y,
+			"width": px.nwWindow.width,
+			"height": px.nwWindow.height
+		};
+
+		db.extra = db.extra || {};
+		db.extra.px2dt = db.extra.px2dt || {};
+		db.extra.px2dt.windowPosition = winPosition;
+		px.px2dtLDA.setData(db);
+
 		px.px2dtLDA.save(function(){
 			// プロジェクト別のアプリケーションデータを削除する
 			var pjAll = px.px2dtLDA.getProjectAll();
@@ -1074,24 +1112,28 @@ new (function($, window){
 	 */
 	this.exit = function(){
 		console.log( 'px.exit() called.' );
-		// if(!confirm('exit?')){return;}
-		try {
-			if( _platform == 'win' ){
-				nw.App.closeAllWindows();
-			}else{
-				nw.App.quit();
+		px.save(function(){
+			// if(!confirm('exit?')){return;}
+			try {
+				if( _platform == 'win' ){
+					nw.App.closeAllWindows();
+				}else{
+					nw.App.quit();
+				}
+			} catch (e) {
+				console.error('Unknown Error on px.exit()');
 			}
-		} catch (e) {
-			console.error('Unknown Error on px.exit()');
-		}
+		});
 	}
 
 	/**
 	 * イベントセット
 	 */
+	this.nwWindow.on( 'close', function(e){
+		px.exit();
+	});
 	process.on( 'exit', function(e){
 		px.log( 'Application exit;' );
-		px.save();
 	});
 	process.on( 'uncaughtException', function(e){
 		// alert('ERROR: Uncaught Exception');

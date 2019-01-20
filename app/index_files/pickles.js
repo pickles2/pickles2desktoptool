@@ -262,13 +262,7 @@ new (function($, window){
 					px.nwWindow.moveTo(winPosition.x, winPosition.y);
 					px.nwWindow.resizeTo(winPosition.width, winPosition.height);
 
-					db.extra = db.extra || {};
-					db.extra.px2dt = db.extra.px2dt || {};
-					db.extra.px2dt.windowPosition = winPosition;
-					px.px2dtLDA.setData(db);
-					px.px2dtLDA.save(function(){
-						it1.next();
-					});
+					it1.next();
 					return;
 				},
 				function(it1){

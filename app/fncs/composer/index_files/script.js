@@ -156,27 +156,71 @@ window.cont_update_proj = function(btn){
  */
 window.cont_install_proj = function(btn){
 	$(btn).attr('disabled', 'disabled');
-	$('#cont_status .cont_console').html('');
+	$('#cont_install input[name=composer-force-install]').attr('disabled', 'disabled');
+	var isForceInstall = $('#cont_install input[name=composer-force-install]').prop("checked");
 
-	pj.execComposer(
-		['install'],
-		{
-			success: function(data){
-				$('#cont_status .cont_console').text(
-					$('#cont_status .cont_console').text() + data
-				);
-			} ,
-			error: function(data){
-				$('#cont_status .cont_console').text(
-					$('#cont_status .cont_console').text() + data
-				);
-			} ,
-			complete: function(data, error, code){
-				$(btn).removeAttr('disabled');
-				px.message( 'composer install 完了しました。' );
+	$('#cont_install .cont_console').html('');
+
+	it79.fnc({}, [
+		function(it1){
+			// 強制的更新の処理
+			if( !isForceInstall ){
+				it1.next();
+				return;
 			}
+			if(!utils79.is_dir(cont_realpathVendorDir)){
+				it1.next();
+				return;
+			}
+			$('#cont_install .cont_console').text(
+				$('#cont_install .cont_console').text() + 'Removing `vendor` directory...'
+			);
+			// vendorフォルダを削除する
+			fsEx.remove(cont_realpathVendorDir, function(){
+				$('#cont_install .cont_console').text(
+					$('#cont_install .cont_console').text() + 'done'+"\n"
+				);
+				it1.next();
+			});
+			return;
+		},
+		function(it1){
+			// composer install
+			pj.execComposer(
+				['install', '--no-interaction'],
+				{
+					success: function(data){
+						$('#cont_install .cont_console').text(
+							$('#cont_install .cont_console').text() + data
+						);
+					} ,
+					error: function(data){
+						$('#cont_install .cont_console').text(
+							$('#cont_install .cont_console').text() + data
+						);
+					} ,
+					complete: function(data, error, code){
+						// $('.cont_console').text(
+						// 	$('.cont_console').text() + code
+						// );
+						$(btn).removeAttr('disabled');
+						$('#cont_install input[name=composer-force-install]').removeAttr('disabled');
+						px.composerUpdateChecker.clearStatus( pj, function(){
+							if(code){
+								alert(
+									'composer が正常に終了しませんでした。(Exit Status Code: '+code+')'+"\n"
+									+'出力内容を参考に `composer.json` の内容を確認して再度お試しください。'+"\n"
+									+'または、「クリーンインストールする」オプションを有効にして再実行すると解決する場合があります。'+"\n"
+								);
+							}
+							px.message( 'composer install 完了しました。' );
+						} );
+					}
+				}
+			);
+			return;
 		}
-	);
+	]);
 }
 
 /**

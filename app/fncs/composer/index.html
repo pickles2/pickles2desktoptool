@@ -43,7 +43,8 @@
 
 					<!-- Nav tabs -->
 					<ul class="nav nav-tabs" role="tablist">
-						<li role="presentation" class="active"><a href="#cont_update" role="tab" data-toggle="tab">更新</a></li>
+						<li role="presentation" class="active"><a href="#cont_install" role="tab" data-toggle="tab">インストール</a></li>
+						<li role="presentation"><a href="#cont_update" role="tab" data-toggle="tab">更新</a></li>
 						<li role="presentation"><a href="#cont_edit" class="cont_edit" role="tab" data-toggle="tab">編集</a></li>
 						<li role="presentation"><a href="#cont_status" role="tab" data-toggle="tab">情報</a></li>
 						<li role="presentation"><a href="#cont_maintenance" role="tab" data-toggle="tab">メンテナンス</a></li>
@@ -51,13 +52,24 @@
 
 					<!-- Tab panes -->
 					<div class="tab-content">
-						<div role="tabpanel" class="tab-pane active" id="cont_update">
+						<div role="tabpanel" class="tab-pane active" id="cont_install">
 							<div class="btn-group btn-group-justified" role="group">
 								<div class="btn-group" style="width: 20%;">
-									<label title="vendorディレクトリを削除してからインストールし直します。"><input type="checkbox" name="composer-force-update" /> 強制的に更新する</label>
+									<label title="vendorディレクトリを削除してからインストールし直します。"><input type="checkbox" name="composer-force-install" /> クリーンインストールする</label>
 								</div>
 								<div class="btn-group" style="width: 80%;">
-									<button class="btn px2-btn" onclick="cont_update_proj(this); return false;" title="`$ composer update` を実行します。">composer プロジェクト を更新する</button>
+									<button class="btn px2-btn" onclick="cont_install_proj(this); return false;" title="`$ composer install` を実行します。">composer ライブラリ をインストールする</button>
+								</div>
+							</div>
+							<pre class="cont_console"></pre>
+						</div>
+						<div role="tabpanel" class="tab-pane" id="cont_update">
+							<div class="btn-group btn-group-justified" role="group">
+								<div class="btn-group" style="width: 20%;">
+									<label title="vendorディレクトリを削除してから更新し直します。"><input type="checkbox" name="composer-force-update" /> 強制的に更新する</label>
+								</div>
+								<div class="btn-group" style="width: 80%;">
+									<button class="btn px2-btn" onclick="cont_update_proj(this); return false;" title="`$ composer update` を実行します。">composer ライブラリ を更新する</button>
 								</div>
 							</div>
 							<pre class="cont_console"></pre>

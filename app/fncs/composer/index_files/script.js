@@ -133,7 +133,7 @@ window.cont_update_proj = function(btn){
 						// );
 						$(btn).removeAttr('disabled');
 						$('#cont_update input[name=composer-force-update]').removeAttr('disabled');
-						px.composerUpdateChecker.clearStatus( pj, function(){
+						px.composerInstallChecker.clearStatus( pj, function(){
 							if(code){
 								alert(
 									'composer が正常に終了しませんでした。(Exit Status Code: '+code+')'+"\n"
@@ -205,7 +205,7 @@ window.cont_install_proj = function(btn){
 						// );
 						$(btn).removeAttr('disabled');
 						$('#cont_install input[name=composer-force-install]').removeAttr('disabled');
-						px.composerUpdateChecker.clearStatus( pj, function(){
+						px.composerInstallChecker.clearStatus( pj, function(){
 							if(code){
 								alert(
 									'composer が正常に終了しませんでした。(Exit Status Code: '+code+')'+"\n"

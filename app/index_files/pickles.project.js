@@ -139,7 +139,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
 				// composer パッケージの更新をチェックする。
-				px.composerUpdateChecker.check(_this, function(checked){});
+				px.composerInstallChecker.check(_this, function(checked){});
 				rlv();
 				return;
 			}); })

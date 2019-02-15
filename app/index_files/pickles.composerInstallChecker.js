@@ -1,5 +1,5 @@
 /**
- * px.composerUpdateChecker
+ * px.composerInstallChecker
  */
 module.exports = function( px, callback ) {
 	callback = callback || function(){};
@@ -85,30 +85,33 @@ module.exports = function( px, callback ) {
 		new Promise(function(rlv){rlv();})
 			.then(function(){ return new Promise(function(rlv, rjt){
 
-				// $ composer update --dry-run
+				// $ composer install --dry-run
 				// この処理は、cmd-queue の行列待ちをしません。
 				// これはユーザーの認識の外で自動的に実行される処理で、
 				// かつ長い時間を要する場合があるコマンドです。
 				// ユーザーが知らない処理のために、ユーザーが実行したい処理が待ち状態になるのは使い勝手が悪いので、
 				// 行列待ちはしないことにしました。
 				px.execComposer(
-					['update', '--dry-run'],
+					['install', '--dry-run'],
 					{
 						'cwd': composerRootDir,
 						'success': function(data){
-							console.log('composer update: success');
+							console.log('composer install: success');
 							console.log(data);
 						},
 						'error': function(data){
-							console.log('composer update: error');
+							console.log('composer install: error');
 							console.log(data);
 						},
 						'complete': function(data, error, code){
 							var result = utils79.trim(data);
+							console.log(result);
 							var status = 'nothing_todo';
 							if( code ){
 								status = 'error';
-							}else if( result.match( new RegExp( '\- Updating .*? to', 'g' ) ) ){
+							}else if( result.match( new RegExp( '\- (?:Updating) .*? to', 'g' ) ) ){
+								status = 'update_found';
+							}else if( result.match( new RegExp( '\- (?:Installing) .*?', 'g' ) ) ){
 								status = 'update_found';
 							}else if( result.match( new RegExp( 'Nothing to install or update$' ) ) ){
 								status = 'nothing_todo';
@@ -117,8 +120,8 @@ module.exports = function( px, callback ) {
 							_this.checkStatus[composerRootDir].result = result;
 
 							if( _this.checkStatus[composerRootDir].status == 'update_found' ){
-								console.info('composerUpdateChecker: update_found ('+_this.checkStatus[composerRootDir].name+')');
-								px.message(_this.checkStatus[composerRootDir].name + ' の composer パッケージのいくつかに、新しいバージョンが見つかりました。 いますぐ更新することをお勧めします。');
+								console.info('composerInstallChecker: update_found ('+_this.checkStatus[composerRootDir].name+')');
+								px.message(_this.checkStatus[composerRootDir].name + ' の composer パッケージのいくつかに、新しいバージョンが見つかりました。 composer install を実行してください。');
 							}
 							callback( _this.checkStatus[composerRootDir] );
 							return;

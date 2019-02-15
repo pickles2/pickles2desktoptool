@@ -266,8 +266,8 @@ new (function($, window){
 					return;
 				},
 				function(it1){
-					var ComposerUpdateChecker = require('./index_files/pickles.composerUpdateChecker.js');
-					px.composerUpdateChecker = new ComposerUpdateChecker( px, function(){
+					var ComposerInstallChecker = require('./index_files/pickles.composerInstallChecker.js');
+					px.composerInstallChecker = new ComposerInstallChecker( px, function(){
 						it1.next();
 					});
 					return;

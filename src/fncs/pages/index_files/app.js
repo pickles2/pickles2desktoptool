@@ -119,8 +119,8 @@ window.contApp = new (function( px ){
 									.on('click', function(e){
 										var attrHref = $(this).attr('href');
 										if( attrHref.match(/^[a-zA-Z0-9]+\:/) ){
-											if(confirm( 'サイト外のURLです。ブラウザで開きますか？' )){
-												px.openInBrowser(attrHref);
+											if(confirm( 'サイト外のURLです。'+"\n"+attrHref+"\n"+'ブラウザで開きますか？' )){
+												px.utils.openURL(attrHref);
 											}
 											return false;
 										}
@@ -257,6 +257,7 @@ window.contApp = new (function( px ){
 		var pathControot = _pj.getConfig().path_controot;
 		to = to.replace( new RegExp( '^'+px.utils.escapeRegExp( pathControot ) ), '' );
 		to = to.replace( new RegExp( '^\\/*' ), '/' );
+		to = to.replace( /\/$/, '/index.html' );
 
 		var page_path = to;
 		return page_path;

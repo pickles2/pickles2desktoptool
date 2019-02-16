@@ -23,6 +23,7 @@
     "ejs": "^2.5.2",
     "express": "^4.13.0",
     "express-pickles2": "file:submodules/node-express-pickles2",
+    "express-queue": "0.0.12",
     "file-stream-rotator": "0.0.7",
     "fs-extra": "^0.24.0",
     "git-parser": "file:submodules/node-git-parser",

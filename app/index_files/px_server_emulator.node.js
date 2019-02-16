@@ -7,6 +7,7 @@
 	var fs = require('fs');
 	var path = require('path');
 	var express = require('express');
+	var expressQueue = require('express-queue');
 	var expressPickles2 = require('express-pickles2');
 	var morgan = require('morgan');
 	var FileStreamRotator = require('file-stream-rotator');
@@ -130,6 +131,8 @@
 		// etagを出力しないように変更。
 		_server.set('etag', false);
 
+		// Express Queue
+		_server.use(expressQueue({ activeLimit: 1, queuedLimit: -1 }));
 
 		// setup Pickles 2
 		_server.use('/*', expressPickles2(

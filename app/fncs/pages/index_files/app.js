@@ -3553,6 +3553,22 @@ window.contApp = new (function( px ){
 								it.next(prop);
 							} ,
 							function(it, prop){
+								var preWin = ( $elms.previewIframe.get(0).contentWindow );
+								$(preWin.document).find('a')
+									.removeAttr('target')
+									.on('click', function(e){
+										var attrHref = $(this).attr('href');
+										if( attrHref.match(/^[a-zA-Z0-9]+\:/) ){
+											if(confirm( 'サイト外のURLです。ブラウザで開きますか？' )){
+												px.openInBrowser(attrHref);
+											}
+											return false;
+										}
+										return true;
+									});
+								it.next(prop);
+							} ,
+							function(it, prop){
 								// console.log(prop);
 								app.goto( currentPagePath, {}, function(){
 									it.next(prop);

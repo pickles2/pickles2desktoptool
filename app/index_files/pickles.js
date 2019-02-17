@@ -354,8 +354,8 @@ new (function($, window){
 		var winPosition = {
 			"x": px.nwWindow.x,
 			"y": px.nwWindow.y,
-			"width": px.nwWindow.width,
-			"height": px.nwWindow.height
+			"width": px.nwWindow.window.outerWidth,
+			"height": px.nwWindow.window.outerHeight
 		};
 
 		db.extra = db.extra || {};

@@ -3558,7 +3558,7 @@ window.contApp = new (function( px ){
 									.removeAttr('target')
 									.on('click', function(e){
 										var attrHref = $(this).attr('href');
-										if( attrHref.match(/^[a-zA-Z0-9]+\:/) ){
+										if( attrHref.match(/^[a-zA-Z0-9]+\:/i) && !attrHref.match(/^(?:javascript|data)\:/i) ){
 											if(confirm( 'サイト外のURLです。'+"\n"+attrHref+"\n"+'ブラウザで開きますか？' )){
 												px.utils.openURL(attrHref);
 											}

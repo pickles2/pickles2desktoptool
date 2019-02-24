@@ -36,6 +36,15 @@
 				;
 
 				// --------------------------------------
+				// ボタンアクション設定： Command Queue のメイン端末を開く
+				$('.cont_open-command-queue-main-terminal button')
+					.on('click', function(){
+						px.commandQueue.show();
+						return false;
+					})
+				;
+
+				// --------------------------------------
 				// ボタンアクション設定： 自動更新のチェック
 				$('.cont_update-check button')
 					.on('click', function(){

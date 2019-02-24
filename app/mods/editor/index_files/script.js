@@ -1,3 +1,4 @@
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 window.px = window.parent.px;
 window.contApp = new (function( px ){
 	var _this = this;
@@ -5,19 +6,19 @@ window.contApp = new (function( px ){
 
 	var _param = px.utils.parseUriParam( window.location.href );
 
-	var _pageInfo = _pj.site.getPageInfo( _param.page_path );
-	if( !_pageInfo ){
-		alert('ERROR: Undefined page path.'); return this;
+	var _pageInfo = null;
+	var _themeInfo = null;
+	if( _param.page_path ){
+		_pageInfo = _pj.site.getPageInfo( _param.page_path );
+		// if( !_pageInfo ){
+		// 	alert('ERROR: Undefined page path.'); return this;
+		// }
+	}else if( _param.theme_id && _param.layout_id ){
+		_themeInfo = {
+			'theme_id': _param.theme_id,
+			'layout_id': _param.layout_id
+		};
 	}
-	var _pathContent = _pageInfo.content;
-	if( !_pathContent ){
-		_pathContent = _pageInfo.path;
-	}
-
-	var _cont_path = _pj.findPageContent( _param.page_path );
-	var _cont_realpath = px.utils.dirname( _pj.get('path')+'/'+_pj.get('entry_script') )+'/'+_cont_path;
-	var _cont_path_info = px.utils.parsePath(_cont_path);
-
 
 	if( window.parent && window.parent.contApp && window.parent.contApp.loadPreview ){
 		// 呼び出し元のプレビュー状態を同期する。
@@ -29,8 +30,20 @@ window.contApp = new (function( px ){
 	 * エディターを起動
 	 */
 	function openEditor(){
-		var filename_editor = 'editor_px2ce';
-		window.location.href = './editor_px2ce.html?page_path='+encodeURIComponent( _param.page_path );
+		var url = './editor_px2ce.html?';
+		var guiEngine = _pj.getGuiEngineName();
+
+		if(guiEngine == 'broccoli-html-editor-php'){
+			url = './editor_px2ce_php.html?'
+		}
+
+		if( _param.page_path ){
+			url += 'page_path='+encodeURIComponent( _param.page_path );
+		}else if(_param.theme_id && _param.layout_id){
+			url += 'theme_id='+encodeURIComponent( _param.theme_id );
+			url += '&layout_id='+encodeURIComponent( _param.layout_id );
+		}
+		window.location.href = url;
 		return true;
 	}
 
@@ -43,8 +56,11 @@ window.contApp = new (function( px ){
 		return true;
 	}
 
-	function init(){
-		if( _pageInfo.path.match( new RegExp('^alias[0-9]*\\:(.*)$') ) ){
+	/**
+	 * 初期化
+	 */
+	function init( callback ){
+		if( _pageInfo && _pageInfo.path.match( new RegExp('^alias[0-9]*\\:(.*)$') ) ){
 			// エイリアスはリダイレクトする
 			var to = RegExp.$1;
 			redirectEditor( to );
@@ -55,7 +71,9 @@ window.contApp = new (function( px ){
 	}
 
 	$(function(){
-		init();
+		init(function(){});
 	})
 
 })( window.parent.px );
+
+},{}]},{},[1])

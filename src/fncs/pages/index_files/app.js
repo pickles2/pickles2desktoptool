@@ -26,10 +26,11 @@ window.contApp = new (function( px ){
 		callback = callback || function(){};
 		it79.fnc({},[
 			function(it1, arg){
+				// 依存APIのバージョンを確認
 				_this.pj.checkPxCmdVersion(
 					{
 						apiVersion: '>=2.0.30',
-						px2dthelperVersion: '>=2.0.4'
+						px2dthelperVersion: '>=2.0.6'
 					},
 					function(){
 						// API設定OK
@@ -47,6 +48,33 @@ window.contApp = new (function( px ){
 						return;
 					}
 				);
+			},
+			function(it1, arg){
+				// broccoli-html-editor-php エンジン利用環境の要件を確認
+				if( _this.pj.getGuiEngineName() == 'broccoli-html-editor-php' ){
+					_this.pj.checkPxCmdVersion(
+						{
+							px2dthelperVersion: '>=2.0.8'
+						},
+						function(){
+							// API設定OK
+							it1.next(arg);
+						},
+						function( errors ){
+							// API設定が不十分な場合のエラー処理
+							var html = px.utils.bindEjs(
+								px.fs.readFileSync('app/common/templates/broccoli-html-editor-php-is-not-available.html').toString(),
+								{errors: errors}
+							);
+							$('.contents').html( html );
+							// エラーだったらここで離脱。
+							callback();
+							return;
+						}
+					);
+					return;
+				}
+				it1.next();
 			},
 			function(it1, arg){
 				$elms.editor = $('<div>');
@@ -85,6 +113,22 @@ window.contApp = new (function( px ){
 								it.next(prop);
 							} ,
 							function(it, prop){
+								var preWin = ( $elms.previewIframe.get(0).contentWindow );
+								$(preWin.document).find('a')
+									.removeAttr('target')
+									.on('click', function(e){
+										var attrHref = $(this).attr('href');
+										if( attrHref.match(/^[a-zA-Z0-9]+\:/i) && !attrHref.match(/^(?:javascript|data)\:/i) ){
+											if(confirm( 'サイト外のURLです。'+"\n"+attrHref+"\n"+'ブラウザで開きますか？' )){
+												px.utils.openURL(attrHref);
+											}
+											return false;
+										}
+										return true;
+									});
+								it.next(prop);
+							} ,
+							function(it, prop){
 								// console.log(prop);
 								app.goto( currentPagePath, {}, function(){
 									it.next(prop);
@@ -100,9 +144,9 @@ window.contApp = new (function( px ){
 				it1.next(arg);
 			},
 			function(it1, arg){
-				contentsComment = new (require('./libs.ignore/contentsComment.js'))(_this, px, _pj);
-				pageDraw = new (require('./libs.ignore/pageDraw.js'))(_this, px, _pj, $elms, contentsComment);
-				pageSearch = new (require('./libs.ignore/pageSearch.js'))(_this, px, _pj, $elms);
+				contentsComment = new (require('../../../fncs/pages/index_files/libs.ignore/contentsComment.js'))(_this, px, _pj);
+				pageDraw = new (require('../../../fncs/pages/index_files/libs.ignore/pageDraw.js'))(_this, px, _pj, $elms, contentsComment);
+				pageSearch = new (require('../../../fncs/pages/index_files/libs.ignore/pageSearch.js'))(_this, px, _pj, $elms);
 				it1.next(arg);
 			},
 			function(it1, arg){
@@ -180,7 +224,7 @@ window.contApp = new (function( px ){
 	 */
 	this.commitContents = function( page_path ){
 		this.gitUi.commit('contents', {'page_path': page_path}, function(result){
-			console.log('(コミット完了しました)');
+			console.log('(コミットを実行しました)', result);
 		});
 		return this;
 	}
@@ -191,7 +235,7 @@ window.contApp = new (function( px ){
 	 */
 	this.logContents = function( page_path ){
 		this.gitUi.log('contents', {'page_path': page_path}, function(result){
-			console.log('(コミットログを表示しました)');
+			console.log('(コミットログを表示しました)', result);
 		});
 		return this;
 	}
@@ -206,12 +250,14 @@ window.contApp = new (function( px ){
 		switch( previewLocation.href ){
 			case 'blank':
 			case 'about:blank':
+			case 'data:text/html,chromewebdata': // <- サーバーが立ち上がってないとき、chromeがこのURLを返す模様
 				return;
 		}
 		var to = previewLocation.pathname;
 		var pathControot = _pj.getConfig().path_controot;
 		to = to.replace( new RegExp( '^'+px.utils.escapeRegExp( pathControot ) ), '' );
 		to = to.replace( new RegExp( '^\\/*' ), '/' );
+		to = to.replace( /\/$/, '/index.html' );
 
 		var page_path = to;
 		return page_path;
@@ -235,6 +281,8 @@ window.contApp = new (function( px ){
 	 * 指定ページへ移動する
 	 */
 	this.goto = function( page_path, options, callback ){
+		// console.log('=-=-=-=-=-=-=-=-=-=-=-=-=-=-= goto');
+		// console.log(_currentPagePath, page_path);
 		callback = callback || function(){};
 		options = options || {};
 		if(page_path === undefined){
@@ -281,13 +329,30 @@ window.contApp = new (function( px ){
 			if(_currentPageInfo.page_info === false){
 				// var pageInfo = _pj.site.getPageInfo( page_path );
 				// console.log(pageInfo);
-				redirectPage(page_path, options, callback);
+				// redirectPage(page_path, options, callback);
+				alert('Error: ページ情報がロードされませんでした。');
+				px.progress.close();
+				callback();
 				return;
 			}
 
 			// 描画・プレビューロードをキック
 			pageDraw.redraw( _currentPageInfo, options, function(){
-				app.loadPreview( _currentPagePath, options, function(){
+				if( _currentPageInfo.path_type == 'alias' ){
+					// エイリアスはロードしない
+					px.progress.close();
+					callback();
+					return;
+				}
+
+				if( !_currentPageInfo.page_info ){
+					// ページ情報が正常にロードされていない場合
+					px.progress.close();
+					callback();
+					return;
+				}
+
+				app.loadPreview( _currentPageInfo.page_info.path, options, function(){
 					px.progress.close();
 					callback();
 				} );
@@ -302,6 +367,8 @@ window.contApp = new (function( px ){
 	 * プレビューウィンドウにページを表示する
 	 */
 	this.loadPreview = function( page_path, options, callback ){
+		// console.log('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= loadPreview');
+		// console.log(page_path);
 		callback = callback || function(){};
 		if(!options){ options = {}; }
 		if(!options.force){ options.force = false; }
@@ -317,17 +384,23 @@ window.contApp = new (function( px ){
 
 		if( currentPreviewPageUrl == gotoUrl && !options.force ){
 			// 現在表示中の `page_path` と同じなら、リロードをスキップ
+			// console.log('skipped :', page_path);
 			callback();
 			return;
 		}
 		// $elms.pageinfo.html('<div style="text-align:center;">now loading ...</div>');
 
-		px.preview.serverStandby( function(){
+		px.preview.serverStandby( function(result){
+			if(result === false){
+				px.message('プレビューサーバーの起動に失敗しました。');
+				callback();
+				return;
+			}
 			$elms.previewIframe.attr( 'src', gotoUrl );
 			callback();
 		} );
 		return;
-	} // goto()
+	} // loadPreview()
 
 	/**
 	 * エディター画面を開く
@@ -385,7 +458,7 @@ window.contApp = new (function( px ){
 				$('<a>')
 					.html('&times;')
 					.attr('href', 'javascript:;')
-					.click( function(){
+					.on('click', function(){
 						// if(!confirm('編集中の内容は破棄されます。エディタを閉じますか？')){ return false; }
 						_this.closeEditor();
 					} )
@@ -432,7 +505,10 @@ window.contApp = new (function( px ){
 		$('body')
 			.css({'overflow':'auto'})
 		;
-		_this.loadPreview( _currentPagePath, {'force':true}, function(){} );
+		_this.loadPreview( _currentPagePath, {'force':true}, function(){
+			pageDraw.redraw(_currentPageInfo, {}, function(){
+			});
+		} );
 		return this;
 	} // closeEditor()
 
@@ -451,7 +527,7 @@ window.contApp = new (function( px ){
 		var $workspaceContainer = $('.cont_workspace_container');
 		$workspaceContainer
 			.css({
-				'height': $(window).innerHeight() - $('.container').outerHeight() - $elms.commentView.outerHeight() - $elms.workspaceSearch.outerHeight() - heightBreadcrumb - 20,
+				'height': $(window).innerHeight() - $('.container').outerHeight() - ( $elms.commentView.is(':visible') ? $elms.commentView.outerHeight() + 10 : 0 ) - $elms.workspaceSearch.outerHeight() - heightBreadcrumb - 20,
 				'margin-top': 10
 			})
 		;
@@ -462,7 +538,7 @@ window.contApp = new (function( px ){
 		;
 		$elms.preview
 			.css({
-				'height': $('.cont_workspace_container').parent().outerHeight() - $elms.pageinfo.outerHeight() - heightBreadcrumb
+				'height': $workspaceContainer.parent().outerHeight() - $elms.pageinfo.outerHeight() - heightBreadcrumb
 			})
 		;
 

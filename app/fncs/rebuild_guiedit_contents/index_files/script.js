@@ -1,7 +1,9 @@
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 window.px = window.parent.px;
 window.contApp = new (function(px){
 	var _this = this;
 	var pj = px.getCurrentProject();
+	var it79 = px.it79;
 	this.pj = pj;
 	var $cont, $btn, $pre;
 
@@ -13,19 +15,52 @@ window.contApp = new (function(px){
 		$btn = $('<button class="px2-btn px2-btn--block">');
 		$pre = $('<pre>');
 
-		$cont
-			.append( $btn
-				.click( function(){ rebuild(this); } )
-				.text('すべてのGUI編集コンテンツを一括再構成する')
-			)
-			.append( $pre
-				.addClass( 'cont_console' )
-				.css({
-					'max-height': 360,
-					'height': 360
-				})
-			)
-		;
+		it79.fnc({},
+			[
+				function(it1, arg){
+					// broccoli-html-editor-php エンジン利用環境の要件を確認
+					if( pj.getGuiEngineName() == 'broccoli-html-editor-php' ){
+						pj.checkPxCmdVersion(
+							{
+								px2dthelperVersion: '>=2.0.8'
+							},
+							function(){
+								// API設定OK
+								it1.next(arg);
+							},
+							function( errors ){
+								// API設定が不十分な場合のエラー処理
+								var html = px.utils.bindEjs(
+									px.fs.readFileSync('app/common/templates/broccoli-html-editor-php-is-not-available.html').toString(),
+									{errors: errors}
+								);
+								$('.contents').html( html );
+								// エラーだったらここで離脱。
+								return;
+							}
+						);
+						return;
+					}
+					it1.next(arg);
+				},
+				function(it1, arg){
+					$cont
+						.append( $btn
+							.click( function(){ rebuild(this); } )
+							.text('すべてのGUI編集コンテンツを一括再構成する')
+						)
+						.append( $pre
+							.addClass( 'cont_console' )
+							.css({
+								'max-height': 360,
+								'height': 360
+							})
+						)
+					;
+					it1.next(arg);
+				}
+			]
+		);
 	}
 
 
@@ -110,3 +145,5 @@ window.contApp = new (function(px){
 	});
 
 })(window.px);
+
+},{}]},{},[1])

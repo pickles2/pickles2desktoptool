@@ -19,6 +19,8 @@ class px2git{
 	 * constructor
 	 */
 	public function __construct(){
+		$this->tune_php();
+
 		// var_dump($_SERVER['argv']);
 		$count = count($_SERVER['argv']);
 		// var_dump($count);
@@ -45,6 +47,27 @@ class px2git{
 	}
 
 	/**
+	 * PHPを調整
+	 */
+	private function tune_php(){
+		if( !extension_loaded( 'mbstring' ) ){
+			trigger_error('mbstring not loaded.');
+		}
+		if( is_callable('mb_internal_encoding') ){
+			mb_internal_encoding('UTF-8');
+			@ini_set( 'mbstring.internal_encoding' , 'UTF-8' );
+			@ini_set( 'mbstring.http_input' , 'UTF-8' );
+			@ini_set( 'mbstring.http_output' , 'UTF-8' );
+		}
+		@ini_set( 'default_charset' , 'UTF-8' );
+		if( is_callable('mb_detect_order') ){
+			@ini_set( 'mbstring.detect_order' , 'UTF-8,SJIS-win,eucJP-win,SJIS,EUC-JP,JIS,ASCII' );
+			mb_detect_order( 'UTF-8,SJIS-win,eucJP-win,SJIS,EUC-JP,JIS,ASCII' );
+		}
+		@header_remove('X-Powered-By');
+	}
+
+	/**
 	 * px2-git を実行する
 	 * @return void no return.
 	 */
@@ -53,8 +76,10 @@ class px2git{
 		switch( $this->method ){
 			case 'status':
 			case 'status_contents':
+			case 'commit':
 			case 'commit_sitemaps':
 			case 'commit_contents':
+			case 'commit_all':
 			case 'log':
 			case 'log_contents':
 			case 'log_sitemaps':

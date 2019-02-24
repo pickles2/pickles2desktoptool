@@ -13,10 +13,12 @@ module.exports = function(app, px, pj){
 	this.init = function( _pageInfo, _$commentView ){
 		pageInfo = _pageInfo;
 		$commentView = _$commentView;
+		var pageContent = pj.findPageContent( pageInfo.path );
+		if( pageContent === null ){
+			return;
+		}
 
-		var pathFiles = pj.getContentFilesByPageContent(
-			pj.findPageContent( pageInfo.path )
-		);
+		var pathFiles = pj.getContentFilesByPageContent( pageContent );
 		var realpathFiles = pj.get_realpath_controot()+pathFiles;
 		var realpath_matDir = realpathFiles + 'comments.ignore/';
 		realpath_comment_file = realpath_matDir + 'comment.md';
@@ -121,10 +123,12 @@ module.exports = function(app, px, pj){
 		callback = callback || function(){};
 		if(!px.utils.isFile( realpath_comment_file )){
 			$commentView.text('no comment.');
+			$commentView.hide();
 
 			callback(true);
 			return;
 		}
+		$commentView.show();
 		$commentView.text('コメントをロードしています...');
 		px.fs.readFile(realpath_comment_file, {'encoding':'utf8'}, function(err, data){
 			var html = px.utils.markdown( data );

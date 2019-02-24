@@ -2973,7 +2973,7 @@ module.exports.stringify = stringify;
 'use strict';
 
 /**
- * @file Embedded JavaScript templating engine.
+ * @file Embedded JavaScript templating engine. {@link http://ejs.co}
  * @author Matthew Eernisse <mde@fleegix.org>
  * @author Tiancheng "Timothy" Gu <timothygu99@gmail.com>
  * @project EJS
@@ -3006,11 +3006,14 @@ var scopeOptionWarned = false;
 var _VERSION_STRING = require('../package.json').version;
 var _DEFAULT_DELIMITER = '%';
 var _DEFAULT_LOCALS_NAME = 'locals';
+var _NAME = 'ejs';
 var _REGEX_STRING = '(<%%|%%>|<%=|<%-|<%_|<%#|<%|%>|-%>|_%>)';
-var _OPTS = [ 'cache', 'filename', 'delimiter', 'scope', 'context',
-        'debug', 'compileDebug', 'client', '_with', 'root', 'rmWhitespace',
-        'strict', 'localsName'];
-var _TRAILING_SEMCOL = /;\s*$/;
+var _OPTS_PASSABLE_WITH_DATA = ['delimiter', 'scope', 'context', 'debug', 'compileDebug',
+  'client', '_with', 'rmWhitespace', 'strict', 'filename', 'async'];
+// We don't allow 'cache' option to be passed in the data obj for
+// the normal `render` call, but this is where Express 2 & 3 put it
+// so we make an exception for `renderFile`
+var _OPTS_PASSABLE_WITH_DATA_EXPRESS = _OPTS_PASSABLE_WITH_DATA.concat('cache');
 var _BOM = /^\uFEFF/;
 
 /**
@@ -3024,9 +3027,18 @@ var _BOM = /^\uFEFF/;
 exports.cache = utils.cache;
 
 /**
+ * Custom file loader. Useful for template preprocessing or restricting access
+ * to a certain part of the filesystem.
+ *
+ * @type {fileLoader}
+ */
+
+exports.fileLoader = fs.readFileSync;
+
+/**
  * Name of the object containing the locals.
  *
- * This variable is overriden by {@link Options}`.localsName` if it is not
+ * This variable is overridden by {@link Options}`.localsName` if it is not
  * `undefined`.
  *
  * @type {String}
@@ -3034,6 +3046,16 @@ exports.cache = utils.cache;
  */
 
 exports.localsName = _DEFAULT_LOCALS_NAME;
+
+/**
+ * Promise implementation -- defaults to the native implementation if available
+ * This is mostly just for testability
+ *
+ * @type {Function}
+ * @public
+ */
+
+exports.promiseImpl = (new Function('return this;'))().Promise;
 
 /**
  * Get the path to the included file from the parent file path and the
@@ -3058,21 +3080,42 @@ exports.resolveInclude = function(name, filename, isDir) {
 
 /**
  * Get the path to the included file by Options
- * 
+ *
  * @param  {String}  path    specified path
  * @param  {Options} options compilation options
  * @return {String}
  */
-function getIncludePath(path, options){
+function getIncludePath(path, options) {
   var includePath;
+  var filePath;
+  var views = options.views;
+
+  // Abs path
   if (path.charAt(0) == '/') {
     includePath = exports.resolveInclude(path.replace(/^\/*/,''), options.root || '/', true);
   }
+  // Relative paths
   else {
-    if (!options.filename) {
-      throw new Error('`include` use relative path requires the \'filename\' option.');
+    // Look relative to a passed filename first
+    if (options.filename) {
+      filePath = exports.resolveInclude(path, options.filename);
+      if (fs.existsSync(filePath)) {
+        includePath = filePath;
+      }
     }
-    includePath = exports.resolveInclude(path, options.filename);  
+    // Then look in any views directories
+    if (!includePath) {
+      if (Array.isArray(views) && views.some(function (v) {
+        filePath = exports.resolveInclude(path, v, true);
+        return fs.existsSync(filePath);
+      })) {
+        includePath = filePath;
+      }
+    }
+    if (!includePath) {
+      throw new Error('Could not find the include file "' +
+          options.escapeFunction(path) + '"');
+    }
   }
   return includePath;
 }
@@ -3109,7 +3152,7 @@ function handleCache(options, template) {
       return func;
     }
     if (!hasTemplate) {
-      template = fs.readFileSync(filename).toString().replace(_BOM, '');
+      template = fileLoader(filename).toString().replace(_BOM, '');
     }
   }
   else if (!hasTemplate) {
@@ -3118,13 +3161,67 @@ function handleCache(options, template) {
       throw new Error('Internal EJS error: no file name or template '
                     + 'provided');
     }
-    template = fs.readFileSync(filename).toString().replace(_BOM, '');
+    template = fileLoader(filename).toString().replace(_BOM, '');
   }
   func = exports.compile(template, options);
   if (options.cache) {
     exports.cache.set(filename, func);
   }
   return func;
+}
+
+/**
+ * Try calling handleCache with the given options and data and call the
+ * callback with the result. If an error occurs, call the callback with
+ * the error. Used by renderFile().
+ *
+ * @memberof module:ejs-internal
+ * @param {Options} options    compilation options
+ * @param {Object} data        template data
+ * @param {RenderFileCallback} cb callback
+ * @static
+ */
+
+function tryHandleCache(options, data, cb) {
+  var result;
+  if (!cb) {
+    if (typeof exports.promiseImpl == 'function') {
+      return new exports.promiseImpl(function (resolve, reject) {
+        try {
+          result = handleCache(options)(data);
+          resolve(result);
+        }
+        catch (err) {
+          reject(err);
+        }
+      });
+    }
+    else {
+      throw new Error('Please provide a callback function');
+    }
+  }
+  else {
+    try {
+      result = handleCache(options)(data);
+    }
+    catch (err) {
+      return cb(err);
+    }
+
+    cb(null, result);
+  }
+}
+
+/**
+ * fileLoader is independent
+ *
+ * @param {String} filePath ejs file path.
+ * @return {String} The contents of the specified file.
+ * @static
+ */
+
+function fileLoader(filePath){
+  return exports.fileLoader(filePath);
 }
 
 /**
@@ -3160,8 +3257,8 @@ function includeSource(path, options) {
   var opts = utils.shallowCopy({}, options);
   var includePath;
   var template;
-  includePath = getIncludePath(path,opts);
-  template = fs.readFileSync(includePath).toString().replace(_BOM, '');
+  includePath = getIncludePath(path, opts);
+  template = fileLoader(includePath).toString().replace(_BOM, '');
   opts.filename = includePath;
   var templ = new Template(template, opts);
   templ.generateSource();
@@ -3185,10 +3282,11 @@ function includeSource(path, options) {
  * @static
  */
 
-function rethrow(err, str, filename, lineno){
+function rethrow(err, str, flnm, lineno, esc){
   var lines = str.split('\n');
   var start = Math.max(lineno - 3, 0);
   var end = Math.min(lines.length, lineno + 3);
+  var filename = esc(flnm); // eslint-disable-line
   // Error context
   var context = lines.slice(start, end).map(function (line, i){
     var curr = i + start + 1;
@@ -3208,24 +3306,8 @@ function rethrow(err, str, filename, lineno){
   throw err;
 }
 
-/**
- * Copy properties in data object that are recognized as options to an
- * options object.
- *
- * This is used for compatibility with earlier versions of EJS and Express.js.
- *
- * @memberof module:ejs-internal
- * @param {Object}  data data object
- * @param {Options} opts options object
- * @static
- */
-
-function cpOptsInData(data, opts) {
-  _OPTS.forEach(function (p) {
-    if (typeof data[p] != 'undefined') {
-      opts[p] = data[p];
-    }
-  });
+function stripSemi(str){
+  return str.replace(/;(\s*$)/, '$1');
 }
 
 /**
@@ -3237,6 +3319,7 @@ function cpOptsInData(data, opts) {
  *
  * @return {(TemplateFunction|ClientFunction)}
  * Depending on the value of `opts.client`, either type might be returned.
+ * Note that the return type of the function also depends on the value of `opts.async`.
  * @public
  */
 
@@ -3269,7 +3352,8 @@ exports.compile = function compile(template, opts) {
  * @param {String}   template EJS template
  * @param {Object}  [data={}] template data
  * @param {Options} [opts={}] compilation and rendering options
- * @return {String}
+ * @return {(String|Promise<String>)}
+ * Return value type depends on `opts.async`.
  * @public
  */
 
@@ -3280,7 +3364,7 @@ exports.render = function (template, d, o) {
   // No options object -- if there are optiony names
   // in the data, copy them to options
   if (arguments.length == 2) {
-    cpOptsInData(data, opts);
+    utils.shallowCopyFromList(opts, data, _OPTS_PASSABLE_WITH_DATA);
   }
 
   return handleCache(opts, template)(data);
@@ -3302,35 +3386,54 @@ exports.render = function (template, d, o) {
 exports.renderFile = function () {
   var args = Array.prototype.slice.call(arguments);
   var filename = args.shift();
-  var cb = args.pop();
-  var data = args.shift() || {};
-  var opts = args.pop() || {};
-  var result;
+  var cb;
+  var opts = {filename: filename};
+  var data;
+  var viewOpts;
 
-  // Don't pollute passed in opts obj with new vals
-  opts = utils.shallowCopy({}, opts);
-
-  // No options object -- if there are optiony names
-  // in the data, copy them to options
-  if (arguments.length == 3) {
-    // Express 4
-    if (data.settings && data.settings['view options']) {
-      cpOptsInData(data.settings['view options'], opts);
+  // Do we have a callback?
+  if (typeof arguments[arguments.length - 1] == 'function') {
+    cb = args.pop();
+  }
+  // Do we have data/opts?
+  if (args.length) {
+    // Should always have data obj
+    data = args.shift();
+    // Normal passed opts (data obj + opts obj)
+    if (args.length) {
+      // Use shallowCopy so we don't pollute passed in opts obj with new vals
+      utils.shallowCopy(opts, args.pop());
     }
-    // Express 3 and lower
+    // Special casing for Express (settings + opts-in-data)
     else {
-      cpOptsInData(data, opts);
+      // Express 3 and 4
+      if (data.settings) {
+        // Pull a few things from known locations
+        if (data.settings.views) {
+          opts.views = data.settings.views;
+        }
+        if (data.settings['view cache']) {
+          opts.cache = true;
+        }
+        // Undocumented after Express 2, but still usable, esp. for
+        // items that are unsafe to be passed along with data, like `root`
+        viewOpts = data.settings['view options'];
+        if (viewOpts) {
+          utils.shallowCopy(opts, viewOpts);
+        }
+      }
+      // Express 2 and lower, values set in app.locals, or people who just
+      // want to pass options in their data. NOTE: These values will override
+      // anything previously set in settings  or settings['view options']
+      utils.shallowCopyFromList(opts, data, _OPTS_PASSABLE_WITH_DATA_EXPRESS);
     }
+    opts.filename = filename;
   }
-  opts.filename = filename;
+  else {
+    data = {};
+  }
 
-  try {
-    result = handleCache(opts)(data);
-  }
-  catch(err) {
-    return cb(err);
-  }
-  return cb(null, result);
+  return tryHandleCache(opts, data, cb);
 };
 
 /**
@@ -3362,7 +3465,10 @@ function Template(text, opts) {
   options.cache = opts.cache || false;
   options.rmWhitespace = opts.rmWhitespace;
   options.root = opts.root;
+  options.outputFunctionName = opts.outputFunctionName;
   options.localsName = opts.localsName || exports.localsName || _DEFAULT_LOCALS_NAME;
+  options.views = opts.views;
+  options.async = opts.async;
 
   if (options.strict) {
     options._with = false;
@@ -3398,11 +3504,15 @@ Template.prototype = {
     var opts = this.opts;
     var prepended = '';
     var appended = '';
-    var escape = opts.escapeFunction;
+    var escapeFn = opts.escapeFunction;
+    var asyncCtor;
 
     if (!this.source) {
       this.generateSource();
       prepended += '  var __output = [], __append = __output.push.bind(__output);' + '\n';
+      if (opts.outputFunctionName) {
+        prepended += '  var ' + opts.outputFunctionName + ' = __append;' + '\n';
+      }
       if (opts._with !== false) {
         prepended +=  '  with (' + opts.localsName + ' || {}) {' + '\n';
         appended += '  }' + '\n';
@@ -3413,25 +3523,21 @@ Template.prototype = {
 
     if (opts.compileDebug) {
       src = 'var __line = 1' + '\n'
-          + '  , __lines = ' + JSON.stringify(this.templateText) + '\n'
-          + '  , __filename = ' + (opts.filename ?
-                JSON.stringify(opts.filename) : 'undefined') + ';' + '\n'
-          + 'try {' + '\n'
-          + this.source
-          + '} catch (e) {' + '\n'
-          + '  rethrow(e, __lines, __filename, __line);' + '\n'
-          + '}' + '\n';
+        + '  , __lines = ' + JSON.stringify(this.templateText) + '\n'
+        + '  , __filename = ' + (opts.filename ?
+        JSON.stringify(opts.filename) : 'undefined') + ';' + '\n'
+        + 'try {' + '\n'
+        + this.source
+        + '} catch (e) {' + '\n'
+        + '  rethrow(e, __lines, __filename, __line, escapeFn);' + '\n'
+        + '}' + '\n';
     }
     else {
       src = this.source;
     }
 
-    if (opts.debug) {
-      console.log(src);
-    }
-
     if (opts.client) {
-      src = 'escape = escape || ' + escape.toString() + ';' + '\n' + src;
+      src = 'escapeFn = escapeFn || ' + escapeFn.toString() + ';' + '\n' + src;
       if (opts.compileDebug) {
         src = 'rethrow = rethrow || ' + rethrow.toString() + ';' + '\n' + src;
       }
@@ -3440,9 +3546,30 @@ Template.prototype = {
     if (opts.strict) {
       src = '"use strict";\n' + src;
     }
+    if (opts.debug) {
+      console.log(src);
+    }
 
     try {
-      fn = new Function(opts.localsName + ', escape, include, rethrow', src);
+      if (opts.async) {
+        // Have to use generated function for this, since in envs without support,
+        // it breaks in parsing
+        try {
+          asyncCtor = (new Function('return (async function(){}).constructor;'))();
+        }
+        catch(e) {
+          if (e instanceof SyntaxError) {
+            throw new Error('This environment does not support async/await');
+          }
+          else {
+            throw e;
+          }
+        }
+      }
+      else {
+        asyncCtor = Function;
+      }
+      fn = new asyncCtor(opts.localsName + ', escapeFn, include, rethrow', src);
     }
     catch(e) {
       // istanbul ignore else
@@ -3450,7 +3577,13 @@ Template.prototype = {
         if (opts.filename) {
           e.message += ' in ' + opts.filename;
         }
-        e.message += ' while compiling ejs';
+        e.message += ' while compiling ejs\n\n';
+        e.message += 'If the above error is not helpful, you may want to try EJS-Lint:\n';
+        e.message += 'https://github.com/RyanZim/EJS-Lint';
+        if (!e.async) {
+          e.message += '\n';
+          e.message += 'Or, if you meant to create an async function, pass async: true as an option.';
+        }
       }
       throw e;
     }
@@ -3471,7 +3604,7 @@ Template.prototype = {
         }
         return includeFile(path, opts)(d);
       };
-      return fn.apply(opts.context, [data || {}, escape, include, rethrow]);
+      return fn.apply(opts.context, [data || {}, escapeFn, include, rethrow]);
     };
     returnedFn.dependencies = this.dependencies;
     return returnedFn;
@@ -3530,7 +3663,7 @@ Template.prototype = {
                   + '      try {' + '\n'
                   + includeObj.source
                   + '      } catch (e) {' + '\n'
-                  + '        rethrow(e, __lines, __filename, __line);' + '\n'
+                  + '        rethrow(e, __lines, __filename, __line, escapeFn);' + '\n'
                   + '      }' + '\n'
                   + '    ; }).call(this)' + '\n';
             }else{
@@ -3539,7 +3672,7 @@ Template.prototype = {
             }
             self.source += includeSrc;
             self.dependencies.push(exports.resolveInclude(include[1],
-                includeOpts.filename));
+              includeOpts.filename));
             return;
           }
         }
@@ -3576,118 +3709,115 @@ Template.prototype = {
     return arr;
   },
 
+  _addOutput: function (line) {
+    if (this.truncate) {
+      // Only replace single leading linebreak in the line after
+      // -%> tag -- this is the single, trailing linebreak
+      // after the tag that the truncation mode replaces
+      // Handle Win / Unix / old Mac linebreaks -- do the \r\n
+      // combo first in the regex-or
+      line = line.replace(/^(?:\r\n|\r|\n)/, '');
+      this.truncate = false;
+    }
+    else if (this.opts.rmWhitespace) {
+      // rmWhitespace has already removed trailing spaces, just need
+      // to remove linebreaks
+      line = line.replace(/^\n/, '');
+    }
+    if (!line) {
+      return line;
+    }
+
+    // Preserve literal slashes
+    line = line.replace(/\\/g, '\\\\');
+
+    // Convert linebreaks
+    line = line.replace(/\n/g, '\\n');
+    line = line.replace(/\r/g, '\\r');
+
+    // Escape double-quotes
+    // - this will be the delimiter during execution
+    line = line.replace(/"/g, '\\"');
+    this.source += '    ; __append("' + line + '")' + '\n';
+  },
+
   scanLine: function (line) {
     var self = this;
     var d = this.opts.delimiter;
     var newLineCount = 0;
 
-    function _addOutput() {
-      if (self.truncate) {
-        // Only replace single leading linebreak in the line after
-        // -%> tag -- this is the single, trailing linebreak
-        // after the tag that the truncation mode replaces
-        // Handle Win / Unix / old Mac linebreaks -- do the \r\n
-        // combo first in the regex-or
-        line = line.replace(/^(?:\r\n|\r|\n)/, '');
-        self.truncate = false;
-      }
-      else if (self.opts.rmWhitespace) {
-        // Gotta be more careful here.
-        // .replace(/^(\s*)\n/, '$1') might be more appropriate here but as
-        // rmWhitespace already removes trailing spaces anyway so meh.
-        line = line.replace(/^\n/, '');
-      }
-      if (!line) {
-        return;
-      }
-
-      // Preserve literal slashes
-      line = line.replace(/\\/g, '\\\\');
-
-      // Convert linebreaks
-      line = line.replace(/\n/g, '\\n');
-      line = line.replace(/\r/g, '\\r');
-
-      // Escape double-quotes
-      // - this will be the delimiter during execution
-      line = line.replace(/"/g, '\\"');
-      self.source += '    ; __append("' + line + '")' + '\n';
-    }
-
     newLineCount = (line.split('\n').length - 1);
 
     switch (line) {
-      case '<' + d:
-      case '<' + d + '_':
-        this.mode = Template.modes.EVAL;
-        break;
-      case '<' + d + '=':
-        this.mode = Template.modes.ESCAPED;
-        break;
-      case '<' + d + '-':
-        this.mode = Template.modes.RAW;
-        break;
-      case '<' + d + '#':
-        this.mode = Template.modes.COMMENT;
-        break;
-      case '<' + d + d:
-        this.mode = Template.modes.LITERAL;
-        this.source += '    ; __append("' + line.replace('<' + d + d, '<' + d) + '")' + '\n';
-        break;
-      case d + d + '>':
-        this.mode = Template.modes.LITERAL;
-        this.source += '    ; __append("' + line.replace(d + d + '>', d + '>') + '")' + '\n';
-        break;
-      case d + '>':
-      case '-' + d + '>':
-      case '_' + d + '>':
-        if (this.mode == Template.modes.LITERAL) {
-          _addOutput();
-        }
+    case '<' + d:
+    case '<' + d + '_':
+      this.mode = Template.modes.EVAL;
+      break;
+    case '<' + d + '=':
+      this.mode = Template.modes.ESCAPED;
+      break;
+    case '<' + d + '-':
+      this.mode = Template.modes.RAW;
+      break;
+    case '<' + d + '#':
+      this.mode = Template.modes.COMMENT;
+      break;
+    case '<' + d + d:
+      this.mode = Template.modes.LITERAL;
+      this.source += '    ; __append("' + line.replace('<' + d + d, '<' + d) + '")' + '\n';
+      break;
+    case d + d + '>':
+      this.mode = Template.modes.LITERAL;
+      this.source += '    ; __append("' + line.replace(d + d + '>', d + '>') + '")' + '\n';
+      break;
+    case d + '>':
+    case '-' + d + '>':
+    case '_' + d + '>':
+      if (this.mode == Template.modes.LITERAL) {
+        this._addOutput(line);
+      }
 
-        this.mode = null;
-        this.truncate = line.indexOf('-') === 0 || line.indexOf('_') === 0;
-        break;
-      default:
-        // In script mode, depends on type of tag
-        if (this.mode) {
-          // If '//' is found without a line break, add a line break.
-          switch (this.mode) {
-            case Template.modes.EVAL:
-            case Template.modes.ESCAPED:
-            case Template.modes.RAW:
-              if (line.lastIndexOf('//') > line.lastIndexOf('\n')) {
-                line += '\n';
-              }
-          }
-          switch (this.mode) {
-            // Just executing code
-            case Template.modes.EVAL:
-              this.source += '    ; ' + line + '\n';
-              break;
-            // Exec, esc, and output
-            case Template.modes.ESCAPED:
-              this.source += '    ; __append(escape(' +
-                line.replace(_TRAILING_SEMCOL, '').trim() + '))' + '\n';
-              break;
-            // Exec and output
-            case Template.modes.RAW:
-              this.source += '    ; __append(' +
-                line.replace(_TRAILING_SEMCOL, '').trim() + ')' + '\n';
-              break;
-            case Template.modes.COMMENT:
-              // Do nothing
-              break;
-            // Literal <%% mode, append as raw output
-            case Template.modes.LITERAL:
-              _addOutput();
-              break;
+      this.mode = null;
+      this.truncate = line.indexOf('-') === 0 || line.indexOf('_') === 0;
+      break;
+    default:
+      // In script mode, depends on type of tag
+      if (this.mode) {
+        // If '//' is found without a line break, add a line break.
+        switch (this.mode) {
+        case Template.modes.EVAL:
+        case Template.modes.ESCAPED:
+        case Template.modes.RAW:
+          if (line.lastIndexOf('//') > line.lastIndexOf('\n')) {
+            line += '\n';
           }
         }
-        // In string mode, just add the output
-        else {
-          _addOutput();
+        switch (this.mode) {
+        // Just executing code
+        case Template.modes.EVAL:
+          this.source += '    ; ' + line + '\n';
+          break;
+          // Exec, esc, and output
+        case Template.modes.ESCAPED:
+          this.source += '    ; __append(escapeFn(' + stripSemi(line) + '))' + '\n';
+          break;
+          // Exec and output
+        case Template.modes.RAW:
+          this.source += '    ; __append(' + stripSemi(line) + ')' + '\n';
+          break;
+        case Template.modes.COMMENT:
+          // Do nothing
+          break;
+          // Literal <%% mode, append as raw output
+        case Template.modes.LITERAL:
+          this._addOutput(line);
+          break;
         }
+      }
+      // In string mode, just add the output
+      else {
+        this._addOutput(line);
+      }
     }
 
     if (self.opts.compileDebug && newLineCount) {
@@ -3728,10 +3858,10 @@ if (require.extensions) {
   require.extensions['.ejs'] = function (module, flnm) {
     var filename = flnm || /* istanbul ignore next */ module.filename;
     var options = {
-          filename: filename,
-          client: true
-        };
-    var template = fs.readFileSync(filename).toString();
+      filename: filename,
+      client: true
+    };
+    var template = fileLoader(filename).toString();
     var fn = exports.compile(template, options);
     module._compile('module.exports = ' + fn.toString() + ';', filename);
   };
@@ -3746,6 +3876,16 @@ if (require.extensions) {
  */
 
 exports.VERSION = _VERSION_STRING;
+
+/**
+ * Name for detection of EJS.
+ *
+ * @readonly
+ * @type {String}
+ * @public
+ */
+
+exports.name = _NAME;
 
 /* istanbul ignore if */
 if (typeof window != 'undefined') {
@@ -3800,17 +3940,17 @@ exports.escapeRegExpChars = function (string) {
 };
 
 var _ENCODE_HTML_RULES = {
-      '&': '&amp;'
-    , '<': '&lt;'
-    , '>': '&gt;'
-    , '"': '&#34;'
-    , "'": '&#39;'
-    }
-  , _MATCH_HTML = /[&<>\'"]/g;
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&#34;',
+  "'": '&#39;'
+};
+var _MATCH_HTML = /[&<>'"]/g;
 
 function encode_char(c) {
   return _ENCODE_HTML_RULES[c] || c;
-};
+}
 
 /**
  * Stringified version of constants used by {@link module:utils.escapeXML}.
@@ -3850,14 +3990,16 @@ exports.escapeXML = function (markup) {
   return markup == undefined
     ? ''
     : String(markup)
-        .replace(_MATCH_HTML, encode_char);
+      .replace(_MATCH_HTML, encode_char);
 };
 exports.escapeXML.toString = function () {
-  return Function.prototype.toString.call(this) + ';\n' + escapeFuncStr
+  return Function.prototype.toString.call(this) + ';\n' + escapeFuncStr;
 };
 
 /**
- * Copy all properties from one object to another, in a shallow fashion.
+ * Naive copy of properties from one object to another.
+ * Does not recurse into non-scalar properties
+ * Does not check to see if the property has a value before copying
  *
  * @param  {Object} to   Destination object
  * @param  {Object} from Source object
@@ -3869,6 +4011,28 @@ exports.shallowCopy = function (to, from) {
   from = from || {};
   for (var p in from) {
     to[p] = from[p];
+  }
+  return to;
+};
+
+/**
+ * Naive copy of a list of key names, from one object to another.
+ * Only copies property if it is actually defined
+ * Does not recurse into non-scalar properties
+ *
+ * @param  {Object} to   Destination object
+ * @param  {Object} from Source object
+ * @param  {Array} list List of properties to copy
+ * @return {Object}      Destination object
+ * @static
+ * @private
+ */
+exports.shallowCopyFromList = function (to, from, list) {
+  for (var i = 0; i < list.length; i++) {
+    var p = list[i];
+    if (typeof from[p] != 'undefined') {
+      to[p] = from[p];
+    }
   }
   return to;
 };
@@ -3894,54 +4058,56 @@ exports.cache = {
   }
 };
 
-
 },{}],17:[function(require,module,exports){
 module.exports={
   "_args": [
     [
       {
-        "raw": "ejs@^2.4.1",
+        "raw": "ejs@2.6.1",
         "scope": null,
         "escapedName": "ejs",
         "name": "ejs",
-        "rawSpec": "^2.4.1",
-        "spec": ">=2.4.1 <3.0.0",
-        "type": "range"
+        "rawSpec": "2.6.1",
+        "spec": "2.6.1",
+        "type": "version"
       },
       "/mydoc_TomK/Dropbox/localhosts/pickles2projects/pickles2/node-pickles2-contents-editor"
     ]
   ],
-  "_from": "ejs@>=2.4.1 <3.0.0",
-  "_id": "ejs@2.5.2",
+  "_from": "ejs@2.6.1",
+  "_id": "ejs@2.6.1",
   "_inCache": true,
   "_location": "/ejs",
-  "_nodeVersion": "4.2.2",
+  "_nodeVersion": "8.9.4",
   "_npmOperationalInternal": {
-    "host": "packages-12-west.internal.npmjs.com",
-    "tmp": "tmp/ejs-2.5.2.tgz_1473259584869_0.9678213631268591"
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/ejs_2.6.1_1525546345882_0.354144762200554"
   },
   "_npmUser": {
     "name": "mde",
     "email": "mde@fleegix.org"
   },
-  "_npmVersion": "2.14.7",
+  "_npmVersion": "5.6.0",
   "_phantomChildren": {},
   "_requested": {
-    "raw": "ejs@^2.4.1",
+    "raw": "ejs@2.6.1",
     "scope": null,
     "escapedName": "ejs",
     "name": "ejs",
-    "rawSpec": "^2.4.1",
-    "spec": ">=2.4.1 <3.0.0",
-    "type": "range"
+    "rawSpec": "2.6.1",
+    "spec": "2.6.1",
+    "type": "version"
   },
   "_requiredBy": [
-    "/"
+    "#USER",
+    "/",
+    "/broccoli-html-editor",
+    "/langbank"
   ],
-  "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.5.2.tgz",
-  "_shasum": "21444ba09386f0c65b6eafb96a3d51bcb3be80d1",
+  "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.6.1.tgz",
+  "_shasum": "498ec0d495655abc6f23cd61868d926464071aa0",
   "_shrinkwrap": null,
-  "_spec": "ejs@^2.4.1",
+  "_spec": "ejs@2.6.1",
   "_where": "/mydoc_TomK/Dropbox/localhosts/pickles2projects/pickles2/node-pickles2-contents-editor",
   "author": {
     "name": "Matthew Eernisse",
@@ -3961,20 +4127,24 @@ module.exports={
   "dependencies": {},
   "description": "Embedded JavaScript templates",
   "devDependencies": {
-    "browserify": "^13.0.1",
-    "eslint": "^3.0.0",
+    "browserify": "^13.1.1",
+    "eslint": "^4.14.0",
+    "git-directory-deploy": "^1.5.1",
     "istanbul": "~0.4.3",
-    "jake": "^8.0.0",
+    "jake": "^8.0.16",
     "jsdoc": "^3.4.0",
     "lru-cache": "^4.0.1",
-    "mocha": "^3.0.2",
-    "rimraf": "^2.2.8",
-    "uglify-js": "^2.6.2"
+    "mocha": "^5.0.5",
+    "uglify-js": "^3.3.16"
   },
   "directories": {},
   "dist": {
-    "shasum": "21444ba09386f0c65b6eafb96a3d51bcb3be80d1",
-    "tarball": "https://registry.npmjs.org/ejs/-/ejs-2.5.2.tgz"
+    "integrity": "sha512-0xy4A/twfrRCnkhfk8ErDi5DqdAsAqeGxht4xkCUrsvhhbQNs7E+4jV0CN7+NKIY0aHE72+XvqtBIXzD31ZbXQ==",
+    "shasum": "498ec0d495655abc6f23cd61868d926464071aa0",
+    "tarball": "https://registry.npmjs.org/ejs/-/ejs-2.6.1.tgz",
+    "fileCount": 10,
+    "unpackedSize": 120006,
+    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJa7f1qCRA9TVsSAnZWagAAhNAQAJzOG4316d2XzOX25knk\nTRhCBHHyFNO4XGZwaomJ3PDugWunW/95FBU96qd9GHpntJO4BU8HSmhUzaRA\nHLQW5Y08NMbsY8vh3cyCKpPSfYuABdpj2OxL5g7z31dsAjg8M94J0AACyggH\np0WGMtB0knMw9fBUfNvDkKgoYXXmlQ3vSNDWzWS1Mkh2z6GzfwEulyq3OJLP\nb2KhHvcZK3/xxrJF6XODrIA9XPf3G0hZw5PMQ8Mjwi3KGrJuG73U7muzy/xm\nOF7KojEOgryZpaG/lQWdedY8YTj8nKFa3KHrKEazywbReV8mpGk0N5D2sIbT\nKgu0txWGxMaGzGcVRMPHHu2eofftpSjqrTU4dbFUBjG8KfV5fb8S5hwTNOzJ\nNHJZvdoBTn+vGXvEDTkmXz9gm/Z8iEtB2wj+lP6mvgezVLQm8HJvkoJ2tkrC\ndQMH/aX5f9/ySKLwWtz7Y8u3eXeUIJEqCh2zoAHwJ05lAbVoZF6mhyx93fac\naoq6BkboQhONOPPI9CQSvy3MFS97+cMjRkOTXS0IzXhwP89DWpv0Pcb5mXcP\nkL45APf4XNUnYclNmSSYm9Y+AvufISSZYyTH0+UTwDY9bckAcRO2ZWv86Jo5\noOkyXF3PxZVUnRyMjuTl9+gHwOAraWooaAzKGY8+RBTQzdYthoy1om+Dxyke\n/uID\r\n=nnYW\r\n-----END PGP SIGNATURE-----\r\n"
   },
   "engines": {
     "node": ">=0.10.0"
@@ -3989,10 +4159,6 @@ module.exports={
   "main": "./lib/ejs.js",
   "maintainers": [
     {
-      "name": "tjholowaychuk",
-      "email": "tj@vision-media.ca"
-    },
-    {
       "name": "mde",
       "email": "mde@fleegix.org"
     }
@@ -4006,11 +4172,12 @@ module.exports={
   },
   "scripts": {
     "coverage": "istanbul cover node_modules/mocha/bin/_mocha",
-    "devdoc": "rimraf out && jsdoc -p -c jsdoc.json lib/* docs/jsdoc/*",
-    "doc": "rimraf out && jsdoc -c jsdoc.json lib/* docs/jsdoc/*",
-    "test": "mocha"
+    "devdoc": "jake doc[dev]",
+    "doc": "jake doc",
+    "lint": "eslint \"**/*.js\" Jakefile",
+    "test": "jake test"
   },
-  "version": "2.5.2"
+  "version": "2.6.1"
 }
 
 },{}],18:[function(require,module,exports){
@@ -22154,16 +22321,15 @@ module.exports = function(px2ce, iframe){
 		var win = $(iframe).get(0).contentWindow;
 		$.ajax({
 			"url": __dirname+'/pickles2-preview-contents.js',
-			// "url": __dirname+'/libs/broccoli-html-editor/client/dist/broccoli-preview-contents.js',
-			// "dataType": "text/plain",
 			"complete": function(XMLHttpRequest, textStatus){
-				// console.log(XMLHttpRequest, textStatus);
-				// console.log(XMLHttpRequest.responseText);
 				var base64 = new Buffer(XMLHttpRequest.responseText).toString('base64');
-				// console.log(base64);
-				// console.log(__dirname+'/broccoli-preview-contents.js');
 				win.postMessage({'scriptUrl':'data:text/javascript;charset=utf8;base64,'+base64}, targetWindowOrigin);
-				callback();
+				setTimeout(function(){
+					// TODO: より確実な方法が欲しい。
+					// 子ウィンドウに走らせるスクリプトの準備が整うまで若干のタイムラグが生じる。
+					// 一旦 50ms あけて callback するようにしたが、より確実に完了を拾える方法が必要。
+					callback();
+				}, 100);
 			}
 		});
 		return this;
@@ -22178,7 +22344,7 @@ module.exports = function(px2ce, iframe){
 		var callbackId = createUUID();
 		// console.log(callbackId);
 
-		callbackMemory[callbackId] = callback;
+		callbackMemory[callbackId] = callback; // callbackは送信先から呼ばれる。
 
 		var message = {
 			'api': api,
@@ -22190,8 +22356,6 @@ module.exports = function(px2ce, iframe){
 		var win = $(iframe).get(0).contentWindow;
 		var targetWindowOrigin = getTargetOrigin(iframe);
 		win.postMessage(message, targetWindowOrigin);
-
-		// callback();//TODO: 仮実装。本当は、iframe側からコールバックされる。
 		return this;
 	}
 
@@ -22290,11 +22454,14 @@ module.exports = function(px2ce){
 module.exports = function(px2ce){
 	var _this = this;
 	var $ = require('jquery');
+	var utils79 = require('utils79');
 	var it79 = require('iterate79');
 	var $canvas = $(px2ce.getElmCanvas());
 	var page_path = px2ce.page_path;
 	var Promise = require('es6-promise').Promise;
-	var px2conf = {};
+	var px2conf = {}
+		moduleCssJs = {css: '', js: ''},
+		pagesByLayout = [];
 
 	var toolbar = new (require('../../apis/toolbar.js'))(px2ce);
 
@@ -22304,12 +22471,33 @@ module.exports = function(px2ce){
 		$elmInstanceTreeView,
 		$elmInstancePathView;
 
-	var show_instanceTreeView = true;
+	var show_instanceTreeView = false;
 
-	function getPreviewUrl(){
+	function getCanvasPageUrl(){
+		if( px2ce.target_mode == 'theme_layout' ){
+			var path_html = px2ce.__dirname + '/editor/broccoli/canvas.html'
+			path_html += '?css='+utils79.base64_encode(moduleCssJs.css);
+			path_html += '&js='+utils79.base64_encode(moduleCssJs.js);
+			return path_html;
+		}
 		var pathname = px2conf.path_controot + page_path;
 		pathname = pathname.replace( new RegExp('\/+', 'g'), '/' );
 		return px2ce.options.preview.origin + pathname;
+	}
+	function getPreviewUrl(){
+		if( px2ce.target_mode == 'theme_layout' ){
+			var page_path = '/index.html';
+			if( pagesByLayout.length ){
+				page_path = pagesByLayout[0].path;
+			}
+			var pathname = px2conf.path_controot + page_path;
+			pathname = pathname.replace( new RegExp('\/+', 'g'), '/' );
+			pathname += '?THEME='+encodeURIComponent(px2ce.theme_id);
+			pathname += '&LAYOUT='+encodeURIComponent(px2ce.layout_id);
+			return px2ce.options.preview.origin + pathname;
+		}
+
+		return getCanvasPageUrl();
 	}
 
 	/**
@@ -22320,15 +22508,17 @@ module.exports = function(px2ce){
 
 		new Promise(function(rlv){rlv();})
 			.then(function(){ return new Promise(function(rlv, rjt){
-				px2ce.gpiBridge(
-					{
-						'api': 'getProjectConf'
-					},
-					function(_px2conf){
-						px2conf = _px2conf;
-						rlv();
-					}
-				);
+				px2conf = px2ce.getBootupInfomations().projectConf;
+				rlv();
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				pagesByLayout = [];
+				if( px2ce.target_mode != 'theme_layout' ){
+					rlv();
+					return;
+				}
+				pagesByLayout = px2ce.getBootupInfomations().pagesByLayout;
+				rlv();
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
 				toolbar.init({
@@ -22379,8 +22569,27 @@ module.exports = function(px2ce){
 				});
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
+				// モジュールのCSS, JS ソースを取得する
+				if( px2ce.target_mode != 'theme_layout' ){
+					// テーマ編集時のみ必要。
+					rlv();
+					return;
+				}
+
+				px2ce.gpiBridge(
+					{
+						'api': 'getModuleCssJsSrc',
+						'theme_id': px2ce.theme_id
+					},
+					function(CssJs){
+						moduleCssJs = CssJs;
+						rlv();
+					}
+				);
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
 				$elmCanvas.attr({
-					"data-broccoli-preview": getPreviewUrl()
+					"data-broccoli-preview": getCanvasPageUrl()
 				});
 				rlv();
 			}); })
@@ -22403,9 +22612,9 @@ module.exports = function(px2ce){
 			.then(function(){ return new Promise(function(rlv, rjt){
 				// 初期化が完了すると呼びだされるコールバック関数です。
 				setKeyboardEvent(function(){
-					_this.redraw(function(){
-						// broccoli.redraw();
-					});
+					// _this.redraw(function(){
+					// 	// broccoli.redraw();
+					// });
 
 					rlv();
 				});
@@ -22491,6 +22700,13 @@ module.exports = function(px2ce){
 	}
 
 	/**
+	 * broccoli client オブジェクトを取得する
+	 */
+	_this.getBroccoliClient = function(){
+		return broccoli;
+	}
+
+	/**
 	 * window.resize イベントハンドラ
 	 */
 	_this.redraw = function( callback ){
@@ -22556,7 +22772,7 @@ module.exports = function(px2ce){
 
 }
 
-},{"../../apis/toolbar.js":122,"es6-promise":18,"iterate79":22,"jquery":23}],124:[function(require,module,exports){
+},{"../../apis/toolbar.js":122,"es6-promise":18,"iterate79":22,"jquery":23,"utils79":56}],124:[function(require,module,exports){
 /**
  * default/default.js
  */
@@ -22566,7 +22782,8 @@ module.exports = function(px2ce){
 	var it79 = require('iterate79');
 	var $canvas = $(px2ce.getElmCanvas());
 	var page_path = px2ce.page_path;
-	var px2conf = {};
+	var px2conf = {},
+		pagesByLayout = [];
 	var editorLib = null;
 	if(window.ace){
 		editorLib = 'ace';
@@ -22581,10 +22798,24 @@ module.exports = function(px2ce){
 		$elmTextareas,
 		$elmTabs;
 
-	function getPreviewUrl(){
-		var pathname = px2conf.path_controot + page_path;
+	function getCanvasPageUrl(){
+		if( px2ce.target_mode == 'theme_layout' ){
+			var page_path = '/index.html';
+			if( pagesByLayout.length ){
+				page_path = pagesByLayout[0].path;
+			}
+			var pathname = px2conf.path_controot + page_path;
+			pathname = pathname.replace( new RegExp('\/+', 'g'), '/' );
+			pathname += '?THEME='+encodeURIComponent(px2ce.theme_id);
+			pathname += '&LAYOUT='+encodeURIComponent(px2ce.layout_id);
+			return px2ce.options.preview.origin + pathname;
+		}
+		var pathname = px2conf.path_controot + px2ce.page_path;
 		pathname = pathname.replace( new RegExp('\/+', 'g'), '/' );
 		return px2ce.options.preview.origin + pathname;
+	}
+	function getPreviewUrl(){
+		return getCanvasPageUrl();
 	}
 
 	/**
@@ -22593,12 +22824,36 @@ module.exports = function(px2ce){
 	this.init = function(editorOption, callback){
 		callback = callback || function(){};
 
-		px2ce.gpiBridge(
-			{
-				'api': 'getProjectConf'
+		it79.fnc({}, [
+			function(it1, arg){
+				px2ce.gpiBridge(
+					{
+						'api': 'getProjectConf'
+					},
+					function(_px2conf){
+						px2conf = _px2conf;
+						it1.next(arg);
+					}
+				);
 			},
-			function(_px2conf){
-				px2conf = _px2conf;
+			function(it1, arg){
+				pagesByLayout = [];
+				if( px2ce.target_mode != 'theme_layout' ){
+					it1.next(arg);
+					return;
+				}
+				px2ce.gpiBridge(
+					{
+						'api': 'getPagesByLayout',
+						'layout_id': px2ce.layout_id
+					},
+					function(pages){
+						pagesByLayout = pages;
+						it1.next(arg);
+					}
+				);
+			},
+			function(it1, arg){
 				toolbar.init({
 					"btns":[
 						{
@@ -22641,172 +22896,176 @@ module.exports = function(px2ce){
 						);
 					}
 				},function(){
-					$canvas.append((function(){
-						var fin = ''
-								+'<div class="pickles2-contents-editor--default">'
-									+'<div class="pickles2-contents-editor--default-editor">'
-										+'<div class="pickles2-contents-editor--default-switch-tab">'
-											+'<div class="btn-group btn-group-justified" role="group">'
-												+'<div class="btn-group" role="group">'
-													+'<button class="btn btn-default btn-xs" data-pickles2-contents-editor-switch="html" disabled>HTML</button>'
-												+'</div>'
-												+'<div class="btn-group" role="group">'
-													+'<button class="btn btn-default btn-xs" data-pickles2-contents-editor-switch="css">CSS (SCSS)</button>'
-												+'</div>'
-												+'<div class="btn-group" role="group">'
-													+'<button class="btn btn-default btn-xs" data-pickles2-contents-editor-switch="js">JavaScript</button>'
-												+'</div>'
+					it1.next(arg);
+				});
+			},
+			function(it1, arg){
+				$canvas.append((function(){
+					var fin = ''
+							+'<div class="pickles2-contents-editor--default">'
+								+'<div class="pickles2-contents-editor--default-editor">'
+									+'<div class="pickles2-contents-editor--default-switch-tab">'
+										+'<div class="btn-group btn-group-justified" role="group">'
+											+'<div class="btn-group" role="group">'
+												+'<button class="btn btn-default btn-xs" data-pickles2-contents-editor-switch="html" disabled>HTML</button>'
+											+'</div>'
+											+'<div class="btn-group" role="group">'
+												+'<button class="btn btn-default btn-xs" data-pickles2-contents-editor-switch="css">CSS (SCSS)</button>'
+											+'</div>'
+											+'<div class="btn-group" role="group">'
+												+'<button class="btn btn-default btn-xs" data-pickles2-contents-editor-switch="js">JavaScript</button>'
 											+'</div>'
 										+'</div>'
-										+'<div class="pickles2-contents-editor--default-editor-body">'
-											+'<div class="pickles2-contents-editor--default-editor-body-html"></div>'
-											+'<div class="pickles2-contents-editor--default-editor-body-css"></div>'
-											+'<div class="pickles2-contents-editor--default-editor-body-js"></div>'
-										+'</div>'
 									+'</div>'
-									+'<div class="pickles2-contents-editor--default-canvas" data-pickles2-contents-editor-preview-url="">'
+									+'<div class="pickles2-contents-editor--default-editor-body">'
+										+'<div class="pickles2-contents-editor--default-editor-body-html"></div>'
+										+'<div class="pickles2-contents-editor--default-editor-body-css"></div>'
+										+'<div class="pickles2-contents-editor--default-editor-body-js"></div>'
 									+'</div>'
 								+'</div>'
-						;
-						return fin;
-					})());
-
-					$canvas.find('.pickles2-contents-editor--default-editor-body-css').hide();
-					$canvas.find('.pickles2-contents-editor--default-editor-body-js').hide();
-
-					$elmCanvas = $canvas.find('.pickles2-contents-editor--default-canvas');
-					$elmEditor = $canvas.find('.pickles2-contents-editor--default-editor');
-					$elmBtns = $canvas.find('.pickles2-contents-editor--default-btns');
-
-					$elmTabs = $canvas.find('.pickles2-contents-editor--default-switch-tab [data-pickles2-contents-editor-switch]');
-					$elmTabs
-						.on('click', function(){
-							var $this = $(this);
-							$elmTabs.removeAttr('disabled');
-							$this.attr({'disabled': 'disabled'});
-							var tabFor = $this.attr('data-pickles2-contents-editor-switch');
-							// console.log(tabFor);
-							$canvas.find('.pickles2-contents-editor--default-editor-body-html').hide();
-							$canvas.find('.pickles2-contents-editor--default-editor-body-css').hide();
-							$canvas.find('.pickles2-contents-editor--default-editor-body-js').hide();
-							$canvas.find('.pickles2-contents-editor--default-editor-body-'+tabFor).show();
-						})
+								+'<div class="pickles2-contents-editor--default-canvas" data-pickles2-contents-editor-preview-url="">'
+								+'</div>'
+							+'</div>'
 					;
+					return fin;
+				})());
+
+				$canvas.find('.pickles2-contents-editor--default-editor-body-css').hide();
+				$canvas.find('.pickles2-contents-editor--default-editor-body-js').hide();
+
+				$elmCanvas = $canvas.find('.pickles2-contents-editor--default-canvas');
+				$elmEditor = $canvas.find('.pickles2-contents-editor--default-editor');
+				$elmBtns = $canvas.find('.pickles2-contents-editor--default-btns');
+
+				$elmTabs = $canvas.find('.pickles2-contents-editor--default-switch-tab [data-pickles2-contents-editor-switch]');
+				$elmTabs
+					.on('click', function(){
+						var $this = $(this);
+						$elmTabs.removeAttr('disabled');
+						$this.attr({'disabled': 'disabled'});
+						var tabFor = $this.attr('data-pickles2-contents-editor-switch');
+						// console.log(tabFor);
+						$canvas.find('.pickles2-contents-editor--default-editor-body-html').hide();
+						$canvas.find('.pickles2-contents-editor--default-editor-body-css').hide();
+						$canvas.find('.pickles2-contents-editor--default-editor-body-js').hide();
+						$canvas.find('.pickles2-contents-editor--default-editor-body-'+tabFor).show();
+					})
+				;
 
 
-					$iframe = $('<iframe>');
-					$elmCanvas.html('').append($iframe);
-					$iframe
-						.on('load', function(){
-							console.log('pickles2-contents-editor: preview loaded');
-							// alert('pickles2-contents-editor: preview loaded');
-							onPreviewLoad( callback );
-						})
-					;
-					// $iframe.attr({"src":"about:blank"});
-					_this.postMessenger = new (require('../../apis/postMessenger.js'))(px2ce, $iframe.get(0));
+				$iframe = $('<iframe>');
+				$elmCanvas.html('').append($iframe);
+				$iframe
+					.on('load', function(){
+						console.log('pickles2-contents-editor: preview loaded');
+						// alert('pickles2-contents-editor: preview loaded');
+						onPreviewLoad( callback );
+					})
+				;
+				// $iframe.attr({"src":"about:blank"});
+				_this.postMessenger = new (require('../../apis/postMessenger.js'))(px2ce, $iframe.get(0));
 
-					windowResized(function(){
-
-						$elmCanvas.attr({
-							"data-pickles2-contents-editor-preview-url": getPreviewUrl()
-						});
-
-						px2ce.gpiBridge(
-							{
-								'api': 'getContentsSrc',
-								'page_path': page_path
-							},
-							function(codes){
-								// console.log(codes);
-
-								if( editorLib == 'ace' ){
-									$canvas.find('.pickles2-contents-editor--default-editor-body-html').append('<div>');
-									$canvas.find('.pickles2-contents-editor--default-editor-body-css').append('<div>');
-									$canvas.find('.pickles2-contents-editor--default-editor-body-js').append('<div>');
-
-									var aceCss = {
-										'position': 'relative',
-										'width': '100%',
-										'height': '100%'
-									};
-									$elmTextareas = {};
-									$elmTextareas['html'] = ace.edit(
-										$canvas.find('.pickles2-contents-editor--default-editor-body-html div').text(codes['html']).css(aceCss).get(0)
-									);
-									$elmTextareas['css'] = ace.edit(
-										$canvas.find('.pickles2-contents-editor--default-editor-body-css div').text(codes['css']).css(aceCss).get(0)
-									);
-									$elmTextareas['js'] = ace.edit(
-										$canvas.find('.pickles2-contents-editor--default-editor-body-js div').text(codes['js']).css(aceCss).get(0)
-									);
-									for(var i in $elmTextareas){
-										$elmTextareas[i].setFontSize(16);
-										$elmTextareas[i].getSession().setUseWrapMode(true);// Ace 自然改行
-										$elmTextareas[i].setShowInvisibles(true);// Ace 不可視文字の可視化
-										$elmTextareas[i].$blockScrolling = Infinity;
-										$elmTextareas[i].setTheme("ace/theme/github");
-										$elmTextareas[i].getSession().setMode("ace/mode/html");
-									}
-									$elmTextareas['html'].setTheme("ace/theme/monokai");
-									$elmTextareas['html'].getSession().setMode("ace/mode/php");
-									$elmTextareas['css'].setTheme("ace/theme/tomorrow");
-									$elmTextareas['css'].getSession().setMode("ace/mode/scss");
-									$elmTextareas['js'].setTheme("ace/theme/xcode");
-									$elmTextareas['js'].getSession().setMode("ace/mode/javascript");
-									switch(editorOption.editorMode){
-										case 'md':
-											$elmTextareas['html'].setTheme("ace/theme/github");
-											$elmTextareas['html'].getSession().setMode("ace/mode/markdown");
-											$canvas.find('.pickles2-contents-editor--default-switch-tab [data-pickles2-contents-editor-switch=html]').text('Markdown');
-											break;
-										case 'txt':
-											$elmTextareas['html'].setTheme("ace/theme/katzenmilch");
-											$elmTextareas['html'].getSession().setMode("ace/mode/plain_text");
-											$canvas.find('.pickles2-contents-editor--default-switch-tab [data-pickles2-contents-editor-switch=html]').text('Text');
-											break;
-										case 'html':
-										default:
-											$elmTextareas['html'].setTheme("ace/theme/monokai");
-											$elmTextareas['html'].getSession().setMode("ace/mode/php");
-											break;
-									}
-
-								}else{
-									$canvas.find('.pickles2-contents-editor--default-editor-body-html').append('<textarea>');
-									$canvas.find('.pickles2-contents-editor--default-editor-body-css').append('<textarea>');
-									$canvas.find('.pickles2-contents-editor--default-editor-body-js').append('<textarea>');
-
-									$elmTextareas = {};
-									$elmTextareas['html'] = $canvas.find('.pickles2-contents-editor--default-editor-body-html textarea');
-									$elmTextareas['css'] = $canvas.find('.pickles2-contents-editor--default-editor-body-css textarea');
-									$elmTextareas['js'] = $canvas.find('.pickles2-contents-editor--default-editor-body-js textarea');
-
-									$elmTextareas['html'].val(codes['html']);
-									$elmTextareas['css'] .val(codes['css']);
-									$elmTextareas['js']  .val(codes['js']);
-
-								}
-
-								setKeyboardEvent(function(){
-									windowResized(function(){
-										// broccoli.redraw();
-									});
-
-									updatePreview();
-
-									// callback();
-								});
-
-							}
-						);
-
-					});
-
+				it1.next(arg);
+			},
+			function(it1, arg){
+				windowResized(function(){
+					it1.next(arg);
+				});
+			},
+			function(it1, arg){
+				$elmCanvas.attr({
+					"data-pickles2-contents-editor-preview-url": getCanvasPageUrl()
 				});
 
+				px2ce.gpiBridge(
+					{
+						'api': 'getContentsSrc',
+						'page_path': page_path
+					},
+					function(codes){
+						// console.log(codes);
+
+						if( editorLib == 'ace' ){
+							$canvas.find('.pickles2-contents-editor--default-editor-body-html').append('<div>');
+							$canvas.find('.pickles2-contents-editor--default-editor-body-css').append('<div>');
+							$canvas.find('.pickles2-contents-editor--default-editor-body-js').append('<div>');
+
+							var aceCss = {
+								'position': 'relative',
+								'width': '100%',
+								'height': '100%'
+							};
+							$elmTextareas = {};
+							$elmTextareas['html'] = ace.edit(
+								$canvas.find('.pickles2-contents-editor--default-editor-body-html div').text(codes['html']).css(aceCss).get(0)
+							);
+							$elmTextareas['css'] = ace.edit(
+								$canvas.find('.pickles2-contents-editor--default-editor-body-css div').text(codes['css']).css(aceCss).get(0)
+							);
+							$elmTextareas['js'] = ace.edit(
+								$canvas.find('.pickles2-contents-editor--default-editor-body-js div').text(codes['js']).css(aceCss).get(0)
+							);
+							for(var i in $elmTextareas){
+								$elmTextareas[i].setFontSize(16);
+								$elmTextareas[i].getSession().setUseWrapMode(true);// Ace 自然改行
+								$elmTextareas[i].setShowInvisibles(true);// Ace 不可視文字の可視化
+								$elmTextareas[i].$blockScrolling = Infinity;
+								$elmTextareas[i].setTheme("ace/theme/github");
+								$elmTextareas[i].getSession().setMode("ace/mode/html");
+							}
+							$elmTextareas['html'].setTheme("ace/theme/monokai");
+							$elmTextareas['html'].getSession().setMode("ace/mode/php");
+							$elmTextareas['css'].setTheme("ace/theme/tomorrow");
+							$elmTextareas['css'].getSession().setMode("ace/mode/scss");
+							$elmTextareas['js'].setTheme("ace/theme/xcode");
+							$elmTextareas['js'].getSession().setMode("ace/mode/javascript");
+							switch(editorOption.editorMode){
+								case 'md':
+									$elmTextareas['html'].setTheme("ace/theme/github");
+									$elmTextareas['html'].getSession().setMode("ace/mode/markdown");
+									$canvas.find('.pickles2-contents-editor--default-switch-tab [data-pickles2-contents-editor-switch=html]').text('Markdown');
+									break;
+								case 'txt':
+									$elmTextareas['html'].setTheme("ace/theme/katzenmilch");
+									$elmTextareas['html'].getSession().setMode("ace/mode/plain_text");
+									$canvas.find('.pickles2-contents-editor--default-switch-tab [data-pickles2-contents-editor-switch=html]').text('Text');
+									break;
+								case 'html':
+								default:
+									$elmTextareas['html'].setTheme("ace/theme/monokai");
+									$elmTextareas['html'].getSession().setMode("ace/mode/php");
+									break;
+							}
+
+						}else{
+							$canvas.find('.pickles2-contents-editor--default-editor-body-html').append('<textarea>');
+							$canvas.find('.pickles2-contents-editor--default-editor-body-css').append('<textarea>');
+							$canvas.find('.pickles2-contents-editor--default-editor-body-js').append('<textarea>');
+
+							$elmTextareas = {};
+							$elmTextareas['html'] = $canvas.find('.pickles2-contents-editor--default-editor-body-html textarea');
+							$elmTextareas['css'] = $canvas.find('.pickles2-contents-editor--default-editor-body-css textarea');
+							$elmTextareas['js'] = $canvas.find('.pickles2-contents-editor--default-editor-body-js textarea');
+
+							$elmTextareas['html'].val(codes['html']);
+							$elmTextareas['css'] .val(codes['css']);
+							$elmTextareas['js']  .val(codes['js']);
+
+						}
+
+						it1.next(arg);
+					}
+				);
+			},
+			function(it1, arg){
+				setKeyboardEvent(function(){
+					windowResized(function(){
+					});
+					updatePreview();
+				});
+				it1.next(arg);
 			}
-		);
+		]);
 
 	};
 
@@ -22903,21 +23162,32 @@ module.exports = function(px2ce){
 		callback = callback || function(){};
 		if(_this.postMessenger===undefined){return;}
 
-		it79.fnc(
-			{},
-			[
-				function( it1, data ){
-					// postMessageの送受信を行う準備
-					_this.postMessenger.init(function(){
-						it1.next(data);
-					});
-				} ,
-				function(it1, data){
-					callback();
-					it1.next();
-				}
-			]
-		);
+		it79.fnc({}, [
+			function( it1, data ){
+				// postMessageの送受信を行う準備
+				console.log('---- postMessenger.init()');
+				_this.postMessenger.init(function(){
+					it1.next(data);
+				});
+			} ,
+			function(it1, arg){
+				// iframeのサイズ合わせ
+				// TODO: 子ウィンドウは、最初の通信で Origin を記憶するので、特に必要ないけどリクエストを投げている。よりよい方法が欲しい。
+				_this.postMessenger.send(
+					'getHtmlContentHeightWidth',
+					{},
+					function(hw){
+						// $canvas.find('iframe').height( hw.h + 0 ).width( hw.w + 0 );
+						// it1.next(data);
+						it1.next(arg);
+					}
+				);
+			},
+			function(it1, data){
+				callback();
+				it1.next(data);
+			}
+		]);
 		return this;
 	}
 
@@ -23051,17 +23321,7 @@ module.exports = function(px2ce){
 		}
 	})().replace(/\\/g, '/').replace(/\/[^\/]*\/?$/, '');
 
-	// bootstrap をロード
-	document.write('<link rel="stylesheet" href="'+__dirname+'/libs/bootstrap/dist/css/bootstrap.css" />');
-	document.write('<script src="'+__dirname+'/libs/bootstrap/dist/js/bootstrap.js"></script>');
-
-	// px2style をロード
-	document.write('<link rel="stylesheet" href="'+__dirname+'/libs/px2style/dist/styles.css" />');
-	document.write('<script src="'+__dirname+'/libs/px2style/dist/scripts.js"></script>');
-
-	// broccoli-html-editor をロード
-	document.write('<link rel="stylesheet" href="'+__dirname+'/libs/broccoli-html-editor/client/dist/broccoli.css" />');
-	document.write('<script src="'+__dirname+'/libs/broccoli-html-editor/client/dist/broccoli.js"></script>');
+	// broccoli-field-table をロード
 	document.write('<script src="'+__dirname+'/libs/broccoli-field-table/dist/broccoli-field-table.js"></script>');
 
 	window.Pickles2ContentsEditor = function(){
@@ -23072,9 +23332,13 @@ module.exports = function(px2ce){
 		this.__dirname = __dirname;
 		this.options = {};
 		this.page_path;
+		this.target_mode;
+		this.theme_id;
+		this.layout_id;
 
 		var serverConfig;
 		var editor;
+		var bootupInfomations;
 
 		var LangBank = require('langbank');
 		this.lb = {};
@@ -23094,12 +23358,20 @@ module.exports = function(px2ce){
 			this.options.onMessage = this.options.onMessage || function(message){ alert('onMessage: '+message); };
 			this.options.preview = this.options.preview || {};
 			this.options.lang = this.options.lang || 'en';
+			this.options.clipboard = this.options.clipboard || {};
+			this.options.clipboard.set = this.options.clipboard.set || null;
+			this.options.clipboard.get = this.options.clipboard.get || null;
+
 			this.page_path = this.options.page_path;
 
 			try {
 				this.page_path = this.page_path.replace( new RegExp('^(alias[0-9]*\\:)?\\/+'), '/' );
 				this.page_path = this.page_path.replace( new RegExp('\\{(?:\\*|\\$)[\s\S]*\\}'), '' );
 			} catch (e) {
+			}
+			if(!this.page_path){
+				// page_path option is required
+				return false;
 			}
 
 			$canvas = $(options.elmCanvas);
@@ -23123,81 +23395,78 @@ module.exports = function(px2ce){
 					function(it1, data){
 						_this.gpiBridge(
 							{
-								'api':'getConfig'
+								'page_path':_this.page_path,
+								'api':'getBootupInfomations'
 							} ,
-							function(config){
-								// console.log(config);
-								serverConfig = config;
+							function(_bootupInfomations){
+								bootupInfomations = _bootupInfomations;
+								console.log('=----=----=', bootupInfomations);
+								serverConfig = bootupInfomations.conf;
+
 								it1.next(data);
 							}
 						);
+					},
+					function(it1, data){
+						// config
+						serverConfig = bootupInfomations.conf;
+						_this.target_mode = serverConfig.target_mode;
+						_this.theme_id = serverConfig.theme_id;
+						_this.layout_id = serverConfig.layout_id;
+						it1.next(data);
 					} ,
 					function(it1, data){
-						_this.gpiBridge(
-							{
-								'api':'getLanguageCsv'
-							} ,
-							function(csv){
-								// console.log(csv);
-								_this.lb = new LangBank(csv, function(){
-									console.log('pickles2-contents-editor: set language "'+_this.options.lang+'"');
-									_this.lb.setLang( _this.options.lang );
-									// console.log( _this.lb.get('ui_label.close') );
+						var csv = bootupInfomations.languageCsv;
+						_this.lb = new LangBank(csv, function(){
+							console.log('pickles2-contents-editor: set language "'+_this.options.lang+'"');
+							_this.lb.setLang( _this.options.lang );
+							// console.log( _this.lb.get('ui_label.close') );
+							it1.next(data);
+						});
+					} ,
+					function(it1, data){
+						var editorMode = bootupInfomations.editorMode;
+						console.log(editorMode);
+						var editorOption = {
+							'editorMode': editorMode,
+							'serverConfig': serverConfig
+						};
+						switch(editorMode){
+							case '.page_not_exists':
+								// ページ自体が存在しない。
+								$canvas.html('<p>ページが存在しません。</p>');
+								it1.next(data);
+								break;
+
+							case '.not_exists':
+								// コンテンツが存在しない
+								$canvas.html('<p>コンテンツが存在しません。</p>');
+								editor = new (require('./editor/not_exists/not_exists.js'))(_this);
+								editor.init(editorOption, function(){
 									it1.next(data);
 								});
-							}
-						);
-					} ,
-					function(it1, data){
-						_this.gpiBridge(
-							{
-								'page_path':_this.page_path,
-								'api':'checkEditorMode'
-							},
-							function(editorMode){
-								// console.log(editorMode);
-								var editorOption = {
-									'editorMode': editorMode,
-									'serverConfig': serverConfig
-								};
-								switch(editorMode){
-									case '.page_not_exists':
-										// ページ自体が存在しない。
-										$canvas.html('<p>ページが存在しません。</p>');
-										it1.next(data);
-										break;
+								break;
 
-									case '.not_exists':
-										// コンテンツが存在しない
-										$canvas.html('<p>コンテンツが存在しません。</p>');
-										editor = new (require('./editor/not_exists/not_exists.js'))(_this);
-										editor.init(editorOption, function(){
-											it1.next(data);
-										});
-										break;
+							case 'html.gui':
+								// broccoli
+								$canvas.html('<p>GUIエディタを起動します。</p>');
+								editor = new (require('./editor/broccoli/broccoli.js'))(_this);
+								editor.init(editorOption, function(){
+									it1.next(data);
+								});
+								break;
 
-									case 'html.gui':
-										// broccoli
-										$canvas.html('<p>GUIエディタを起動します。</p>');
-										editor = new (require('./editor/broccoli/broccoli.js'))(_this);
-										editor.init(editorOption, function(){
-											it1.next(data);
-										});
-										break;
-
-									case 'html':
-									case 'md':
-									default:
-										// defaultテキストエディタ
-										$canvas.html('<p>テキストエディタを起動します。</p>');
-										editor = new (require('./editor/default/default.js'))(_this);
-										editor.init(editorOption, function(){
-											it1.next(data);
-										});
-										break;
-								}
-							}
-						);
+							case 'html':
+							case 'md':
+							default:
+								// defaultテキストエディタ
+								$canvas.html('<p>テキストエディタを起動します。</p>');
+								editor = new (require('./editor/default/default.js'))(_this);
+								editor.init(editorOption, function(){
+									it1.next(data);
+								});
+								break;
+						}
 					} ,
 					function(it1, data){
 						callback();
@@ -23290,45 +23559,33 @@ module.exports = function(px2ce){
 
 			new Promise(function(rlv){rlv();})
 				.then(function(){ return new Promise(function(rlv, rjt){
-					px2ce.gpiBridge(
-						{
-							'api': 'getProjectConf'
-						},
-						function(_px2conf){
-							px2conf = _px2conf;
-							rlv();
-						}
-					);
+					px2conf = bootupInfomations.projectConf;
+					rlv();
 				}); })
 				.then(function(){ return new Promise(function(rlv, rjt){
 					// プロジェクトが拡張するフィールド
 					// クライアントサイドのライブラリをロードしておく
-					px2ce.gpiBridge(
-						{
-							'api': 'loadCustomFieldsClientSideLibs'
+					var scripts = bootupInfomations.customFieldsClientSideLibs;
+					it79.ary(scripts,
+						function(itAry, scriptUrl, idx){
+							var scr = document.createElement('script');
+							scr.src = scriptUrl;
+							scr.onload = function(e){
+								// console.log('custom script loaded.', this, e);
+								itAry.next();
+							};
+							// console.log(scr);
+							scr.onerror = function(e){
+								console.error('custom script NOT loaded.', this, e);
+								itAry.next();
+							};
+							document.body.appendChild(scr);
 						},
-						function(scripts){
-							it79.ary(scripts,
-								function(itAry, scriptUrl, idx){
-									var scr = document.createElement('script');
-									scr.src = scriptUrl;
-									scr.onload = function(e){
-										// console.log('custom script loaded.', this, e);
-										itAry.next();
-									};
-									// console.log(scr);
-									scr.onerror = function(e){
-										console.error('custom script NOT loaded.', this, e);
-										itAry.next();
-									};
-									document.body.appendChild(scr);
-								},
-								function(){
-									rlv();
-								}
-							);
+						function(){
+							rlv();
 						}
 					);
+
 				}); })
 				.then(function(){ return new Promise(function(rlv, rjt){
 					// フィールドを拡張
@@ -23374,25 +23631,23 @@ module.exports = function(px2ce){
 					rlv();
 				}); })
 				.then(function(){ return new Promise(function(rlv, rjt){
-					rlv();
-				}); })
-				.then(function(){ return new Promise(function(rlv, rjt){
-					rlv();
-				}); })
-				.then(function(){ return new Promise(function(rlv, rjt){
-					rlv();
-				}); })
-				.then(function(){ return new Promise(function(rlv, rjt){
+					var contents_area_selector = px2conf.plugins.px2dt.contents_area_selector;
+					var contents_bowl_name_by = px2conf.plugins.px2dt.contents_bowl_name_by;
+					if(_this.target_mode == 'theme_layout'){
+						contents_area_selector = '[data-pickles2-theme-editor-contents-area]';
+						contents_bowl_name_by = 'data-pickles2-theme-editor-contents-area';
+					}
+
 					broccoliInitializeOptions = {
 						'elmCanvas': document.createElement('div'),
 						'elmModulePalette': document.createElement('div'),
 						'elmInstanceTreeView': document.createElement('div'),
 						'elmInstancePathView': document.createElement('div'),
-						'contents_area_selector': px2conf.plugins.px2dt.contents_area_selector,
-						// ↑編集可能領域を探すためのクエリを設定します。
-						//  この例では、data-contents属性が付いている要素が編集可能領域として認識されます。
-						'contents_bowl_name_by': px2conf.plugins.px2dt.contents_bowl_name_by,
-						// ↑bowlの名称を、data-contents属性値から取得します。
+						'contents_area_selector': contents_area_selector,
+							// ↑編集可能領域を探すためのクエリを設定します。
+							//  この例では、data-contents属性が付いている要素が編集可能領域として認識されます。
+						'contents_bowl_name_by': contents_bowl_name_by,
+							// ↑bowlの名称を、data-contents属性値から取得します。
 						'customFields': customFields,
 						'lang': px2ce.options.lang,
 						'gpiBridge': function(api, options, callback){
@@ -23414,6 +23669,7 @@ module.exports = function(px2ce){
 							);
 							return;
 						},
+						'clipboard': px2ce.options.clipboard,
 						'onClickContentsLink': function( uri, data ){
 							px2ce.onClickContentsLink( uri, data );
 						},
@@ -23452,6 +23708,13 @@ module.exports = function(px2ce){
 		}
 
 		/**
+		 * エディタオブジェクトを取得する
+		 */
+		this.getEditor = function(){
+			return editor;
+		}
+
+		/**
 		 * ユーザーへのメッセージを表示する
 		 */
 		this.message = function(message, callback){
@@ -23467,6 +23730,13 @@ module.exports = function(px2ce){
 		*/
 		this.gpiBridge = function(data, callback){
 			return this.options.gpiBridge(data, callback);
+		}
+
+		/**
+		 * 初期起動時にロードした情報を取得する
+		 */
+		this.getBootupInfomations = function(){
+			return bootupInfomations;
 		}
 
 		/**

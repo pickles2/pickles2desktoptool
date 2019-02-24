@@ -28,11 +28,17 @@ gulp.task("client-libs", function() {
 	gulp.src(["node_modules/pickles2-module-editor/dist/**/*"])
 		.pipe(gulp.dest( './app/common/pickles2-module-editor/dist/' ))
 	;
-	// gulp.src(["node_modules/broccoli-field-psd/dist/*"])
-	// 	.pipe(gulp.dest( './app/common/broccoli-field-psd/dist/' ))
-	// ;
 	gulp.src(["node_modules/px2style/dist/**/*"])
 		.pipe(gulp.dest( './app/common/px2style/dist/' ))
+	;
+	gulp.src(["node_modules/cmd-queue/dist/**/*"])
+		.pipe(gulp.dest( './app/common/cmd-queue/dist/' ))
+	;
+	gulp.src(["node_modules/git-parser/dist/**/*"])
+		.pipe(gulp.dest( './app/common/git-parser/dist/' ))
+	;
+	gulp.src(["node_modules/remote-finder/dist/**/*"])
+		.pipe(gulp.dest( './app/common/remote-finder/dist/' ))
 	;
 });
 

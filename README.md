@@ -2,8 +2,6 @@
 
 [Pickles 2](http://pickles2.pxt.jp/) のプロジェクトテンプレートをベースに、ウェブサイトを編集するGUI編集環境を提供します。
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/videoseries?list=PL5ZUBZrE-CkDSYUvVZNDCILrzGhRG2U8L" frameborder="0" allowfullscreen></iframe>
-
 ## Install
 
 Copy `Pickles2.app` to your Application Folder.
@@ -14,8 +12,10 @@ Copy `Pickles2.app` to your Application Folder.
 ### Initial Setup for develop
 
 ```
+$ npm install -g gulp
 $ git clone https://github.com/pickles2/app-pickles2.git
 $ cd app-pickles2
+$ git submodule update --init --recursive --force
 $ npm install
 $ composer install
 ```
@@ -32,6 +32,20 @@ $ npm run submodules-update
 $ npm start
 ```
 
+`npm start` でエラーが起きる場合は以下を試してください。
+
+```
+$ npm install nw
+$ npm start
+```
+
+
+### Task Runner
+
+```
+$ gulp watch
+```
+
 
 ### Build application
 
@@ -40,7 +54,16 @@ $ php docs/help/htdocs/.px_execute.php /?PX=publish.run
 $ npm run build
 ```
 
-`./build/` にZIPファイルが出力されます。
+`./build/dist/` にZIPファイルが出力されます。
+
+### Build application cleanly
+
+```
+$ sh build/build_clean.sh [-i ${AppleIdentity}] {$branch_or_version}
+```
+
+ユーザーのホームディレクトリにZIPファイルが出力されます。
+
 
 ### node and npm version
 
@@ -54,13 +77,83 @@ Mac で Windows 版をビルドするにあたり、次の環境が必要です�
 
 ## 更新履歴 - Change log
 
-### Pickles 2 2.0.0-beta.17 (2017年??月??日)
+### Pickles 2 v2.0.0-beta.23 (リリース日未定)
+
+- ????????????????????
+
+### Pickles 2 v2.0.0-beta.22 (2019年2月22日)
+
+- 新機能「ファイルとフォルダ」を追加。
+- 新機能「コンテンツファイルを一括作成」を追加。
+- 新機能「コンテンツファイルリスト作成」を追加。
+- Broccoli エディタ (GUI編集) で、コンテキストメニューを使えるようになった。
+- ウィンドウのサイズと表示位置を記憶するようになった。
+- `composer install` 画面を追加。
+- 内蔵ウェブサーバーの安定性を向上した。
+- Forum のリンク先を GitHub issue に変更。
+- その他細かい不具合を修正。
+
+### Pickles 2 v2.0.0-beta.21 (2018年10月26日)
+
+- 1ページを単体で手軽にパブリッシュできる機能を追加。
+- パブリッシュを途中でキャンセルできる機能を追加。
+- 新規プロジェクト作成のフローを改善。
+- アプリケーション設定から、 git のユーザー情報設定を更新できるようになった。
+- その他いくつかのUIの改善。
+
+### Pickles 2 v2.0.0-beta.20 (2018年8月30日)
+
+- guiEngine 設定で `broccoli-html-editor-php` に対応。PHPに移植されたGUI編集エンジンを利用可能になった。
+- スタイルガイドジェネレータが `finalize.php` に対応した。
+- JS版GUI編集で、 if フィールドが、 canvas モード描画時でも常に finalize モードで出力された値を評価するように変更した。
+- 外部のサーバーを設定したプロジェクトで、内蔵サーバーを起動してしまうことがある不具合を修正。
+- composer.json の extra が存在するが空白の場合に異常終了する不具合を修正。
+- composer プロジェクトの更新で、強制的に更新するオプションを追加した。
+- composer update コマンドが失敗したとき、ユーザーに通知するようになった。
+- コンテンツ一括加工の Dry Run オプションを、デフォルトでオフにした。
+- その他いくつかの不具合の修正。
+
+### Pickles 2 v2.0.0-beta.19 (2018年4月6日)
+
+- GUI編集で、 elseifフィールド と elseフィールド を使えるようになった。
+- GUI編集で、 moduleフィールド、 loopフィールドに `maxLength` を追加。
+- GUI編集で、 moduleフィールドに `enabledChildren` を、モジュールの `info.json` 仕様に `enabledParents`, `enabledBowls` を追加。親子関係の定義ができるようになった。
+- プロジェクトの診断情報の表示機能を追加。
+- 外部テキストエディタの設定で、 `$PATH` を使えるようになった。
+- 外部Gitクライアントで開く機能を追加。
+- 前回パブリッシュしたときの条件を記憶し、自動入力されるようになった。
+- デフォルトで、内蔵 php ではなくパスが通された `php` コマンドを使用するように変更。
+- スタイルガイドのインターフェイスを改善。
+- その他不具合の修正、パフォーマンス調整など。
+
+### Pickles 2 v2.0.0-beta.18 (2017年12月8日)
+
+- テーマ編集機能を追加。
+- GUI編集で、imageフィールドがファイル名の重複をチェックするようになった。
+- GUI編集で、imageフィールドの JPEG, PNG 画像の自動ロスレス圧縮機能を削除。圧縮に著しく時間がかかり、作業効率を下げるため。
+- GUI編集で、finalize.js の第3引数 `supply` に `data` を追加。モジュールに入力されたデータ構造にアクセスできるようになった。
+- モジュール編集機能のUI改善。
+- プロジェクトの `px2package` を読み込み、 `entry_script`, `home_dir` を補完するようになった。
+- 新しい設定 `$conf->plugins->px2dt->path_module_templates_dir` に対応。
+- コンテンツ編集画面が、エイリアスページに対応した。
+- 起動時のウィンドウサイズが、スクリーンサイズいっぱいに拡大されるようになった。
+- パンくずに欠損などがある場合に、コンテンツ編集画面で画面が動かなくなる不具合を修正。
+- その他いくつかの細かい修正。
+
+### Pickles 2 v2.0.0-beta.17.1 (2017年6月21日)
+
+- 新規プロジェクト作成時に成功しているのにエラーが表示される不具合を修正。
+- コンテンツ一括加工の不具合を修正。
+- 内蔵のプレビュー用サーバーの起動に失敗した場合に、画面に通知を表示するようになった。
+- その他いくつかの細かい修正。
+
+### Pickles 2 v2.0.0-beta.17 (2017年6月1日)
 
 - アプリケーションの名称を `Pickles 2 Desktop Tool` から `Pickles 2` に変更。
 - NW.js を 0.21.1 に更新。
 - Windows版で、バックグラウンドでの パブリッシュ中 と サイトマップキャッシュ生成中 に、画面左下に状態を表示するようになった。
 - 旧GUI編集エンジン `legacy` を廃止し、`pickles2-contents-editor` に一本化。
-- コンテンツ編集画面のUI改善。大量のページを扱っても破綻しないようにした。
+- コンテンツ編集画面のUI改善。ページ一覧をツリー表示に変更し、大量のページを扱っても破綻しないようにした。
 - 「他のページから複製して取り込む」で、入力した文字列から候補のページを表示するようになった。
 - プロジェクトごとに外部のプレビューサーバーを設定できるようになった。
 - 同名で拡張子が異なるサイトマップファイルをまとめて表示するように変更した。

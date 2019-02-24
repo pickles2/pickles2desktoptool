@@ -1,3 +1,4 @@
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
  * Publish: app.js
  */
@@ -6,8 +7,12 @@ window.contApp = new (function(px, $){
 	var _this = this;
 	var _pj, _realpathPublishDir;
 	var $cont;
-	var _status;
 	var _patterns;
+	var currentQueueId;
+	var justClosedNow;
+
+	this.progressReport = new(require('../../../fncs/publish/index_files/libs.ignore/progressReport.js'))(this, px, $);
+	this.resultReport = new(require('../../../fncs/publish/index_files/libs.ignore/resultReport.js'))(this, px, $);
 
 	/**
 	 * initialize
@@ -28,57 +33,139 @@ window.contApp = new (function(px, $){
 		} catch (e) {
 		}
 
-		px.utils.iterateFnc([
-			function(it, arg){
-				px.fs.exists( _realpathPublishDir+'applock.txt', function(result){
-					arg.applockExists = result;
-					it.next(arg);
-				} );
+		px.it79.fnc({}, [
+			function(it){
+				$cont.append( $('#template-scenes').html() ).find('.cont_scene').hide();
+				_this.progressReport.init($cont);
+				it.next();
 			} ,
-			function(it, arg){
-				px.fs.exists( _realpathPublishDir+'publish_log.csv', function(result){
-					arg.publishLogExists = result;
-					it.next(arg);
-				} );
+			function(it){
+				_this.checkPublishStatus(function(status){
+					if( status.applockExists ){
+						// パブリッシュ中だったら
+						$cont.find('#cont_on_publish').show();
+					}else if( status.publishLogExists && status.htdocsExists ){
+						// パブリッシュが完了していたら
+						$cont.find('#cont_after_publish').show();
+						_this.resultReport.init();
+					}else{
+						// パブリッシュ前だったら
+						$cont.find('#cont_before_publish').show();
+					}
+					it.next();
+				});
 			} ,
-			function(it, arg){
-				px.fs.exists( _realpathPublishDir+'alert_log.csv', function(result){
-					arg.alertLogExists = result;
-					it.next(arg);
-				} );
+			function(it){
+				px.commandQueue.client.destroyTerminal('publish');
+				px.commandQueue.client.createTerminal(null, {
+					"name": "publish",
+					"tags": [
+						'pj-'+_pj.get('id'),
+						'pickles2-publish'
+					],
+					"write": function(message){
+						// console.log('terminal message', message);
+						if(message.command == 'open'){
+							$('.cont_scene').hide();
+							$('#cont_before_publish-progress').show();
+							currentQueueId = message.queueItemInfo.id;
+						}else if(message.command == 'stdout'){
+							_this.progressReport.updateView(message.data.join(''));
+							currentQueueId = message.queueItemInfo.id;
+						}else if(message.command == 'close'){
+							currentQueueId = undefined;
+							_this.checkPublishStatus(function(status){
+								$('.cont_scene').hide();
+								if( status.applockExists ){
+									// パブリッシュ中だったら
+									$cont.find('#cont_on_publish').show();
+								}else if( status.publishLogExists && status.htdocsExists ){
+									// パブリッシュが完了していたら
+									$cont.find('#cont_after_publish').show();
+									_this.resultReport.init();
+									_this.progressReport.resetView();
+								}else{
+									// パブリッシュ前だったら
+									if(justClosedNow){
+										$cont.find('#cont_after_publish-zero_files').show();
+									}else{
+										$cont.find('#cont_before_publish').show();
+									}
+								}
+								justClosedNow = undefined;
+							});
+						}
+					}
+				});
+				it.next();
 			} ,
-			function(it, arg){
-				px.fs.exists( _realpathPublishDir+'htdocs/', function(result){
-					arg.htdocsExists = result;
-					it.next(arg);
-				} );
-			} ,
-			function(it, arg){
-				_status = arg;
-				if( _status.applockExists ){
-					// パブリッシュ中だったら
-					$cont.append( $('#template-on_publish').html() );
-				}else if( _status.publishLogExists && _status.htdocsExists ){
-					// パブリッシュが完了していたら
-					$cont.append( $('#template-after_publish').html() );
-					$cont.find('.cont_canvas')
-						.height( $(window).height() - $('.container').eq(0).height() - $cont.find('.cont_buttons').height() - 20 )
-					;
-					_this.resultReport.init( _this, $cont.find('.cont_canvas') );
-				}else{
-					// パブリッシュ前だったら
-					$cont.append( $('#template-before_publish').html() );
-				}
-				// console.log(arg);
-				it.next(arg);
-			} ,
-			function(it, arg){
+			function(it){
 				setTimeout(function(){
 					px.progress.close();
-					it.next(arg);
+					it.next();
 				}, 10);
 			}
-		]).start({});
+		]);
+	}
+
+	/**
+	 * パブリッシュの状態を調べる
+	 */
+	this.checkPublishStatus = function(callback){
+		callback = callback || function(){};
+		var status = {};
+		px.it79.fnc({}, [
+			function(it){
+				px.fs.exists( _realpathPublishDir+'applock.txt', function(result){
+					status.applockExists = result;
+					it.next();
+				} );
+			} ,
+			function(it){
+				status.pid = null;
+				status.lastPublishStartedDateTime = null;
+				if(!status.applockExists){
+					it.next();
+					return;
+				}
+				px.fs.readFile( _realpathPublishDir+'applock.txt', function(err, data){
+					if(err){
+						it.next();
+						return;
+					}
+					var src = data.toString();
+					if(src.match(/ProcessID\=([0-9]*)/)){
+						status.pid = Number(RegExp.$1);
+					}
+					if(src.match(/([0-9]*\-[0-9]{2}\-[0-9]{2} [0-9]{2}\:[0-9]{2}\:[0-9]{2})/)){
+						status.lastPublishStartedDateTime = RegExp.$1;
+					}
+					it.next();
+				} );
+			} ,
+			function(it){
+				px.fs.exists( _realpathPublishDir+'publish_log.csv', function(result){
+					status.publishLogExists = result;
+					it.next();
+				} );
+			} ,
+			function(it){
+				px.fs.exists( _realpathPublishDir+'alert_log.csv', function(result){
+					status.alertLogExists = result;
+					it.next();
+				} );
+			} ,
+			function(it){
+				px.fs.exists( _realpathPublishDir+'htdocs/', function(result){
+					status.htdocsExists = result;
+					it.next();
+				} );
+			} ,
+			function(it){
+				callback(status);
+			}
+		]);
+		return;
 	}
 
 	/**
@@ -86,6 +173,28 @@ window.contApp = new (function(px, $){
 	 */
 	this.publish = function(){
 		var $body = $( $('#template-dialog_publish_options').html() );
+		try {
+			if(_pj.appdata.get().publishOption.last){
+				var path_region = [_pj.appdata.get().publishOption.last.path_region];
+				path_region = path_region.concat(_pj.appdata.get().publishOption.last.paths_region);
+				try {
+					$body.find('textarea[name=path_region]').val( path_region.join("\n") );
+				} catch (e) {
+					$body.find('textarea[name=path_region]').val( '/' );
+				}
+				try {
+					$body.find('textarea[name=paths_ignore]').val( _pj.appdata.get().publishOption.last.paths_ignore.join("\n") );
+				} catch (e) {
+					$body.find('textarea[name=paths_ignore]').val( '' );
+				}
+				try {
+					$body.find('input[name=keep_cache]').prop("checked", !!(_pj.appdata.get().publishOption.last.keep_cache));
+				} catch (e) {
+					$body.find('input[name=keep_cache]').prop("checked", false);
+				}
+			}
+		} catch (e) {
+		}
 
 		(function(){
 			// パブリッシュパターンの選択UIを作る
@@ -147,7 +256,7 @@ window.contApp = new (function(px, $){
 					.text('パブリッシュを実行する')
 					.attr({'type':'submit'})
 					.addClass('px2-btn px2-btn--primary')
-					.click(function(){
+					.on('click', function(){
 						var str_paths_region_val = $body.find('textarea[name=path_region]').val();
 						var str_paths_region = '';
 						var tmp_ary_paths_region = str_paths_region_val.split(new RegExp('\r\n|\r|\n','g'));
@@ -180,19 +289,63 @@ window.contApp = new (function(px, $){
 
 						var keep_cache = ( $body.find('input[name=keep_cache]:checked').val() ? 1 : 0 );
 
+						// パブリッシュ条件入力ダイアログを閉じる
 						px.closeDialog();
 
-						_this.progressReport.init(
-							_this,
-							$cont,
+						_pj.appdata.get().publishOption = _pj.appdata.get().publishOption || {};
+						_pj.appdata.get().publishOption.last = {
+							"path_region": path_region,
+							"paths_region": ary_paths_region,
+							"paths_ignore": ary_paths_ignore,
+							"keep_cache": keep_cache
+						};
+						_pj.appdata.save(function(){});
+
+						var px2cmd_options = '';
+						px2cmd_options += 'path_region='+encodeURIComponent(path_region);
+						for(var idx in ary_paths_region){
+							px2cmd_options += '&paths_region[]='+encodeURIComponent(ary_paths_region[idx]);
+						}
+						for(var idx in ary_paths_ignore){
+							px2cmd_options += '&paths_ignore[]='+encodeURIComponent(ary_paths_ignore[idx]);
+						}
+						if(keep_cache){
+							px2cmd_options += '&keep_cache=1';
+						}
+
+						// パブリッシュコマンドを発行する
+						px.commandQueue.client.addQueueItem(
+							[
+								'php',
+								px.path.resolve(_pj.get('path'), _pj.get('entry_script')),
+								'/?PX=publish.run&'+px2cmd_options
+							],
 							{
-								"path_region": path_region,
-								"paths_region": ary_paths_region,
-								"paths_ignore": ary_paths_ignore,
-								"keep_cache": keep_cache,
-								"complete": function(){
-									px.message( 'パブリッシュを完了しました。' );
-									init();
+								'cdName': 'default',
+								'tags': [
+									'pj-'+_pj.get('id'),
+									'pickles2-publish'
+								],
+								'accept': function(queueId){
+									// console.log(queueId);
+									currentQueueId = queueId;
+								},
+								'open': function(message){
+								},
+								'stdout': function(message){
+									// _this.updateView(message.data.join(''));
+								},
+								'stderr': function(message){
+									// _this.updateView(message.data.join(''));
+								},
+								'close': function(message){
+									justClosedNow = true;
+									if(message.data !== 0){
+										px.message( 'パブリッシュが正常に完了できませんでした。ご確認ください。' );
+									}else{
+										px.message( 'パブリッシュを完了しました。' );
+									}
+									return;
 								}
 							}
 						);
@@ -200,13 +353,21 @@ window.contApp = new (function(px, $){
 				$('<button>')
 					.text(px.lb.get('ui_label.cancel'))
 					.addClass('px2-btn')
-					.click(function(){
+					.on('click', function(){
 						px.closeDialog();
 					})
 			]
 		});
 
 		return true;
+	}
+
+	/**
+	 * パブリッシュを中断する
+	 */
+	this.cancel = function(){
+		px.commandQueue.client.killQueueItem(currentQueueId);
+		px.fs.unlinkSync( _realpathPublishDir+'applock.txt' );
 	}
 
 	/**
@@ -254,13 +415,6 @@ window.contApp = new (function(px, $){
 	}
 
 	/**
-	 * ステータスを取得
-	 */
-	this.getStatus = function(){
-		return _status;
-	}
-
-	/**
 	 * パブリッシュディレクトリのパスを取得
 	 */
 	this.getRealpathPublishDir = function(){
@@ -268,14 +422,316 @@ window.contApp = new (function(px, $){
 	}
 
 
-	$(window).load(function(){
-		init();
-	});
-	$(window).resize(function(){
-		$('.cont_canvas')
-			.height( $(window).height() - $('.container').eq(0).height() - $cont.find('.cont_buttons').height() - 20 )
+	function windowResized(){
+		$('.contents')
+			.height( $(window).height() - $('.container').eq(0).height() - 10 )
 		;
+		$('.cont_canvas')
+			.height( $(window).height() - $('.container').eq(0).height() - $cont.find('.cont_buttons').eq(0).height() - 20 )
+		;
+	}
+
+	$(window).on('load', function(){
+		init();
+		windowResized();
+
+		$(window).on('resize', function(){
+			windowResized();
+		});
 	});
 
 	return this;
 })(px, $);
+
+},{"../../../fncs/publish/index_files/libs.ignore/progressReport.js":2,"../../../fncs/publish/index_files/libs.ignore/resultReport.js":3}],2:[function(require,module,exports){
+/**
+ * Publish: progressReport.js
+ */
+module.exports = function(contApp, px, $){
+	var _this = this;
+	var _pj = px.getCurrentProject();
+	var $results, $phase, $currentTask, $timer, $row, $progressBar;
+	var phase;
+	var _timer;
+
+	/**
+	 * レポート表示の初期化
+	 */
+	this.init = function(){
+		$results = $('#cont_before_publish-progress');
+		$timer = $results.find('.cont_progress-timer');
+		$row = $results.find('.cont_progress-row');
+		$phase = $results.find('.cont_progress-phase').css({'font-weight':'bold'});
+		$currentTask = $results.find('.cont_progress-currentTask');
+		$progressBar = $results.find('.cont_progress-bar [role=progressbar]');
+	}
+
+	/**
+	 * 進捗画面をリセットする
+	 */
+	this.resetView = function(){
+		clearTimeout(_timer);
+		$phase.text('');
+		$currentTask.text('');
+		$row.text('');
+		$timer.text('');
+		$progressBar.attr({'aria-valuenow':0}).css({'width':'0%'});
+	}
+
+	/**
+	 * 進捗レポート画面を更新する
+	 */
+	this.updateView = function(data){
+
+		if( !$results.is(':visible') ){
+			$('.cont_scene').hide();
+			$results.show();
+		}
+
+		try {
+			var data = data.toString();
+			var rows = data.split(new RegExp('(\r\n|\r|\n)+'));
+		} catch (e) {
+		}
+
+		for( var idx in rows ){
+			var row = px.php.trim( rows[idx] );
+			if( typeof(row) !== typeof('') || !row.length ){
+				continue;
+			}
+			if( row.match( new RegExp('^\\#\\#([\\s\\S]+)$') ) ){
+				phase = px.php.trim( RegExp.$1 );
+				if( phase == 'Start publishing' ){
+					$phase.text( 'Publishing...' );
+					(function(){
+						var startTimestamp = (new Date).getTime();
+						function updateTimer(){
+							var time = (new Date).getTime() - startTimestamp;
+							$timer.text( Math.floor(time/1000) + ' sec' );
+							_timer = setTimeout( updateTimer, 25 );
+						}
+						updateTimer();
+					})();
+				}else{
+					$phase.text( phase );
+				}
+			}else if( phase == 'Start publishing' ){
+				if( row.match( new RegExp('^([0-9]+)\\/([0-9]+)$') ) ){
+					$currentTask.text( RegExp.$1 +' / '+ RegExp.$2 );
+					var per = RegExp.$1/RegExp.$2*100;
+					$progressBar.attr({'aria-valuenow':per}).css({'width':per+'%'});
+				}else if( row.match( new RegExp('^\\/([\\s\\S]+)$') ) ){
+					$row.text(row);
+				}
+			}else if( phase == 'Clearing caches' ){
+				$row.text(row);
+			}else if( phase == 'Making list' ){
+				$row.text(row);
+			}else if( phase == 'Sync to publish directory.' ){
+				clearTimeout(_timer);
+				$row.text('');
+			}else if( phase == 'done.' ){
+				clearTimeout(_timer);
+				$row.text('');
+			}else{
+				$row.text('');
+			}
+			// console.log( row );
+		}
+	}
+
+	return this;
+
+}
+
+},{}],3:[function(require,module,exports){
+/**
+ * Publish: resultReport.js
+ */
+module.exports = function(contApp, px, $){
+	var _this = this;
+
+	var $scene, $results, $rows, $summaries, $spentTime, $totalFileCount, $errorMessage;
+	var publishStatus;
+
+	/**
+	 * レポート表示の初期化
+	 */
+	this.init = function(){
+		$scene = $('#cont_after_publish');
+		if( !$scene.is(':visible') ){
+			$('.cont_scene').hide();
+			$scene.show();
+		}
+		$scene.find('.cont_results-error').removeClass('cont_results-error');
+
+		$canvas = $scene.find('.cont_canvas');
+		$results = $canvas.find('.cont_results');
+		$canvas
+			.height( $(window).height() - $('.container').eq(0).height() - $scene.find('.cont_buttons').height() - 20 )
+		;
+
+
+		$rows = $results.find('.cont_results-rows');
+		$summaries = $results.find('.cont_results-summaries');
+		$spentTime = $results.find('.cont_results-spentTime span');
+		$totalFileCount = $results.find('.cont_results-total_file_count strong');
+		$errorMessage = $results.find('.cont_results-errorMessage');
+
+		px.it79.fnc({}, [
+			function( it, arg ){
+				d3.csv( 'file://'+contApp.getRealpathPublishDir()+"publish_log.csv" )
+					.row(function(d) {
+						var rtn = {};
+						rtn.datetime = d['datetime'];
+						rtn.path = d['path'];
+						rtn.procType = d['proc_type'];
+						rtn.statusCode = d['status_code'];
+						return rtn;
+					})
+					.get(function(error, csv) {
+						// console.log(csv);
+						arg.publishLogCsv = csv;
+						it.next(arg);
+					})
+				;
+			} ,
+			function( it, arg ){
+				contApp.checkPublishStatus(function(res){
+					// console.log(res);
+					publishStatus = res;
+					it.next(arg);
+				});
+			} ,
+			function( it, arg ){
+
+				arg.alertLogCsv = [];
+				if( !publishStatus.alertLogExists ){
+					it.next(arg);
+					return;
+				}
+
+				d3.csv( 'file://'+contApp.getRealpathPublishDir()+"alert_log.csv" )
+					.row(function(d) {
+						var rtn = {};
+						rtn.datetime = d['datetime'];
+						rtn.path = d['path'];
+						rtn.errorMessage = d['error_message'];
+						return rtn;
+					})
+					.get(function(error, csv) {
+						// console.log(csv);
+						arg.alertLogCsv = csv;
+						it.next(arg);
+					})
+				;
+			} ,
+			function( it, arg ){
+				var count = arg.publishLogCsv.length;
+				var startDateTime = arg.publishLogCsv[0].datetime;
+				var endDateTime = arg.publishLogCsv[arg.publishLogCsv.length-1].datetime;
+				var time = Date.parse( endDateTime ) - Date.parse( startDateTime );
+
+				function updateTotalFileCounter( count, i ){
+					i ++;
+					var t = 50;
+					if( t == i ){
+						// 全量完了
+						$totalFileCount.text( count );
+
+						if( publishStatus.alertLogExists ){
+							$results.addClass('cont_results-error');
+							$errorMessage
+								.text( arg.alertLogCsv.length + '件のエラーが検出されています。' )
+							;
+						}
+						return;
+					}
+					$totalFileCount.text( Math.round(count/t*i) );
+					setTimeout( function(){ updateTotalFileCounter( count, i ); }, 2 );
+				}
+				updateTotalFileCounter( count, 0 );
+
+				function updateSpentTime( time, i ){
+					i ++;
+					var t = 35;
+					if( t == i ){
+						// 全量完了
+						$spentTime.text( time + ' sec' );
+						return;
+					}
+					$spentTime.text( Math.round(time/t*i) + ' sec' );
+					setTimeout( function(){ updateSpentTime( time, i ); }, 4 );
+				}
+				updateSpentTime( (time/1000), 0 );
+
+
+				var rows = [];
+				var summaries = {
+					'procTypes': {} ,
+					'statusCodes': {}
+				};
+				// d3.select( $canvas.get(0) ).html(arg.publishLogCsv);
+
+				px.utils.iterate(
+					arg.publishLogCsv,
+					function( it2, row2, idx2 ){
+
+						// 行データ
+						rows.push( row2 );
+
+						// 統計
+						if( !summaries.procTypes[row2.procType] ){ summaries.procTypes[row2.procType] = 0; };
+						summaries.procTypes[row2.procType] ++;
+
+						if( !summaries.statusCodes[row2.statusCode] ){ summaries.statusCodes[row2.statusCode] = 0; };
+						summaries.statusCodes[row2.statusCode] ++;
+						// console.log(summaries);
+
+						(function(){
+							var table = d3.select( $summaries.find('table').get(0) );
+							table.select('tr.cont_procTypes td')
+								.data([summaries.procTypes])
+								.html(
+									function(d, i){
+										var ul = $('<ul>');
+										for( var idx in d ){
+											ul.append( $('<li>').text( idx + ': ' + d[idx] ) );
+										}
+										return ul.html();
+									}
+								)
+							;
+							table.select('tr.cont_statusCodes td')
+								.data([summaries.statusCodes])
+								.html(
+									function(d, i){
+										var ul = $('<ul>');
+										for( var idx in d ){
+											ul.append( $('<li>').text( idx + ': ' + d[idx] ) );
+										}
+										return ul.html();
+									}
+								)
+							;
+						})();
+
+						setTimeout( function(){
+							it2.next();
+						}, 0 );
+
+					} ,
+					function(){
+						it.next(arg);
+					}
+				);
+
+			}
+		]);
+
+	} // this.init();
+
+	return this;
+}
+
+},{}]},{},[1])

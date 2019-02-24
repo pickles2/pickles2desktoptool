@@ -297,6 +297,10 @@
   padding: 0.5em 0;
   background-color: #fff; }
 
+.broccoli--edit-window-message-field {
+  display: none;
+  margin: 10px; }
+
 .broccoli--edit-window-builtin-fields {
   border: 1px solid #99e;
   padding: 1em;
@@ -370,6 +374,10 @@
       overflow: auto;
       display: block; }
 
+.broccoli--edit-window-field-error-message {
+  margin: 10px;
+  display: none; }
+
 .broccoli--lightbox {
   position: fixed;
   top: 0;
@@ -393,7 +401,8 @@
   background-color: rgba(128, 128, 128, 0.05);
   width: 100%;
   height: 100%;
-  z-index: 11000; }
+  z-index: 11000;
+  text-align: center; }
   .broccoli--progress-inner {
     position: absolute;
     left: 0;
@@ -406,6 +415,18 @@
     top: -50%;
     width: 100%;
     height: 180px; }
+
+.broccoli--progress-comment {
+  color: #999;
+  background-color: #eee;
+  padding: 0.5em 1em;
+  margin: 0 auto;
+  display: inline-block;
+  font-size: 70%;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; }
 
 .broccoli--module-info-preview {
   position: fixed;
@@ -573,3 +594,44 @@
     text-overflow: ellipsis;
     overflow: hidden;
     padding-left: 8px; }
+  .broccoli--module-palette a.broccoli--module-palette--draggablebutton-children {
+    padding-left: 24px; }
+    .broccoli--module-palette a.broccoli--module-palette--draggablebutton-children span.broccoli--module-palette--draggablebutton-thumb {
+      width: 27px;
+      min-width: 27px;
+      height: 27px;
+      min-height: 27px; }
+
+.broccoli__error-message {
+  border: 1px solid #f00;
+  color: #f00;
+  background-color: #fdd;
+  padding: 10px 20px;
+  border-radius: 10px; }
+  .broccoli__error-message ul {
+    margin-top: 0;
+    margin-bottom: 0; }
+
+.broccoli--contextmenu {
+  z-index: 20000;
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  max-width: 300px;
+  min-height: 30px;
+  background-color: #f9f9f9;
+  border: 1px solid #999;
+  font-size: 14px; }
+  .broccoli--contextmenu ul {
+    padding: 0;
+    margin: 0; }
+    .broccoli--contextmenu ul li {
+      padding: 0;
+      margin: 0;
+      list-style-type: none; }
+      .broccoli--contextmenu ul li a, .broccoli--contextmenu ul li span {
+        display: block;
+        padding: 4px 18px; }
+      .broccoli--contextmenu ul li a:hover {
+        background-color: #f0f0f0; }

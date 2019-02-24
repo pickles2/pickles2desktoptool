@@ -1,9 +1,13 @@
 new (function($, window){
 	// pickles
-	window.px = _this = this;
+	var _this = this;
+	window.px = this;
+	this.px2style = window.px2style;
 
 	// node.js
 	this.process = process;
+
+	this.cwd = process.cwd();
 
 	// NW.js
 	this.nw = nw;
@@ -11,9 +15,6 @@ new (function($, window){
 
 	// jQuery
 	this.$ = $;
-
-	// Underscore
-	this._ = _;
 
 	// package.json
 	var _packageJson = require('../package.json');
@@ -77,13 +78,22 @@ new (function($, window){
 	this.twig = _twig;
 	var _ejs = require('ejs');
 	this.ejs = _ejs;
+	var _csv = require('csv');
+	this.csv = _csv;
 
 	var _appServer = require('./index_files/app_server.js');
 
 	// Pickles 2
 	var _px2agent = require('px2agent');
 	this.px2agent = _px2agent;
-	var _px2dtLDA = new (require('px2dt-localdata-access'))(_path_data_dir);
+	var _px2dtLDA = new (require('px2dt-localdata-access'))(
+		_path_data_dir,
+		{
+			"updated": function(updatedEvents){
+				console.log('Px2DTLDA Data Updated:', updatedEvents);
+			}
+		}
+	);
 	this.px2dtLDA = _px2dtLDA;
 
 	// broccoli-html-editor
@@ -108,9 +118,9 @@ new (function($, window){
 	var _platform = (function(){
 		var platform = 'unknown';
 		console.log('platform:', process.platform);
-		if(process.platform == 'win32')return 'win';
-		if(process.platform == 'darwin')return 'mac';
-		if(process.platform == 'linux')return 'linux';
+		if(process.platform == 'win32'){return 'win';}
+		if(process.platform == 'darwin'){return 'mac';}
+		if(process.platform == 'linux'){return 'linux';}
 		console.log('unknown platform:', process.platform);
 		return platform;
 	})();
@@ -138,13 +148,15 @@ new (function($, window){
 	var $header, $footer, $main, $contents, $shoulderMenu;
 	var _menu = [];
 
+	this.cookie = $.cookie;
+
 	/**
 	 * アプリケーションの初期化
 	 */
 	function init(callback){
 		_it79.fnc({},
 			[
-				function(it1, data){
+				function(it1){
 					// データディレクトリを初期化
 					px.px2dtLDA.initDataDir(function(result){
 						if( !result ){
@@ -162,11 +174,18 @@ new (function($, window){
 						px.px2dtLDA.db.network.appserver.port = px.px2dtLDA.db.network.appserver.port || _packageJson.pickles2.network.appserver.port;
 
 						px.px2dtLDA.save(function(){
-							it1.next(data);
+							it1.next();
 						});
 					});
 				},
-				function(it1, data){
+				function(it1){
+					// Command Queue をセットアップ
+					var CommandQueue = require('./index_files/cmdQueueCtrl.js');
+					_this.commandQueue = new CommandQueue(_this, window);
+					it1.next();
+				},
+				function(it1){
+
 					(function(){
 						// node-webkit の標準的なメニューを出す
 						var win = _nw_gui.Window.get();
@@ -196,7 +215,7 @@ new (function($, window){
 					it1.next();
 					return;
 				},
-				function(it1, data){
+				function(it1){
 					// 各国語言語切替機能のロード
 					var LangBank = require('langbank');
 					px.lb = new LangBank( require('path').resolve('./app/common/language/language.csv'), function(){
@@ -206,7 +225,7 @@ new (function($, window){
 					}); // new LangBank()
 					return;
 				},
-				function(it1, data){
+				function(it1){
 					// ヒント機能のロード
 					var Px2Hint = require('./index_files/pickles.hint.js');
 					px.hint = new Px2Hint( px, require('path').resolve('./app/common/language/hint.csv'), function(){
@@ -215,14 +234,14 @@ new (function($, window){
 					}); // new LangBank()
 					return;
 				},
-				function(it1, data){
+				function(it1){
 					// file watcher
 					var FileWatcher = require('./index_files/pickles.watcher.js');
 					px.watcher = new FileWatcher( px );
 					it1.next();
 					return;
 				},
-				function(it1, data){
+				function(it1){
 					// db.json の読み込み
 					px.load(function(){
 						it1.next();
@@ -230,30 +249,57 @@ new (function($, window){
 					}); // px.load()
 					return;
 				},
-				function(it1, data){
-					var ComposerUpdateChecker = require('./index_files/pickles.composerUpdateChecker.js');
-					px.composerUpdateChecker = new ComposerUpdateChecker( px, function(){
+				function(it1){
+					// ウィンドウ位置とサイズの初期化
+					var db = px.px2dtLDA.getData();
+					var winPosition = {
+						"x": 0,
+						"y": 0,
+						"width": window.screen.width,
+						"height": window.screen.height
+					};
+					try{
+						if( typeof(db.extra.px2dt.windowPosition) === typeof({}) ){
+							winPosition = db.extra.px2dt.windowPosition;
+						}
+					}catch(e){}
+					px.nwWindow.moveTo(winPosition.x, winPosition.y);
+					px.nwWindow.resizeTo(winPosition.width, winPosition.height);
+
+					it1.next();
+					return;
+				},
+				function(it1){
+					var ComposerInstallChecker = require('./index_files/pickles.composerInstallChecker.js');
+					px.composerInstallChecker = new ComposerInstallChecker( px, function(){
 						it1.next();
 					});
 					return;
 				},
-				function(it1, data){
+				function(it1){
 					// CSS拡張
 					$('head').append( $('<style>')
 						.html(
-							'.theme_gmenu ul li a:hover,'
-							+'.theme_gmenu ul li a.current{color: '+_packageJson.pickles2.colors.defaultKeyColor+';}'
-							+'.theme_shoulder_menu button {border-left: 1px solid '+_packageJson.pickles2.colors.defaultKeyColor+';}'
-							+'.theme_shoulder_menu ul li a.current {background-color: '+_packageJson.pickles2.colors.defaultKeyColor+';}'
+							'.theme-header__gmenu ul li a:hover,'
+							+'.theme-header__gmenu ul li a.current{color: '+_packageJson.pickles2.colors.defaultKeyColor+';}'
+							+'.theme-header__shoulder-menu button {border-left: 1px solid '+_packageJson.pickles2.colors.defaultKeyColor+';}'
+							+'.theme-header__shoulder-menu ul li a.current {background-color: '+_packageJson.pickles2.colors.defaultKeyColor+';}'
 						)
 					);
 					it1.next();
 					return;
 				},
-				function(it1, data){
+				function(it1){
 					// setup "node-php-bin"
 					px.NodePhpBin = require('node-php-bin');
-					px.nodePhpBinOptions = {};
+					px.nodePhpBinOptions = {
+						// パスが通った php コマンドで初期化
+						// ※ 2018-03-26 @tomk79
+						// 　macOS の ElCapitan 以降、 openssl と libxml2 が利用できない環境があり、
+						// 　node-php-bin 内蔵の php の利用を一時中断することになった。
+						'bin': 'php' ,
+						'ini': null
+					};
 					if( px.px2dtLDA.db.commands && px.px2dtLDA.db.commands['php'] ){
 						px.nodePhpBinOptions = {
 							'bin': px.px2dtLDA.db.commands['php'] ,
@@ -264,47 +310,24 @@ new (function($, window){
 					it1.next();
 					return;
 				},
-				function(it1, data){
+				function(it1){
 					// メニュー設定
-					_menu = [
-						{"label":px.lb.get('menu.home'),                 "cond":"projectSelected",    "area":"mainmenu", "app":"fncs/home/index.html", "cb": function(){px.subapp();}} ,
-						{"label":px.lb.get('menu.sitemap'),         "cond":"pxStandby",          "area":"mainmenu", "app":"fncs/sitemap/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-						{"label":px.lb.get('menu.theme'),               "cond":"pxStandby",          "area":"mainmenu", "app":"fncs/theme/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-						{"label":px.lb.get('menu.pages'),           "cond":"pxStandby",          "area":"mainmenu", "app":"fncs/pages/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-						{"label":px.lb.get('menu.publish'),         "cond":"pxStandby",          "area":"mainmenu", "app":"fncs/publish/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-						{"label":px.lb.get('menu.dashboard'),      "cond":"projectSelected",    "area":"shoulder", "app":"index.html", "cb": function(){px.deselectProject();px.subapp();}} ,
-						{"label":px.lb.get('menu.openFolder'),       "cond":"homeDirExists",      "area":"shoulder", "app":null, "cb": function(){px.getCurrentProject().open();}},
-						{"label":px.lb.get('menu.openInBrowser'),       "cond":"pxStandby",          "area":"shoulder", "app":null, "cb": function(){px.openInBrowser();}},
-						{"label":px.lb.get('menu.openInTexteditor'), "cond":"homeDirExists",      "area":"shoulder", "app":null, "cb": function(){px.openInTextEditor( px.getCurrentProject().get('path') );}},
-						{"label":px.lb.get('menu.openInTerminal'), "cond":"homeDirExists",      "area":"shoulder", "app":null, "cb": function(){px.openInTerminal( px.getCurrentProject().get('path') );}},
-						{"label":px.lb.get('menu.projectConfig'),     "cond":"pxStandby",          "area":"shoulder", "app":"fncs/config/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-						{"label":px.lb.get('menu.composer'),             "cond":"composerJsonExists", "area":"shoulder", "app":"fncs/composer/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-						{"label":px.lb.get('menu.git'),                  "cond":"homeDirExists",      "area":"shoulder", "app":"fncs/git/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-						{"label":px.lb.get('menu.preview'),           "cond":"pxStandby",          "area":"shoulder", "app":"fncs/preview/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-						{"label":px.lb.get('menu.moveContents'), "cond":"pxStandby",          "area":"shoulder", "app":"fncs/movecontents/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-						{"label":px.lb.get('menu.search'),               "cond":"pxStandby",          "area":"shoulder", "app":"fncs/search/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-						{"label":px.lb.get('menu.module'),               "cond":"pxStandby",          "area":"shoulder", "app":"fncs/module/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-						{"label":px.lb.get('menu.styleguideGenerator'),  "cond":"pxStandby",          "area":"shoulder", "app":"fncs/styleguide_generator/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-						{"label":px.lb.get('menu.contentsProcessor'),"cond":"pxStandby",          "area":"shoulder", "app":"fncs/contents_processor/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-						{"label":px.lb.get('menu.updateGuiContents'),"cond":"pxStandby",          "area":"shoulder", "app":"fncs/rebuild_guiedit_contents/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-						{"label":px.lb.get('menu.clearcache'),     "cond":"pxStandby",          "area":"shoulder", "app":"fncs/clearcache/index.html", "cb": function(){px.subapp($(this).data('app'));}} ,
-						// {"label":"Reload(dev)",          "cond":"always", "cb": function(){window.location.href='index.html?';}} ,
-						{"label":px.lb.get('menu.systemInfo'),         "cond":"always",             "area":"shoulder", "app":null, "cb": function(){px.dialog({
-							title: px.lb.get('menu.systemInfo'),
-							body: $('<iframe>').attr('src', 'mods/systeminfo/index.html').css({'width':'100%','height':460})
-						});}} ,
-						{"label":_appName+" "+px.lb.get('menu.desktoptoolConfig'), "cond":"always",        "area":"shoulder", "app":null, "cb": function(){px.editPx2DTConfig();}} ,
-						{"label":px.lb.get('menu.help'), "cond":"always", "area":"shoulder", "app":null, "cb": function(){px.openHelp();} },
-						{"label":px.lb.get('menu.developerTool'), "cond":"always", "area":"shoulder", "app":null, "cb": function(){
-							// ブラウザの DevTools を開く
-							nw.Window.get().showDevTools();
-							// TODO: nodeJs の DevTools は スクリプト上から開けない？
-						} },
-						{"label":px.lb.get('menu.exit'),                 "cond":"always",             "area":"shoulder", "app":null, "cb": function(){px.exit();}}
-					];
-					it1.next(data);
+					var gmenu = require('./index_files/globalmenu.js');
+					_menu = new gmenu(px);
+					it1.next();
 				},
-				function(it1, data){
+				function(it1){
+					// 開発者のための隠しコマンド
+					// Ctrl + Opt + R で トップフレームを再読込する
+					$(window).on('keypress', function(e){
+						// console.log(e);
+						if(e.keyCode == 18 && e.ctrlKey && e.altKey ){
+							window.location.href='./index.html';
+						}
+					});
+					it1.next();
+				},
+				function(it1){
 					callback();
 				}
 
@@ -330,7 +353,40 @@ new (function($, window){
 	 */
 	this.save = function(callback){
 		callback = callback || function(){};
+
+		var db = px.px2dtLDA.getData();
+		var winPosition = {
+			"x": px.nwWindow.x,
+			"y": px.nwWindow.y,
+			"width": px.nwWindow.window.outerWidth,
+			"height": px.nwWindow.window.outerHeight
+		};
+
+		db.extra = db.extra || {};
+		db.extra.px2dt = db.extra.px2dt || {};
+		db.extra.px2dt.windowPosition = winPosition;
+		px.px2dtLDA.setData(db);
+
 		px.px2dtLDA.save(function(){
+			// プロジェクト別のアプリケーションデータを削除する
+			var pjAll = px.px2dtLDA.getProjectAll();
+			var pjAllIds = {};
+			for(let idx in pjAll){
+				pjAllIds[pjAll[idx].id] = true;
+			}
+			var baseDir = px.px2dtLDA.getAppDataDir('px2dt');
+			var filelist = px.fs.readdirSync(baseDir);
+			for(let idx in filelist){
+				var filename = filelist[idx];
+				var filenamePjId = filename.replace(/\.[a-zA-Z0-9]+$/g, '');
+				try {
+					if( !pjAllIds[filenamePjId] ){
+						px.fs.unlinkSync(baseDir+'/'+filename);
+					}
+				} catch (e) {
+				}
+			}
+
 			callback();
 		});
 		return;
@@ -380,42 +436,21 @@ new (function($, window){
 		opt.complete = opt.complete||function(){};
 
 		if( typeof(projectInfo.home_dir) != typeof('') || !projectInfo.home_dir.length ){
-			projectInfo.home_dir = 'px-files/'
+			projectInfo.home_dir = '';
 		}
 		if( typeof(projectInfo.entry_script) != typeof('') || !projectInfo.entry_script.length ){
-			projectInfo.entry_script = '.px_execute.php'
+			projectInfo.entry_script = '';
 		}
 
-		var isError = false;
-		var errorMsg = {};
-
-		if( typeof(projectInfo.name) != typeof('') || !projectInfo.name.length ){
-			errorMsg.name = 'name is required.';
-			isError = true;
-		}
-		if( typeof(projectInfo.path) != typeof('') || !projectInfo.path.length ){
-			errorMsg.path = 'path is required.';
-			isError = true;
-		}else if( !px.fs.existsSync(projectInfo.path) ){
-			errorMsg.path = 'path is required as a existed directory path.';
-			isError = true;
-		}
-		if( typeof(projectInfo.home_dir) != typeof('') || !projectInfo.home_dir.length ){
-			errorMsg.home_dir = 'home directory is required.';
-			isError = true;
-		}
-		if( typeof(projectInfo.entry_script) != typeof('') || !projectInfo.entry_script.length ){
-			errorMsg.entry_script = 'entry_script is required.';
-			isError = true;
-		}
-		if( isError ){
-			opt.error(errorMsg);
+		var result = this.validateProjectInfo(projectInfo);
+		if( result.isError ){
+			opt.error(result.errorMsg);
 			opt.complete();
 			return false;
 		}
 
 		var result = px.px2dtLDA.addProject( projectInfo );
-		if( !result ){
+		if( result === false ){
 			opt.error({'common': 'Unknown ERROR'});
 			opt.complete();
 			return false;
@@ -429,6 +464,51 @@ new (function($, window){
 	}
 
 	/**
+	 * プロジェクト情報の入力値を検証する
+	 */
+	this.validateProjectInfo = function(projectInfo){
+		var result = {
+			isError: false,
+			errorMsg: {}
+		};
+
+		// name
+		if( typeof(projectInfo.name) != typeof('') || !projectInfo.name.length ){
+			result.errorMsg.name = 'name は必須項目です。 name is required.';
+			result.isError = true;
+		}
+
+		// path
+		if( typeof(projectInfo.path) != typeof('') || !projectInfo.path.length ){
+			result.errorMsg.path = 'path は必須項目です。 path is required.';
+			result.isError = true;
+		}else if( !px.utils79.is_dir(projectInfo.path) ){
+			result.errorMsg.path = '存在するディレクトリを選択してください。 path is required as a existed directory path.';
+			result.isError = true;
+		}else if( !px.utils79.is_file(projectInfo.path+'/composer.json') ){
+			var path_filelist = require('fs').readdirSync(projectInfo.path);
+			var filelist_length = 0;
+			for(var i in path_filelist){
+				switch( path_filelist[i] ){
+					case '.DS_Store':
+					case 'Thumbs.db':
+					case 'composer.json':
+						break;
+					default:
+						filelist_length ++;
+						break;
+				}
+			}
+			if( filelist_length ){
+				result.errorMsg.path = '内容が空のディレクトリか、または composer.json が置かれているディレクトリを選択してください。';
+				result.isError = true;
+			}
+		}
+	
+		return result;
+	}
+
+	/**
 	 * プロジェクト情報を更新する
 	 */
 	this.updateProject = function(projectId, projectInfo){
@@ -436,6 +516,12 @@ new (function($, window){
 			return false;
 		}
 		projectInfo = JSON.parse( JSON.stringify( projectInfo ) );
+
+		var result = this.validateProjectInfo(projectInfo);
+		if( result.isError ){
+			return false;
+		}
+
 		px.px2dtLDA.db.projects[projectId] = projectInfo;
 		return true;
 	}
@@ -541,7 +627,7 @@ new (function($, window){
 			return px.px2dtLDA.db.commands[cmd];
 		}
 		if( cmd == 'php' ){
-			return require('node-php-bin').get().getPath();
+			return this.nodePhpBin.getPath();
 		}
 		return cmd;
 	}
@@ -551,8 +637,8 @@ new (function($, window){
 	 * node-php-bin の PHP などを考慮して、
 	 * -c, -d オプションの解決を自動的にやっている前提で、
 	 * composer コマンドを実行します。
-	 * @param  {[type]} cmd  [description]
-	 * @param  {[type]} opts [description]
+	 * @param  {Array}  cmd  `php`, `composer` を含まないコマンドオプションの配列
+	 * @param  {Object} opts [description]
 	 * @return {[type]}      [description]
 	 */
 	this.execComposer = function( cmd, opts ){
@@ -591,9 +677,28 @@ new (function($, window){
 	 */
 	this.openInBrowser = function(){
 		var px = this;
-		this.preview.serverStandby(function(){
+
+		// 外部プレビューサーバーの設定があるか調べる
+		var pj = px.getCurrentProject();
+		if(pj){
+			var px2dtLDA_Pj = px.px2dtLDA.project(pj.projectId);
+			var external_preview_server_origin = px2dtLDA_Pj.getExtendedData('external_preview_server_origin');
+			if( typeof(external_preview_server_origin)==typeof('') && external_preview_server_origin.match(/^https?\:\/\//i) ){
+				// 外部プレビューサーバーが設定されていたら、
+				// 内蔵サーバーの起動はせず、ブラウザを呼び出す。
+				px.utils.openURL( px.preview.getUrl() );
+				return;
+			}
+		}
+
+		this.preview.serverStandby(function(result){
+			if(result === false){
+				px.message('プレビューサーバーの起動に失敗しました。');
+				return;
+			}
 			px.utils.openURL( px.preview.getUrl() );
 		});
+		return;
 	}
 
 	/**
@@ -610,11 +715,14 @@ new (function($, window){
 	this.openInTextEditor = function( path ){
 		var pathEditor = '';
 		var targetType = null;
+		var externalAppName;
 		if( this.utils.isDirectory(path) ){
 			targetType = 'dir';
+			externalAppName = 'texteditorForDir';
 			pathEditor = this.getDb().apps.texteditorForDir;
 		}else if( px.utils.isFile(path) ){
 			targetType = 'file';
+			externalAppName = 'texteditor';
 			pathEditor = this.getDb().apps.texteditor;
 		}else{
 			alert('編集対象のパスが存在しません。'+"\n"+path);
@@ -623,30 +731,39 @@ new (function($, window){
 		}
 
 		var msgSudgestSetting = _appName+'設定 メニューから、アプリケーション "外部テキストエディタ'+(targetType=='dir'?'(ディレクトリを開く)':'')+'" を設定してください。';
-		if( !this.getDb().apps || ( !pathEditor.length && !this.utils.isDirectory(pathEditor) ) ){
+		if( !this.getDb().apps || ( !pathEditor.length && !this.utils.isDirectory(pathEditor) && !this.utils.isFile(pathEditor) ) ){
 			alert('外部テキストエディタが設定されていないか、存在しません。' + "\n" + msgSudgestSetting);
 			console.error('ERROR: '+'外部テキストエディタが設定されていないか、存在しません。');
 			return false;
 		}
-		if(_platform=='win'){
-			px.utils.spawn(
-				pathEditor,
-				[
-					path
-				],
-				{}
-			);
+		px.px2dtLDA.startApp(externalAppName, {PATH: path});
+		return true;
+	}
+
+	/**
+	 * 外部Gitクライアントで開く
+	 */
+	this.openInGitClient = function( path ){
+		var pathEditor = '';
+		var targetType = null;
+		var externalAppName;
+		if( this.utils.isDirectory(path) ){
+			targetType = 'dir';
+			externalAppName = 'gitClient';
+			pathEditor = this.getDb().apps.gitClient;
 		}else{
-			px.utils.spawn(
-				px.cmd('open'),
-				[
-					path,
-					'-a',
-					pathEditor
-				],
-				{}
-			);
+			alert('編集対象のパスが存在しません。'+"\n"+path);
+			console.error('ERROR: '+'編集対象のパスが存在しません。'+"\n"+path);
+			return false;
 		}
+
+		var msgSudgestSetting = _appName+'設定 メニューから、アプリケーション "外部Gitクライアント" を設定してください。';
+		if( !this.getDb().apps || ( !pathEditor.length && !this.utils.isDirectory(pathEditor) && !this.utils.isFile(pathEditor) ) ){
+			alert('外部Gitクライアントが設定されていないか、存在しません。' + "\n" + msgSudgestSetting);
+			console.error('ERROR: '+'外部Gitクライアントが設定されていないか、存在しません。');
+			return false;
+		}
+		px.px2dtLDA.startApp(externalAppName, {PATH: path});
 		return true;
 	}
 
@@ -718,6 +835,7 @@ new (function($, window){
 
 		if( typeof(_selectedProject) != typeof(0) ){
 			appName = '';
+			px.commandQueue.server.setCurrentDir( 'default', process.cwd() ); // current dir を初期化
 		}else if( !appName && typeof(_selectedProject) == typeof(0) ){
 			appName = 'fncs/home/index.html';
 		}
@@ -842,70 +960,32 @@ new (function($, window){
 		if( cpj !== null ){
 			cpj_s = cpj.status()
 		}
+		if(!$shoulderMenu){
+			return;
+		}
 
-		$('.theme_gmenu').html( $('<ul>')
+		$('.theme-header__gmenu').html( $('<ul>')
 			.append( $('<li>')
 				.append( '<span>&nbsp;</span>' )
 			)
 		);
 		$shoulderMenu.find('ul').html('');
-		for( var i in _menu ){
-			if( _menu[i].cond == 'projectSelected' ){
-				if( cpj === null ){
-					continue;
-				}
-			}else if( _menu[i].cond == 'composerJsonExists' ){
-				if( cpj === null || !cpj_s.composerJsonExists ){
-					continue;
-				}
-			}else if( _menu[i].cond == 'homeDirExists' ){
-				if( cpj === null || !cpj_s.homeDirExists ){
-					continue;
-				}
-			}else if( _menu[i].cond == 'pxStandby' ){
-				if( cpj === null || !cpj_s.isPxStandby ){
-					continue;
-				}
-			}else if( _menu[i].cond != 'always' ){
-				continue;
-			}
-
-			var $tmpMenu = $('<a>')
-				.attr({"href":"javascript:;"})
-				.click(_menu[i].cb)
-				.text(_menu[i].label)
-				.data('app', _menu[i].app)
-				.addClass( ( _current_app==_menu[i].app ? 'current' : '' ) )
-			;
-
-			switch( _menu[i].area ){
-				case 'shoulder':
-					$shoulderMenu.find('ul').append( $('<li>')
-						.append( $tmpMenu )
-					);
-					break;
-				default:
-					$('.theme_gmenu ul').append( $('<li>')
-						.append( $tmpMenu )
-					);
-					break;
-			}
-		}
+		_menu.drawGlobalMenu($shoulderMenu, _current_app);
 
 		if( cpj === null ){
-			$('.theme_px2logo').css({
+			$('.theme-header__px2logo').css({
 				"width": 70,
 				"height": 70
 			});
-			$('.theme_id')
+			$('.theme-header__id')
 				.css({"opacity":0})
 			;
 		}else{
-			$('.theme_px2logo').css({
+			$('.theme-header__px2logo').css({
 				"width": 45,
 				"height": 45
 			});
-			$('.theme_id')
+			$('.theme-header__id')
 				.html('')
 				.append( $('<div>')
 					.text( /* '-> ' + */ cpj.get('name') )
@@ -971,7 +1051,58 @@ new (function($, window){
 	 * ログをファイルに出力
 	 */
 	this.log = function( msg ){
+		console.info(msg);
 		return px.px2dtLDA.log(msg);
+	}
+
+	/**
+	 * 診断ツール
+	 */
+	this.healthCheck = function(){
+		var Px2DtHealthCheck = require('px2dt-health-check');
+		var $body = $('<div>'
+			+'<div class="px2-loading"></div>'
+			+'</div>');
+		var $result = $('<div>'
+			+'<p>次のテキストを選択してコピーするか、<a href="javascript:;">ファイルに保存</a>してください。</p>'
+			+'<p>お使いのコンピューター内部の情報を含む場合があります。取り扱いにご注意ください。</p>'
+			+'<p><textarea class="form-control" readonly="readonly" style="height: 340px;"></textarea></p>'
+			+'</div>');
+		var $textarea = $result.find('textarea');
+
+		px2style.modal(
+			{
+				title: '診断ツール',
+				body: $body
+			},
+			function(){
+				var px2DtHealthCheck = new Px2DtHealthCheck();
+				px2DtHealthCheck.checkDt(
+					_path_data_dir,
+					_selectedProject,
+					function(result){
+						console.info('--- px2dt-health-check - result', result);
+						var filename = 'pickles2-debug.json';
+						var jsonString = JSON.stringify(result, null, "\t");
+						$body.html('').append($result);
+						$textarea.val(jsonString);
+						$result.find('a').on('click', function(e){
+	 						// ファイルとして保存する
+							var blob = new Blob([ jsonString ], { "type" : "text/json" });
+							if (window.navigator.msSaveBlob) {
+								window.navigator.msSaveBlob(blob, filename);
+
+								// msSaveOrOpenBlobの場合はファイルを保存せずに開ける
+								window.navigator.msSaveOrOpenBlob(blob, filename);
+							} else {
+								$(this).attr('download', filename);
+								this.href = window.URL.createObjectURL(blob);
+							}
+						});
+					}
+				);
+			}
+		);
 	}
 
 	/**
@@ -979,24 +1110,24 @@ new (function($, window){
 	 */
 	this.exit = function(){
 		console.log( 'px.exit() called.' );
-		// if(!confirm('exit?')){return;}
-		try {
-			if( _platform == 'win' ){
-				nw.App.closeAllWindows();
-			}else{
+		px.save(function(){
+			// if(!confirm('exit?')){return;}
+			try {
 				nw.App.quit();
+			} catch (e) {
+				console.error('Unknown Error on px.exit()');
 			}
-		} catch (e) {
-			console.error('Unknown Error on px.exit()');
-		}
+		});
 	}
 
 	/**
 	 * イベントセット
 	 */
+	this.nwWindow.on( 'close', function(e){
+		px.exit();
+	});
 	process.on( 'exit', function(e){
 		px.log( 'Application exit;' );
-		px.save();
 	});
 	process.on( 'uncaughtException', function(e){
 		// alert('ERROR: Uncaught Exception');
@@ -1018,7 +1149,7 @@ new (function($, window){
 	/**
 	 * アプリケーションを初期化
 	 */
-	$(function(){
+	$(window).on('load', function(){
 		_it79.fnc({}, [
 			function(it, arg){
 				// init
@@ -1029,17 +1160,17 @@ new (function($, window){
 			function(it, arg){
 
 				// DOMスキャン
-				$header   = $('.theme_header');
+				$header   = $('.theme-header');
 				$contents = $('.contents');
-				$footer   = $('.theme_footer');
+				$footer   = $('.theme-footer');
 				// $dialog   = $('<div>');
-				$shoulderMenu = $('.theme_shoulder_menu');
+				$shoulderMenu = $('.theme-header__shoulder-menu');
 
 				$header.css({
 					'border-bottom-color': _packageJson.pickles2.colors.defaultKeyColor,
 					'color': _packageJson.pickles2.colors.defaultKeyColor
 				});
-				$header.find('.theme_px2logo a')
+				$header.find('.theme-header__px2logo a')
 					.html(function(){
 						var src = _fs.readFileSync('./app/common/images/logo.svg').toString();
 						return src;

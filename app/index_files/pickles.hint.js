@@ -32,8 +32,22 @@ module.exports = function( px , csv , callback) {
 	 */
 	this.getRandom = function(){
 		var list = this.lb.getList();
-		var keys = px._.keys(list);
-		var key = px._.shuffle(keys)[0];
+		var keys = [];
+
+		// array_keys
+		for(var key in list){
+			keys.push(key);
+		}
+
+		// shuffle
+		for(var i = keys.length - 1; i > 0; i--){
+			var r = Math.floor(Math.random() * (i + 1));
+			var tmp = keys[i];
+			keys[i] = keys[r];
+			keys[r] = tmp;
+		}
+		var key = keys[0];
+
 		return this.lb.get(key);
 	}
 

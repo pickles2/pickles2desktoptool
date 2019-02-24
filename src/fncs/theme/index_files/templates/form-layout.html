@@ -1,0 +1,31 @@
+<form action="javascript:;" method="post">
+	<div class="px2-p">
+		<table class="px2-table" style="width:100%;">
+			<tbody>
+				<tr data-form-column-name="themeId">
+					<th>テーマID</th>
+					<td>
+						<div><%= themeId %></div>
+					</td>
+				</tr>
+				<tr data-form-column-name="layoutId">
+					<th>レイアウトID</th>
+					<td>
+						<div><input type="text" name="layoutId" value="<%= layoutId %>" class="form-control" /></div>
+						<div class="cont-error-message"></div>
+					</td>
+				</tr>
+				<% if( !layoutId ){ %>
+					<tr data-form-column-name="editMode">
+						<th>編集方法</th>
+						<td>
+							<div><label><input type="radio" name="editMode" value="html.gui" checked="checked" /> HTML + GUI編集</label></div>
+							<div><label><input type="radio" name="editMode" value="html" /> HTML</label></div>
+							<div class="cont-error-message"></div>
+						</td>
+					</tr>
+				<% } %>
+			</tbody>
+		</table>
+	</div>
+</form>

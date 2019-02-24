@@ -1,0 +1,26 @@
+html, body{
+	margin: 0;
+	border: 0;
+	height: 100%;
+	width: 100%;
+}
+body{
+	display: flex;
+	flex-direction: column;
+	> .container{
+		flex-shrink: 0;
+	}
+	> .contents{
+		display: flex;
+		flex-direction: column;
+
+		> .container{
+			display: flex;
+			flex-direction: column;
+			> #cont_finder{
+				overflow: auto;
+				z-index: 1;
+			}
+		}
+	}
+}

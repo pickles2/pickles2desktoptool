@@ -1,0 +1,15 @@
+<div class="container selectable">
+	<div class="alert alert-danger" role="alert">
+		<p>Broccoli エンジンが利用できません。</p>
+		<p>このプロジェクトは、 <code>broccoli-html-editor-php</code> を利用するように設定されていますが、このエンジンを利用するには、 <code>pickles2/px2-px2dthelper</code> の v2.0.8 以上が必要です。</p>
+	</div>
+	<p>この問題を改善するには、次の点を確認してください。</p>
+	<ul>
+		<li><code>composer.json</code> で、<code>pickles2/px2-px2dthelper</code> の v2.0.8 以上がロードされる記述になっていることを確認してください。</li>
+		<li><code>composer update</code> を実行して、ライブラリを更新してください。
+			<ul>
+				<li>うまく更新できないときは、一度 <code>vendor/</code> フォルダを削除してからもう一度実行すると、解決できる場合があります。</li>
+			</ul>
+		</li>
+	</ul>
+</div>

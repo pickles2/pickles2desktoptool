@@ -11,14 +11,44 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	var _path = require('path');
 	var _pjError = [];
 	var _projectStatus = null;
+	var _px2package = {};
 
 
 	/**
 	 * projectオブジェクトを初期化
 	 */
-	function init(pj){
+	function init(){
+		var pj = _this;
 
 		new Promise(function(rlv){rlv();})
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// px2package 情報を読み込み
+				_px2package = px.px2dtLDA.project(projectId).px2package().getPrimaryProject();
+				if(_px2package === false){
+					_px2package = {
+						'type': 'project',
+						'path': '.px_execute.php',
+						'path_homedir': 'px-files/'
+					};
+				}
+				rlv();
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// cmdQueue にカレントディレクトリ情報をセット
+				px.commandQueue.server.setCurrentDir( 'default', _this.get('path') );
+				px.commandQueue.server.setCurrentDir( 'git', _this.get_realpath_git_root() );
+				px.commandQueue.server.setCurrentDir( 'composer', _this.get_realpath_composer_root() );
+				rlv();
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// appdataオブジェクトを生成
+				_this.appdata = new (require('./pickles.project.appdata.js'))(px, _this, function(){
+					rlv();
+				});
+				return;
+			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
 
 				// px2agent から プロジェクト情報を生成
@@ -29,16 +59,16 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 				};
 				// console.log(px2agentOption);
 				_px2proj = px.px2agent.createProject(
-					_path.resolve( pj.get('path') + '/' + pj.get('entry_script') ) ,
+					_path.resolve( _this.get('path') + '/' + _this.get('entry_script') ) ,
 					px2agentOption
 				);
-				pj.px2proj = _px2proj;
+				_this.px2proj = _px2proj;
 
 				rlv();
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
-				pj.updateProjectStatus(function( tmpStatus ){
+				_this.updateProjectStatus(function( tmpStatus ){
 					_projectStatus = tmpStatus;
 					rlv();
 				});
@@ -47,7 +77,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 			.then(function(){ return new Promise(function(rlv, rjt){
 				if( !_projectStatus.pathExists || !_projectStatus.entryScriptExists || !_projectStatus.vendorDirExists || !_projectStatus.composerJsonExists ){
 					_px2proj = false;
-					pj.px2proj = _px2proj;
+					_this.px2proj = _px2proj;
 					rlv();
 					return;
 				}
@@ -87,21 +117,33 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 				/**
 				 * px.site
 				 */
-				pj.site = new (require('./pickles.project.site.js'))(px, pj, function(){
+				_this.site = new (require('./pickles.project.site.js'))(px, _this, function(){
 					rlv();
 				});
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
-				// composer パッケージの更新をチェックする。
-				px.composerUpdateChecker.check(pj, function(checked){
-					// console.log('composerUpdateChecker.check() done.', checked.status);
+				// remote-finder (=ファイルとフォルダ)
+				// Server Side
+				_this.remoteFinder = new (require('remote-finder'))({
+					"default": _this.get('path')
+				},{
+					"paths_readonly": [
+						'*/.git/*',
+						'*/.svn/*',
+						'*/vendor/*'
+					]
 				});
 				rlv();
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
-				// console.log('project "' + _this.projectInfo.name + '" (projectId: ' + _this.projectId + ') initialized.');
+				// composer パッケージの更新をチェックする。
+				px.composerInstallChecker.check(_this, function(checked){});
+				rlv();
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
 				cbStandby();
 				rlv();
 				return;
@@ -142,7 +184,21 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 				status.pathContainsFileCount = false;
 				if( status.pathExists ){
 					try {
-						status.pathContainsFileCount = px.fs.readdirSync(_this.get('path')).length;
+						status.pathContainsFileCount = (function(){
+							var filelist = px.fs.readdirSync(_this.get('path'));
+							var filelist_length = 0;
+							for(var i in filelist){
+								switch( filelist[i] ){
+									case '.DS_Store':
+									case 'Thumbs.db':
+										break;
+									default:
+										filelist_length ++;
+										break;
+								}
+							}
+							return filelist_length;
+						})();
 					} catch (e) {
 					}
 				}
@@ -266,6 +322,11 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
+				status.guiEngineName = _this.getGuiEngineName();
+				rlv();
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
 				// console.log(status);
 				callback(status);
 				return;
@@ -325,6 +386,18 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 
 	/** プロジェクト情報を取得する */
 	this.get = function(key){
+		if(key == 'entry_script' && !this.projectInfo[key]){
+			if(_px2package.path){
+				return _px2package.path;
+			}
+			return '.px_execute.php';
+		}
+		if(key == 'home_dir' && !this.projectInfo[key]){
+			if(_px2package.path_homedir){
+				return _px2package.path_homedir;
+			}
+			return 'px-files/';
+		}
 		return this.projectInfo[key];
 	}
 
@@ -487,8 +560,8 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	 * 基本的には px.execComposer() をラップするメソッドですが、
 	 * cwd オプションを自動的に付与する点が異なります。
 	 *
-	 * @param  {[type]} cmd  [description]
-	 * @param  {[type]} opts [description]
+	 * @param  {Array}  cmd  `php`, `composer` を含まないコマンドオプションの配列
+	 * @param  {Object} opts [description]
 	 * @return {[type]}      [description]
 	 */
 	this.execComposer = function( cmd, opts ){
@@ -521,7 +594,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 		options = options || {};
 		options.filter = !!options.filter;
 		_px2proj.query(
-			this.getConcretePath(path)+'?PX=px2dthelper.get.all&filter='+(options.filter?'true':'false'),
+			'/?PX=px2dthelper.get.all&path='+encodeURIComponent(path)+'&filter='+(options.filter?'true':'false'),
 			{
 				"output": "json",
 				"complete": function(data, code){
@@ -541,11 +614,45 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	}
 
 	/**
+	 * テーマコレクションディレクトリのパスを得る
+	 */
+	this.px2dthelperGetRealpathThemeCollectionDir = function( callback ){
+		var multithemePluginFunctionName = 'tomk79\\pickles2\\multitheme\\theme::exec';
+		var realpathThemeCollectionDir = false;
+		_this.px2dthelperGetAll('/', {}, function(px2all){
+			realpathThemeCollectionDir = px2all.realpath_homedir+'themes/';
+			_this.px2proj.query(
+				'/?PX=px2dthelper.plugins.get_plugin_options&func_div=processor.html&plugin_name='+encodeURIComponent(multithemePluginFunctionName),
+				{
+					"output": "json",
+					"complete": function(result, code){
+						try {
+							result = JSON.parse(result);
+							// console.log(result);
+							if( result[0].options.path_theme_collection ){
+								realpathThemeCollectionDir = require('path').resolve( px2all.realpath_docroot + px2all.path_controot, result[0].options.path_theme_collection )+'/';
+							}
+						} catch (e) {
+						}
+						// console.log(realpathThemeCollectionDir);
+						callback(realpathThemeCollectionDir);
+						return;
+					}
+				}
+			);
+		});
+		return;
+	}
+
+	/**
 	 * ページパスからコンテンツを探す
 	 */
 	this.findPageContent = function( pagePath ){
 		var pageInfo = this.site.getPageInfo( pagePath );
-		var contLocalpath = pageInfo.content;
+		var contLocalpath = pagePath;
+		if( pageInfo ){
+			contLocalpath = pageInfo.content;
+		}
 
 		for( var tmpExt in _config.funcs.processor ){
 			if( px.fs.existsSync( this.get_realpath_controot()+'/'+contLocalpath+'.'+ tmpExt) ){
@@ -577,7 +684,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 		callback = callback || function(){};
 
 		_px2proj.query(
-			this.getConcretePath(pagePath)+'?PX=px2dthelper.check_editor_mode', {
+			'/?PX=px2dthelper.check_editor_mode&path='+encodeURIComponent(pagePath), {
 				"output": "json",
 				"complete": function(data, code){
 					// console.log(data, code);
@@ -675,6 +782,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	 * - broccoli-html-editor = 新エンジン broccoli (default)
 	 */
 	this.getGuiEngineName = function(){
+		var engineName = 'broccoli-html-editor';
 		try {
 			var conf = this.getConfig();
 			if( conf && conf.plugins && conf.plugins.px2dt && conf.plugins.px2dt.guiEngine ){
@@ -683,13 +791,16 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 						console.error('[Notice] guiEngine "legacy" is a obsoleted option. Selected "broccoli-html-editor" instead.');
 						// return conf.plugins.px2dt.guiEngine;
 						break;
+					case 'broccoli-html-editor-php':
+						engineName = 'broccoli-html-editor-php';
+						break;
 					default:
 						break;
 				}
 			}
 		} catch (e) {
 		}
-		return 'broccoli-html-editor';
+		return engineName;
 	}
 
 	/**
@@ -704,15 +815,47 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 				return;
 			}
 
-			// broccoli-html-editor
-			pj.createBroccoliServer(pagePath, function(broccoli){
-				broccoli.updateContents(
-					function(result){
-						callback(result);
+			var guiEngine = pj.getGuiEngineName();
+
+			if(guiEngine == 'broccoli-html-editor-php'){
+				// broccoli-html-editor-php (PHP版) の処理
+				var options = {
+					'api': 'broccoliBridge',
+					'forBroccoli': {
+						'api': 'updateContents',
+						'options': {
+							'lang': 'ja'
+						}
+					},
+					'page_path': pagePath
+				};
+				options = px.utils79.base64_encode(JSON.stringify(options));
+				var PxCommand = 'PX=px2dthelper.px2ce.gpi&appMode=desktop&data='+encodeURIComponent(options);
+
+				_px2proj.query(
+					pj.getConcretePath(pagePath)+'?'+PxCommand, {
+						"output": "json",
+						"complete": function(data, code){
+							// console.log(data, code);
+							var rtn = false;
+							try{
+								rtn = JSON.parse(data);
+							}catch(e){}
+							callback(rtn);
+							return;
+						}
 					}
 				);
-			});
-
+			}else{
+				// broccoli-html-editor (旧JS版) の処理
+				pj.createBroccoliServer(pagePath, function(broccoli){
+					broccoli.updateContents(
+						function(result){
+							callback(result);
+						}
+					);
+				});
+			}
 		});
 		return this;
 	}// buildGuiEditContent()
@@ -722,120 +865,9 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	 */
 	this.createBroccoliServer = function(page_path, callback){
 		callback = callback || function(){};
-		var Broccoli = require('broccoli-html-editor');
-		var path = require('path');
-		var _pj = this;
-
-		var documentRoot = path.resolve(this.get('path'), this.get('entry_script'), '..')+'/'
-		var realpathDataDir,
-			pathResourceDir;
-		var pageInfo = this.site.getPageInfo( page_path );
-		var px2conf = this.getConfig();
-
-		function parseConfig(callback){
-			var utils79 = px.utils79;
-			// console.log(px2conf.plugins.px2dt);
-			function bind( tpl ){
-				var data = {
-					'dirname' : utils79.dirname( pageInfo.content ),
-					'filename' : utils79.basename( (function(path){
-						var rtn = path.replace( new RegExp('\\.[a-zA-Z0-9\\_\\-]+$'), '' );
-						return rtn;
-					})( pageInfo.content ) ),
-					'ext' : (function(path){
-						path.match( new RegExp('\\.([a-zA-Z0-9\\_\\-]+)$') );
-						var rtn = (RegExp.$1).toLowerCase();
-						return rtn;
-					})( pageInfo.content )
-				};
-
-				tpl = tpl.replace( '{$dirname}', data['dirname'] );
-				tpl = tpl.replace( '{$filename}', data['filename'] );
-				tpl = tpl.replace( '{$ext}', data['ext'] );
-
-				return tpl;
-			}
-
-			try {
-				if( px2conf.plugins.px2dt.guieditor.path_resource_dir ){
-					pathResourceDir = bind( px2conf.plugins.px2dt.guieditor.path_resource_dir );
-					pathResourceDir = require('path').resolve('/' + px2conf.path_controot + '/' + pathResourceDir)+'/';
-					// console.log(pathResourceDir);
-				}
-			} catch (e) {
-			}
-
-			try {
-				if( px2conf.plugins.px2dt.guieditor.path_data_dir ){
-					realpathDataDir = bind( px2conf.plugins.px2dt.guieditor.path_data_dir );
-					realpathDataDir = require('path').resolve('/', documentRoot+'/'+px2conf.path_controot, realpathDataDir)+'/';
-					// console.log(realpathDataDir);
-				}
-			} catch (e) {
-			}
-
-			// console.log(pathResourceDir);
-			// console.log(realpathDataDir);
-			setTimeout(function(){
-				callback();
-			}, 0);
-			return;
-		}
-
-		_pj.px2proj.realpath_files(page_path, '', function(realpath){
-			realpathDataDir = path.resolve(realpath, 'guieditor.ignore')+'/';
-
-			_pj.px2proj.path_files(page_path, '', function(localpath){
-				pathResourceDir = path.resolve(localpath, 'resources')+'/';
-				pathResourceDir = pathResourceDir.replace(new RegExp('\\\\','g'), '/').replace(new RegExp('^[a-zA-Z]\\:\\/'), '/');
-					// Windows でボリュームラベル "C:" などが含まれるようなパスを渡すと、
-					// broccoli-html-editor内 resourceMgr で
-					// 「Uncaught RangeError: Maximum call stack size exceeded」が起きて落ちる。
-					// ここで渡すのはウェブ側からみえる外部のパスでありサーバー内部パスではないので、
-					// ボリュームラベルが付加された値を渡すのは間違い。
-
-				parseConfig(function(){
-
-					// broccoli setup.
-					var broccoli = new Broccoli();
-
-					// console.log(broccoli);
-					broccoli.init(
-						{
-							'appMode': 'desktop', // 'web' or 'desktop'. default to 'web'
-							'paths_module_template': _pj.getConfig().plugins.px2dt.paths_module_template ,
-							'documentRoot': documentRoot,
-							'pathHtml': page_path,
-							'pathResourceDir': pathResourceDir,
-							'realpathDataDir': realpathDataDir,
-							'customFields': _pj.mkBroccoliCustomFieldOptionBackend() ,
-							'bindTemplate': function(htmls, callback){
-								var fin = '';
-								for( var bowlId in htmls ){
-									if( bowlId == 'main' ){
-										fin += htmls['main'];
-									}else{
-										fin += "\n";
-										fin += "\n";
-										fin += '<?php ob_start(); ?>'+"\n";
-										fin += htmls[bowlId]+"\n";
-										fin += '<?php $px->bowl()->send( ob_get_clean(), '+JSON.stringify(bowlId)+' ); ?>'+"\n";
-										fin += "\n";
-									}
-								}
-								callback(fin);
-								return;
-							} ,
-							'log': function(msg){
-								px.log(msg);
-							}
-
-						},
-						function(){
-							callback(broccoli);
-						}
-					);
-				});
+		_this.createPickles2ContentsEditorServer(page_path, {}, function(px2ce){
+			px2ce.createBroccoli(function(broccoli){
+				callback(broccoli);
 			});
 		});
 		return this;
@@ -844,7 +876,8 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	/**
 	 * pickles2-contents-editor(サーバーサイド)を生成する
 	 */
-	this.createPickles2ContentsEditorServer = function(page_path, callback){
+	this.createPickles2ContentsEditorServer = function(page_path, options, callback){
+		options = options || {};
 		callback = callback || function(){};
 		var Px2CE = require('pickles2-contents-editor');
 		var _pj = this;
@@ -854,20 +887,24 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 
 		// console.log(broccoli);
 		// console.log(require('path').resolve('/', './'+page_path));
-		px2ce.init(
-			{
-				'page_path': page_path,
-				'appMode': 'desktop', // 'web' or 'desktop'. default to 'web'
-				'entryScript': require('path').resolve( _pj.get('path'), _pj.get('entry_script') ),
-				'customFields': _pj.mkBroccoliCustomFieldOptionBackend() ,
-				'customFieldsIncludePath': _pj.mkBroccoliCustomFieldIncludePathOptionBackend() ,
-				'log': function(msg){
-					px.log(msg);
-				},
-				'commands':{
-					'php': px.nodePhpBinOptions
-				}
+
+		var initOption = {
+			'target_mode': (options.target_mode || 'page_content'),
+			'page_path': page_path,
+			'appMode': 'desktop', // 'web' or 'desktop'. default to 'web'
+			'entryScript': require('path').resolve( _pj.get('path'), _pj.get('entry_script') ),
+			'customFields': _pj.mkBroccoliCustomFieldOptionBackend() ,
+			'customFieldsIncludePath': _pj.mkBroccoliCustomFieldIncludePathOptionBackend() ,
+			'log': function(msg){
+				px.log(msg);
 			},
+			'commands':{
+				'php': px.nodePhpBinOptions
+			}
+		};
+
+		px2ce.init(
+			initOption,
 			function(){
 				callback(px2ce);
 			}
@@ -958,15 +995,28 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 		try {
 			var confCustomFields = this.getConfig().plugins.px2dt.guieditor.custom_fields;
 			for(var fieldName in confCustomFields){
-				if( confCustomFields[fieldName].frontend.file && confCustomFields[fieldName].frontend.function ){
-					var pathJs = _path.resolve(entryScript, '..', confCustomFields[fieldName].frontend.file);
-					rtn.push( 'file://'+pathJs );
+				var file = confCustomFields[fieldName].frontend.file;
+				var dir = confCustomFields[fieldName].frontend.dir;
+				var fnc = confCustomFields[fieldName].frontend.function;
+				if( file && fnc ){
+					if( typeof(file) == typeof('') ){
+						file = [file];
+					}
+					for(var idx in file){
+						var filePath = '.';
+						if( typeof(dir) == typeof('') && px.utils79.is_dir(require('path').resolve(entryScript, '..', dir)) ){
+							filePath = dir;
+						}
+						var pathJs = require('path').resolve(entryScript, '..', filePath, file[idx]);
+						rtn.push( 'file://'+pathJs );
+					}
 				}
 			}
 
 		} catch (e) {
+			console.error(e);
 		}
-		// console.log(rtn);
+		// console.log('=-=-=-=-=-=-=-=-=-=', rtn);
 
 		return rtn;
 	}
@@ -1010,9 +1060,62 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 		callback = callback || function(){};
 		var BroccoliProcessor = require('broccoli-processor');
 
-		this.createPickles2ContentsEditorServer( page_path, function(px2ce){
+		var broccoliProcessorOptions = {};
+		if( this.getGuiEngineName() == 'broccoli-html-editor-php' ){
+			broccoliProcessorOptions.saveResourceDb = function(resourceDb, callbackSaveResourceDb){
+				// console.log('=-=-=-=-=-= callbackSaveResourceDb', page_path);
+				_this.px2dthelperGetAll('/', {}, function(px2all){
+					px.it79.ary(
+						resourceDb,
+						function( itAry, resInfo, resKey ){
+							// console.log(resKey, resInfo);
+							var realpathDataDir = px2all.realpath_homedir+'_sys/ram/data/';
+							var gpiOptions = {
+								'api': 'broccoliBridge',
+								'forBroccoli': {
+									'api': 'resourceMgr.updateResource',
+									'options': {
+										'resKey': resKey,
+										'resInfo': resInfo,
+										'lang': 'ja'
+									}
+								},
+								'page_path': page_path
+							};
+
+							var tmpFileName = '__tmp_'+px.utils79.md5( Date.now() )+'.json';
+							px.fs.writeFileSync( realpathDataDir+tmpFileName, JSON.stringify(gpiOptions) );
+							var PxCommand = 'PX=px2dthelper.px2ce.gpi&appMode=desktop&data_filename='+encodeURIComponent(tmpFileName);
+							_px2proj.query(
+								_this.getConcretePath(page_path)+'?'+PxCommand, {
+									"output": "json",
+									"complete": function(data, code){
+										console.log('------result:', data, code);
+										px.fs.unlinkSync( realpathDataDir+tmpFileName );
+										itAry.next();
+										return;
+									}
+								}
+							);
+						},
+						function(){
+							callbackSaveResourceDb(true);
+						}
+					);
+				});
+			}
+			broccoliProcessorOptions.rebuild = function(callbackRebuild){
+				// console.log('=-=-=-=-=-= callbackRebuild', page_path);
+				_this.buildGuiEditContent(page_path, function(){
+					callbackRebuild(true);
+				});
+			}
+			broccoliProcessorOptions.jsonIndentSize = 4;
+		}
+
+		this.createPickles2ContentsEditorServer( page_path, {}, function(px2ce){
 			px2ce.createBroccoli(function(broccoli){
-				var broccoliProcessor = new BroccoliProcessor(broccoli, {});
+				var broccoliProcessor = new BroccoliProcessor(broccoli, broccoliProcessorOptions);
 				callback( broccoliProcessor );
 			});
 		} );
@@ -1379,7 +1482,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	}
 
 	// オブジェクトを初期化
-	init(this);
+	init();
 	return this;
 
 };

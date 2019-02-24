@@ -34,17 +34,6 @@ window.contApp = new (function(){
 			function(it, arg){
 				var $mainTaskUi = $('.cont_maintask_ui');
 
-				var isPathEmptyDir = (function(isDir, path){
-					if(!isDir){return false;}
-					var ls = px.fs.readdirSync(path);
-					// console.log(ls);
-					// console.log(ls.length);
-					var rtn = !ls.length;
-					// console.log(rtn);
-					return rtn;
-				})(status.pathExists, pj.get('path'));
-
-
 				if( !status.pathExists ){
 					// パスの選択しなおし
 					$mainTaskUi
@@ -65,7 +54,7 @@ window.contApp = new (function(){
 								return false;
 							})
 					;
-				}else if( status.pathExists && !status.composerJsonExists && !isPathEmptyDir ){
+				}else if( status.pathExists && !status.composerJsonExists && status.pathContainsFileCount ){
 					// ディレクトリが空ではないためセットアップできない画面
 					$mainTaskUi
 						.html( $('#template-is-not-empty-dir').html() )
@@ -126,12 +115,13 @@ window.contApp = new (function(){
 					it.next(arg);
 					return;
 				}
-				px.composerUpdateChecker.getStatus(pj, function(checked){
-					// console.log('composerUpdateChecker.check() done.', checked.status);
+				px.composerInstallChecker.getStatus(pj, function(checked){
+					// console.log('composerInstallChecker.check() done.', checked.status);
 					if( checked.status == 'update_found' ){
 						$('.cont_info').append( $('<div class="alert alert-info">')
-							.append( $('<span>').text('composer パッケージのいくつかに、新しいバージョンが見つかりました。') )
-							.append( $('<a href="javascript:px.subapp(\'fncs/composer/index.html\');">').text('いますぐ更新することをお勧めします。') )
+							.append( $('<span>').text('composer パッケージのいくつかに、更新が見つかりました。') )
+							.append( $('<a href="javascript:px.subapp(\'fncs/composer/index.html\');">').text('composer install を実行してください') )
+							.append( $('<span>').text('。') )
 						);
 					}
 					it.next(arg);
@@ -193,6 +183,14 @@ window.contApp = new (function(){
 	 * パスの選び直し
 	 */
 	this.selectProjectPath = function(path){
+		var validatePjInfo = {path: path};
+		var result = px.validateProjectInfo(validatePjInfo);
+		if( result.errorMsg.path ){
+			console.error(result.errorMsg.path);
+			alert(result.errorMsg.path);
+			return false;
+		}
+
 		var pj = px.getCurrentProject();
 		pj.projectInfo.path = path;
 		if( !px.updateProject(pj.projectId, pj.projectInfo) ){
@@ -246,6 +244,12 @@ window.contApp = new (function(){
 		$form.find('[name=pj_entry_script]').val(px2dtLDA_pj.getEntryScript());
 		$form.find('[name=pj_external_preview_server_origin]').val(px2dtLDA_pj.getExtendedData('external_preview_server_origin'));
 
+		$form.find('.error_name').html('');
+		$form.find('.error_path').html('');
+		$form.find('.error_home_dir').html('');
+		$form.find('.error_entry_script').html('');
+		$form.find('.error_external_preview_server_origin').html('');
+
 		px.dialog( {
 			title: 'プロジェクト情報を編集',
 			body: $form ,
@@ -254,15 +258,41 @@ window.contApp = new (function(){
 					.text('OK')
 					.addClass('px2-btn--primary')
 					.on('click', function(){
-						var data = px2dtLDA_pj.get();
-						data.home_dir = $form.find('[name=pj_home_dir]').val()
-						px2dtLDA_pj.setName($form.find('[name=pj_name]').val());
-						px2dtLDA_pj.setEntryScript($form.find('[name=pj_entry_script]').val());
-						var external_preview_server_origin = $form.find('[name=pj_external_preview_server_origin]').val();
-						px2dtLDA_pj.setExtendedData('external_preview_server_origin', (external_preview_server_origin || undefined));
-						if( $form.find('[name=pj_path]').val().length ){
-							px2dtLDA_pj.setPath($form.find('[name=pj_path]').val());
+						$form.find('.error_name').html('');
+						$form.find('.error_path').html('');
+						$form.find('.error_home_dir').html('');
+						$form.find('.error_entry_script').html('');
+						$form.find('.error_external_preview_server_origin').html('');
+
+						var projectInfo = px2dtLDA_pj.get();
+
+						var newProjectInfo = JSON.parse( JSON.stringify( projectInfo ) );
+
+						newProjectInfo.name = $form.find('[name=pj_name]').val();
+						var tmpPath = $form.find('[name=pj_path]').val();
+						if( typeof(tmpPath) == typeof('') && tmpPath.length ){
+							newProjectInfo.path = tmpPath;//指定があったら上書き
 						}
+						newProjectInfo.home_dir = $form.find('[name=pj_home_dir]').val()
+						newProjectInfo.entry_script = $form.find('[name=pj_entry_script]').val()
+						newProjectInfo.external_preview_server_origin = $form.find('[name=pj_external_preview_server_origin]').val();
+
+						var result = px.validateProjectInfo(newProjectInfo);
+						if( result.isError ){
+							alert('エラー: 入力不備があります。');
+							for( var fieldName in result.errorMsg ){
+								$form.find('.error_'+fieldName).html('').append('<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><span class="sr-only">Error:</span> '+result.errorMsg[fieldName]+'</div>');
+							}
+							return false;
+						}
+				
+						px2dtLDA_pj.setName(newProjectInfo.name);
+						if( tmpPath.length ){
+							px2dtLDA_pj.setPath(newProjectInfo.path);
+						}
+						projectInfo.home_dir = newProjectInfo.home_dir;
+						px2dtLDA_pj.setEntryScript(newProjectInfo.entry_script);
+						px2dtLDA_pj.setExtendedData('external_preview_server_origin', (newProjectInfo.external_preview_server_origin || undefined));
 
 						px.save(function(){
 							px.closeDialog();

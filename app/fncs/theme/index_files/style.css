@@ -1,1 +1,47 @@
-@charset "utf-8";
+.contents button.px2-btn {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; }
+
+.contents .cont-theme-list__unit {
+  display: flex; }
+  .contents .cont-theme-list__unit-thumb {
+    width: 60px;
+    max-width: 100%;
+    margin-right: 20px; }
+    .contents .cont-theme-list__unit-thumb img {
+      width: 60px;
+      height: 60px; }
+
+.contents .cont-layout-menu {
+  border: none;
+  display: block; }
+  .contents .cont-layout-menu li {
+    display: inline-block;
+    border: none;
+    padding: 1px 2px; }
+    .contents .cont-layout-menu li button {
+      font-size: small;
+      padding: 0.2em 1em; }
+
+.contents .cont-theme-home-readme__thumb {
+  float: left;
+  margin: 0 20px 20px 0;
+  width: 220px;
+  max-width: 100%; }
+  .contents .cont-theme-home-readme__thumb img {
+    width: 100%; }
+  @media all and (max-width: 580px) {
+    .contents .cont-theme-home-readme__thumb {
+      width: 100px; } }
+
+.contents .cont-theme-home-readme__readme {
+  margin-left: 240px; }
+  @media all and (max-width: 580px) {
+    .contents .cont-theme-home-readme__readme {
+      margin-left: 120px; } }
+
+.contents .cont-theme-home-readme:after {
+  content: " ";
+  display: block;
+  clear: both; }

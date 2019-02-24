@@ -50,6 +50,10 @@ a:hover {
   font-size: 12px;
   width: 100%; }
 
+.contents .input-group-btn-lg .px2-btn {
+  font-size: 16px;
+  width: 100%; }
+
 /**
  * スクロールバー
  */
@@ -141,14 +145,14 @@ ul.listview {
     padding: 0; }
     ul.listview li:last-child {
       border: none; }
-    ul.listview li a {
+    ul.listview li > a {
       display: block;
       text-decoration: none;
       padding: 0.3em 1.5em;
       background-color: #fefefe; }
-      ul.listview li a:hover {
+      ul.listview li > a:hover {
         background-color: #f9f9f9; }
-      ul.listview li a.current {
+      ul.listview li > a.current {
         font-weight: bold;
         background-color: #00a0e6;
         color: #fff; }
@@ -158,33 +162,8 @@ ul.listview {
       border-top: 1px dotted #ddd; }
       ul.listview li ul li {
         border-bottom: 1px dotted #ddd; }
-        ul.listview li ul li a {
+        ul.listview li ul li > a {
           padding-left: 2.5em; }
-
-/**
- * ローディング
- */
-@-webkit-keyframes px2dt--loading {
-  0% {
-    transform: rotate(360deg); }
-  100% {
-    transform: rotate(0deg); } }
-
-.px2dt-loading {
-  clear: both;
-  float: none;
-  display: block;
-  text-align: center;
-  padding: 3em; }
-
-.px2dt-loading:before {
-  display: block;
-  text-align: center;
-  content: url("../images/loading.svg");
-  width: 50px;
-  height: 50px;
-  margin: 0 auto;
-  -webkit-animation: px2dt--loading 1s infinite normal linear; }
 
 /**
  * .clearfix

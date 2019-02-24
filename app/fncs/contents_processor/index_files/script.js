@@ -1,3 +1,4 @@
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 window.px = window.parent.px;
 window.contApp = new (function(px){
 	var _this = this;
@@ -14,7 +15,8 @@ window.contApp = new (function(px){
 	var CodeMirrorInstans = {};
 	var pathHomeDir, pathLogFileName;
 
-	var cancelRequest = false;
+	var _cancelRequest = false;
+	var Processor = require('../../../fncs/contents_processor/index_files/libs.ignore/processor.js');
 
 	/**
 	 * initialize
@@ -23,6 +25,32 @@ window.contApp = new (function(px){
 		px.it79.fnc(
 			{},
 			[
+				function(it1, data){
+					// broccoli-html-editor-php エンジン利用環境の要件を確認
+					if( pj.getGuiEngineName() == 'broccoli-html-editor-php' ){
+						pj.checkPxCmdVersion(
+							{
+								px2dthelperVersion: '>=2.0.8'
+							},
+							function(){
+								// API設定OK
+								it1.next(data);
+							},
+							function( errors ){
+								// API設定が不十分な場合のエラー処理
+								var html = px.utils.bindEjs(
+									px.fs.readFileSync('app/common/templates/broccoli-html-editor-php-is-not-available.html').toString(),
+									{errors: errors}
+								);
+								$('.contents').html( html );
+								// エラーだったらここで離脱。
+								return;
+							}
+						);
+						return;
+					}
+					it1.next(data);
+				},
 				function(it1, data){
 					pj.px2proj.get_path_homedir(function(path){
 						pathHomeDir = path;
@@ -88,7 +116,7 @@ window.contApp = new (function(px){
 					});
 
 					$btn
-						.click( function(){
+						.on('click', function(){
 							var btn = this;
 							var $form = $cont.find('form');
 							var target_path = $form.find('input[name=target_path]').val();
@@ -96,7 +124,7 @@ window.contApp = new (function(px){
 							var script_instance_processor = $form.find('textarea[name=script_instance_processor]').val();
 							var is_dryrun = ( $form.find('input[name=is_dryrun]:checked').val()=='dryrun' ? true : false );
 
-							cancelRequest = false;
+							_cancelRequest = false;
 
 							$pre.text('');
 							$(btn).attr('disabled', 'disabled');
@@ -120,8 +148,32 @@ window.contApp = new (function(px){
 							}).attr({'disabled':'disabled'});
 
 							var $btnCancel = $('<button class="px2-btn">').text('中断').click(function(){
-								cancelRequest = true;
+								_cancelRequest = true;
 							});
+
+							pathLogFileName = (function(){
+								var date = new Date;
+								var filename = '';
+								filename += 'contents_processor_log-';
+								filename += px.php.str_pad(date.getFullYear(), 4, '0', 'STR_PAD_LEFT');
+								filename += px.php.str_pad((date.getMonth()+1), 2, '0', 'STR_PAD_LEFT');
+								filename += px.php.str_pad(date.getDate(), 2, '0', 'STR_PAD_LEFT');
+								filename += '-';
+								filename += px.php.str_pad(date.getHours(), 2, '0', 'STR_PAD_LEFT');
+								filename += px.php.str_pad(date.getMinutes(), 2, '0', 'STR_PAD_LEFT');
+								filename += px.php.str_pad(date.getSeconds(), 2, '0', 'STR_PAD_LEFT');
+								filename2 = '';
+								var i = 0;
+								while( !px.utils79.is_file(pathHomeDir+'/'+filename+filename2+'.log') ){
+									if( px.utils79.is_file(pathHomeDir+'/'+filename+filename2+'.log') ){
+										i ++;
+										filename2 = '('+i+')';
+										continue;
+									}
+									break;
+								}
+								return filename+filename2+'.log';
+							})();
 
 							var $btnOpenLogFile = $('<button class="px2-btn">').text('ログファイルを開く').click(function(){
 								px.openInTextEditor(pathHomeDir+'/logs/'+pathLogFileName);
@@ -137,7 +189,8 @@ window.contApp = new (function(px){
 								]
 							});
 
-							processor(
+							var processor = new Processor(_this, px, pj, pathHomeDir, pathLogFileName, $progressMessage, $progress, $pre);
+							processor.run(
 								target_path,
 								script_source_processor,
 								script_instance_processor,
@@ -162,6 +215,10 @@ window.contApp = new (function(px){
 					it1.next(data);
 				},
 				function(it1, data){
+					$('*').tooltip();
+					it1.next(data);
+				},
+				function(it1, data){
 					$(window).scrollTop(0);
 					$('form input[name=target_path]').focus();
 					it1.next(data);
@@ -170,8 +227,30 @@ window.contApp = new (function(px){
 		);
 	}
 
+	/**
+	 * キャンセルボタンの状態を取得する
+	 */
+	this.isCanceled = function(){
+		return _cancelRequest;
+	}
 
-	var processor = function(target_path, script_source_processor, script_instance_processor, is_dryrun, callback){
+
+	/**
+	 * イベント
+	 */
+	$(window).on('load', function(){
+		init();
+	});
+
+})(window.px);
+
+},{"../../../fncs/contents_processor/index_files/libs.ignore/processor.js":2}],2:[function(require,module,exports){
+/**
+ * processor.js
+ */
+module.exports = function(app, px, pj, pathHomeDir, pathLogFileName, $progressMessage, $progress, $pre){
+
+	this.run = function(target_path, script_source_processor, script_instance_processor, is_dryrun, callback){
 		// console.log(script_source_processor, script_instance_processor);
 
 		$progressMessage.html('実行中...');
@@ -185,6 +264,7 @@ window.contApp = new (function(px){
 		var counter = {};
 		var fileCounter = {};
 		var pathCurrentContent = null;
+
 
 		// HTMLソース加工
 		function srcProcessor( src, type, next ){
@@ -215,30 +295,6 @@ window.contApp = new (function(px){
 			return fileCounter[pathCurrentContent];
 		}
 
-		pathLogFileName = (function(){
-			var date = new Date;
-			var filename = '';
-			filename += 'contents_processor_log-';
-			filename += px.php.str_pad(date.getFullYear(), 4, '0', 'STR_PAD_LEFT');
-			filename += px.php.str_pad((date.getMonth()+1), 2, '0', 'STR_PAD_LEFT');
-			filename += px.php.str_pad(date.getDate(), 2, '0', 'STR_PAD_LEFT');
-			filename += '-';
-			filename += px.php.str_pad(date.getHours(), 2, '0', 'STR_PAD_LEFT');
-			filename += px.php.str_pad(date.getMinutes(), 2, '0', 'STR_PAD_LEFT');
-			filename += px.php.str_pad(date.getSeconds(), 2, '0', 'STR_PAD_LEFT');
-			filename2 = '';
-			var i = 0;
-			while( !px.utils79.is_file(pathHomeDir+'/'+filename+filename2+'.log') ){
-				if( px.utils79.is_file(pathHomeDir+'/'+filename+filename2+'.log') ){
-					i ++;
-					filename2 = '('+i+')';
-					continue;
-				}
-				break;
-			}
-			return filename+filename2+'.log';
-		})();
-
 		// 実行ログをファイル出力する
 		function log(msg){
 			try {
@@ -267,10 +323,12 @@ window.contApp = new (function(px){
 		log('-----------------------------------');
 		log('## Log by pages');
 
+
 		px.it79.ary(
 			pageList ,
 			function( it1, sitemapRow, pagePath ){
-				if( cancelRequest ){
+
+				if( app.isCanceled() ){
 					// キャンセルボタンが押されていたら、すべてスキップ
 					log("\n\n\n\n");
 					log('+++++++++++++++++++++++');
@@ -281,13 +339,14 @@ window.contApp = new (function(px){
 					return;
 				}
 				// console.log(sitemapRow);
+
 				fileProgressCounter ++;
 				$progressMessage.text(pagePath);
 				$progress
 					.text(fileProgressCounter+'/'+pageListFullCount)
 					.css({"width": Number(fileProgressCounter/pageListFullCount*100)+'%'})
 				;
-				$pre.text( $pre.text() + sitemapRow.path );
+				$pre.text( $pre.text() + "\n" + sitemapRow.path );
 
 				log("\n"+'---- page('+fileProgressCounter+'/'+pageListFullCount+'): '+pagePath); // コンテンツの加工処理開始 (を、ログファイルに記録)
 
@@ -328,7 +387,7 @@ window.contApp = new (function(px){
 						function(it2, arg2){
 							// HTML拡張子のみ抽出
 							var Extension = pj.get_path_proc_type( arg2.pageInfo.path );
-							$pre.text( $pre.text() + ' -> ' + Extension );
+							$pre.text( $pre.text() + "\n" + ' -> Extension: ' + Extension );
 							log('Extension: '+Extension);
 							switch( Extension ){
 								case 'html':
@@ -345,8 +404,8 @@ window.contApp = new (function(px){
 						} ,
 						function(it2, arg2){
 							pj.getPageContentEditorMode( arg2.pageInfo.path, function(procType){
-								log('EditorMode: '+procType);
-								$pre.text( $pre.text() + ' -> ' + procType );
+								log('EditorMode: ' + procType);
+								$pre.text( $pre.text() + "\n" + ' -> ' + 'EditorMode: ' + procType );
 								switch( procType ){
 									case '.not_exists':
 										$pre.text( $pre.text() + ' -> SKIP' );
@@ -393,6 +452,7 @@ window.contApp = new (function(px){
 
 									case 'html':
 									case 'md':
+									case '.page_not_exists':
 									default:
 										if( !pathCurrentContent ){
 											// console.log( 'content path of ' + arg2.pageInfo.path + ' is ' + pathCurrentContent );
@@ -405,7 +465,17 @@ window.contApp = new (function(px){
 										pj.px2proj.get_path_controot(function(contRoot){
 											pj.px2proj.get_path_docroot(function(docRoot){
 												var _contentsPath = px.path.resolve(docRoot + contRoot + pathCurrentContent);
-												var src = px.fs.readFileSync( _contentsPath ).toString();
+												var src = '';
+												try {
+													src = px.fs.readFileSync( _contentsPath );
+													src = src.toString();
+												} catch (e) {
+													$pre.text( $pre.text() + ' -> ERROR' );
+													$pre.text( $pre.text() + "\n" );
+													log('-> ERROR');
+													it2.next(arg2);
+													return;
+												}
 												srcProcessor( src, procType, function(after){
 													if( is_dryrun ){
 														// dryrun で実行されていたら、加工結果を保存しない
@@ -426,6 +496,7 @@ window.contApp = new (function(px){
 														it2.next(arg2);
 													} );
 												} );
+												return;
 											});
 										});
 										break;
@@ -455,11 +526,6 @@ window.contApp = new (function(px){
 
 	}
 
-	/**
-	 * イベント
-	 */
-	$(function(){
-		init();
-	});
+}
 
-})(window.px);
+},{}]},{},[1])

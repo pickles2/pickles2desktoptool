@@ -31,42 +31,65 @@ module.exports = function( px, pj ) {
 				// console.log(param);
 
 				// PHPスクリプトを実行する
-				var rtn = '';
-				var err = '';
-				nodePhpBin.script(
+				var stdout = '';
+				var stderr = '';
+				px.commandQueue.client.addQueueItem(
 					[
+						'php',
 						path_px2git,
 						utils79.base64_encode(JSON.stringify(param))
 					],
 					{
-						"success": function(data){
-							rtn += data;
-							// console.log(data);
-						} ,
-						"error": function(data){
-							rtn += data;
-							err += data;
-							console.log(data);
-						} ,
-						"complete": function(data, error, code){
+						'cdName': 'default',
+						'tags': [
+							'pj-'+pj.get('id'),
+							'project-git'
+						],
+						'accept': function(queueId){
+							// console.log(queueId);
+						},
+						'open': function(message){
+						},
+						'stdout': function(message){
+							for(var idx in message.data){
+								stdout += message.data[idx];
+							}
+						},
+						'stderr': function(message){
+							for(var idx in message.data){
+								stdout += message.data[idx];
+								stderr += message.data[idx];
+								console.error(message.data[idx]);
+							}
+						},
+						'close': function(message){
 							setTimeout(function(){
 								try {
-									rtn = JSON.parse(rtn);
+									stdout = JSON.parse(stdout);
 								} catch (e) {
 									console.error('Failed to parse JSON string.');
-									console.error(rtn);
-									rtn = false;
+									console.error(stdout);
+									stdout = false;
 								}
-								console.log(rtn, err, code);
-								callback(rtn, err, code);
+								var code = message.data;
+								console.log(stdout, stderr, code);
+								callback(stdout, stderr, code);
 							},500);
+							return;
 						}
 					}
 				);
+
 				return;
 			}
 		})(apiName).fnc;
 	}
+
+	/**
+	 * 任意のファイルをコミットする
+	 * @return {[type]} [description]
+	 */
+	this.commit = new apiGen('commit');
 
 	/**
 	 * サイトマップをコミットする
@@ -79,6 +102,12 @@ module.exports = function( px, pj ) {
 	 * @return {[type]} [description]
 	 */
 	this.commitContents = new apiGen('commit_contents');
+
+	/**
+	 * すべての差分をコミットする
+	 * @return {[type]} [description]
+	 */
+	this.commitAll = new apiGen('commit_all');
 
 	/**
 	 * git status

@@ -1,17 +1,23 @@
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 window.px = window.parent.px;
 
 var pj = px.getCurrentProject();
-var cont_pathComposerJson = pj.get('path')+'composer.json';
+var fsEx = px.fsEx;
+var cont_realpathComposerRoot = pj.get('path');
 var CodeMirrorInstans;
+var it79 = px.it79;
+var utils79 = px.utils79;
 if( px.utils.isDirectory( pj.get_realpath_composer_root() ) ){
-	cont_pathComposerJson = pj.get_realpath_composer_root()+'composer.json';
+	cont_realpathComposerRoot = pj.get_realpath_composer_root();
 }
+var cont_realpathComposerJson = cont_realpathComposerRoot+'composer.json';
+var cont_realpathVendorDir = cont_realpathComposerRoot+'vendor/';
 
-function cont_init(){
+window.cont_init = function(){
 	// bootstrap
 	$('*').tooltip();
 
-	px.fs.readFile(cont_pathComposerJson, function(err, src){
+	px.fs.readFile(cont_realpathComposerJson, function(err, src){
 		if(err){
 			px.message(err);
 		}
@@ -40,7 +46,10 @@ function cont_init(){
 
 }
 
-function cont_selfupdate_conposer(btn){
+/**
+ * composer self-update
+ */
+window.cont_selfupdate_conposer = function(btn){
 	$(btn).attr('disabled', 'disabled');
 	$('#cont_maintenance .cont_console').html('');
 
@@ -70,61 +79,154 @@ function cont_selfupdate_conposer(btn){
 	);
 }
 
-function cont_update_proj(btn){
+/**
+ * composer update
+ */
+window.cont_update_proj = function(btn){
 	$(btn).attr('disabled', 'disabled');
+	$('#cont_update input[name=composer-force-update]').attr('disabled', 'disabled');
+	var isForceUpdate = $('#cont_update input[name=composer-force-update]').prop("checked");
+
 	$('#cont_update .cont_console').html('');
-	pj.execComposer(
-		['update'],
-		{
-			success: function(data){
-				$('#cont_update .cont_console').text(
-					$('#cont_update .cont_console').text() + data
-				);
-			} ,
-			error: function(data){
-				$('#cont_update .cont_console').text(
-					$('#cont_update .cont_console').text() + data
-				);
-			} ,
-			complete: function(data, error, code){
-				// $('.cont_console').text(
-				// 	$('.cont_console').text() + code
-				// );
-				$(btn).removeAttr('disabled');
-				px.composerUpdateChecker.clearStatus( pj, function(){
-					px.message( 'composer update 完了しました。' );
-				} );
+
+	it79.fnc({}, [
+		function(it1){
+			// 強制的更新の処理
+			if( !isForceUpdate ){
+				it1.next();
+				return;
 			}
+			if(!utils79.is_dir(cont_realpathVendorDir)){
+				it1.next();
+				return;
+			}
+			$('#cont_update .cont_console').text(
+				$('#cont_update .cont_console').text() + 'Removing `vendor` directory...'
+			);
+			// vendorフォルダを削除する
+			fsEx.remove(cont_realpathVendorDir, function(){
+				$('#cont_update .cont_console').text(
+					$('#cont_update .cont_console').text() + 'done'+"\n"
+				);
+				it1.next();
+			});
+			return;
+		},
+		function(it1){
+			// composer update
+			pj.execComposer(
+				['update', '--no-interaction'],
+				{
+					success: function(data){
+						$('#cont_update .cont_console').text(
+							$('#cont_update .cont_console').text() + data
+						);
+					} ,
+					error: function(data){
+						$('#cont_update .cont_console').text(
+							$('#cont_update .cont_console').text() + data
+						);
+					} ,
+					complete: function(data, error, code){
+						// $('.cont_console').text(
+						// 	$('.cont_console').text() + code
+						// );
+						$(btn).removeAttr('disabled');
+						$('#cont_update input[name=composer-force-update]').removeAttr('disabled');
+						px.composerInstallChecker.clearStatus( pj, function(){
+							if(code){
+								alert(
+									'composer が正常に終了しませんでした。(Exit Status Code: '+code+')'+"\n"
+									+'出力内容を参考に `composer.json` の内容を確認して再度お試しください。'+"\n"
+									+'または、「強制的に更新する」オプションを有効にして再実行すると解決する場合があります。'+"\n"
+								);
+							}
+							px.message( 'composer update 完了しました。' );
+						} );
+					}
+				}
+			);
+			return;
 		}
-	);
+	]);
 }
 
-function cont_install_proj(btn){
+/**
+ * composer install
+ */
+window.cont_install_proj = function(btn){
 	$(btn).attr('disabled', 'disabled');
-	$('#cont_status .cont_console').html('');
+	$('#cont_install input[name=composer-force-install]').attr('disabled', 'disabled');
+	var isForceInstall = $('#cont_install input[name=composer-force-install]').prop("checked");
 
-	pj.execComposer(
-		['install'],
-		{
-			success: function(data){
-				$('#cont_status .cont_console').text(
-					$('#cont_status .cont_console').text() + data
-				);
-			} ,
-			error: function(data){
-				$('#cont_status .cont_console').text(
-					$('#cont_status .cont_console').text() + data
-				);
-			} ,
-			complete: function(data, error, code){
-				$(btn).removeAttr('disabled');
-				px.message( 'composer install 完了しました。' );
+	$('#cont_install .cont_console').html('');
+
+	it79.fnc({}, [
+		function(it1){
+			// 強制的更新の処理
+			if( !isForceInstall ){
+				it1.next();
+				return;
 			}
+			if(!utils79.is_dir(cont_realpathVendorDir)){
+				it1.next();
+				return;
+			}
+			$('#cont_install .cont_console').text(
+				$('#cont_install .cont_console').text() + 'Removing `vendor` directory...'
+			);
+			// vendorフォルダを削除する
+			fsEx.remove(cont_realpathVendorDir, function(){
+				$('#cont_install .cont_console').text(
+					$('#cont_install .cont_console').text() + 'done'+"\n"
+				);
+				it1.next();
+			});
+			return;
+		},
+		function(it1){
+			// composer install
+			pj.execComposer(
+				['install', '--no-interaction'],
+				{
+					success: function(data){
+						$('#cont_install .cont_console').text(
+							$('#cont_install .cont_console').text() + data
+						);
+					} ,
+					error: function(data){
+						$('#cont_install .cont_console').text(
+							$('#cont_install .cont_console').text() + data
+						);
+					} ,
+					complete: function(data, error, code){
+						// $('.cont_console').text(
+						// 	$('.cont_console').text() + code
+						// );
+						$(btn).removeAttr('disabled');
+						$('#cont_install input[name=composer-force-install]').removeAttr('disabled');
+						px.composerInstallChecker.clearStatus( pj, function(){
+							if(code){
+								alert(
+									'composer が正常に終了しませんでした。(Exit Status Code: '+code+')'+"\n"
+									+'出力内容を参考に `composer.json` の内容を確認して再度お試しください。'+"\n"
+									+'または、「クリーンインストールする」オプションを有効にして再実行すると解決する場合があります。'+"\n"
+								);
+							}
+							px.message( 'composer install 完了しました。' );
+						} );
+					}
+				}
+			);
+			return;
 		}
-	);
+	]);
 }
 
-function cont_show_packages(btn, opt){
+/**
+ * composer show
+ */
+window.cont_show_packages = function(btn, opt){
 	$(btn).attr('disabled', 'disabled');
 	$('#cont_status .cont_console').html('');
 
@@ -152,12 +254,12 @@ function cont_show_packages(btn, opt){
 /**
  * composer.json の編集を保存
  */
-function cont_save_composerJson(form){
+window.cont_save_composerJson = function(form){
 	var $form = $('form.cont_edit_composer_json');
 	var src = $form.find('textarea').val();
 
 	src = JSON.parse( JSON.stringify( src ) );
-	px.fs.writeFile( cont_pathComposerJson, src, {encoding:'utf8'}, function(err){
+	px.fs.writeFile( cont_realpathComposerJson, src, {encoding:'utf8'}, function(err){
 		if(err){
 			px.message( 'composer.json の保存に失敗しました。' );
 		}else{
@@ -169,7 +271,7 @@ function cont_save_composerJson(form){
 /**
  * window resize
  */
-function cont_resizeEvent(){
+window.cont_resizeEvent = function(){
 	var cmHeight = $(window).innerHeight() - $('#cont_edit button').offset().top - $('#cont_edit button').outerHeight() -20;
 	if( cmHeight < 120 ){ cmHeight = 'auto'; }
 	$('.cont_edit_composer_json .CodeMirror')
@@ -182,3 +284,5 @@ function cont_resizeEvent(){
 $(function(){
 	cont_init();
 });
+
+},{}]},{},[1])

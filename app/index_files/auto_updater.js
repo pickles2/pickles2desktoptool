@@ -13,13 +13,24 @@ module.exports = function( window, px ) {
 		execPath = gui.App.argv[1];
 
 		// Replace old app, Run updated app from original location and close temp instance
-		upd.install(copyPath, function(err) {
-			if(!err) {
+		// 本来 node-webkit-updater の作法では upd.install() を使うが、
+		// これが mac でうまく動作しなかったため、 fsEx.copy() に置き換えた。
+		px.fsEx.copy(upd.getAppPath(), copyPath, {"overwrite": true}, function(err) {
+			if (err) {
+				console.error(err);
+				alert('[ERROR] アプリケーションの更新に失敗しました。アプリケーションファイルのコピーが失敗しました。');
+				return;
+			}
 
+			alert('アップデートが完了しました。 アプリケーションを再起動します。');
+
+			setTimeout(function(){
 				// ------------- Step 6 -------------
 				upd.run(execPath, null);
-				gui.App.quit();
-			}
+
+				px.exit();
+			}, 0);
+
 		});
 	}
 

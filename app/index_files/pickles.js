@@ -159,6 +159,14 @@ new (function($, window){
 		_it79.fnc({},
 			[
 				function(it1){
+					// AutoUpdater: Installer Mode
+					if( autoUpdater.isInstallerMode() ) {
+						autoUpdater.doAsInstallerMode();
+						return;
+					}
+					it1.next();
+				},
+				function(it1){
 					// データディレクトリを初期化
 					px.px2dtLDA.initDataDir(function(result){
 						if( !result ){
@@ -330,6 +338,12 @@ new (function($, window){
 					it1.next();
 				},
 				function(it1){
+					// HTMLコードを配置
+					$('body').html( document.getElementById('template-outer-frame').innerHTML );
+					it1.next();
+				},
+
+				function(it1){
 					callback();
 				}
 
@@ -357,6 +371,12 @@ new (function($, window){
 		callback = callback || function(){};
 
 		var db = px.px2dtLDA.getData();
+		if(!db){
+			// データの読み込み前には保存しない。
+			// 上書きして破壊してしまう恐れがあるため。
+			callback();
+			return;
+		}
 		var winPosition = {
 			"x": px.nwWindow.x,
 			"y": px.nwWindow.y,

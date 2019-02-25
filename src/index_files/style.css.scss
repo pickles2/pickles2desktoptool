@@ -10,6 +10,25 @@ body{
 	outline: none;
 }
 
+.splash{
+	position: absolute;
+	top: 0; left: 0;
+	width: 100%; height: 100%;
+	font-size: 11px;
+	text-align: center;
+	color: #999;
+	padding-top: 3rem;
+}
+.installer-mode{
+	position: absolute;
+	top: 0; left: 0;
+	width: 100%; height: 100%;
+	font-size: 11px;
+	text-align: center;
+	color: #999;
+	padding-top: 3rem;
+}
+
 // Header
 .theme-header{
 	background-color: #fff;

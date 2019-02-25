@@ -64,6 +64,10 @@
 								if( !confirm('新しいバージョンが見つかりました。更新しますか？') ){
 									return;
 								}
+								if( !confirm('アプリケーションの更新には、数分かかることがあります。 更新中には作業は行なえません。 いますぐ更新しますか？') ){
+									return;
+								}
+								px.message('インストーラーをダウンロードしています...。');
 
 								// ------------- Step 2 -------------
 								upd.download(function(error, filename) {
@@ -72,6 +76,8 @@
 										return;
 									}
 
+									px.message('インストーラーアーカイブを展開しています...。');
+
 									// ------------- Step 3 -------------
 									upd.unpack(filename, function(error, newAppPath) {
 										if( error ){
@@ -79,9 +85,13 @@
 											return;
 										}
 
-										// ------------- Step 4 -------------
-										upd.runInstaller(newAppPath, [upd.getAppPath(), upd.getAppExec()],{});
-										px.exit();
+										px.message('インストールの準備が整いました。インストーラーを起動します。');
+										setTimeout(function(){
+											// ------------- Step 4 -------------
+											upd.runInstaller(newAppPath, [upd.getAppPath(), upd.getAppExec()],{});
+											px.exit();
+											return;
+										}, 3000);
 
 									}, manifest);
 

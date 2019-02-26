@@ -5,6 +5,8 @@ var it79 = require('iterate79');
 var NwBuilder = require('nw-builder');
 var zipFolder = require('zip-folder');
 var packageJson = require('../package.json');
+var isProductionMode = true;
+var devManifestInfo = false;
 var phpjs = require('phpjs');
 var date = new Date();
 var appName = packageJson.name;
@@ -40,17 +42,42 @@ function writeLog(row){
 }
 
 if( packageJson.version.match(new RegExp('\\+(?:[a-zA-Z0-9\\_\\-\\.]+\\.)?nb$')) ){
+	isProductionMode = false;
+}
+if( !isProductionMode ){
 	versionSign += '-'+pad(date.getFullYear(),4)+pad(date.getMonth()+1, 2)+pad(date.getDate(), 2);
 	versionSign += '-'+pad(date.getHours(),2)+pad(date.getMinutes(), 2);
 	packageJson.version = versionSign;
+	packageJson.manifestUrl = packageJson.devManifestUrl;
 	// 一時的なバージョン番号を付与した package.json を作成し、
 	// もとのファイルを リネームしてとっておく。
 	// ビルドが終わった後に元に戻す。
 	require('fs').renameSync('./package.json', './package.json.orig');
-	require('fs').writeFileSync('./package.json', JSON.stringify(packageJson, null, 2));
+	require('fs').writeFileSync('./package.json', JSON.stringify(packageJson, null, 4));
+
+	// 開発プレビュー版用の manifest ファイルを準備
+	devManifestInfo = {};
+	devManifestInfo.manifest = {};
+	devManifestInfo.manifest.name = appName;
+	devManifestInfo.manifest.version = '9999.0.0'; // 常に最新になるように嘘をつく
+	devManifestInfo.manifest.manifestUrl = packageJson.devManifestUrl;
+	devManifestInfo.manifest.packages = {};
+
+	if( devManifestInfo.manifest.manifestUrl.match(/^(https?\:\/\/[a-zA-Z0-9\.\/\-\_]+)\/([a-zA-Z0-9\.\_\-]+?)$/g) ){
+		devManifestInfo.manifestBaseUrl = RegExp.$1 + '/';
+		devManifestInfo.manifestFilename = RegExp.$2;
+	}
 }
 
+
 console.log('== build "'+appName+'" v'+versionSign+' ==');
+if( !isProductionMode ){
+	console.log('');
+	console.log('****************************');
+	console.log('* DEVELOPERS PREVIEW BUILD *');
+	console.log('****************************');
+	console.log('');
+}
 
 console.log('Cleanup...');
 (function(base){
@@ -217,15 +244,30 @@ nw.build().then(function () {
 				it79.ary(
 					platforms,
 					function(it2, platformName, idx){
+						var zipFileName = appName+'-'+versionSign+'-'+platformName+'.zip';
+						if( !isProductionMode && devManifestInfo ){
+							var manifestPlatformName = platformName;
+							switch( manifestPlatformName ){
+								case "osx64":
+								case "osx32":
+									manifestPlatformName = "mac";
+								case "win64":
+								case "win32":
+									manifestPlatformName = "win";
+							}
+							devManifestInfo.manifest.packages[manifestPlatformName] = {};
+							devManifestInfo.manifest.packages[manifestPlatformName].url = devManifestInfo.manifestBaseUrl + zipFileName;
+						}
+
 						writeLog('[platform: '+platformName+'] Zipping...');
 						zipFolder(
 							__dirname + '/'+appName+'/'+platformName+'/',
-							__dirname + '/dist/'+appName+'-'+versionSign+'-'+platformName+'.zip',
+							__dirname + '/dist/'+zipFileName,
 							function(err) {
 								if(err) {
 									writeLog('ERROR!', err);
 								} else {
-									writeLog('success. - '+'./build/dist/'+appName+'-'+versionSign+'-'+platformName+'.zip');
+									writeLog('success. - '+'./build/dist/'+zipFileName);
 								}
 								it2.next();
 							}
@@ -235,6 +277,16 @@ nw.build().then(function () {
 						itPj.next(param);
 					}
 				);
+			},
+			function(itPj, param){
+				if( !isProductionMode && devManifestInfo ){
+					// manifest json を出力
+					require('fs').writeFileSync(
+						__dirname + '/dist/' + devManifestInfo.manifestFilename,
+						JSON.stringify(devManifestInfo.manifest, null, 4)
+					);
+				}
+				itPj.next(param);
 			},
 			function(itPj, param){
 				writeLog('cleanup...');

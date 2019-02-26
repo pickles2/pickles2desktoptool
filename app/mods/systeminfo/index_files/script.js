@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function(){
-	window.px = window.parent.px;
+	var px = window.px = window.parent.px;
 	var systemInfoCollector = new (require('../../../mods/systeminfo/index_files/libs.ignore/system.js'))(window.px);
 	var applicationInfoCollector = new (require('../../../mods/systeminfo/index_files/libs.ignore/application.js'))(window.px);
 	var tableTemplate;
@@ -51,7 +51,7 @@
 						var upd = px.getAutoUpdater().getUpdater();
 						// console.log(upd);
 
-						// ------------- Step 1 -------------
+						// 新しいバージョンがあるかどうか確認する
 						upd.checkNewVersion(function(error, newVersionExists, manifest) {
 							if( error ){
 								console.error(error);
@@ -61,33 +61,32 @@
 								alert('お使いのアプリケーションは最新版です。');
 
 							} else {
-								if( !confirm('新しいバージョンが見つかりました。更新しますか？') ){
+								if( !confirm('新しいバージョンが見つかりました。'+"\n"+'最新バージョン: '+manifest.version+"\n"+'お使いのバージョン: '+px.packageJson.version+"\n"+'更新しますか？') ){
 									return;
 								}
 								if( !confirm('アプリケーションの更新には、数分かかることがあります。 更新中には作業は行なえません。 いますぐ更新しますか？') ){
 									return;
 								}
-								px.message('インストーラーをダウンロードしています...。');
+								console.info('インストーラーをダウンロードしています...。');
 
-								// ------------- Step 2 -------------
+								// 最新版のZIPアーカイブをダウンロード
 								upd.download(function(error, filename) {
 									if( error ){
 										console.error(error);
 										return;
 									}
 
-									px.message('インストーラーアーカイブを展開しています...。');
+									console.info('インストーラーアーカイブを展開しています...。');
 
-									// ------------- Step 3 -------------
+									// ZIPを解凍
 									upd.unpack(filename, function(error, newAppPath) {
 										if( error ){
 											console.error(error);
 											return;
 										}
 
-										px.message('インストールの準備が整いました。インストーラーを起動します。');
+										console.info('インストールの準備が整いました。インストーラーを起動します。');
 										setTimeout(function(){
-											// ------------- Step 4 -------------
 											upd.runInstaller(newAppPath, [upd.getAppPath(), upd.getAppExec()],{});
 											px.exit();
 											return;

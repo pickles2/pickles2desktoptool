@@ -149,7 +149,7 @@ new (function($, window){
 
 	// Auto Updater
 	var AutoUpdater = require('./index_files/auto_updater.js'),
-		autoUpdater = new AutoUpdater(window, this);
+		autoUpdater = new AutoUpdater(this);
 	this.getAutoUpdater = function(){ return autoUpdater; }
 
 	/**

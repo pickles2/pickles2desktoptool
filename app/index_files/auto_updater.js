@@ -1,10 +1,9 @@
-module.exports = function( window, px ) {
+module.exports = function( px ) {
 	var _this = this;
 
 	var gui = px.nw;
 	var Updater = require('node-webkit-updater');
 	var upd = new Updater(px.packageJson);
-	var copyPath, execPath;
 
 	/**
 	 * インストーラーモードかを判断する
@@ -29,8 +28,10 @@ module.exports = function( window, px ) {
 			[
 				function(it1){
 					console.log('Starting installation...');
-					$body.html( '<div class="installer-mode"></div>' );
-					$body.find('.installer-mode').text('インストールしています...。');
+					$body.html( '<div class="installer-mode"><div class="installer-mode__appname"></div><div class="installer-mode__version"></div><div class="installer-mode__progress-msg"></div></div>' );
+					$body.find('.installer-mode__appname').text(px.packageJson.window.title);
+					$body.find('.installer-mode__version').text(px.packageJson.version);
+					$body.find('.installer-mode__progress-msg').text('インストールしています...。');
 
 					setTimeout(function(){
 						it1.next();
@@ -51,7 +52,7 @@ module.exports = function( window, px ) {
 
 						if (err) {
 							console.error(err);
-							$('body').find('.installer-mode').text('[ERROR] アプリケーションの更新に失敗しました。アプリケーションファイルのコピーが失敗しました。');
+							$('body').find('.installer-mode__progress-msg').text('[ERROR] アプリケーションの更新に失敗しました。アプリケーションファイルのコピーが失敗しました。');
 							alert('[ERROR] アプリケーションの更新に失敗しました。アプリケーションファイルのコピーが失敗しました。');
 							return;
 						}
@@ -61,7 +62,7 @@ module.exports = function( window, px ) {
 				},
 				function(it1){
 					console.log('Installation done.');
-					$body.find('.installer-mode').text('アップデートが完了しました。');
+					$body.find('.installer-mode__progress-msg').text('アップデートが完了しました。');
 
 					setTimeout(function(){
 						alert('アップデートが完了しました。 アプリケーションを再起動します。');
@@ -75,7 +76,7 @@ module.exports = function( window, px ) {
 				},
 				function(it1){
 					if( _this.isInstallerMode() ){
-						console.log('Reboot...');
+						console.log('Reboot...', execPath);
 						upd.run(execPath, null);
 					}
 

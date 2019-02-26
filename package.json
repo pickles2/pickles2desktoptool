@@ -86,8 +86,8 @@
     "title": "Pickles 2",
     "toolbar": true,
     "frame": true,
-    "width": 200,
-    "height": 160,
+    "width": 400,
+    "height": 260,
     "fullscreen": false,
     "icon": "app/common/images/appicon.png",
     "position": "center"

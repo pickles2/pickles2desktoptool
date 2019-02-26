@@ -251,9 +251,11 @@ nw.build().then(function () {
 								case "osx64":
 								case "osx32":
 									manifestPlatformName = "mac";
+									break;
 								case "win64":
 								case "win32":
 									manifestPlatformName = "win";
+									break;
 							}
 							devManifestInfo.manifest.packages[manifestPlatformName] = {};
 							devManifestInfo.manifest.packages[manifestPlatformName].url = devManifestInfo.manifestBaseUrl + zipFileName;

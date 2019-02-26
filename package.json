@@ -1,6 +1,6 @@
 {
   "name": "Pickles2",
-  "version": "2.0.0-beta.23+nb",
+  "version": "2.0.0-beta.23+dev",
   "description": "",
   "private": true,
   "main": "app/index.html",
@@ -81,7 +81,7 @@
     "credit": "(C)Pickles 2 Project."
   },
   "manifestUrl": "http://pickles2.pxt.jp/release/app/Pickles2/package.json",
-  "devManifestUrl": "http://pickles2.pxt.jp/release/app/Pickles2/dev/package_dev.json",
+  "devManifestUrl": "http://pickles2.pxt.jp/release/app_dev/Pickles2/package.json",
   "window": {
     "title": "Pickles 2",
     "toolbar": true,

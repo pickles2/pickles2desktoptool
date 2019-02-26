@@ -41,7 +41,7 @@ function writeLog(row){
 	console.log(row);
 }
 
-if( packageJson.version.match(new RegExp('\\+(?:[a-zA-Z0-9\\_\\-\\.]+\\.)?nb$')) ){
+if( packageJson.version.match(new RegExp('\\+(?:[a-zA-Z0-9\\_\\-\\.]+\\.)?dev$')) ){
 	isProductionMode = false;
 }
 if( !isProductionMode ){

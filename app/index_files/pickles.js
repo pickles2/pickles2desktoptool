@@ -161,7 +161,7 @@ new (function($, window){
 				function(it1){
 					// AutoUpdater: Installer Mode
 					if( autoUpdater.isInstallerMode() ) {
-						autoUpdater.doAsInstallerMode();
+						autoUpdater.doAsInstallerMode( $('body') );
 						return;
 					}
 					it1.next();
@@ -370,13 +370,14 @@ new (function($, window){
 	this.save = function(callback){
 		callback = callback || function(){};
 
-		var db = px.px2dtLDA.getData();
-		if(!db){
-			// データの読み込み前には保存しない。
+		if( autoUpdater.isInstallerMode() ) {
+			// インストールモード時には保存しない。
 			// 上書きして破壊してしまう恐れがあるため。
 			callback();
 			return;
 		}
+
+		var db = px.px2dtLDA.getData();
 		var winPosition = {
 			"x": px.nwWindow.x,
 			"y": px.nwWindow.y,

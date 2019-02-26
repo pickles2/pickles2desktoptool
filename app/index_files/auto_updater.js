@@ -10,7 +10,7 @@ module.exports = function( window, px ) {
 	 * インストーラーモードかを判断する
 	 */
 	this.isInstallerMode = function(){
-		if(gui.App.argv.length) {
+		if(gui.App.argv.length == 2) {
 			return true;
 		}
 		return false;
@@ -19,42 +19,71 @@ module.exports = function( window, px ) {
 	/**
 	 * インストーラーモードを判断し、処理する
 	 */
-	this.doAsInstallerMode = function(){
+	this.doAsInstallerMode = function( $body ){
 		// Args passed when new app is launched from temp dir during update
 
-		var html = '<div class="installer-mode"></div>';
-		$('body').html( html );
-		$('body').find('.installer-mode').text('インストールしています...。');
+		var copyPath = gui.App.argv[0];
+		var execPath = gui.App.argv[1];
 
-		// ------------- Step 5 -------------
-		copyPath = gui.App.argv[0];
-		execPath = gui.App.argv[1];
+		px.it79.fnc({},
+			[
+				function(it1){
+					console.log('Starting installation...');
+					$body.html( '<div class="installer-mode"></div>' );
+					$body.find('.installer-mode').text('インストールしています...。');
 
-		setTimeout(function(){
-			// Replace old app, Run updated app from original location and close temp instance
-			// 本来 node-webkit-updater の作法では upd.install() を使うが、
-			// これが mac でうまく動作しなかったため、 fsEx.copy() に置き換えた。
-			px.fsEx.copy(upd.getAppPath(), copyPath, {"overwrite": true}, function(err) {
-				if (err) {
-					console.error(err);
-					$('body').find('.installer-mode').text('[ERROR] アプリケーションの更新に失敗しました。アプリケーションファイルのコピーが失敗しました。');
-					alert('[ERROR] アプリケーションの更新に失敗しました。アプリケーションファイルのコピーが失敗しました。');
-					return;
-				}
+					setTimeout(function(){
+						it1.next();
+					}, 3000);
+				},
+				function(it1){
+					console.log('Starting copy application files...');
+					if( !_this.isInstallerMode() ){
+						it1.next();
+						return;
+					}
 
-				$('body').find('.installer-mode').text('アップデートが完了しました。');
+					// Replace old app, Run updated app from original location and close temp instance
+					// 本来 node-webkit-updater の作法では upd.install() を使うが、
+					// これが mac でうまく動作しなかったため、 fsEx.copy() に置き換えた。
+					px.fsEx.copy(upd.getAppPath(), copyPath, {"overwrite": true}, function(err) {
+						console.log('Copy application files done.');
 
-				alert('アップデートが完了しました。 アプリケーションを再起動します。');
+						if (err) {
+							console.error(err);
+							$('body').find('.installer-mode').text('[ERROR] アプリケーションの更新に失敗しました。アプリケーションファイルのコピーが失敗しました。');
+							alert('[ERROR] アプリケーションの更新に失敗しました。アプリケーションファイルのコピーが失敗しました。');
+							return;
+						}
 
-				setTimeout(function(){
-					// ------------- Step 6 -------------
-					upd.run(execPath, null);
+						it1.next();
+					});
+				},
+				function(it1){
+					console.log('Installation done.');
+					$body.find('.installer-mode').text('アップデートが完了しました。');
+
+					setTimeout(function(){
+						alert('アップデートが完了しました。 アプリケーションを再起動します。');
+						it1.next();
+					}, 500);
+				},
+				function(it1){
+					setTimeout(function(){
+						it1.next();
+					}, 1000);
+				},
+				function(it1){
+					if( _this.isInstallerMode() ){
+						console.log('Reboot...');
+						upd.run(execPath, null);
+					}
 
 					px.exit();
-				}, 1000);
+				}
+			]
+		);
 
-			});
-		}, 3000);
 		return;
 	}
 

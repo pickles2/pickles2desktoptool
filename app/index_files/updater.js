@@ -1,4 +1,4 @@
-module.exports = function( px ) {
+module.exports = function( px, $ ) {
 	var _this = this;
 
 	var updateStatus = null;
@@ -80,9 +80,16 @@ module.exports = function( px ) {
 			}
 		}
 
+		// show progress bar
+		px.progress.start({
+			"blindness": true,
+			"showProgressBar": true
+		});
+
 		updateStatus = 'downloading';
 		console.info('インストーラーをダウンロードしています...。');
 		console.log(manifest);
+		px.progress.message('インストーラーをダウンロードしています...。');
 
 		// 最新版のZIPアーカイブをダウンロード
 		upd.download(function(error, filename) {
@@ -96,6 +103,7 @@ module.exports = function( px ) {
 			updateStatus = 'unpacking';
 			console.info('インストーラーアーカイブを展開しています...。');
 			console.log(filename);
+			px.progress.message('インストーラーアーカイブを展開しています...。');
 
 			// ZIPを展開
 			upd.unpack(filename, function(error, newAppPath) {
@@ -108,6 +116,7 @@ module.exports = function( px ) {
 
 				updateStatus = 'booting_installer';
 				console.info('インストールの準備が整いました。インストーラーを起動します。');
+				px.progress.message('インストールの準備が整いました。インストーラーを起動します。');
 				setTimeout(function(){
 					upd.runInstaller(newAppPath, [upd.getAppPath(), upd.getAppExec()],{});
 					px.exit();
@@ -123,16 +132,19 @@ module.exports = function( px ) {
 	/**
 	 * インストーラーモードを処理する
 	 */
-	this.doAsInstallerMode = function( $body ){
+	this.doAsInstallerMode = function(){
 		// Args passed when new app is launched from temp dir during update
+
+		var $body = $('body');
 
 		updateStatus = 'installing';
 		var copyPath = gui.App.argv[0];
 		var execPath = gui.App.argv[1];
 		if(!copyPath || !execPath){
-			alert('インストール先 または 再起動プログラム のパスがセットされていません。');
 			console.error('インストール先 または 再起動プログラム のパスがセットされていません。');
-			return;
+			if( !confirm('インストール先 または 再起動プログラム のパスがセットされていません。続行しますか？') ){
+				return;
+			}
 		}
 
 		px.it79.fnc({},

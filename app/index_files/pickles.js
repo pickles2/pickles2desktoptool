@@ -150,7 +150,7 @@ new (function($, window){
 	// Auto Updater
 	var updater = (function(px){
 		var Updater = require('./index_files/updater.js');
-		return new Updater(px);
+		return new Updater(px, $);
 	})(this);
 	this.updater = updater;
 
@@ -163,7 +163,7 @@ new (function($, window){
 				function(it1){
 					// updater: Installer Mode
 					if( updater.isInstallerMode() ) {
-						updater.doAsInstallerMode( $('body') );
+						updater.doAsInstallerMode();
 						return;
 					}
 					it1.next();

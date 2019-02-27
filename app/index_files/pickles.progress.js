@@ -44,7 +44,7 @@ module.exports.init = function( px, $ ) {
 			.append( $('<div>')
 				.html(htmlProgress)
 			)
-			.append( $('<div>')
+			.append( $('<div class="px2dt-progress-bar__message">')
 				.css({
 					'color':'#fff',
 					'text-align': 'center'
@@ -81,6 +81,14 @@ module.exports.init = function( px, $ ) {
 		$('body').append( $progress );
 		stopKeyboard();
 		return this;
+	}
+
+	/**
+	 * メッセージを更新する
+	 */
+	this.message = function( msg ){
+		$progress.find('.px2dt-progress-bar__message').html('').append( msg );
+		return;
 	}
 
 	/**

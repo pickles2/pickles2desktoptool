@@ -1,9 +1,17 @@
 module.exports = function( px ) {
 	var _this = this;
 
+	var updateStatus = null;
 	var gui = px.nw;
-	var Updater = require('node-webkit-updater');
-	var upd = new Updater(px.packageJson);
+	var NwUpdater = require('node-webkit-updater');
+	var upd = new NwUpdater(px.packageJson);
+
+	/**
+	 * 状態を確認する
+	 */
+	this.getUpdateStatus = function(){
+		return updateStatus;
+	}
 
 	/**
 	 * インストーラーモードかを判断する
@@ -16,13 +24,98 @@ module.exports = function( px ) {
 	}
 
 	/**
-	 * インストーラーモードを判断し、処理する
+	 * 新しいバージョンがあるかどうか確認する
+	 */
+	this.checkNewVersion = function(){
+
+		upd.checkNewVersion(function(error, newVersionExists, manifest) {
+			if( error ){
+				console.error(error);
+				return;
+			}
+			if ( !newVersionExists ) {
+				alert('お使いのアプリケーションは最新版です。');
+
+			} else {
+				if( !confirm('新しいバージョンが見つかりました。'+"\n"+'・最新バージョン: '+manifest.version+"\n"+'・お使いのバージョン: '+px.packageJson.version+"\n"+'更新しますか？') ){
+					return;
+				}
+				if( !confirm('アプリケーションの更新には、数分かかることがあります。'+"\n"+'更新中には作業は行なえません。'+"\n"+'いますぐ更新しますか？') ){
+					return;
+				}
+
+				// 更新を実行する
+				_this.update();
+			}
+		});
+
+		return;
+	}
+
+	/**
+	 * 更新を実行する
+	 * 
+	 * インストーラーのダウンロードと展開を行います。
+	 * 完了したら、インストーラーを起動してアプリを終了します。
+	 */
+	this.update = function(){
+		if( updateStatus !== null ){
+			alert('現在アップデート処理は進行中です。'+"\n"+'Status: '+updateStatus);
+			return;
+		}
+
+		updateStatus = 'downloading';
+		console.info('インストーラーをダウンロードしています...。');
+
+		// 最新版のZIPアーカイブをダウンロード
+		upd.download(function(error, filename) {
+			if( error ){
+				updateStatus = null;
+				console.error(error);
+				alert('[ERROR] 最新版パッケージのダウンロードに失敗しました。通信状態のよい環境で時間をあけて再度お試しください。');
+				return;
+			}
+
+			updateStatus = 'unpacking';
+			console.info('インストーラーアーカイブを展開しています...。');
+
+			// ZIPを展開
+			upd.unpack(filename, function(error, newAppPath) {
+				if( error ){
+					updateStatus = null;
+					console.error(error);
+					alert('[ERROR] 最新版パッケージの展開に失敗しました。ダウンロードしたパッケージが破損している可能性があります。');
+					return;
+				}
+
+				updateStatus = 'booting_installer';
+				console.info('インストールの準備が整いました。インストーラーを起動します。');
+				setTimeout(function(){
+					upd.runInstaller(newAppPath, [upd.getAppPath(), upd.getAppExec()],{});
+					px.exit();
+					return;
+				}, 3000);
+
+			}, manifest);
+
+		}, manifest);
+	}
+
+
+	/**
+	 * インストーラーモードを処理する
 	 */
 	this.doAsInstallerMode = function( $body ){
 		// Args passed when new app is launched from temp dir during update
 
+		updateStatus = 'installing';
 		var copyPath = gui.App.argv[0];
 		var execPath = gui.App.argv[1];
+		if(!copyPath || !execPath){
+			alert('インストール先 または 再起動プログラム のパスがセットされていません。');
+			console.error('インストール先 または 再起動プログラム のパスがセットされていません。');
+			return;
+		}
 
 		px.it79.fnc({},
 			[
@@ -61,6 +154,7 @@ module.exports = function( px ) {
 					});
 				},
 				function(it1){
+					updateStatus = null;
 					console.log('Installation done.');
 					$body.find('.installer-mode__progress-msg').text('アップデートが完了しました。');
 
@@ -84,62 +178,6 @@ module.exports = function( px ) {
 				}
 			]
 		);
-
-		return;
-	}
-
-
-	/**
-	 * 新しいバージョンがあるかどうか確認する
-	 */
-	this.checkNewVersion = function(){
-
-		upd.checkNewVersion(function(error, newVersionExists, manifest) {
-			if( error ){
-				console.error(error);
-				return;
-			}
-			if ( !newVersionExists ) {
-				alert('お使いのアプリケーションは最新版です。');
-
-			} else {
-				if( !confirm('新しいバージョンが見つかりました。'+"\n"+'・最新バージョン: '+manifest.version+"\n"+'・お使いのバージョン: '+px.packageJson.version+"\n"+'更新しますか？') ){
-					return;
-				}
-				if( !confirm('アプリケーションの更新には、数分かかることがあります。'+"\n"+'更新中には作業は行なえません。'+"\n"+'いますぐ更新しますか？') ){
-					return;
-				}
-				console.info('インストーラーをダウンロードしています...。');
-
-				// 最新版のZIPアーカイブをダウンロード
-				upd.download(function(error, filename) {
-					if( error ){
-						console.error(error);
-						return;
-					}
-
-					console.info('インストーラーアーカイブを展開しています...。');
-
-					// ZIPを解凍
-					upd.unpack(filename, function(error, newAppPath) {
-						if( error ){
-							console.error(error);
-							return;
-						}
-
-						console.info('インストールの準備が整いました。インストーラーを起動します。');
-						setTimeout(function(){
-							upd.runInstaller(newAppPath, [upd.getAppPath(), upd.getAppExec()],{});
-							px.exit();
-							return;
-						}, 3000);
-
-					}, manifest);
-
-				}, manifest);
-
-			}
-		});
 
 		return;
 	}

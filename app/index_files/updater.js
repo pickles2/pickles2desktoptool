@@ -167,21 +167,45 @@ module.exports = function( px, $ ) {
 						return;
 					}
 
-					// Replace old app, Run updated app from original location and close temp instance
-					// 本来 node-webkit-updater の作法では upd.install() を使うが、
-					// これが mac でうまく動作しなかったため、 fsEx.copy() に置き換えた。
-					px.fsEx.copy(upd.getAppPath(), copyPath, {"overwrite": true}, function(err) {
-						console.log('Copy application files done.');
+					px.it79.fnc({},
+						[
+							function(it2){
+								// Windowsのみで実行する処理
+								if( px.getPlatform() !== 'win' ){
+									// Windows 以外はスキップ
+									it2.next();
+									return;
+								}
+								// remove file
+								px.fsEx.remove(execPath, function(err){
+									if (err){
+										alert('[ERROR] ' + execPath + ' を削除できませんでした。');
+										console.error(err);
+										return;
+									}
+									it2.next();
+								});
+							},
+							function(it1){
+								// Replace old app, Run updated app from original location
+								// 本来 node-webkit-updater の作法では upd.install() を使うが、
+								// これが mac でうまく動作しなかったため、 fsEx.copy() に置き換えた。
+								px.fsEx.copy(upd.getAppPath(), copyPath, {"overwrite": true}, function(err) {
+									console.log('Copy application files done.');
 
-						if (err) {
-							console.error(err);
-							$('body').find('.installer-mode__progress-msg').text('[ERROR] アプリケーションの更新に失敗しました。アプリケーションファイルのコピーが失敗しました。');
-							alert('[ERROR] アプリケーションの更新に失敗しました。アプリケーションファイルのコピーが失敗しました。');
-							return;
-						}
+									if (err) {
+										console.error(err);
+										$('body').find('.installer-mode__progress-msg').text('[ERROR] アプリケーションの更新に失敗しました。アプリケーションファイルのコピーが失敗しました。');
+										alert('[ERROR] アプリケーションの更新に失敗しました。アプリケーションファイルのコピーが失敗しました。');
+										return;
+									}
 
-						it1.next();
-					});
+									it1.next();
+								});
+							}
+						]
+					);
+
 				},
 				function(it1){
 					updateStatus = null;
@@ -200,7 +224,7 @@ module.exports = function( px, $ ) {
 				},
 				function(it1){
 					if( _this.isInstallerMode() ){
-						console.log('Reboot...', execPath);
+						console.log('Reboot App ...', execPath);
 						upd.run(execPath, null);
 					}
 

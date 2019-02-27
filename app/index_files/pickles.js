@@ -114,7 +114,7 @@ new (function($, window){
 
 	var _platform = (function(){
 		var platform = 'unknown';
-		console.log('platform:', process.platform);
+		console.log('process.platform:', process.platform);
 		if(process.platform == 'win32'){return 'win';}
 		if(process.platform == 'darwin'){return 'mac';}
 		if(process.platform == 'linux'){return 'linux';}

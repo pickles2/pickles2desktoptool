@@ -48,7 +48,7 @@
 				// ボタンアクション設定： 自動更新のチェック
 				$('.cont_update-check button')
 					.on('click', function(){
-						var upd = px.getAutoUpdater().getUpdater();
+						var upd = px.updater.getUpdater();
 						// console.log(upd);
 
 						// 新しいバージョンがあるかどうか確認する

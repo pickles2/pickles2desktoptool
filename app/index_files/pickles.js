@@ -148,9 +148,11 @@ new (function($, window){
 	this.cookie = $.cookie;
 
 	// Auto Updater
-	var AutoUpdater = require('./index_files/auto_updater.js'),
-		autoUpdater = new AutoUpdater(this);
-	this.getAutoUpdater = function(){ return autoUpdater; }
+	var updater = (function(px){
+		var Updater = require('./index_files/updater.js');
+		return new Updater(px);
+	})(this);
+	this.updater = updater;
 
 	/**
 	 * アプリケーションの初期化
@@ -159,9 +161,9 @@ new (function($, window){
 		_it79.fnc({},
 			[
 				function(it1){
-					// AutoUpdater: Installer Mode
-					if( autoUpdater.isInstallerMode() ) {
-						autoUpdater.doAsInstallerMode( $('body') );
+					// updater: Installer Mode
+					if( updater.isInstallerMode() ) {
+						updater.doAsInstallerMode( $('body') );
 						return;
 					}
 					it1.next();
@@ -370,7 +372,7 @@ new (function($, window){
 	this.save = function(callback){
 		callback = callback || function(){};
 
-		if( autoUpdater.isInstallerMode() ) {
+		if( updater.isInstallerMode() ) {
 			// インストールモード時には保存しない。
 			// 上書きして破壊してしまう恐れがあるため。
 			callback();

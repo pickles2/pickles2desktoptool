@@ -88,6 +88,62 @@ module.exports = function( px ) {
 		return;
 	}
 
+
+	/**
+	 * 新しいバージョンがあるかどうか確認する
+	 */
+	this.checkNewVersion = function(){
+
+		upd.checkNewVersion(function(error, newVersionExists, manifest) {
+			if( error ){
+				console.error(error);
+				return;
+			}
+			if ( !newVersionExists ) {
+				alert('お使いのアプリケーションは最新版です。');
+
+			} else {
+				if( !confirm('新しいバージョンが見つかりました。'+"\n"+'・最新バージョン: '+manifest.version+"\n"+'・お使いのバージョン: '+px.packageJson.version+"\n"+'更新しますか？') ){
+					return;
+				}
+				if( !confirm('アプリケーションの更新には、数分かかることがあります。'+"\n"+'更新中には作業は行なえません。'+"\n"+'いますぐ更新しますか？') ){
+					return;
+				}
+				console.info('インストーラーをダウンロードしています...。');
+
+				// 最新版のZIPアーカイブをダウンロード
+				upd.download(function(error, filename) {
+					if( error ){
+						console.error(error);
+						return;
+					}
+
+					console.info('インストーラーアーカイブを展開しています...。');
+
+					// ZIPを解凍
+					upd.unpack(filename, function(error, newAppPath) {
+						if( error ){
+							console.error(error);
+							return;
+						}
+
+						console.info('インストールの準備が整いました。インストーラーを起動します。');
+						setTimeout(function(){
+							upd.runInstaller(newAppPath, [upd.getAppPath(), upd.getAppExec()],{});
+							px.exit();
+							return;
+						}, 3000);
+
+					}, manifest);
+
+				}, manifest);
+
+			}
+		});
+
+		return;
+	}
+
 	/**
 	 * Updaterを取得する
 	 */

@@ -185,12 +185,13 @@ module.exports = function( px, $ ) {
 										if (err){
 											retryCounter --;
 											if(retryCounter > 0){
-												remove(callback); // retry
+												setTimeout(function(){
+													remove(callback); // retry
+												}, 500);
 												return;
 											}
 											alert('[ERROR] ' + copyPath + ' を削除できませんでした。');
 											console.error(err);
-											return;
 										}
 										callback();
 									});

@@ -79,6 +79,12 @@
 			body: $tpl ,
 			buttons: [
 				$('<button>')
+					.text(px.lb.get('ui_label.cancel'))
+					.addClass('px2-btn')
+					.on('click', function(){
+						px.closeDialog();
+					}) ,
+				$('<button>')
 					.text(px.lb.get('ui_label.ok'))
 					.addClass('px2-btn')
 					.addClass('px2-btn--primary')
@@ -98,12 +104,6 @@
 								px.closeDialog();
 							});
 						});
-					}) ,
-				$('<button>')
-					.text(px.lb.get('ui_label.cancel'))
-					.addClass('px2-btn')
-					.on('click', function(){
-						px.closeDialog();
 					})
 			]
 		});

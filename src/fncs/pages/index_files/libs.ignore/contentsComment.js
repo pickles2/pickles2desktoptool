@@ -93,6 +93,11 @@ module.exports = function(app, px, pj){
 				'body': $body,
 				'buttons':[
 					$('<button>')
+						.text(px.lb.get('ui_label.cancel'))
+						.on('click', function(){
+							px.closeDialog();
+						}),
+					$('<button>')
 						.text('OK')
 						.addClass('px2-btn--primary')
 						.on('click', function(){
@@ -102,11 +107,6 @@ module.exports = function(app, px, pj){
 							_this.updateComment(function(){
 								px.closeDialog();
 							});
-						}),
-					$('<button>')
-						.text('Cancel')
-						.on('click', function(){
-							px.closeDialog();
 						})
 				]
 			});

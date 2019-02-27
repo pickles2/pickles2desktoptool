@@ -255,6 +255,11 @@ window.contApp = new (function(){
 			body: $form ,
 			buttons: [
 				$('<button>')
+					.text(px.lb.get('ui_label.cancel'))
+					.on('click', function(){
+						px.closeDialog();
+					} ) ,
+				$('<button>')
 					.text('OK')
 					.addClass('px2-btn--primary')
 					.on('click', function(){
@@ -299,11 +304,6 @@ window.contApp = new (function(){
 							px.message('プロジェクト情報を更新しました。');
 							px.subapp();
 						});
-					} ) ,
-				$('<button>')
-					.text('Cancel')
-					.on('click', function(){
-						px.closeDialog();
 					} )
 			]
 		} );

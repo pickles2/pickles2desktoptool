@@ -4091,6 +4091,11 @@ module.exports = function(app, px, pj){
 				'body': $body,
 				'buttons':[
 					$('<button>')
+						.text(px.lb.get('ui_label.cancel'))
+						.on('click', function(){
+							px.closeDialog();
+						}),
+					$('<button>')
 						.text('OK')
 						.addClass('px2-btn--primary')
 						.on('click', function(){
@@ -4100,11 +4105,6 @@ module.exports = function(app, px, pj){
 							_this.updateComment(function(){
 								px.closeDialog();
 							});
-						}),
-					$('<button>')
-						.text('Cancel')
-						.on('click', function(){
-							px.closeDialog();
 						})
 				]
 			});
@@ -4690,6 +4690,11 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 									'body': $body,
 									'buttons':[
 										$('<button>')
+											.text(px.lb.get('ui_label.cancel'))
+											.on('click', function(){
+												px.closeDialog();
+											}),
+										$('<button>')
 											.text('OK')
 											.addClass('px2-btn--primary')
 											.on('click', function(){
@@ -4714,11 +4719,6 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 														} );
 													}
 												);
-											}),
-										$('<button>')
-											.text('Cancel')
-											.on('click', function(){
-												px.closeDialog();
 											})
 									]
 								});
@@ -4784,6 +4784,11 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 									'title': '編集方法を変更する',
 									'body': $body,
 									'buttons':[
+										$('<button class="px2-btn">')
+											.text(px.lb.get('ui_label.cancel'))
+											.on('click', function(){
+												px.closeDialog();
+											}),
 										$('<button class="px2-btn px2-btn--primary">')
 											.text('OK')
 											.on('click', function(){
@@ -4799,11 +4804,6 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 														});
 													} );
 												} )
-											}),
-										$('<button class="px2-btn">')
-											.text('キャンセル')
-											.on('click', function(){
-												px.closeDialog();
 											})
 									]
 								});

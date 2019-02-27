@@ -171,18 +171,31 @@ module.exports = function( px, $ ) {
 						[
 							function(it2){
 								// Windowsのみで実行する処理
+								// Windowsでは、アプリのコピーをする前に、
+								// もとのバージョンを一旦削除する
 								if( px.getPlatform() !== 'win' ){
 									// Windows 以外はスキップ
 									it2.next();
 									return;
 								}
 								// remove file
-								px.fsEx.remove(execPath, function(err){
-									if (err){
-										alert('[ERROR] ' + execPath + ' を削除できませんでした。');
-										console.error(err);
-										return;
-									}
+								var retryCounter = 50;
+								function remove(callback){
+									px.fsEx.remove(copyPath, function(err){
+										if (err){
+											retryCounter --;
+											if(retryCounter > 0){
+												remove(callback); // retry
+												return;
+											}
+											alert('[ERROR] ' + copyPath + ' を削除できませんでした。');
+											console.error(err);
+											return;
+										}
+										callback();
+									});
+								}
+								remove(function(){
 									it2.next();
 								});
 							},
@@ -200,8 +213,11 @@ module.exports = function( px, $ ) {
 										return;
 									}
 
-									it1.next();
+									it2.next();
 								});
+							},
+							function(){
+								it1.next();
 							}
 						]
 					);

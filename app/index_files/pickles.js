@@ -185,6 +185,10 @@ new (function($, window){
 						px.px2dtLDA.db.network.appserver = px.px2dtLDA.db.network.appserver || {};
 						px.px2dtLDA.db.network.appserver.port = px.px2dtLDA.db.network.appserver.port || _packageJson.pickles2.network.appserver.port;
 
+						px.px2dtLDA.db.extra = px.px2dtLDA.db.extra || {};
+						px.px2dtLDA.db.extra.px2dt = px.px2dtLDA.db.extra.px2dt || {};
+						px.px2dtLDA.db.extra.px2dt.checkForUpdate = px.px2dtLDA.db.extra.px2dt.checkForUpdate || 'autoCheck';
+
 						px.px2dtLDA.save(function(){
 							it1.next();
 						});
@@ -342,6 +346,33 @@ new (function($, window){
 				function(it1){
 					// HTMLコードを配置
 					$('body').html( document.getElementById('template-outer-frame').innerHTML );
+					it1.next();
+				},
+				function(it1){
+					// アプリの更新を自動チェック
+					if( px.px2dtLDA.db.extra.px2dt.checkForUpdate == 'autoCheck' ){
+						px.updater.checkNewVersion(function(error, newVersionExists, manifest){
+							setTimeout(function(){
+								if( error ){
+									console.error('最新版の情報を取得できませんでした。通信状態のよい環境で時間をあけて再度お試しください。');
+									return;
+								}
+								if ( newVersionExists ) {
+									if( !confirm('新しいバージョンが見つかりました。'+"\n"+'・最新バージョン: '+manifest.version+"\n"+'・お使いのバージョン: '+px.packageJson.version+"\n"+'更新しますか？') ){
+										return;
+									}
+									if( !confirm('アプリケーションの更新には、数分かかることがあります。'+"\n"+'更新中には作業は行なえません。'+"\n"+'いますぐ更新しますか？') ){
+										return;
+									}
+
+									// 更新を実行する
+									px.updater.update(manifest);
+								}
+							}, 3000);
+						});
+						it1.next();
+						return;
+					}
 					it1.next();
 				},
 

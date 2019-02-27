@@ -43,15 +43,6 @@
 					})
 				;
 
-				// --------------------------------------
-				// ボタンアクション設定： 自動更新のチェック
-				$('.cont_update-check button')
-					.on('click', function(){
-						px.updater.checkNewVersion();
-						return false;
-					})
-				;
-
 				it1.next();
 			},
 			function(it1, arg){

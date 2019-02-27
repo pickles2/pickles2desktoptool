@@ -284,6 +284,15 @@ module.exports = function(px){
 		}
 	});
 	_menu.push({
+		"label":px.lb.get('menu.checkForUpdate'),
+		"cond":"always",
+		"area":"shoulder",
+		"app":null,
+		"click": function(){
+			px.updater.checkNewVersion();
+		}
+	});
+	_menu.push({
 		"label":px.lb.get('menu.developerTool'),
 		"cond":"always",
 		"area":"shoulder",

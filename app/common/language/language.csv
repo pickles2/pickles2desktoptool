@@ -28,6 +28,7 @@ menu.filesAndFolders,Files and Folders,ファイルとフォルダ,,
 menu.systemInfo,System Information,システム情報,系统信息,系統信息
 menu.desktoptoolConfig,"Application Config","アプリケーション設定",桌面工具设定,桌面工具設定
 menu.help,Help,ヘルプ,帮助,幫助
+menu.checkForUpdate,Check for update...,アップデートを確認...,,
 menu.developerTool,Developer Tool,デペロッパツール,开发人员工具,開發人員工具
 menu.exit,Exit,終了,退出,退出
 ui_label.ok,OK,OK,OK,OK

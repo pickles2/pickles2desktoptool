@@ -186,7 +186,7 @@ module.exports = function( px, $ ) {
 									it2.next();
 								});
 							},
-							function(it1){
+							function(it2){
 								// Replace old app, Run updated app from original location
 								// 本来 node-webkit-updater の作法では upd.install() を使うが、
 								// これが mac でうまく動作しなかったため、 fsEx.copy() に置き換えた。

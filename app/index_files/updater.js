@@ -26,11 +26,10 @@ module.exports = function( px ) {
 	/**
 	 * 新しいバージョンがあるかどうか確認する
 	 */
-	this.checkNewVersion = function(){
-
-		upd.checkNewVersion(function(error, newVersionExists, manifest) {
+	this.checkNewVersion = function(callback){
+		callback = callback || function(error, newVersionExists, manifest){
 			if( error ){
-				console.error(error);
+				alert('最新版の情報を取得できませんでした。通信状態のよい環境で時間をあけて再度お試しください。');
 				return;
 			}
 			if ( !newVersionExists ) {
@@ -45,8 +44,24 @@ module.exports = function( px ) {
 				}
 
 				// 更新を実行する
-				_this.update();
+				_this.update(manifest);
 			}
+		};
+
+		console.info('アプリケーションの更新を確認します。');
+		console.log(px.packageJson);
+		upd.checkNewVersion(function(error, newVersionExists, manifest) {
+			if( error ){
+				console.error(error);
+			}
+			if( newVersionExists ){
+				console.info('お使いのアプリケーションは最新版です。');
+			}else{
+				console.info('新しいバージョンが見つかりました。'+"\n"+'・最新バージョン: '+manifest.version+"\n"+'・お使いのバージョン: '+px.packageJson.version);
+			}
+			console.log(manifest);
+
+			callback(error, newVersionExists, manifest);
 		});
 
 		return;
@@ -58,14 +73,16 @@ module.exports = function( px ) {
 	 * インストーラーのダウンロードと展開を行います。
 	 * 完了したら、インストーラーを起動してアプリを終了します。
 	 */
-	this.update = function(){
+	this.update = function(manifest){
 		if( updateStatus !== null ){
-			alert('現在アップデート処理は進行中です。'+"\n"+'Status: '+updateStatus);
-			return;
+			if(!confirm('現在アップデート処理は進行中です。'+"\n"+'Status: '+updateStatus+"\n\n"+'再実行しますか？')){
+				return;
+			}
 		}
 
 		updateStatus = 'downloading';
 		console.info('インストーラーをダウンロードしています...。');
+		console.log(manifest);
 
 		// 最新版のZIPアーカイブをダウンロード
 		upd.download(function(error, filename) {
@@ -78,6 +95,7 @@ module.exports = function( px ) {
 
 			updateStatus = 'unpacking';
 			console.info('インストーラーアーカイブを展開しています...。');
+			console.log(filename);
 
 			// ZIPを展開
 			upd.unpack(filename, function(error, newAppPath) {

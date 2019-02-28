@@ -48,7 +48,9 @@ if( !isProductionMode ){
 	versionSign += '-'+pad(date.getFullYear(),4)+pad(date.getMonth()+1, 2)+pad(date.getDate(), 2);
 	versionSign += '-'+pad(date.getHours(),2)+pad(date.getMinutes(), 2);
 	packageJson.version = versionSign;
-	packageJson.manifestUrl = packageJson.devManifestUrl;
+	if( packageJson.devManifestUrl ){
+		packageJson.manifestUrl = packageJson.devManifestUrl;
+	}
 	// 一時的なバージョン番号を付与した package.json を作成し、
 	// もとのファイルを リネームしてとっておく。
 	// ビルドが終わった後に元に戻す。
@@ -56,16 +58,18 @@ if( !isProductionMode ){
 	require('fs').writeFileSync('./package.json', JSON.stringify(packageJson, null, 4));
 
 	// 開発プレビュー版用の manifest ファイルを準備
-	devManifestInfo = {};
-	devManifestInfo.manifest = {};
-	devManifestInfo.manifest.name = appName;
-	devManifestInfo.manifest.version = '9999.0.0'; // 常に最新になるように嘘をつく
-	devManifestInfo.manifest.manifestUrl = packageJson.devManifestUrl;
-	devManifestInfo.manifest.packages = {};
+	if( packageJson.manifestUrl ){
+		devManifestInfo = {};
+		devManifestInfo.manifest = {};
+		devManifestInfo.manifest.name = appName;
+		devManifestInfo.manifest.version = '9999.0.0'; // 常に最新になるように嘘をつく
+		devManifestInfo.manifest.manifestUrl = packageJson.devManifestUrl;
+		devManifestInfo.manifest.packages = {};
 
-	if( devManifestInfo.manifest.manifestUrl.match(/^(https?\:\/\/[a-zA-Z0-9\.\/\-\_]+)\/([a-zA-Z0-9\.\_\-]+?)$/g) ){
-		devManifestInfo.manifestBaseUrl = RegExp.$1 + '/';
-		devManifestInfo.manifestFilename = RegExp.$2;
+		if( devManifestInfo.manifest.manifestUrl.match(/^(https?\:\/\/[a-zA-Z0-9\.\/\-\_]+)\/([a-zA-Z0-9\.\_\-]+?)$/g) ){
+			devManifestInfo.manifestBaseUrl = RegExp.$1 + '/';
+			devManifestInfo.manifestFilename = RegExp.$2;
+		}
 	}
 }
 

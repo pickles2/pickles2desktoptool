@@ -55,8 +55,7 @@ module.exports = function( px, $ ) {
 		upd.checkNewVersion(function(error, newVersionExists, manifest) {
 			if( error ){
 				console.error(error);
-			}
-			if( !newVersionExists ){
+			}else if( !newVersionExists ){
 				console.info('お使いのアプリケーションは最新版です。');
 			}else{
 				console.info('新しいバージョンが見つかりました。'+"\n"+'・最新バージョン: '+manifest.version+"\n"+'・お使いのバージョン: '+px.packageJson.version);

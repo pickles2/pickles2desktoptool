@@ -170,6 +170,7 @@ new (function($, window){
 				},
 				function(it1){
 					// データディレクトリを初期化
+					$('.splash__message p').text('データファイルを初期化中...');
 					px.px2dtLDA.initDataDir(function(result){
 						if( !result ){
 							console.error('FAILED to Initialize data directory. - '+_path_data_dir);
@@ -196,14 +197,16 @@ new (function($, window){
 				},
 				function(it1){
 					// Command Queue をセットアップ
+					$('.splash__message p').text('Command Queue をセットアップ...');
 					var CommandQueue = require('./index_files/cmdQueueCtrl.js');
 					_this.commandQueue = new CommandQueue(_this, window);
 					it1.next();
 				},
 				function(it1){
+					// node-webkit の標準的なメニューを出す
+					$('.splash__message p').text('メニューをセットアップ...');
 
 					(function(){
-						// node-webkit の標準的なメニューを出す
 						var win = _nw_gui.Window.get();
 						var nativeMenuBar = new _nw_gui.Menu({ type: "menubar" });
 						try {
@@ -233,6 +236,7 @@ new (function($, window){
 				},
 				function(it1){
 					// 各国語言語切替機能のロード
+					$('.splash__message p').text('各国語言語切替機能のロード...');
 					var LangBank = require('langbank');
 					px.lb = new LangBank( require('path').resolve('./app/common/language/language.csv'), function(){
 						px.lb.setLang(px.px2dtLDA.getLanguage());
@@ -243,6 +247,7 @@ new (function($, window){
 				},
 				function(it1){
 					// ヒント機能のロード
+					$('.splash__message p').text('ヒントのロード...');
 					var Px2Hint = require('./index_files/pickles.hint.js');
 					px.hint = new Px2Hint( px, require('path').resolve('./app/common/language/hint.csv'), function(){
 						px.hint.setLang(px.px2dtLDA.getLanguage());
@@ -251,7 +256,8 @@ new (function($, window){
 					return;
 				},
 				function(it1){
-					// file watcher
+					// File Watcher をロード
+					$('.splash__message p').text('File Watcher をロード...');
 					var FileWatcher = require('./index_files/pickles.watcher.js');
 					px.watcher = new FileWatcher( px );
 					it1.next();
@@ -259,6 +265,7 @@ new (function($, window){
 				},
 				function(it1){
 					// db.json の読み込み
+					$('.splash__message p').text('データを読み込んでいます...');
 					px.load(function(){
 						it1.next();
 						return;
@@ -267,6 +274,7 @@ new (function($, window){
 				},
 				function(it1){
 					// ウィンドウ位置とサイズの初期化
+					$('.splash__message p').text('ウィンドウ位置とサイズの初期化...');
 					var db = px.px2dtLDA.getData();
 					var winPosition = {
 						"x": 0,
@@ -286,6 +294,7 @@ new (function($, window){
 					return;
 				},
 				function(it1){
+					$('.splash__message p').text('composer パッケージをチェックしています...');
 					var ComposerInstallChecker = require('./index_files/pickles.composerInstallChecker.js');
 					px.composerInstallChecker = new ComposerInstallChecker( px, function(){
 						it1.next();
@@ -307,6 +316,7 @@ new (function($, window){
 				},
 				function(it1){
 					// setup "node-php-bin"
+					$('.splash__message p').text('PHPラッパーをロードしています...');
 					px.NodePhpBin = require('node-php-bin');
 					px.nodePhpBinOptions = {
 						// パスが通った php コマンドで初期化
@@ -328,6 +338,7 @@ new (function($, window){
 				},
 				function(it1){
 					// メニュー設定
+					$('.splash__message p').text('メニューを設定しています...');
 					var gmenu = require('./index_files/globalmenu.js');
 					_menu = new gmenu(px);
 					it1.next();
@@ -335,6 +346,7 @@ new (function($, window){
 				function(it1){
 					// 開発者のための隠しコマンド
 					// Ctrl + Opt + R で トップフレームを再読込する
+					$('.splash__message p').text('キーボードショートカット...');
 					$(window).on('keypress', function(e){
 						// console.log(e);
 						if(e.keyCode == 18 && e.ctrlKey && e.altKey ){

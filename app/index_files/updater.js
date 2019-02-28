@@ -167,61 +167,21 @@ module.exports = function( px, $ ) {
 						return;
 					}
 
-					px.it79.fnc({},
-						[
-							function(it2){
-								// Windowsのみで実行する処理
-								// Windowsでは、アプリのコピーをする前に、
-								// もとのバージョンを一旦削除する
-								if( px.getPlatform() !== 'win' ){
-									// Windows 以外はスキップ
-									it2.next();
-									return;
-								}
-								// remove file
-								var retryCounter = 50;
-								function remove(callback){
-									px.fsEx.remove(copyPath, function(err){
-										if (err){
-											retryCounter --;
-											if(retryCounter > 0){
-												setTimeout(function(){
-													remove(callback); // retry
-												}, 500);
-												return;
-											}
-											alert('[ERROR] ' + copyPath + ' を削除できませんでした。');
-											console.error(err);
-										}
-										callback();
-									});
-								}
-								remove(function(){
-									it2.next();
-								});
-							},
-							function(it2){
-								// Replace old app, Run updated app from original location
-								// 本来 node-webkit-updater の作法では upd.install() を使うが、
-								// これが mac でうまく動作しなかったため、 fsEx.copy() に置き換えた。
-								px.fsEx.copy(upd.getAppPath(), copyPath, {"overwrite": true}, function(err) {
-									console.log('Copy application files done.');
+					// Replace old app, Run updated app from original location
+					// 本来 node-webkit-updater の作法では upd.install() を使うが、
+					// これが mac でうまく動作しなかったため、 fsEx.copy() に置き換えた。
+					px.fsEx.copy(upd.getAppPath(), copyPath, {"overwrite": true}, function(err) {
+						console.log('Copy application files done.');
 
-									if (err) {
-										console.error(err);
-										$('body').find('.installer-mode__progress-msg').text('[ERROR] アプリケーションの更新に失敗しました。アプリケーションファイルのコピーが失敗しました。');
-										alert('[ERROR] アプリケーションの更新に失敗しました。アプリケーションファイルのコピーが失敗しました。');
-										return;
-									}
+						if (err) {
+							console.error(err);
+							$('body').find('.installer-mode__progress-msg').text('[ERROR] アプリケーションの更新に失敗しました。アプリケーションファイルのコピーが失敗しました。');
+							alert('[ERROR] アプリケーションの更新に失敗しました。アプリケーションファイルのコピーが失敗しました。');
+							return;
+						}
 
-									it2.next();
-								});
-							},
-							function(){
-								it1.next();
-							}
-						]
-					);
+						it1.next();
+					});
 
 				},
 				function(it1){
@@ -242,7 +202,7 @@ module.exports = function( px, $ ) {
 				function(it1){
 					if( _this.isInstallerMode() ){
 						console.log('Reboot App ...', execPath);
-						upd.run(execPath, null);
+						upd.run(execPath, []);
 					}
 
 					px.exit();

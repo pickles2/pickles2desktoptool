@@ -17,6 +17,8 @@ module.exports = function( px, $ ) {
 	 * インストーラーモードかを判断する
 	 */
 	this.isInstallerMode = function(){
+		// return true; // debug_mode
+
 		if(gui.App.argv.length == 2) {
 			return true;
 		}
@@ -151,7 +153,7 @@ module.exports = function( px, $ ) {
 			[
 				function(it1){
 					console.log('Starting installation...');
-					$body.html( '<div class="installer-mode"><div class="installer-mode__appname"></div><div class="installer-mode__version"></div><div class="installer-mode__progress-msg"></div></div>' );
+					$body.html( $('#template-installer-mode').html() );
 					$body.find('.installer-mode__appname').text(px.packageJson.window.title);
 					$body.find('.installer-mode__version').text(px.packageJson.version);
 					$body.find('.installer-mode__progress-msg').text('インストールしています...。');
@@ -162,7 +164,7 @@ module.exports = function( px, $ ) {
 				},
 				function(it1){
 					console.log('Starting copy application files...');
-					if( !_this.isInstallerMode() ){
+					if( !copyPath ){
 						it1.next();
 						return;
 					}
@@ -200,7 +202,7 @@ module.exports = function( px, $ ) {
 					}, 1000);
 				},
 				function(it1){
-					if( _this.isInstallerMode() ){
+					if( execPath ){
 						console.log('Reboot App ...', execPath);
 						upd.run(execPath, []);
 					}

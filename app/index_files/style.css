@@ -40,6 +40,15 @@ body {
   text-align: center;
   color: #999;
   padding-top: 3rem; }
+  .installer-mode__px2logo {
+    width: 80%;
+    max-width: 140px;
+    margin: 2em auto; }
+    .installer-mode__px2logo img {
+      width: 100%; }
+  .installer-mode__appname {
+    font-size: 1.8em;
+    font-weight: bold; }
 
 .theme-header {
   background-color: #fff;

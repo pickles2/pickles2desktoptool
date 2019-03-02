@@ -135,7 +135,6 @@ module.exports = function(px, window){
 	var $mainTerminal = $(terminalTemplate);
 	var $mainTerminal__main = $mainTerminal.find('.theme-command-terminal__main');
 	var $mainTerminal__cQ = $mainTerminal.find('.theme-command-terminal__cQ');
-	$('body').append($mainTerminal);
 	var mainTerminal = this.client.createTerminal($mainTerminal__cQ.get(0));
 	// console.log('Command Queue Standby.');
 
@@ -158,6 +157,7 @@ module.exports = function(px, window){
 	 * メイン端末を表示する
 	 */
 	this.show = function(){
+		$('body').append($mainTerminal);
 		$mainTerminal.css({"display":"block"});
 		$mainTerminal__main.css({"bottom": 0, "height": "70%"});
 	}

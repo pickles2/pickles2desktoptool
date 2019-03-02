@@ -7,6 +7,7 @@
 	;
 
 	px.message = function( message, opt ){
+		$('body').append($msgBox);
 		opt = opt || {};
 		opt.complete = opt.complete || function(){};
 		var $newMsg = $('<div>')
@@ -47,9 +48,5 @@
 		);
 		return this;
 	}
-
-	$(function(){
-		$('body').append($msgBox);
-	});
 
 })(px, jQuery);

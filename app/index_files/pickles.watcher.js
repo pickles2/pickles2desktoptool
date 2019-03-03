@@ -19,7 +19,6 @@ module.exports = function( px ){
 		.addClass('theme_ui_px_live_report')
 		.addClass('theme_ui_px_live_report--hidden')
 	;
-	$('body').append($report);
 
 	/**
 	 * ファイル監視を開始する
@@ -78,6 +77,8 @@ module.exports = function( px ){
 	 * ライブステータスを更新
 	 */
 	function updateStatus(fileInfo){
+		$('body').append($report);
+
 		// console.info(fileInfo);
 		switch( fileInfo.realpath ){
 			case px.path.resolve( _pathHomedir+'/_sys/ram/caches/sitemaps/making_sitemap_cache.lock.txt' ):

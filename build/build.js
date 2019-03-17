@@ -231,12 +231,12 @@ nw.build().then(function () {
 				writeLog(APPLE_IDENTITY);
 				it79.ary(
 					[
-						'./build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs\ Helper.app',
-						'./build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs\ Framework.framework/Versions/A/Resources/app_mode_loader.app',
-						'./build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs\ Framework.framework/Versions/A/XPCServices/AlertNotificationService.xpc',
-						'./build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs\ Framework.framework/Versions/A/Helpers/crashpad_handler',
-						'./build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs\ Framework.framework/Versions/A/nwjs\ Framework',
-						'./build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs\ Framework.framework/libnode.dylib',
+						'./build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs Helper.app',
+						'./build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs Framework.framework/Versions/A/Resources/app_mode_loader.app',
+						'./build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs Framework.framework/Versions/A/XPCServices/AlertNotificationService.xpc',
+						'./build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs Framework.framework/Versions/A/Helpers/crashpad_handler',
+						'./build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs Framework.framework/Versions/A/nwjs Framework',
+						'./build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs Framework.framework/libnode.dylib',
 						'./build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/libffmpeg.dylib',
 						'./build/'+appName+'/osx64/'+appName+'.app'
 					],

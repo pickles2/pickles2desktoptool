@@ -229,19 +229,41 @@ nw.build().then(function () {
 				}
 				writeLog('-- Apple Developer Certification:');
 				writeLog(APPLE_IDENTITY);
-				var proc = require('child_process').spawn(
-					'codesign',
-					[
-						'--deep',
-						'-s', APPLE_IDENTITY,
-						'./build/'+appName+'/osx64/'+appName+'.app'
-					],
-					{}
-				);
-				proc.on('close', function(){
-					writeLog('done!');
-					itPj.next(param);
-				});
+				it79.fnc({}, [
+					function(itPjSign){
+						var proc = require('child_process').spawn(
+							'codesign',
+							[
+								'--deep',
+								'-s', APPLE_IDENTITY,
+								'./build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs\ Helper.app'
+							],
+							{}
+						);
+						proc.on('close', function(){
+							writeLog('done!');
+							itPjSign.next(param);
+						});
+					},
+					function(itPjSign){
+						var proc = require('child_process').spawn(
+							'codesign',
+							[
+								'--deep',
+								'-s', APPLE_IDENTITY,
+								'./build/'+appName+'/osx64/'+appName+'.app'
+							],
+							{}
+						);
+						proc.on('close', function(){
+							writeLog('done!');
+							itPjSign.next(param);
+						});
+					},
+					function(itPjSign){
+						itPj.next(param);
+					}
+				]);
 			},
 			function(itPj, param){
 				// ZIP Apps.

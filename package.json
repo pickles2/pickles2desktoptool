@@ -58,8 +58,8 @@
     "gulp-plumber": "^1.1.0",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^2.3.2",
-    "nw": "0.21.1-sdk",
-    "nw-builder": "3.2.0"
+    "nw": "0.37.0-sdk",
+    "nw-builder": "3.5.7"
   },
   "pickles2": {
     "network": {

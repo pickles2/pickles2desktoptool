@@ -229,41 +229,36 @@ nw.build().then(function () {
 				}
 				writeLog('-- Apple Developer Certification:');
 				writeLog(APPLE_IDENTITY);
-				it79.fnc({}, [
-					function(itPjSign){
+				it79.ary(
+					[
+						'./build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs\ Helper.app',
+						'./build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs\ Framework.framework/Versions/A/Resources/app_mode_loader.app',
+						'./build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs\ Framework.framework/Versions/A/XPCServices/AlertNotificationService.xpc',
+						'./build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs\ Framework.framework/Versions/A/Helpers/crashpad_handler',
+						'./build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs\ Framework.framework/Versions/A/nwjs\ Framework',
+						'./build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs\ Framework.framework/libnode.dylib',
+						'./build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/libffmpeg.dylib',
+						'./build/'+appName+'/osx64/'+appName+'.app'
+					],
+					function(itPjSign, row, idx){
 						var proc = require('child_process').spawn(
 							'codesign',
 							[
 								'--deep',
 								'-s', APPLE_IDENTITY,
-								'./build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs\ Helper.app'
+								row
 							],
 							{}
 						);
 						proc.on('close', function(){
-							writeLog('done!');
+							writeLog('done! - ['+idx+'] '+row);
 							itPjSign.next(param);
 						});
 					},
-					function(itPjSign){
-						var proc = require('child_process').spawn(
-							'codesign',
-							[
-								'--deep',
-								'-s', APPLE_IDENTITY,
-								'./build/'+appName+'/osx64/'+appName+'.app'
-							],
-							{}
-						);
-						proc.on('close', function(){
-							writeLog('done!');
-							itPjSign.next(param);
-						});
-					},
-					function(itPjSign){
+					function(){
 						itPj.next(param);
 					}
-				]);
+				);
 			},
 			function(itPj, param){
 				// ZIP Apps.

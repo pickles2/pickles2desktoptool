@@ -3,7 +3,6 @@ var fsX = require('fs-extra');
 var utils79 = require('utils79');
 var it79 = require('iterate79');
 var NwBuilder = require('nw-builder');
-var zipFolder = require('zip-folder');
 var packageJson = require('../package.json');
 var isProductionMode = true;
 var devManifestInfo = false;
@@ -231,13 +230,6 @@ nw.build().then(function () {
 				writeLog(APPLE_IDENTITY);
 				it79.ary(
 					[
-						// './build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs Helper.app',
-						// './build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs Framework.framework/Versions/A/Resources/app_mode_loader.app',
-						// './build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs Framework.framework/Versions/A/XPCServices/AlertNotificationService.xpc',
-						// './build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs Framework.framework/Versions/A/Helpers/crashpad_handler',
-						// './build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs Framework.framework/Versions/A/nwjs Framework',
-						// './build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/nwjs Framework.framework/libnode.dylib',
-						// './build/'+appName+'/osx64/'+appName+'.app/Contents/Versions/73.0.3683.75/libffmpeg.dylib',
 						'./build/'+appName+'/osx64/'+appName+'.app'
 					],
 					function(itPjSign, row, idx){
@@ -245,7 +237,7 @@ nw.build().then(function () {
 							'codesign',
 							[
 								'--deep',
-								'-fv',
+								'-f',
 								'-s', APPLE_IDENTITY,
 								row
 							],
@@ -284,18 +276,20 @@ nw.build().then(function () {
 						}
 
 						writeLog('[platform: '+platformName+'] Zipping...');
-						zipFolder(
-							__dirname + '/'+appName+'/'+platformName+'/',
-							__dirname + '/dist/'+zipFileName,
-							function(err) {
-								if(err) {
-									writeLog('ERROR!', err);
-								} else {
-									writeLog('success. - '+'./build/dist/'+zipFileName);
-								}
-								it2.next();
-							}
+						process.chdir(__dirname + '/'+appName+'/'+platformName+'/');
+						var proc = require('child_process').spawn(
+							'zip',
+							[
+								'-q', '-y', '-r',
+								'../../dist/'+zipFileName, '.'
+							],
+							{}
 						);
+						proc.on('close', function(){
+							writeLog('success. - '+'./build/dist/'+zipFileName);
+							process.chdir(__dirname);
+							it2.next();
+						});
 					},
 					function(){
 						itPj.next(param);

@@ -17,6 +17,11 @@ window.cont_init = function(){
 	// bootstrap
 	$('*').tooltip();
 
+	$('.cont-show-advanced a').on('click', function(e){
+		$('.nav>.cont-show-advanced').hide();
+		$('.nav>li.cont-advanced').css({"display":"block"});
+	});
+
 	px.fs.readFile(cont_realpathComposerJson, function(err, src){
 		if(err){
 			px.message(err);

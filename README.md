@@ -67,8 +67,8 @@ $ sh build/build_clean.sh [-i ${AppleIdentity}] {$branch_or_version}
 
 ### node and npm version
 
-- node@6.9.1
-- npm@3.6.0
+- node@10.15.0
+- npm@6.4.1
 
 Mac で Windows 版をビルドするにあたり、次の環境が必要です。
 

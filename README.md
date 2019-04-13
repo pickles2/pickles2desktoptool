@@ -77,7 +77,7 @@ Mac で Windows 版をビルドするにあたり、次の環境が必要です�
 
 ## 更新履歴 - Change log
 
-### Pickles 2 v2.0.0-beta.24 (リリース日未定)
+### Pickles 2 v2.0.0-beta.24 (2019年4月19日)
 
 - nw.js v0.37.0 にアップデートした。
 - Broccoli エディタ (GUI編集) で、loopフィールドの外側に宣言されたinputフィールドの値を、 loopフィールド内の echoフィールドで参照できるようになった。

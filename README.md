@@ -56,13 +56,18 @@ $ npm run build
 
 `./build/dist/` にZIPファイルが出力されます。
 
+
 ### Build application cleanly
 
 ```
 $ sh build/build_clean.sh [-i ${AppleIdentity}] {$branch_or_version}
 ```
 
-ユーザーのホームディレクトリにZIPファイルが出力されます。
+ユーザーのホームディレクトリに、クリーンビルドされたZIPファイルが出力されます。
+
+mac で実行してください。Windows では実行できません。
+また、 node@6.9.1, npm@3.10.8 で動作することが確認されています。
+node@10.15.0 の環境では、エラーが発生して失敗します(原因は不明)。
 
 
 ### node and npm version

@@ -354,7 +354,10 @@ module.exports = function(px){
 			}
 
 			var $tmpMenu = $('<a>')
-				.attr({"href":"javascript:;"})
+				.attr({
+					"href":"javascript:;",
+					"data-name": _menu[i].app
+				})
 				.on('click', _menu[i].click)
 				.text(_menu[i].label)
 				.data('app', _menu[i].app)
@@ -368,7 +371,7 @@ module.exports = function(px){
 					);
 					break;
 				default:
-					$('.theme-header__gmenu ul').append( $('<li>')
+					$('.px2-header__global-menu ul').append( $('<li>')
 						.append( $tmpMenu )
 					);
 					break;

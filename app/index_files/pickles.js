@@ -305,10 +305,10 @@ new (function($, window){
 					// CSS拡張
 					$('head').append( $('<style>')
 						.html(
-							'.theme-header__gmenu ul li a:hover,'
-							+'.theme-header__gmenu ul li a.current{color: '+_packageJson.pickles2.colors.defaultKeyColor+';}'
-							+'.theme-header__shoulder-menu button {border-left: 1px solid '+_packageJson.pickles2.colors.defaultKeyColor+';}'
-							+'.theme-header__shoulder-menu ul li a.current {background-color: '+_packageJson.pickles2.colors.defaultKeyColor+';}'
+							'.px2-header__global-menu ul li a:hover,'
+							+'.px2-header__global-menu ul li a.current{color: '+_packageJson.pickles2.colors.defaultKeyColor+';}'
+							+'.px2-header__shoulder-menu button {border-color-left: '+_packageJson.pickles2.colors.defaultKeyColor+';}'
+							+'.px2-header__shoulder-menu ul li a.current {background-color: '+_packageJson.pickles2.colors.defaultKeyColor+';}'
 						)
 					);
 					it1.next();
@@ -358,6 +358,7 @@ new (function($, window){
 				function(it1){
 					// HTMLコードを配置
 					$('body').html( document.getElementById('template-outer-frame').innerHTML );
+					px2style.header.init({"current":""});
 					it1.next();
 				},
 				function(it1){
@@ -909,6 +910,7 @@ new (function($, window){
 		}
 
 		if( appName ){
+			px2style.header.init({"current":appName});
 			this.loadProject(function(){ // プロジェクトオブジェクトをリロードする。
 				var projectStatus = _pj.status();
 				// console.log(projectStatus);
@@ -942,6 +944,7 @@ new (function($, window){
 
 		}else{
 			// プロジェクト選択画面を描画
+			px2style.header.init({"current":""});
 			$cont.html( $('script#template-selectProject-page').html() );
 			$cont.find('.cont_top_footer p').text( _packageJson.pickles2.credit );
 
@@ -1032,7 +1035,7 @@ new (function($, window){
 			return;
 		}
 
-		$('.theme-header__gmenu').html( $('<ul>')
+		$('.px2-header__global-menu').html( $('<ul>')
 			.append( $('<li>')
 				.append( '<span>&nbsp;</span>' )
 			)
@@ -1041,19 +1044,11 @@ new (function($, window){
 		_menu.drawGlobalMenu($shoulderMenu, _current_app);
 
 		if( cpj === null ){
-			$('.theme-header__px2logo').css({
-				"width": 70,
-				"height": 70
-			});
-			$('.theme-header__id')
+			$('.px2-header__id')
 				.css({"opacity":0})
 			;
 		}else{
-			$('.theme-header__px2logo').css({
-				"width": 45,
-				"height": 45
-			});
-			$('.theme-header__id')
+			$('.px2-header__id')
 				.html('')
 				.append( $('<div>')
 					.text( /* '-> ' + */ cpj.get('name') )
@@ -1089,30 +1084,6 @@ new (function($, window){
 				'height': $contents.innerHeight() - 7
 			})
 		;
-
-		var $ul = $shoulderMenu.find('ul');
-		$shoulderMenu.find('button')
-			.css({
-				'height': $header.outerHeight()
-			})
-		;
-		$ul.css({
-			top: $header.height() ,
-			height: $(window).height()-$header.outerHeight()
-		});
-		if( $ul.css('display') == 'block' ){
-			$shoulderMenu.css({
-				width: '100%' ,
-				height: $(window).height()
-			});
-		}else{
-			$shoulderMenu
-				.css({
-					'height': $header.outerHeight()
-				})
-			;
-		}
-
 	}
 
 	/**
@@ -1228,17 +1199,17 @@ new (function($, window){
 			function(it, arg){
 
 				// DOMスキャン
-				$header   = $('.theme-header');
+				$header   = $('.px2-header');
 				$contents = $('.contents');
 				$footer   = $('.theme-footer');
 				// $dialog   = $('<div>');
-				$shoulderMenu = $('.theme-header__shoulder-menu');
+				$shoulderMenu = $('.px2-header__shoulder-menu');
 
 				$header.css({
 					'border-bottom-color': _packageJson.pickles2.colors.defaultKeyColor,
 					'color': _packageJson.pickles2.colors.defaultKeyColor
 				});
-				$header.find('.theme-header__px2logo a')
+				$header.find('.px2-header__px2logo a')
 					.html(function(){
 						var src = _fs.readFileSync('./app/common/images/logo.svg').toString();
 						return src;

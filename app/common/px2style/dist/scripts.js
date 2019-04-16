@@ -9845,7 +9845,7 @@ module.exports = function(Px2style){
 		$header = $('.px2-header__inner');
 		$shoulderMenu = $('.px2-header__shoulder-menu');
 
-		$shoulderMenuUl = $shoulderMenu.find('ul');
+		$shoulderMenuUl = $shoulderMenu.find('>ul');
 		$shoulderMenu
 			.css({
 				'width': 50,
@@ -9902,7 +9902,19 @@ module.exports = function(Px2style){
 			'height': $(window).height()-$header.height()
 		});
 
-
+		$shoulderMenuUl.find('*').removeClass('px2-header__shoulder-menu-group');
+		$shoulderMenuUl.find('li:has(>ul)').addClass('px2-header__shoulder-menu-group')
+		$shoulderMenuUl.find('li:has(>ul) > a').off().on('click', function(e){
+			e.stopPropagation();
+			var $ul = $(this).parent().find('>ul');
+			if( $ul.css('display') == 'block' ){
+				$ul.hide();
+				$(this).parent().removeClass('px2-header__shoulder-menu-group-opened');
+			}else{
+				$ul.show();
+				$(this).parent().addClass('px2-header__shoulder-menu-group-opened');
+			}
+		})
 
 		if( $shoulderMenuUl.css('display') == 'block' ){
 			$shoulderMenu.css({

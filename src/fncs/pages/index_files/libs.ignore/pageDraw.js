@@ -503,8 +503,15 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 										'border-radius': 5
 									})
 								;
-								$input.on('change', function(){
+								var updateListTimer = null;
+								var lastKeyword = '';
+								function updateList(){
+									clearTimeout(updateListTimer);
 									var val = $input.val();
+									if(val == lastKeyword || !val.length){
+										return;
+									}
+									lastKeyword = val;
 									$list.html('<div class="px2-loading"></div>');
 									pj.px2proj.query('/?PX=px2dthelper.search_sitemap&keyword='+encodeURIComponent(val), {
 										"output": "json",
@@ -535,7 +542,18 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 											$list.html('').append($ul);
 										}
 									});
-								});
+								}
+								$input
+									.on('keyup', function(){
+										clearTimeout(updateListTimer);
+										updateListTimer = setTimeout(function(){
+											updateList();
+										}, 1000);
+									})
+									.on('change', function(){
+										updateList();
+									})
+								;
 
 								px.dialog({
 									'title': '他のページから複製',
@@ -574,6 +592,9 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 											})
 									]
 								});
+
+								$input.focus();
+
 								return false;
 							})
 						)

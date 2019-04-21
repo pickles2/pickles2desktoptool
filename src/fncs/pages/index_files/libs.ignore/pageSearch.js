@@ -4,7 +4,7 @@
 module.exports = function(app, px, pj, $elms){
 	var it79 = require('iterate79');
 	var _this = this;
-	var fileterTimer;
+	var _workspaceSearchTimer;
 	var _sitemap = null;
 	var _workspaceSearchKeywords='',
 		_workspaceSearchListLabel='title';
@@ -21,22 +21,42 @@ module.exports = function(app, px, pj, $elms){
 			function(it, prop){
 				// --------------------------------------
 				// ページ検索機能
+				function doSearch(){
+					clearTimeout(_workspaceSearchTimer);
+					var newKeyword = $elms.workspaceSearch.find('input[type=text]').val();
+					var newListLabel = $elms.workspaceSearch.find('input[type=radio][name=list-label]:checked').val();
+					if( newKeyword == _workspaceSearchKeywords && newListLabel == _workspaceSearchListLabel ){
+						return;
+					}
+					_workspaceSearchKeywords = newKeyword;
+					_workspaceSearchListLabel = newListLabel;
+					_this.search(function(){});
+					return;
+				}
 				$elms.workspaceSearch.find('form#cont_search_form')
+					.off('submit')
 					.on('submit', function(e){
-						_workspaceSearchKeywords = $elms.workspaceSearch.find('input[type=text]').val();
-						_this.search(function(){});
+						doSearch();
 						return false;
+					})
+				;
+				$elms.workspaceSearch.find('input[type=text]')
+					.off('keyup')
+					.on('keyup', function(e){
+						clearTimeout(_workspaceSearchTimer);
+						_workspaceSearchTimer = setTimeout(function(){
+							doSearch();
+						}, 1000);
+					})
+					.off('change')
+					.on('change', function(e){
+						doSearch();
 					})
 				;
 				$elms.workspaceSearch.find('input[type=radio][name=list-label]')
 					.off('change')
 					.on('change', function(){
-						_workspaceSearchListLabel = $elms.workspaceSearch.find('input[type=radio][name=list-label]:checked').val();
-						// console.log(_workspaceSearchListLabel);
-						clearTimeout(fileterTimer);
-						fileterTimer = setTimeout(function(){
-							_this.search(function(){});
-						}, 1000);
+						doSearch();
 					})
 				;
 				it.next(prop);

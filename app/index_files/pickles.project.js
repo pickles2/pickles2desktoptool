@@ -1128,7 +1128,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	this.copyContentsData = function( pathFrom, pathTo, callback ){
 		callback = callback || function(){};
 		_px2proj.query(
-			this.getConcretePath(pathTo)+'?PX=px2dthelper.copy_content&from='+this.getConcretePath(pathFrom)+'&to='+this.getConcretePath(pathTo), {
+			this.getConcretePath(pathTo)+'?PX=px2dthelper.copy_content&from='+this.getConcretePath(pathFrom)+'&to='+this.getConcretePath(pathTo)+'&force=1', {
 				"output": "json",
 				"complete": function(data, code){
 					// console.log(data, code);

@@ -16,6 +16,8 @@ module.exports = function(app, px, pj, pathHomeDir, pathLogFileName, $progressMe
 
 		var counter = {};
 		var fileCounter = {};
+		var currentEditorMode = '';
+		var currentExtension = '';
 		var pathCurrentContent = null;
 
 
@@ -43,8 +45,8 @@ module.exports = function(app, px, pj, pathHomeDir, pathLogFileName, $progressMe
 
 		// ファイルを数える
 		function countFile(){
-			fileCounter[pathCurrentContent] = fileCounter[pathCurrentContent]||0;
-			fileCounter[pathCurrentContent] ++;
+			fileCounter[pathCurrentContent] = fileCounter[pathCurrentContent]||{'ext':currentExtension,'editorMode':currentEditorMode, 'count':0};
+			fileCounter[pathCurrentContent].count ++;
 			return fileCounter[pathCurrentContent];
 		}
 
@@ -142,6 +144,7 @@ module.exports = function(app, px, pj, pathHomeDir, pathLogFileName, $progressMe
 							var Extension = pj.get_path_proc_type( arg2.pageInfo.path );
 							$pre.text( $pre.text() + "\n" + ' -> Extension: ' + Extension );
 							log('Extension: '+Extension);
+							currentExtension = Extension;
 							switch( Extension ){
 								case 'html':
 								case 'htm':
@@ -158,6 +161,7 @@ module.exports = function(app, px, pj, pathHomeDir, pathLogFileName, $progressMe
 						function(it2, arg2){
 							pj.getPageContentEditorMode( arg2.pageInfo.path, function(procType){
 								log('EditorMode: ' + procType);
+								currentEditorMode = procType;
 								$pre.text( $pre.text() + "\n" + ' -> ' + 'EditorMode: ' + procType );
 								switch( procType ){
 									case '.not_exists':

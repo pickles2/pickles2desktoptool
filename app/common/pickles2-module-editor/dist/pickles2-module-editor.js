@@ -1812,12 +1812,12 @@ var _DEFAULT_DELIMITER = '%';
 var _DEFAULT_LOCALS_NAME = 'locals';
 var _NAME = 'ejs';
 var _REGEX_STRING = '(<%%|%%>|<%=|<%-|<%_|<%#|<%|%>|-%>|_%>)';
-var _OPTS = ['delimiter', 'scope', 'context', 'debug', 'compileDebug',
-  'client', '_with', 'rmWhitespace', 'strict', 'filename'];
-// We don't allow 'cache' option to be passed in the data obj
-// for the normal `render` call, but this is where Express puts it
+var _OPTS_PASSABLE_WITH_DATA = ['delimiter', 'scope', 'context', 'debug', 'compileDebug',
+  'client', '_with', 'rmWhitespace', 'strict', 'filename', 'async'];
+// We don't allow 'cache' option to be passed in the data obj for
+// the normal `render` call, but this is where Express 2 & 3 put it
 // so we make an exception for `renderFile`
-var _OPTS_EXPRESS = _OPTS.concat('cache');
+var _OPTS_PASSABLE_WITH_DATA_EXPRESS = _OPTS_PASSABLE_WITH_DATA.concat('cache');
 var _BOM = /^\uFEFF/;
 
 /**
@@ -1850,6 +1850,16 @@ exports.fileLoader = fs.readFileSync;
  */
 
 exports.localsName = _DEFAULT_LOCALS_NAME;
+
+/**
+ * Promise implementation -- defaults to the native implementation if available
+ * This is mostly just for testability
+ *
+ * @type {Function}
+ * @public
+ */
+
+exports.promiseImpl = (new Function('return this;'))().Promise;
 
 /**
  * Get the path to the included file from the parent file path and the
@@ -1907,7 +1917,8 @@ function getIncludePath(path, options) {
       }
     }
     if (!includePath) {
-      throw new Error('Could not find include include file.');
+      throw new Error('Could not find the include file "' +
+          options.escapeFunction(path) + '"');
     }
   }
   return includePath;
@@ -1977,13 +1988,32 @@ function handleCache(options, template) {
 
 function tryHandleCache(options, data, cb) {
   var result;
-  try {
-    result = handleCache(options)(data);
+  if (!cb) {
+    if (typeof exports.promiseImpl == 'function') {
+      return new exports.promiseImpl(function (resolve, reject) {
+        try {
+          result = handleCache(options)(data);
+          resolve(result);
+        }
+        catch (err) {
+          reject(err);
+        }
+      });
+    }
+    else {
+      throw new Error('Please provide a callback function');
+    }
   }
-  catch (err) {
-    return cb(err);
+  else {
+    try {
+      result = handleCache(options)(data);
+    }
+    catch (err) {
+      return cb(err);
+    }
+
+    cb(null, result);
   }
-  return cb(null, result);
 }
 
 /**
@@ -2093,6 +2123,7 @@ function stripSemi(str){
  *
  * @return {(TemplateFunction|ClientFunction)}
  * Depending on the value of `opts.client`, either type might be returned.
+ * Note that the return type of the function also depends on the value of `opts.async`.
  * @public
  */
 
@@ -2125,7 +2156,8 @@ exports.compile = function compile(template, opts) {
  * @param {String}   template EJS template
  * @param {Object}  [data={}] template data
  * @param {Options} [opts={}] compilation and rendering options
- * @return {String}
+ * @return {(String|Promise<String>)}
+ * Return value type depends on `opts.async`.
  * @public
  */
 
@@ -2136,7 +2168,7 @@ exports.render = function (template, d, o) {
   // No options object -- if there are optiony names
   // in the data, copy them to options
   if (arguments.length == 2) {
-    utils.shallowCopyFromList(opts, data, _OPTS);
+    utils.shallowCopyFromList(opts, data, _OPTS_PASSABLE_WITH_DATA);
   }
 
   return handleCache(opts, template)(data);
@@ -2156,36 +2188,49 @@ exports.render = function (template, d, o) {
  */
 
 exports.renderFile = function () {
-  var filename = arguments[0];
-  var cb = arguments[arguments.length - 1];
+  var args = Array.prototype.slice.call(arguments);
+  var filename = args.shift();
+  var cb;
   var opts = {filename: filename};
   var data;
+  var viewOpts;
 
-  if (arguments.length > 2) {
-    data = arguments[1];
-
-    // No options object -- if there are optiony names
-    // in the data, copy them to options
-    if (arguments.length === 3) {
-      // Express 4
+  // Do we have a callback?
+  if (typeof arguments[arguments.length - 1] == 'function') {
+    cb = args.pop();
+  }
+  // Do we have data/opts?
+  if (args.length) {
+    // Should always have data obj
+    data = args.shift();
+    // Normal passed opts (data obj + opts obj)
+    if (args.length) {
+      // Use shallowCopy so we don't pollute passed in opts obj with new vals
+      utils.shallowCopy(opts, args.pop());
+    }
+    // Special casing for Express (settings + opts-in-data)
+    else {
+      // Express 3 and 4
       if (data.settings) {
-        if (data.settings['view options']) {
-          utils.shallowCopyFromList(opts, data.settings['view options'], _OPTS_EXPRESS);
-        }
+        // Pull a few things from known locations
         if (data.settings.views) {
           opts.views = data.settings.views;
         }
+        if (data.settings['view cache']) {
+          opts.cache = true;
+        }
+        // Undocumented after Express 2, but still usable, esp. for
+        // items that are unsafe to be passed along with data, like `root`
+        viewOpts = data.settings['view options'];
+        if (viewOpts) {
+          utils.shallowCopy(opts, viewOpts);
+        }
       }
-      // Express 3 and lower
-      else {
-        utils.shallowCopyFromList(opts, data, _OPTS_EXPRESS);
-      }
+      // Express 2 and lower, values set in app.locals, or people who just
+      // want to pass options in their data. NOTE: These values will override
+      // anything previously set in settings  or settings['view options']
+      utils.shallowCopyFromList(opts, data, _OPTS_PASSABLE_WITH_DATA_EXPRESS);
     }
-    else {
-      // Use shallowCopy so we don't pollute passed in opts obj with new vals
-      utils.shallowCopy(opts, arguments[2]);
-    }
-
     opts.filename = filename;
   }
   else {
@@ -2224,8 +2269,10 @@ function Template(text, opts) {
   options.cache = opts.cache || false;
   options.rmWhitespace = opts.rmWhitespace;
   options.root = opts.root;
+  options.outputFunctionName = opts.outputFunctionName;
   options.localsName = opts.localsName || exports.localsName || _DEFAULT_LOCALS_NAME;
   options.views = opts.views;
+  options.async = opts.async;
 
   if (options.strict) {
     options._with = false;
@@ -2262,10 +2309,14 @@ Template.prototype = {
     var prepended = '';
     var appended = '';
     var escapeFn = opts.escapeFunction;
+    var asyncCtor;
 
     if (!this.source) {
       this.generateSource();
       prepended += '  var __output = [], __append = __output.push.bind(__output);' + '\n';
+      if (opts.outputFunctionName) {
+        prepended += '  var ' + opts.outputFunctionName + ' = __append;' + '\n';
+      }
       if (opts._with !== false) {
         prepended +=  '  with (' + opts.localsName + ' || {}) {' + '\n';
         appended += '  }' + '\n';
@@ -2276,14 +2327,14 @@ Template.prototype = {
 
     if (opts.compileDebug) {
       src = 'var __line = 1' + '\n'
-          + '  , __lines = ' + JSON.stringify(this.templateText) + '\n'
-          + '  , __filename = ' + (opts.filename ?
-                JSON.stringify(opts.filename) : 'undefined') + ';' + '\n'
-          + 'try {' + '\n'
-          + this.source
-          + '} catch (e) {' + '\n'
-          + '  rethrow(e, __lines, __filename, __line, escapeFn);' + '\n'
-          + '}' + '\n';
+        + '  , __lines = ' + JSON.stringify(this.templateText) + '\n'
+        + '  , __filename = ' + (opts.filename ?
+        JSON.stringify(opts.filename) : 'undefined') + ';' + '\n'
+        + 'try {' + '\n'
+        + this.source
+        + '} catch (e) {' + '\n'
+        + '  rethrow(e, __lines, __filename, __line, escapeFn);' + '\n'
+        + '}' + '\n';
     }
     else {
       src = this.source;
@@ -2304,7 +2355,25 @@ Template.prototype = {
     }
 
     try {
-      fn = new Function(opts.localsName + ', escapeFn, include, rethrow', src);
+      if (opts.async) {
+        // Have to use generated function for this, since in envs without support,
+        // it breaks in parsing
+        try {
+          asyncCtor = (new Function('return (async function(){}).constructor;'))();
+        }
+        catch(e) {
+          if (e instanceof SyntaxError) {
+            throw new Error('This environment does not support async/await');
+          }
+          else {
+            throw e;
+          }
+        }
+      }
+      else {
+        asyncCtor = Function;
+      }
+      fn = new asyncCtor(opts.localsName + ', escapeFn, include, rethrow', src);
     }
     catch(e) {
       // istanbul ignore else
@@ -2315,6 +2384,10 @@ Template.prototype = {
         e.message += ' while compiling ejs\n\n';
         e.message += 'If the above error is not helpful, you may want to try EJS-Lint:\n';
         e.message += 'https://github.com/RyanZim/EJS-Lint';
+        if (!e.async) {
+          e.message += '\n';
+          e.message += 'Or, if you meant to create an async function, pass async: true as an option.';
+        }
       }
       throw e;
     }
@@ -2403,7 +2476,7 @@ Template.prototype = {
             }
             self.source += includeSrc;
             self.dependencies.push(exports.resolveInclude(include[1],
-                includeOpts.filename));
+              includeOpts.filename));
             return;
           }
         }
@@ -2512,9 +2585,9 @@ Template.prototype = {
       this.truncate = line.indexOf('-') === 0 || line.indexOf('_') === 0;
       break;
     default:
-        // In script mode, depends on type of tag
+      // In script mode, depends on type of tag
       if (this.mode) {
-          // If '//' is found without a line break, add a line break.
+        // If '//' is found without a line break, add a line break.
         switch (this.mode) {
         case Template.modes.EVAL:
         case Template.modes.ESCAPED:
@@ -2524,28 +2597,28 @@ Template.prototype = {
           }
         }
         switch (this.mode) {
-            // Just executing code
+        // Just executing code
         case Template.modes.EVAL:
           this.source += '    ; ' + line + '\n';
           break;
-            // Exec, esc, and output
+          // Exec, esc, and output
         case Template.modes.ESCAPED:
           this.source += '    ; __append(escapeFn(' + stripSemi(line) + '))' + '\n';
           break;
-            // Exec and output
+          // Exec and output
         case Template.modes.RAW:
           this.source += '    ; __append(' + stripSemi(line) + ')' + '\n';
           break;
         case Template.modes.COMMENT:
-              // Do nothing
+          // Do nothing
           break;
-            // Literal <%% mode, append as raw output
+          // Literal <%% mode, append as raw output
         case Template.modes.LITERAL:
           this._addOutput(line);
           break;
         }
       }
-        // In string mode, just add the output
+      // In string mode, just add the output
       else {
         this._addOutput(line);
       }
@@ -2677,7 +2750,7 @@ var _ENCODE_HTML_RULES = {
   '"': '&#34;',
   "'": '&#39;'
 };
-var _MATCH_HTML = /[&<>\'"]/g;
+var _MATCH_HTML = /[&<>'"]/g;
 
 function encode_char(c) {
   return _ENCODE_HTML_RULES[c] || c;
@@ -2721,7 +2794,7 @@ exports.escapeXML = function (markup) {
   return markup == undefined
     ? ''
     : String(markup)
-        .replace(_MATCH_HTML, encode_char);
+      .replace(_MATCH_HTML, encode_char);
 };
 exports.escapeXML.toString = function () {
   return Function.prototype.toString.call(this) + ';\n' + escapeFuncStr;
@@ -2793,53 +2866,34 @@ exports.cache = {
 module.exports={
   "_args": [
     [
-      {
-        "raw": "ejs@2.5.7",
-        "scope": null,
-        "escapedName": "ejs",
-        "name": "ejs",
-        "rawSpec": "2.5.7",
-        "spec": "2.5.7",
-        "type": "version"
-      },
+      "ejs@2.6.1",
       "/mydoc_TomK/Dropbox/localhosts/pickles2projects/pickles2/node-pickles2-module-editor"
     ]
   ],
-  "_from": "ejs@2.5.7",
-  "_id": "ejs@2.5.7",
-  "_inCache": true,
+  "_from": "ejs@2.6.1",
+  "_id": "ejs@2.6.1",
+  "_inBundle": false,
+  "_integrity": "sha512-0xy4A/twfrRCnkhfk8ErDi5DqdAsAqeGxht4xkCUrsvhhbQNs7E+4jV0CN7+NKIY0aHE72+XvqtBIXzD31ZbXQ==",
   "_location": "/ejs",
-  "_nodeVersion": "6.9.1",
-  "_npmOperationalInternal": {
-    "host": "s3://npm-registry-packages",
-    "tmp": "tmp/ejs-2.5.7.tgz_1501385411193_0.3807816591579467"
-  },
-  "_npmUser": {
-    "name": "mde",
-    "email": "mde@fleegix.org"
-  },
-  "_npmVersion": "3.10.8",
   "_phantomChildren": {},
   "_requested": {
-    "raw": "ejs@2.5.7",
-    "scope": null,
-    "escapedName": "ejs",
+    "type": "version",
+    "registry": true,
+    "raw": "ejs@2.6.1",
     "name": "ejs",
-    "rawSpec": "2.5.7",
-    "spec": "2.5.7",
-    "type": "version"
+    "escapedName": "ejs",
+    "rawSpec": "2.6.1",
+    "saveSpec": null,
+    "fetchSpec": "2.6.1"
   },
   "_requiredBy": [
-    "#USER",
     "/",
     "/broccoli-html-editor",
     "/langbank",
     "/pickles2-contents-editor"
   ],
-  "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.5.7.tgz",
-  "_shasum": "cc872c168880ae3c7189762fd5ffc00896c9518a",
-  "_shrinkwrap": null,
-  "_spec": "ejs@2.5.7",
+  "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.6.1.tgz",
+  "_spec": "2.6.1",
   "_where": "/mydoc_TomK/Dropbox/localhosts/pickles2projects/pickles2/node-pickles2-module-editor",
   "author": {
     "name": "Matthew Eernisse",
@@ -2859,20 +2913,15 @@ module.exports={
   "dependencies": {},
   "description": "Embedded JavaScript templates",
   "devDependencies": {
-    "browserify": "^13.0.1",
-    "eslint": "^3.0.0",
+    "browserify": "^13.1.1",
+    "eslint": "^4.14.0",
     "git-directory-deploy": "^1.5.1",
     "istanbul": "~0.4.3",
-    "jake": "^8.0.0",
+    "jake": "^8.0.16",
     "jsdoc": "^3.4.0",
     "lru-cache": "^4.0.1",
-    "mocha": "^3.0.2",
-    "uglify-js": "^2.6.2"
-  },
-  "directories": {},
-  "dist": {
-    "shasum": "cc872c168880ae3c7189762fd5ffc00896c9518a",
-    "tarball": "https://registry.npmjs.org/ejs/-/ejs-2.5.7.tgz"
+    "mocha": "^5.0.5",
+    "uglify-js": "^3.3.16"
   },
   "engines": {
     "node": ">=0.10.0"
@@ -2885,15 +2934,7 @@ module.exports={
   ],
   "license": "Apache-2.0",
   "main": "./lib/ejs.js",
-  "maintainers": [
-    {
-      "name": "mde",
-      "email": "mde@fleegix.org"
-    }
-  ],
   "name": "ejs",
-  "optionalDependencies": {},
-  "readme": "ERROR: No README data found!",
   "repository": {
     "type": "git",
     "url": "git://github.com/mde/ejs.git"
@@ -2905,7 +2946,7 @@ module.exports={
     "lint": "eslint \"**/*.js\" Jakefile",
     "test": "jake test"
   },
-  "version": "2.5.7"
+  "version": "2.6.1"
 }
 
 },{}],13:[function(require,module,exports){
@@ -4068,7 +4109,7 @@ return Promise;
 },{"pBGvAp":17}],14:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
-  var eLen = nBytes * 8 - mLen - 1
+  var eLen = (nBytes * 8) - mLen - 1
   var eMax = (1 << eLen) - 1
   var eBias = eMax >> 1
   var nBits = -7
@@ -4081,12 +4122,12 @@ exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   e = s & ((1 << (-nBits)) - 1)
   s >>= (-nBits)
   nBits += eLen
-  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+  for (; nBits > 0; e = (e * 256) + buffer[offset + i], i += d, nBits -= 8) {}
 
   m = e & ((1 << (-nBits)) - 1)
   e >>= (-nBits)
   nBits += mLen
-  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+  for (; nBits > 0; m = (m * 256) + buffer[offset + i], i += d, nBits -= 8) {}
 
   if (e === 0) {
     e = 1 - eBias
@@ -4101,7 +4142,7 @@ exports.read = function (buffer, offset, isLE, mLen, nBytes) {
 
 exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   var e, m, c
-  var eLen = nBytes * 8 - mLen - 1
+  var eLen = (nBytes * 8) - mLen - 1
   var eMax = (1 << eLen) - 1
   var eBias = eMax >> 1
   var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
@@ -4134,7 +4175,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
       m = 0
       e = eMax
     } else if (e + eBias >= 1) {
-      m = (value * c - 1) * Math.pow(2, mLen)
+      m = ((value * c) - 1) * Math.pow(2, mLen)
       e = e + eBias
     } else {
       m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
@@ -13969,6 +14010,9 @@ return jQuery;
 
 },{}],16:[function(require,module,exports){
 (function (process){
+// .dirname, .basename, and .extname methods are extracted from Node.js v8.11.1,
+// backported and transplited with Babel, with backwards-compat fixes
+
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -14019,14 +14063,6 @@ function normalizeArray(parts, allowAboveRoot) {
 
   return parts;
 }
-
-// Split a filename into [root, dir, basename, ext], unix version
-// 'root' is just a slash, or nothing.
-var splitPathRe =
-    /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
-var splitPath = function(filename) {
-  return splitPathRe.exec(filename).slice(1);
-};
 
 // path.resolve([from ...], to)
 // posix version
@@ -14143,37 +14179,120 @@ exports.relative = function(from, to) {
 exports.sep = '/';
 exports.delimiter = ':';
 
-exports.dirname = function(path) {
-  var result = splitPath(path),
-      root = result[0],
-      dir = result[1];
-
-  if (!root && !dir) {
-    // No dirname whatsoever
-    return '.';
+exports.dirname = function (path) {
+  if (typeof path !== 'string') path = path + '';
+  if (path.length === 0) return '.';
+  var code = path.charCodeAt(0);
+  var hasRoot = code === 47 /*/*/;
+  var end = -1;
+  var matchedSlash = true;
+  for (var i = path.length - 1; i >= 1; --i) {
+    code = path.charCodeAt(i);
+    if (code === 47 /*/*/) {
+        if (!matchedSlash) {
+          end = i;
+          break;
+        }
+      } else {
+      // We saw the first non-path separator
+      matchedSlash = false;
+    }
   }
 
-  if (dir) {
-    // It has a dirname, strip trailing slash
-    dir = dir.substr(0, dir.length - 1);
+  if (end === -1) return hasRoot ? '/' : '.';
+  if (hasRoot && end === 1) {
+    // return '//';
+    // Backwards-compat fix:
+    return '/';
   }
-
-  return root + dir;
+  return path.slice(0, end);
 };
 
+function basename(path) {
+  if (typeof path !== 'string') path = path + '';
 
-exports.basename = function(path, ext) {
-  var f = splitPath(path)[2];
-  // TODO: make this comparison case-insensitive on windows?
+  var start = 0;
+  var end = -1;
+  var matchedSlash = true;
+  var i;
+
+  for (i = path.length - 1; i >= 0; --i) {
+    if (path.charCodeAt(i) === 47 /*/*/) {
+        // If we reached a path separator that was not part of a set of path
+        // separators at the end of the string, stop now
+        if (!matchedSlash) {
+          start = i + 1;
+          break;
+        }
+      } else if (end === -1) {
+      // We saw the first non-path separator, mark this as the end of our
+      // path component
+      matchedSlash = false;
+      end = i + 1;
+    }
+  }
+
+  if (end === -1) return '';
+  return path.slice(start, end);
+}
+
+// Uses a mixed approach for backwards-compatibility, as ext behavior changed
+// in new Node.js versions, so only basename() above is backported here
+exports.basename = function (path, ext) {
+  var f = basename(path);
   if (ext && f.substr(-1 * ext.length) === ext) {
     f = f.substr(0, f.length - ext.length);
   }
   return f;
 };
 
+exports.extname = function (path) {
+  if (typeof path !== 'string') path = path + '';
+  var startDot = -1;
+  var startPart = 0;
+  var end = -1;
+  var matchedSlash = true;
+  // Track the state of characters (if any) we see before our first dot and
+  // after any path separator we find
+  var preDotState = 0;
+  for (var i = path.length - 1; i >= 0; --i) {
+    var code = path.charCodeAt(i);
+    if (code === 47 /*/*/) {
+        // If we reached a path separator that was not part of a set of path
+        // separators at the end of the string, stop now
+        if (!matchedSlash) {
+          startPart = i + 1;
+          break;
+        }
+        continue;
+      }
+    if (end === -1) {
+      // We saw the first non-path separator, mark this as the end of our
+      // extension
+      matchedSlash = false;
+      end = i + 1;
+    }
+    if (code === 46 /*.*/) {
+        // If this is our first dot, mark it as the start of our extension
+        if (startDot === -1)
+          startDot = i;
+        else if (preDotState !== 1)
+          preDotState = 1;
+    } else if (startDot !== -1) {
+      // We saw a non-dot and non-path separator before our dot, so we should
+      // have a good chance at having a non-empty extension
+      preDotState = -1;
+    }
+  }
 
-exports.extname = function(path) {
-  return splitPath(path)[3];
+  if (startDot === -1 || end === -1 ||
+      // We saw a non-dot character immediately before the dot
+      preDotState === 0 ||
+      // The (right-most) trimmed path component is exactly '..'
+      preDotState === 1 && startDot === end - 1 && startDot === startPart + 1) {
+    return '';
+  }
+  return path.slice(startDot, end);
 };
 
 function filter (xs, f) {
@@ -17846,6 +17965,23 @@ module.exports = function(px2me, $canvasContent, options, callback){
 
 			$canvasContent.find('[name=packageId]').val( '' );
 			$canvasContent.find('[name=packageName]').val( '' );
+			$canvasContent.find('input[type=radio][name=import_from]').on('change', function(){
+				var $checkedRadio = $canvasContent.find('input[type=radio][name=import_from]:checked');
+
+				var $inputId = $canvasContent.find('[name=packageId]');
+				var isInchangedId = $inputId.attr('placeholder') == $inputId.val();
+				$inputId.attr( {'placeholder':$checkedRadio.attr('data-package-id')} );
+				if((isInchangedId || !$inputId.val().length) && $checkedRadio.attr('data-package-id').length){
+					$inputId.val( $checkedRadio.attr('data-package-id') );
+				}
+
+				var $inputName = $canvasContent.find('[name=packageName]');
+				var isInchangedName = $inputName.attr('placeholder') == $inputName.val();
+				$inputName.attr( {'placeholder':$checkedRadio.attr('data-package-name')} );
+				if((isInchangedName || !$inputName.val().length) && $checkedRadio.attr('data-package-name').length){
+					$inputName.val( $checkedRadio.attr('data-package-name') );
+				}
+			});
 			rlv();
 		}); })
 		.then(function(){ return new Promise(function(rlv, rjt){
@@ -17864,8 +18000,13 @@ module.exports = function(px2me, $canvasContent, options, callback){
 						data.packageId = $canvasContent.find('[name=packageId]').val();
 						data.packageName = $canvasContent.find('[name=packageName]').val();
 						data.importFrom = $canvasContent.find('[name=import_from]:checked').val();
+						data.force = $canvasContent.find('[name=force]:checked').val();
 
 						px2me.addNewPackage(data, function(result){
+							if( !result.result ){
+								alert(result.msg);
+								return;
+							}
 							px2me.loadPage('list', {}, function(){
 								px2me.closeModal();
 							});

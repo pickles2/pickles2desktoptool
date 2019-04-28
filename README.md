@@ -1,6 +1,10 @@
 # Pickles 2
 
-[Pickles 2](https://pickles2.pxt.jp/) のプロジェクトテンプレートをベースに、ウェブサイトを編集するGUI編集環境を提供します。
+code name: babycorn
+
+[Pickles 2](https://pickles2.pxt.jp/) のプロジェクトテンプレートをベースにしたウェブサイトを編集するGUI編集環境を提供します。
+
+Pickles Framework 2 に特化した CMSライクなテキストエディタです。
 
 ## Install
 

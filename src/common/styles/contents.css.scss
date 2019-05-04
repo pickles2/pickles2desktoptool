@@ -174,6 +174,14 @@ ul.listview{
 }
 
 /**
+ * AceEditor
+ */
+.ace_composition_placeholder,
+.ace_line *{
+	overflow: visible;
+}
+
+/**
  * .clearfix
  */
 .clearfix {

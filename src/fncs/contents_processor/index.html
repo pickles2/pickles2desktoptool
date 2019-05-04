@@ -88,6 +88,27 @@ editor.done();</textarea>}</code></pre>
 // next() に加工後の src を渡して、次の処理へ進む。
 next(src);
 		</script>
+		<script class="snippet-source-processor" title="クラス dom-selector が含まれる箇所をカウントする" type="text/template">
+// console.log(type, src);
+
+var $ = supply.cheerio.load(src, {decodeEntities: false});
+var $elms = $('.dom-selector');
+if( $elms.length ){
+	count('クラス dom-selector が含まれる回数'); // カウントする
+	countFile(); // ファイル単位でカウントする
+}
+
+next(src);
+		</script>
+		<script class="snippet-source-processor" title="文字列 a が含まれる箇所をカウントする" type="text/template">
+if( src.match('a') ){
+	count('文字列 a が含まれる回数'); // カウントする
+	countFile(); // ファイル単位でカウントする
+}
+
+// next() に加工後の src を渡して、次の処理へ進む。
+next(src);
+		</script>
 		<script class="snippet-source-processor" title="文字列の単純置換" type="text/template">
 var before = 'mojimoji';
 var after = 'mohimohi';
@@ -104,7 +125,7 @@ src = src.replace(before, after);
 next(src);
 		</script>
 		<script class="snippet-source-processor" title="テキストをDOM置換する" type="text/template">
-console.log(type, src);
+// console.log(type, src);
 
 // ここに加工するコードを書く
 var $ = supply.cheerio.load(src, {decodeEntities: false});
@@ -115,15 +136,6 @@ $('.dom-selector')
 ;
 src = $.html();
 
-next(src);
-		</script>
-		<script class="snippet-source-processor" title="文字列 a が含まれる箇所をカウントする" type="text/template">
-if( src.match('a') ){
-	count('文字列 a が含まれる回数'); // 文字列 a が含まれる回数 をカウントする
-	countFile(); // ファイル単位でカウントする
-}
-
-// next() に加工後の src を渡して、次の処理へ進む。
 next(src);
 		</script>
 
@@ -218,7 +230,7 @@ var targetModuleName = 'local:dev/mod';
 var instance = editor.getInstance();
 
 if( instance.modId.match(targetModuleName) && !instance.subModName ){
-	count('モジュール '+targetModuleName+' が使われている件数'); // targetModuleName に指定したモジュールが使われている件数 をカウントする
+	count('モジュール '+instance.modId+' が使われている件数'); // 該当するモジュールが使われている件数 をカウントする
 	countFile(); // ファイル単位でカウントする
 }
 
@@ -231,10 +243,17 @@ var newModuleName = 'local:dev/mod';
 var instance = editor.getInstance();
 
 if( instance.modId == targetModuleName && !instance.subModName ){
-	count('モジュール '+targetModuleName+' が使われている件数'); // targetModuleName に指定したモジュールが使われている件数 をカウントする
+	count('モジュール '+instance.modId+' が使われている件数'); // 該当するモジュールが使われている件数 をカウントする
 	countFile(); // ファイル単位でカウントする
 
-	instance.modId = newModuleName;
+	instance.modId = newModuleName; // モジュール名の置き換え
+
+	/*
+	// モジュールのデータ形式が変わる場合
+	instance.fields.fieldname = {
+		"src": instance.fields.fieldname
+	};
+	*/
 
 	// 加工後のインスタンスデータで更新する
 	editor.setInstance(instance);

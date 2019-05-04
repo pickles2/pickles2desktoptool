@@ -136,10 +136,8 @@ editor.done();
 var it79 = editor.supply.iterate79;
 var broccoli = editor.getBroccoli();
 var instance = editor.getInstance();
-// console.log(instance.modId, instance.subModName);
 
 broccoli.getModule(instance.modId, instance.subModName, function(mod){
-	// console.log(mod);
 
 	it79.ary(
 		mod.fields,
@@ -202,7 +200,6 @@ broccoli.getModule(instance.modId, instance.subModName, function(mod){
 		</script>
 		<script class="snippet-instance-processor" title="リソースの値を加工する" type="text/template">
 var resourceDb = editor.resourceMgr.getResourceDb();
-//console.log( resourceDb );
 
 for(var resKey in resourceDb){
 	var resInfo = editor.resourceMgr.getResourceInfo(resKey);
@@ -219,11 +216,28 @@ editor.done();
 		<script class="snippet-instance-processor" title="指定モジュールが使われている数をカウントする" type="text/template">
 var targetModuleName = 'local:dev/mod';
 var instance = editor.getInstance();
-// console.log(instance.modId, instance.subModName);
+
+if( instance.modId.match(targetModuleName) && !instance.subModName ){
+	count('モジュール '+targetModuleName+' が使われている件数'); // targetModuleName に指定したモジュールが使われている件数 をカウントする
+	countFile(); // ファイル単位でカウントする
+}
+
+// editor.done() を呼び出して、次の処理へ進む。
+editor.done();
+		</script>
+		<script class="snippet-instance-processor" title="指定モジュールを他のモジュールに置き換える" type="text/template">
+var targetModuleName = 'local:dev/mod';
+var newModuleName = 'local:dev/mod';
+var instance = editor.getInstance();
 
 if( instance.modId == targetModuleName && !instance.subModName ){
 	count('モジュール '+targetModuleName+' が使われている件数'); // targetModuleName に指定したモジュールが使われている件数 をカウントする
 	countFile(); // ファイル単位でカウントする
+
+	instance.modId = newModuleName;
+
+	// 加工後のインスタンスデータで更新する
+	editor.setInstance(instance);
 }
 
 // editor.done() を呼び出して、次の処理へ進む。

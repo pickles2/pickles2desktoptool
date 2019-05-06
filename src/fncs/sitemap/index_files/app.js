@@ -197,9 +197,29 @@ window.contApp = new (function(px, $){
 			alert(filename + '.csv' + 'は、すでに存在します。');
 			return;
 		}
-		var csvSrc = '"* path","* content","* id","* title","* title_breadcrumb","* title_h1","* title_label","* title_full","* logical_path","* list_flg","* layout","* orderby","* keywords","* description","* category_top_flg","* role","* proc_type","* **delete_flg"'+"\r\n";
-		fsEx.writeFileSync(realpath, csvSrc);
-		init();
+		pj.px2proj.query(
+			'/?PX=px2dthelper.sitemap.create&filename='+encodeURIComponent(filename),
+			{
+				"output": "json",
+				"complete": function(data, code){
+					var result = false;
+					try {
+						result = JSON.parse(data);
+					} catch (e) {
+						alert("サイトマップファイルの作成に失敗しました。この機能は、プロジェクトに pickles2/px2-px2dthelper v2.0.12 以降が必要です。");
+						return;
+					}
+					if(!result.result){
+						alert(result.message);
+						return;
+					}
+
+					init();
+					return;
+				}
+			}
+		);
+		return;
 	}
 
 	/**

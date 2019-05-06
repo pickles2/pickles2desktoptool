@@ -1449,10 +1449,17 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	}
 
 	/**
-	 * 検索オブジェクトを生成・取得する
+	 * git操作オブジェクトを生成・取得する
 	 */
 	this.git = function(){
 		return new (require('./pickles.project.git.js'))(px, this);
+	}
+
+	/**
+	 * コンフィグ編集オブジェクトを生成・取得する
+	 */
+	this.configEditor = function(){
+		return new (require('./pickles.project.configEditor.js'))(px, this);
 	}
 
 	/**

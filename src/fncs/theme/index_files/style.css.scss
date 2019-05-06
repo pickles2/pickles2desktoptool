@@ -57,4 +57,22 @@
 			clear:both;
 		}
 	}
+	.cont-theme-home-set-default{
+		border: 1px solid #ffeeba;
+		background-color: #fff3cd;
+		color: #856404;
+		padding: 1rem;
+		text-align: center;
+		border-radius: 5px;
+		width: 80%;
+		margin: 1em auto;
+		&--is-default{
+			border: 1px solid #c3e6cb;
+			background-color: #d4edda;
+			color: #155724;
+		}
+		p{
+			margin: 0;
+		}
+	}
 }

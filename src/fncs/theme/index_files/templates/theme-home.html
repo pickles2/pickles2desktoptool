@@ -11,6 +11,14 @@
 		</div>
 	</div>
 
+	<div class="cont-theme-home-set-default px2-p<% if(default_theme_id == themeId){ %> cont-theme-home-set-default--is-default<% } %>">
+		<% if(default_theme_id == themeId){ %>
+			<p>このテーマを採用しています。</p>
+		<% }else{ %>
+			<p><button class="px2-btn px2-btn--primary cont-theme-home-set-default__btn-set-default">このテーマを採用する</button></p>
+		<% } %>
+	</div>
+
 	<div class="cont-theme-home-readme px2-p">
 		<div class="cont-theme-home-readme__thumb">
 			<img src="<%= thumb %>" alt="" />

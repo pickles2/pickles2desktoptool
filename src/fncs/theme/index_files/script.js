@@ -202,7 +202,8 @@ window.contApp = new (function(){
 						'layouts': arg.layouts,
 						'thumb': arg.thumb,
 						'readme': arg.readme,
-						'realpathThemeCollectionDir': realpathThemeCollectionDir
+						'realpathThemeCollectionDir': realpathThemeCollectionDir,
+						'default_theme_id': multithemePluginOptions.default_theme_id
 					}
 				);
 				$('.contents').html( html );
@@ -217,6 +218,16 @@ window.contApp = new (function(){
 					var href = this.href;
 					px.utils.openURL( href );
 					return false;
+				});
+				$('.contents').find('.cont-theme-home-set-default__btn-set-default').on('click', function(e){
+					pj.configEditor().setDefaultTheme(themeId, function(result){
+						if(!result.result){
+							alert(result.message);
+							return;
+						}
+						multithemePluginOptions.default_theme_id = themeId;
+						_this.pageThemeHome(themeId);
+					});
 				});
 				it1.next(arg);
 			}

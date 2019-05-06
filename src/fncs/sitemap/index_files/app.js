@@ -2,9 +2,10 @@ window.px = window.parent.px;
 window.contApp = new (function(px, $){
 	var _this = this;
 	var it79 = require('iterate79');
-	var utils79 = require('utils79');
+	var utils79 = px.utils79;
 	var pj = px.getCurrentProject();
 	var realpath_sitemap_dir = pj.get('path')+'/'+pj.get('home_dir')+'/sitemaps/';
+	var fsEx = px.fsEx;
 	var filelist;
 	var $filelist;
 	this.git = pj.git();
@@ -184,6 +185,24 @@ window.contApp = new (function(px, $){
 	}
 
 	/**
+	 * 新規サイトマップCSVを作成
+	 */
+	this.addNewSitemapCsv = function(){
+		var filename = prompt('ファイル名');
+		if( !filename ){
+			return;
+		}
+		var realpath = realpath_sitemap_dir + filename + '.csv';
+		if( utils79.is_file( realpath ) ){
+			alert(filename + '.csv' + 'は、すでに存在します。');
+			return;
+		}
+		var csvSrc = '"* path","* content","* id","* title","* title_breadcrumb","* title_h1","* title_label","* title_full","* logical_path","* list_flg","* layout","* orderby","* keywords","* description","* category_top_flg","* role","* proc_type","* **delete_flg"'+"\r\n";
+		fsEx.writeFileSync(realpath, csvSrc);
+		init();
+	}
+
+	/**
 	 * サイトマップをコミットする
 	 */
 	this.commitSitemap = function(){
@@ -228,11 +247,11 @@ window.contApp = new (function(px, $){
 	 * ウィンドウリサイズイベントハンドラ
 	 */
 	function onWindowResized(){
-		$('.cont_filelist_sitemap')
-			.css({
-				'height': $(window).height() - $('.cont_buttons').height() - 100
-			})
-		;
+		// $('.cont_filelist_sitemap')
+		// 	.css({
+		// 		'height': $(window).height() - $('.cont_buttons').height() - 100
+		// 	})
+		// ;
 	}
 
 	/**

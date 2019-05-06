@@ -8,34 +8,20 @@
 		<meta name="keywords" content="" />
 		<meta name="description" content="" />
 
-		<!-- jQuery -->
-		<script src="../../common/scripts/jquery-2.2.4.min.js" type="text/javascript"></script>
-
-		<!-- common funcs -->
-		<script src="../../common/scripts/common_funcs.js" type="text/javascript"></script>
-
-		<!-- jQuery UI -->
-		<link rel="stylesheet" href="../../common/jquery-ui/jquery-ui.min.css">
-		<script src="../../common/jquery-ui/jquery-ui.min.js"></script>
-
-		<!-- Bootstrap -->
+		<!-- Bootstrap 3 -->
 		<link rel="stylesheet" href="../../common/bootstrap/css/bootstrap.min.css">
-		<script src="../../common/bootstrap/js/bootstrap.min.js"></script>
 
 		<!-- Pickles 2 Style -->
 		<link rel="stylesheet" href="../../common/px2style/dist/styles.css" charset="utf-8" />
-		<script src="../../common/px2style/dist/scripts.js" charset="utf-8"></script>
 
 		<!-- normalize & FESS -->
 		<link rel="stylesheet" href="../../common/styles/contents.css" type="text/css" />
 
 		<!-- Pickles 2 - Git UI -->
 		<link rel="stylesheet" href="../../common/px2dtGitUi/px2dtGitUi.css" type="text/css" />
-		<script src="../../common/px2dtGitUi/px2dtGitUi.js"></script>
 
 		<!-- Local Resources -->
 		<link rel="stylesheet" href="./index_files/style.css" type="text/css" />
-		<script src="./index_files/app.js"></script>
 
 		<script type="text/template" id="template-manual">
 			<div class="px2-document">
@@ -102,7 +88,30 @@
 					<button class="btn px2-btn" onclick="contApp.openManual(); return false;">ヘルプ</button>
 				</div>
 				<div class="cont_filelist_sitemap">Loading...</div>
+
+				<p class="text-right">
+					<button class="px2-btn px2-btn--primary" onclick="contApp.addNewSitemapCsv();return false;">新規サイトマップCSV作成</button>
+				</p>
 			<!-- /.container --></div>
 		</div>
+
+		<!-- jQuery -->
+		<script src="../../common/scripts/jquery-2.2.4.min.js" type="text/javascript"></script>
+
+		<!-- common funcs -->
+		<script src="../../common/scripts/common_funcs.js" type="text/javascript"></script>
+
+		<!-- Bootstrap 3 -->
+		<script src="../../common/bootstrap/js/bootstrap.min.js"></script>
+
+		<!-- Pickles 2 Style -->
+		<script src="../../common/px2style/dist/scripts.js" charset="utf-8"></script>
+
+		<!-- Pickles 2 - Git UI -->
+		<script src="../../common/px2dtGitUi/px2dtGitUi.js"></script>
+
+		<!-- Local Resources -->
+		<script src="./index_files/app.js"></script>
+
 	</body>
 </html>

@@ -15,8 +15,6 @@ module.exports = function( px, pj ) {
 				'theme_id': themeId
 			}
 		}));
-		console.log(themeId);
-		console.log(param);
 
 		pj.px2proj.query(
 			'/?PX=px2dthelper.config.update&base64_json='+encodeURIComponent(param),

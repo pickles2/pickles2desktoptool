@@ -286,6 +286,17 @@ new (function($, window){
 						if( typeof(db.extra.px2dt.windowPosition) === typeof({}) ){
 							winPosition = db.extra.px2dt.windowPosition;
 						}
+						// 位置ずれ補正
+						if( winPosition.width < 100 ){
+							winPosition.width = 100;
+						}
+						if( winPosition.height < 100 ){
+							winPosition.height = 100;
+						}
+						if( winPosition.x > window.screen.width - 50 || winPosition.y > window.screen.height - 50 ){
+							winPosition.x = 0;
+							winPosition.y = 0;
+						}
 					}catch(e){}
 					px.nwWindow.moveTo(winPosition.x, winPosition.y);
 					px.nwWindow.resizeTo(winPosition.width, winPosition.height);

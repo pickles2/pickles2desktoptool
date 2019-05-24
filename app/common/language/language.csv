@@ -8,7 +8,6 @@ menu.publish,Publish,パブリッシュ,发布,發布
 menu.dashboard,Dashboard,ダッシュボード,控制版面,控制版面
 menu.openFolder,Open Folder,フォルダを開く,打开文件夹,打開文件夾
 menu.openInBrowser,Open in Browser,ブラウザで開く,在浏览器中打开,在瀏覽器中打開
-menu.openAppInBrowser,Open Product Preview in Browser,パブリッシュされたサイトをブラウザで開く,,
 menu.openInTexteditor,Open in Text editor,テキストエディタで開く,在Text editor中打开,在Text editor中打開
 menu.openInGitClient,Open in Git client,Gitクライアントで開く,在Git client中打开,在Git client中打開
 menu.openInTerminal,Open in Terminal,コマンドラインで開く,在Terminal中打开,在Terminal中打開

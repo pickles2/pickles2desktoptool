@@ -60,6 +60,14 @@
 					</p>
 				</form>
 			</div>
+			<div class="more_links">
+				<ul>
+					<li><a href="javascript:px.getCurrentProject().open();" class="px2-link px2-link--burette">フォルダを開く</a></li>
+					<li><a href="javascript:px.openInTextEditor( contApp.pj.get('path') );" class="px2-link px2-link--burette">外部テキストエディタで開く</a></li>
+					<li><a href="javascript:px.openInGitClient( contApp.pj.get('path') );" class="px2-link px2-link--burette">外部Gitクライアントで開く</a></li>
+					<li><a href="javascript:px.openInTerminal( contApp.pj.get('path') );" class="px2-link px2-link--burette">コマンドラインで開く</a></li>
+				</ul>
+			</div><!-- /.more_links -->
 		</script>
 		<script type="text/template" id="template-is-not-empty-dir">
 			<div>
@@ -153,6 +161,7 @@
 				<li><a href="javascript:px.openInTerminal( contApp.pj.get('path') );" class="px2-link px2-link--burette">コマンドラインで開く</a></li>
 			</ul>
 			<ul class="px2-horizontal-list px2-horizontal-list--right">
+				<li><a href="javascript:px.openAppInBrowser();" class="px2-link px2-link--burette">パブリッシュプレビュー</a></li>
 				<li><a href="javascript:px.subapp('fncs/config/index.html');" class="px2-link px2-link--burette">config.php を編集する</a></li>
 				<li><a href="javascript:px.subapp('fncs/composer/index.html');" class="px2-link px2-link--burette">composer を操作する</a></li>
 			</ul>

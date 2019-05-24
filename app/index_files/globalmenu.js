@@ -85,6 +85,15 @@ module.exports = function(px){
 		}
 	});
 	_menu.push({
+		"label":px.lb.get('menu.openAppInBrowser'),
+		"cond":"pxStandby",
+		"area":"shoulder",
+		"app":null,
+		"click": function(){
+			px.openAppInBrowser();
+		}
+	});
+	_menu.push({
 		"label":px.lb.get('menu.openInTexteditor'),
 		"cond":"homeDirExists",
 		"area":"shoulder",

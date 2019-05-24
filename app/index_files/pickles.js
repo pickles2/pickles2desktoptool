@@ -78,8 +78,6 @@ new (function($, window){
 	var _csv = require('csv');
 	this.csv = _csv;
 
-	var _appServer = require('./index_files/app_server.js');
-
 	// Pickles 2
 	var _px2agent = require('px2agent');
 	this.px2agent = _px2agent;
@@ -772,6 +770,35 @@ new (function($, window){
 		}
 
 		this.preview.serverStandby(function(result){
+			if(result === false){
+				px.message('プレビューサーバーの起動に失敗しました。');
+				return;
+			}
+			px.utils.openURL( px.preview.getUrl() );
+		});
+		return;
+	}
+
+	/**
+	 * パブリッシュされたサイトをブラウザで開く
+	 */
+	this.openAppInBrowser = function(){
+		var px = this;
+
+		// 外部プレビューサーバーの設定があるか調べる
+		var pj = px.getCurrentProject();
+		if(pj){
+			var px2dtLDA_Pj = px.px2dtLDA.project(pj.projectId);
+			var external_app_server_origin = px2dtLDA_Pj.getExtendedData('external_app_server_origin');
+			if( typeof(external_app_server_origin)==typeof('') && external_app_server_origin.match(/^https?\:\/\//i) ){
+				// 外部プレビューサーバーが設定されていたら、
+				// 内蔵サーバーの起動はせず、ブラウザを呼び出す。
+				px.utils.openURL( px.preview.getUrl() );
+				return;
+			}
+		}
+
+		this.appPreview.serverStandby(function(result){
 			if(result === false){
 				px.message('プレビューサーバーの起動に失敗しました。');
 				return;

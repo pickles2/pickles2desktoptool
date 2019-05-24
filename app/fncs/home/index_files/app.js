@@ -23,6 +23,7 @@ window.contApp = new (function(){
 				$('.tpl_home_dir').text( pj.get('home_dir') );
 				$('.tpl_entry_script').text( pj.get('entry_script') );
 				$('.tpl_external_preview_server_origin').text( px2dtLDA_pj.getExtendedData('external_preview_server_origin')||'' );
+				$('.tpl_external_app_server_origin').text( px2dtLDA_pj.getExtendedData('external_app_server_origin')||'' );
 				$('address.center').text( px.packageJson.pickles2.credit );
 				it.next(arg);
 			} ,
@@ -243,12 +244,14 @@ window.contApp = new (function(){
 		$form.find('[name=pj_home_dir]').val(px2dtLDA_pj.get().home_dir);
 		$form.find('[name=pj_entry_script]').val(px2dtLDA_pj.getEntryScript());
 		$form.find('[name=pj_external_preview_server_origin]').val(px2dtLDA_pj.getExtendedData('external_preview_server_origin'));
+		$form.find('[name=pj_external_app_server_origin]').val(px2dtLDA_pj.getExtendedData('external_app_server_origin'));
 
 		$form.find('.error_name').html('');
 		$form.find('.error_path').html('');
 		$form.find('.error_home_dir').html('');
 		$form.find('.error_entry_script').html('');
 		$form.find('.error_external_preview_server_origin').html('');
+		$form.find('.error_external_app_server_origin').html('');
 
 		px.dialog( {
 			title: 'プロジェクト情報を編集',
@@ -268,6 +271,7 @@ window.contApp = new (function(){
 						$form.find('.error_home_dir').html('');
 						$form.find('.error_entry_script').html('');
 						$form.find('.error_external_preview_server_origin').html('');
+						$form.find('.error_external_app_server_origin').html('');
 
 						var projectInfo = px2dtLDA_pj.get();
 
@@ -281,6 +285,7 @@ window.contApp = new (function(){
 						newProjectInfo.home_dir = $form.find('[name=pj_home_dir]').val()
 						newProjectInfo.entry_script = $form.find('[name=pj_entry_script]').val()
 						newProjectInfo.external_preview_server_origin = $form.find('[name=pj_external_preview_server_origin]').val();
+						newProjectInfo.external_app_server_origin = $form.find('[name=pj_external_app_server_origin]').val();
 
 						var result = px.validateProjectInfo(newProjectInfo);
 						if( result.isError ){
@@ -298,6 +303,7 @@ window.contApp = new (function(){
 						projectInfo.home_dir = newProjectInfo.home_dir;
 						px2dtLDA_pj.setEntryScript(newProjectInfo.entry_script);
 						px2dtLDA_pj.setExtendedData('external_preview_server_origin', (newProjectInfo.external_preview_server_origin || undefined));
+						px2dtLDA_pj.setExtendedData('external_app_server_origin', (newProjectInfo.external_app_server_origin || undefined));
 
 						px.save(function(){
 							px.closeDialog();

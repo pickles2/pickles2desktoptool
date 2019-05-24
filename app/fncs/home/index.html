@@ -246,6 +246,14 @@
 								<div class="overflow:hidden;"><input type="text" name="pj_external_preview_server_origin" value="" placeholder="eg. http://localhost:8080" class="form-control" /></div>
 							</td>
 						</tr>
+						<tr>
+							<th>External App Server Origin</th>
+							<td>
+								<p>パブリッシュされた最終的な成果をプレビューするために、外部のウェブサーバーアプリケーションを使用する場合、そのURLを入力してください。空欄にした場合は、内蔵のウェブサーバーを使用します。</p>
+								<div class="error_external_app_server_origin"></div>
+								<div class="overflow:hidden;"><input type="text" name="pj_external_app_server_origin" value="" placeholder="eg. http://localhost:8081" class="form-control" /></div>
+							</td>
+						</tr>
 					</table>
 				</form>
 			</div>
@@ -344,6 +352,10 @@
 								<tr>
 									<th>External Preview Server Origin</th>
 									<td class="tpl_external_preview_server_origin selectable">...</td>
+								</tr>
+								<tr>
+									<th>External App Server Origin</th>
+									<td class="tpl_external_app_server_origin selectable">...</td>
 								</tr>
 							</table>
 						</div>

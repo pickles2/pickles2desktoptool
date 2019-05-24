@@ -67,7 +67,7 @@
 			}
 			_appServer.start(this.getPort(), function(result){
 				if(result === false){
-					console.error('プロダクションサーバーの起動に失敗しました。');
+					console.error('パブリッシュプレビューサーバーの起動に失敗しました。');
 				}
 				callback(result);
 			});

@@ -13,6 +13,7 @@
 	var _server = express();
 	var _path_access_log;
 	var _last_realpathEntryScript;
+	var _realpathPublishDir;
 
 	var _port;
 	var _running = false;
@@ -110,74 +111,27 @@
 		// Express Queue
 		_server.use(expressQueue({ activeLimit: 1, queuedLimit: -1 }));
 
-		// setup Pickles 2
-		_server.use('/*', expressPickles2(
-			null,
-			{
-				'liveConfig': function(callback){
-					var pj = px.getCurrentProject();
-					var realpathEntryScript = path.resolve(pj.get('path'), pj.get('entry_script'));
-					if( _last_realpathEntryScript !== realpathEntryScript ){
-						// console.log(realpathEntryScript);
-						_last_realpathEntryScript = realpathEntryScript;
-						accessLogStream.write(
-							'Switch Project to: ' + realpathEntryScript+"\n",
-							'utf-8'
-						);
-						callback(
-							realpathEntryScript,
-							{}
-						);
-						return;
-					}else{
-						callback(
-							realpathEntryScript,
-							{}
-						);
-						return;
-					}
-				},
-				'processor': function(html, ext, callback, response){
-					// console.log(response);
-					if( ext == 'html' ){
-						if( html.match('<script data-broccoli-receive-message="yes">') ){
-							// すでに挿入済みの場合はスキップする。
-							// `external_preview_server_origin` が導入された際に、
-							// px2-px2dthelper にこのタグを挿入する機能が追加された。
-							// ただしこれはオプションなので、適用される場合とされない場合がある。
-							// なのでここでは、有無をチェックし、挿入されていない場合にのみ、挿入する。
-						}else{
-							html += getBroccoliScript();
+		// Update Pickles 2 config
+		_server.use('/*', function(req, res, next){
+			var pj = px.getCurrentProject();
+			var entryScript = path.resolve( pj.get('path') + '/' + pj.get('entry_script') );
+			var realpathContRoot = px.utils79.dirname(entryScript);
+			_realpathPublishDir = path.resolve( realpathContRoot, pj.getConfig().path_publish_dir )+'/';
+			// console.log(pj);
+			// console.log(pj.getConfig());
+			// console.log(pj.getConfig().path_publish_dir);
+			// console.log(realpathContRoot);
+			// console.log(_realpathPublishDir);
+			// // path_publish_dir
+			next();
+			return;
+		} );
 
-							var errorHtml = '';
-							if( response.status != 200 ){
-								errorHtml += '<ul style="background-color: #fee; border: 3px solid #f33; padding: 10px; margin: 0.5em; border-radius: 5px;">';
-								errorHtml += '<li style="color: #f00; list-style-type: none;">STATUS: '+response.status+' '+response.message+'</li>';
-								errorHtml += '</ul>';
-							}
-							if( response.errors.length ){
-								errorHtml += '<ul style="background-color: #fee; border: 3px solid #f33; padding: 10px; margin: 0.5em; border-radius: 5px;">';
-								for( var idx in response.errors ){
-									errorHtml += '<li style="color: #f00; list-style-type: none;">'+response.errors[idx]+'</li>';
-								}
-								errorHtml += '</ul>';
-							}
-							if( errorHtml.length ){
-								html += '<div style="position: fixed; top: 10px; left: 5%; width: 90%; font-size: 14px; opacity: 0.8; z-index: 2147483000;" onclick="this.style.display=\'none\';">';
-								html += errorHtml;
-								html += '</div>';
-							}
-						}
-					}
-					callback(html);
-					return;
-				},
-				'bin': px.nodePhpBinOptions.bin,
-				'ini': px.nodePhpBinOptions.ini,
-				'extension_dir': px.nodePhpBinOptions.extension_dir
-			},
-			_server
-		) );
+		_server.use('/*', function(req, res, next){
+			console.log(req);
+			res.status(200).send("Hello World "+_realpathPublishDir);
+			return;
+		} );
 
 
 		// 指定ポートでLISTEN状態にする

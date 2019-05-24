@@ -19,6 +19,8 @@
 	var _running = false;
 	var px;
 
+	const mime = require('mime');
+
 	/**
 	 * 初期化
 	 */
@@ -119,17 +121,39 @@
 			_realpathPublishDir = path.resolve( realpathContRoot, pj.getConfig().path_publish_dir )+'/';
 			// console.log(pj);
 			// console.log(pj.getConfig());
-			// console.log(pj.getConfig().path_publish_dir);
-			// console.log(realpathContRoot);
-			// console.log(_realpathPublishDir);
-			// // path_publish_dir
 			next();
 			return;
 		} );
 
 		_server.use('/*', function(req, res, next){
 			console.log(req);
-			res.status(200).send("Hello World "+_realpathPublishDir);
+			var utils79 = px.utils79;
+			var src = '';
+			var realpathFile = _realpathPublishDir + req.params[0];
+			if( realpathFile.match(/\/$/g) ){
+				realpathFile = realpathFile+'index.html';
+			}
+			if( utils79.is_file( realpathFile ) ){
+				// --------------------------
+				// 物理ファイルが存在する場合
+				src = fs.readFileSync(realpathFile);
+				res
+					.writeHead(200, {'Content-Type': mime.getType(realpathFile) })
+					.end( src )
+				;
+				return;
+
+			}else{
+				// --------------------------
+				// 物理ファイルが存在しない場合
+
+				res
+					.status(404)
+					.end( '404 File Not Found.' )
+				;
+
+				return;
+			}
 			return;
 		} );
 

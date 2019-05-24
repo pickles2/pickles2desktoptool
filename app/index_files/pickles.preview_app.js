@@ -1,5 +1,6 @@
 (function(px){
-	var _appServer = require('./index_files/app_server_emulator.node.js');
+	var _appServer = require('./index_files/app_server_emulator.node.js').init(px);
+
 	px.appPreview = new (function(){
 		this.getUrl = function( path ){
 
@@ -41,10 +42,10 @@
 		 * ポート番号を取得
 		 */
 		this.getPort = function(){
-			var port = px.packageJson.pickles2.network.preview.port;
+			var port = px.packageJson.pickles2.network.appserver.port;
 			var db = px.getDb();
-			if( db.network && db.network.preview && db.network.preview.port ){
-				port = db.network.preview.port;
+			if( db.network && db.network.preview && db.network.appserver.port ){
+				port = db.network.appserver.port;
 			}
 			return port;
 		}
@@ -75,4 +76,4 @@
 
 	})();
 
-})(px);
+})(window.px);

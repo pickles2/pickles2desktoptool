@@ -793,7 +793,7 @@ new (function($, window){
 			if( typeof(external_app_server_origin)==typeof('') && external_app_server_origin.match(/^https?\:\/\//i) ){
 				// 外部プレビューサーバーが設定されていたら、
 				// 内蔵サーバーの起動はせず、ブラウザを呼び出す。
-				px.utils.openURL( px.preview.getUrl() );
+				px.utils.openURL( px.appPreview.getUrl() );
 				return;
 			}
 		}
@@ -803,7 +803,7 @@ new (function($, window){
 				px.message('プレビューサーバーの起動に失敗しました。');
 				return;
 			}
-			px.utils.openURL( px.preview.getUrl() );
+			px.utils.openURL( px.appPreview.getUrl() );
 		});
 		return;
 	}

@@ -3,9 +3,7 @@
 @import url(./filter.css);
 body {
   background-color: #fff;
-  cursor: default;
-  color: #333;
-  user-select: none; }
+  color: #333; }
 
 textarea,
 input,

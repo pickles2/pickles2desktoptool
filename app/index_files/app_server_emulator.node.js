@@ -118,6 +118,12 @@
 			var pj = px.getCurrentProject();
 			var entryScript = path.resolve( pj.get('path') + '/' + pj.get('entry_script') );
 			var realpathContRoot = px.utils79.dirname(entryScript);
+			if(!pj.getConfig().path_publish_dir){
+				res
+					.status(200)
+					.end( '<html><p style="text-align:center;">Publish Directory is not set.</p></html>' )
+				;
+			}
 			_realpathPublishDir = path.resolve( realpathContRoot, pj.getConfig().path_publish_dir )+'/';
 			// console.log(pj);
 			// console.log(pj.getConfig());

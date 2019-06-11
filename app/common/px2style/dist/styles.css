@@ -562,6 +562,8 @@
               border: none; }
               .px2-header__global-menu ul li.px2-header__global-menu-group ul li a.current:before {
                 content: none; }
+      .px2-header__global-menu ul li.px2-header__global-menu-group-opened {
+        z-index: 10000; }
       .px2-header__global-menu ul li.px2-header__global-menu-group-opened > a::after {
         transform: rotate(90deg); }
   .px2-header__shoulder-menu {

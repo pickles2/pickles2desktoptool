@@ -2907,6 +2907,7 @@ module.exports = function(broccoli){
 	var tplFrame = ''
 				+ '<div class="broccoli--edit-window">'
 				+ '	<form action="javascript:;">'
+				+ '		<div class="broccoli--edit-window-logical-path">---</div>'
 				+ '		<h2 class="broccoli--edit-window-module-name">---</h2>'
 				+ '		<div class="broccoli--edit-window-message-field"></div>'
 				+ '		<div class="broccoli--edit-window-fields">'
@@ -3035,6 +3036,10 @@ module.exports = function(broccoli){
 		$editWindow.html('').append( broccoli.bindEjs(tplFrame, {'lb':broccoli.lb}) );
 		$editWindow.find('.broccoli--edit-window-module-name').text(mod.info.name||mod.id);
 		$editWindow.find('.broccoli--edit-window-fields').append($fields);
+
+		$editWindow.find('.broccoli--edit-window-logical-path').html('').append(
+			drawLogicalPath(instancePath)
+		);
 
 		$editWindow.find('.broccoli--edit-window-builtin-fields').hide();
 		$editWindow.find('.broccoli--edit-window-builtin-fields-switch').click(function(){
@@ -3435,6 +3440,53 @@ module.exports = function(broccoli){
 	}
 
 	/**
+	 * パンくずを表示する
+	 */
+	function drawLogicalPath(instancePath){
+		// パンくずを表示
+		var instPath = instancePath.split('/');
+		var timer;
+
+		// console.log(instPath);
+
+		var $ul = $('<ul>');
+		var instPathMemo = [];
+		for( var idx in instPath ){
+			instPathMemo.push(instPath[idx]);
+			if( instPathMemo.length <= 1 ){ continue; }
+			var contData = broccoli.contentsSourceData.get(instPathMemo.join('/'));
+			if( !contData ){
+				// appender を選択した場合に、
+				// 存在しない instance が末尾に含まれた状態で送られてくる。
+				// その場合、contData は undefined になる。
+				// 処理できないので、スキップする。
+				continue;
+			}
+			var mod = broccoli.contentsSourceData.getModule(contData.modId, contData.subModName);
+			var label = mod && mod.info.name||mod.id;
+			if(instPathMemo.length==2){
+				// bowl自体だったら
+				label = instPathMemo[instPathMemo.length-1];
+			}
+			$ul.append( $('<li>')
+				.append( $('<a href="javascript:;">')
+					.attr({
+						'data-broccoli-instance-path': instPathMemo.join('/')
+					})
+					.bind('click', function(e){
+						clearTimeout(timer);
+						var instancePath = $(this).attr('data-broccoli-instance-path');
+						broccoli.editInstance( instancePath );
+					} )
+					.text(label)
+				)
+			);
+		}
+		return $ul;
+
+	}
+
+	/**
 	 * インスタンスの編集内容を検証する
 	 */
 	function validateInstance( instancePath, mod, data, callback ){
@@ -3717,7 +3769,9 @@ module.exports = function(broccoli){
 	 */
 	this.duplicateData = function( data, callback, resources ){
 		callback = callback||function(){};
-		data = JSON.parse( JSON.stringify( data ) );
+		try{
+			data = JSON.parse( JSON.stringify( data ) );
+		}catch(e){}
 		new Promise(function(rlv){rlv();}).then(function(){ return new Promise(function(rlv, rjt){
 			callback(data);
 		}); });
@@ -3929,10 +3983,6 @@ module.exports = function(broccoli){
 				// bowl自体だったら
 				label = instPathMemo[instPathMemo.length-1];
 			}
-			if( mod.subModName ){
-				// サブモジュールだったら
-				label = '@'+mod.subModName;
-			}
 			$ul.append( $('<li>')
 				.append( $('<a href="javascript:;">')
 					.attr({
@@ -3967,10 +4017,6 @@ module.exports = function(broccoli){
 					var contData = broccoli.contentsSourceData.get(children[child]);
 					var mod = broccoli.contentsSourceData.getModule(contData.modId, contData.subModName);
 					var label = mod && mod.info.name||mod.id;
-					if( mod.subModName ){
-						// サブモジュールだったら
-						label = '@'+mod.subModName;
-					}
 					$ulChildren.append( $('<li>')
 						.append( $('<a href="javascript:;">')
 							.attr({
@@ -6151,7 +6197,12 @@ module.exports = function(broccoli){
 	 */
 	this.mkEditor = function( mod, data, elm, callback ){
 		var _this = this;
-		if(typeof(data) !== typeof({})){ data = {'src':''+data,'editor':'markdown'}; }
+		if( typeof(data) !== typeof({}) ){
+			data = {
+				'src':'' + ( typeof(data) === typeof('') ? data : '' ),
+				'editor':'markdown'
+			};
+		}
 		var rows = 12;
 		if( mod.rows ){
 			rows = mod.rows;
@@ -6318,8 +6369,11 @@ module.exports = function(broccoli){
 		var _this = this;
 		var fixedLang = mod.lang || null;
 
-		if(typeof(data) !== typeof({})){
-			data = {'src':''+data,'lang':(fixedLang ? fixedLang : 'javascript')};
+		if( typeof(data) !== typeof({}) ){
+			data = {
+				'src': ''+(typeof(data) === typeof('') ? data : ''),
+				'lang': (fixedLang ? fixedLang : 'javascript')
+			};
 		}
 		if( fixedLang ){
 			data.lang = fixedLang;

@@ -4183,7 +4183,7 @@ module.exports={
   "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.6.1.tgz",
   "_shasum": "498ec0d495655abc6f23cd61868d926464071aa0",
   "_spec": "ejs@^2.4.1",
-  "_where": "/mydoc_TomK/Dropbox/localhosts/pickles2projects/pickles2/node-pickles2-contents-editor",
+  "_where": "/mydoc_TomK/projs/pickles2/pickles2/node-pickles2-contents-editor",
   "author": {
     "name": "Matthew Eernisse",
     "email": "mde@fleegix.org",
@@ -22688,19 +22688,23 @@ module.exports = function(px2ce){
 							"click": function(){
 								px2ce.openUrlInBrowser( getPreviewUrl() );
 							}
-						},
-						{
-							"label": 'CSS',
-							"click": function(){
-								openCssJsEditor('css');
-							}
-						},
-						{
-							"label": 'JavaScript',
-							"click": function(){
-								openCssJsEditor('js');
-							}
 						}
+						// ↓ CSSとJavaScriptをBroccoli編集画面から編集できる機能を
+						// 　試作してみたが、乱用された場合にコンテンツデザインの
+						// 　一貫性を損ねるリスクがあるので、
+						// 　ひとまずペンディングにする。
+						// {
+						// 	"label": 'CSS',
+						// 	"click": function(){
+						// 		openCssJsEditor('css');
+						// 	}
+						// },
+						// {
+						// 	"label": 'JavaScript',
+						// 	"click": function(){
+						// 		openCssJsEditor('js');
+						// 	}
+						// }
 					],
 					"onFinish": function(){
 						// 完了イベント

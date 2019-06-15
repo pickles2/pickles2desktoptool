@@ -88,11 +88,13 @@ Mac で Windows 版をビルドするにあたり、次の環境が必要です�
 
 ### Pickles 2 v2.0.0-beta.25 (リリース日未定)
 
+- Update: broccoli-html-editor v0.3.7
+- Update: pickles2-contents-editor v2.0.6
+- Update: pickles2-module-editor v0.2.3
 - コンテンツ一括加工機能がレポートする `countFile()` の出力に、コンテンツの拡張子と編集タイプの情報を付加するようになった。
 - テーマの編集画面から、デフォルトのテーマを切り替えられるようになった。(プロジェクトに `pickles2/px2-px2dthelper` v2.0.12 以降が必要)
 - 新規サイトマップCSV作成機能を追加。
 - パブリッシュプレビュー機能を追加。
-- Broccoli エディタ (GUI編集) で、 CSS と JavaScript を追加できるようになった。
 - その他いくつかのUIの改善。
 
 ### Pickles 2 v2.0.0-beta.24 (2019年4月19日)

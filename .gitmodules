@@ -7,9 +7,6 @@
 [submodule "submodules/node-express-pickles2"]
 	path = submodules/node-express-pickles2
 	url = https://github.com/tomk79/node-express-pickles2.git
-[submodule "submodules/node-pickles2-contents-editor"]
-	path = submodules/node-pickles2-contents-editor
-	url = https://github.com/pickles2/node-pickles2-contents-editor.git
 [submodule "submodules/px2style"]
 	path = submodules/px2style
 	url = https://github.com/pickles2/px2style.git
@@ -19,9 +16,6 @@
 [submodule "submodules/node-broccoli-processor"]
 	path = submodules/node-broccoli-processor
 	url = https://github.com/broccoli-html-editor/node-broccoli-processor.git
-[submodule "submodules/node-pickles2-module-editor"]
-	path = submodules/node-pickles2-module-editor
-	url = https://github.com/pickles2/node-pickles2-module-editor.git
 [submodule "submodules/node-utils79"]
 	path = submodules/node-utils79
 	url = https://github.com/tomk79/node-utils79.git

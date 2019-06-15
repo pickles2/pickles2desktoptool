@@ -1,6 +1,3 @@
-[submodule "submodules/broccoli-html-editor"]
-	path = submodules/broccoli-html-editor
-	url = https://github.com/broccoli-html-editor/broccoli-html-editor.git
 [submodule "submodules/broccoli-field-table"]
 	path = submodules/broccoli-field-table
 	url = https://github.com/broccoli-html-editor/broccoli-field-table.git

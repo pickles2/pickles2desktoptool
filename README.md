@@ -86,7 +86,7 @@ Mac で Windows 版をビルドするにあたり、次の環境が必要です�
 
 ## 更新履歴 - Change log
 
-### Pickles 2 v2.0.0-beta.25 (リリース日未定)
+### Pickles 2 v2.0.0-beta.25 (2019年6月30日)
 
 - Update: broccoli-html-editor v0.3.8
 - Update: pickles2-contents-editor v2.0.6

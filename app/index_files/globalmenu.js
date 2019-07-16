@@ -16,45 +16,35 @@ module.exports = function(px){
 		"cond":"projectSelected",
 		"area":"mainmenu",
 		"app":"fncs/home/index.html",
-		"click": function(){
-			px.subapp();
-		}
+		"href":"javascript:px.subapp();"
 	});
 	_menu.push({
 		"label":px.lb.get('menu.sitemap'),
 		"cond":"pxStandby",
 		"area":"mainmenu",
 		"app":"fncs/sitemap/index.html",
-		"click": function(){
-			px.subapp($(this).data('app'));
-		}
+		"href": "javascript:px.subapp('fncs/sitemap/index.html');"
 	});
 	_menu.push({
 		"label":px.lb.get('menu.theme'),
 		"cond":"pxStandby",
 		"area":"mainmenu",
 		"app":"fncs/theme/index.html",
-		"click": function(){
-			px.subapp($(this).data('app'));
-		}
+		"href": "javascript:px.subapp('fncs/theme/index.html');"
 	});
 	_menu.push({
 		"label":px.lb.get('menu.pages'),
 		"cond":"pxStandby",
 		"area":"mainmenu",
 		"app":"fncs/pages/index.html",
-		"click": function(){
-			px.subapp($(this).data('app'));
-		}
+		"href": "javascript:px.subapp('fncs/pages/index.html');"
 	});
 	_menu.push({
 		"label":px.lb.get('menu.publish'),
 		"cond":"pxStandby",
 		"area":"mainmenu",
 		"app":"fncs/publish/index.html",
-		"click": function(){
-			px.subapp($(this).data('app'));
-		}
+		"href": "javascript:px.subapp('fncs/publish/index.html');"
 	});
 	_menu.push({
 		"label":px.lb.get('menu.dashboard'),
@@ -355,10 +345,10 @@ module.exports = function(px){
 
 			var $tmpMenu = $('<a>')
 				.attr({
-					"href":"javascript:;",
+					"href":(_menu[i].href || "javascript:;"),
 					"data-name": _menu[i].app
 				})
-				.on('click', _menu[i].click)
+				.on('click', (_menu[i].click || function(){}))
 				.text(_menu[i].label)
 				.data('app', _menu[i].app)
 				.addClass( ( _current_app==_menu[i].app ? 'current' : '' ) )

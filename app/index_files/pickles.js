@@ -1074,9 +1074,7 @@ new (function($, window){
 		}
 
 		$('.px2-header__global-menu').html( $('<ul>')
-			.append( $('<li>')
-				.append( '<span>&nbsp;</span>' )
-			)
+			.append( $('<li>') )
 		);
 		$shoulderMenu.find('ul').html('');
 		_menu.drawGlobalMenu($shoulderMenu, _current_app);
@@ -1122,6 +1120,7 @@ new (function($, window){
 				'height': $contents.innerHeight() - 7
 			})
 		;
+		px2style.header.init({"current":_current_app});
 	}
 
 	/**

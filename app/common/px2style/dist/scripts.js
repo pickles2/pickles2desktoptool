@@ -9856,6 +9856,16 @@ module.exports = function(Px2style){
 		$shoulderMenu = $('.px2-header__shoulder-menu');
 		$shoulderMenuUl = $shoulderMenu.find('>ul');
 
+
+		$shoulderMenuUl.find('.px2-header__shoulder-global-menu').remove();
+		var $gmenuLis = $globalMenuUl.find('>li');
+		for(var i = $gmenuLis.length-1; i >= 0 ; i --){
+			$gmenuLis.eq(i).clone()
+				.addClass('px2-header__shoulder-global-menu')
+				.prependTo($shoulderMenuUl);
+		}
+
+
 		$globalMenuUl.find('li').removeClass('px2-header__global-menu-group');
 		$globalMenuUl.find('li:has(>ul)').addClass('px2-header__global-menu-group')
 		$globalMenuUl.find('li:has(>ul) > a').off().on('click', function(e){

@@ -288,6 +288,11 @@ window.contApp = new (function( px ){
 		if(page_path === undefined){
 			page_path = '';
 		}
+		if(page_path === ''){
+			try{
+				page_path = _pj.getConfig().path_top;
+			}catch(e){}
+		}
 		// console.log(_currentPagePath, page_path);
 		if( _currentPagePath === page_path && !options.force ){
 			// 遷移先がカレントページを同じければ処理しない。

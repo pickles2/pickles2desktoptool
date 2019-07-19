@@ -294,7 +294,7 @@ window.contApp = new (function( px ){
 			}catch(e){}
 		}
 		// console.log(_currentPagePath, page_path);
-		if( _currentPagePath === page_path && !options.force ){
+		if( removeHash(_currentPagePath) === removeHash(page_path) && !options.force ){
 			// 遷移先がカレントページを同じければ処理しない。
 			callback();
 			return;
@@ -309,7 +309,8 @@ window.contApp = new (function( px ){
 					path_controot = _currentPageInfo.config.path_controot;
 				} catch (e) {
 				}
-				href = href.replace(new RegExp('^'+px.utils.escapeRegExp(_currentPageInfo.config.path_controot)), '/');
+				href = removeHash(href);
+				href = href.replace(new RegExp('^'+px.utils.escapeRegExp(path_controot)), '/');
 				// console.log(href);
 				px.progress.close();
 				app.goto(href, options, callback);
@@ -369,6 +370,18 @@ window.contApp = new (function( px ){
 	}
 
 	/**
+	 * URLからHashを削除する
+	 */
+	function removeHash(url){
+		if(typeof(url) !== typeof('')){
+			return url;
+		}
+		var rtn = url.replace(/\#[\s\S]*$/g, '');
+		// console.log(url, rtn);
+		return rtn;
+	}
+
+	/**
 	 * プレビューウィンドウにページを表示する
 	 */
 	this.loadPreview = function( page_path, options, callback ){
@@ -387,7 +400,7 @@ window.contApp = new (function( px ){
 		var currentPreviewPageUrl = px.preview.getUrl(currentPreviewPagePath);
 		// console.log(currentPreviewPageUrl, gotoUrl);
 
-		if( currentPreviewPageUrl == gotoUrl && !options.force ){
+		if( removeHash(currentPreviewPageUrl) === removeHash(gotoUrl) && !options.force ){
 			// 現在表示中の `page_path` と同じなら、リロードをスキップ
 			// console.log('skipped :', page_path);
 			callback();
@@ -411,6 +424,7 @@ window.contApp = new (function( px ){
 	 * エディター画面を開く
 	 */
 	this.openEditor = function( pagePath ){
+		pagePath = removeHash(pagePath);
 		var pageInfo = _pj.site.getPageInfo( pagePath );
 		if( !pageInfo ){
 			alert('ERROR: Undefined page path. - ' + pagePath);

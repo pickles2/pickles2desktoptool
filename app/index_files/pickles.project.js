@@ -684,7 +684,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 		callback = callback || function(){};
 
 		_px2proj.query(
-			'/?PX=px2dthelper.check_editor_mode&path='+encodeURIComponent(pagePath), {
+			'/?PX=px2dthelper.check_editor_mode&path='+encodeURIComponent(this.getConcretePath(pagePath)), {
 				"output": "json",
 				"complete": function(data, code){
 					// console.log(data, code);

@@ -380,7 +380,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 							.on('click', function(){
 								$bs3btn.find('.dropdown-toggle').click();
 								var $this = $(this);
-								var bookmarklet = "javascript:(function(){var b=document.body;elm=document.createElement('script');elm.setAttribute('type','text/javascript');elm.src='http://tomk79.github.io/DEC/dec_show.js';b.appendChild(elm);b.removeChild(elm);return;})();";
+								var bookmarklet = "javascript:(function(){var b=document.body;elm=document.createElement('script');elm.setAttribute('type','text/javascript');elm.src='https://tomk79.github.io/DEC/dec_show.js';b.appendChild(elm);b.removeChild(elm);return;})();";
 								$elms.previewIframe.get(0).contentWindow.location = bookmarklet;
 								return false;
 							})

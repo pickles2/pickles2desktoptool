@@ -16,7 +16,6 @@ window.contApp = new (function( px ){
 		pageDraw,
 		pageSearch;
 
-	this.git = _pj.git();
 	this.gitUi = new px2dtGitUi(px, _pj);
 
 	/**

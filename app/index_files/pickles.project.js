@@ -1456,6 +1456,13 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	}
 
 	/**
+	 * px2-git操作オブジェクトを生成・取得する
+	 */
+	this.px2GitPhp = function(){
+		return new (require('./pickles.project.px2GitPhp.js'))(px, this);
+	}
+
+	/**
 	 * コンフィグ編集オブジェクトを生成・取得する
 	 */
 	this.configEditor = function(){

@@ -3448,8 +3448,6 @@ window.contApp = new (function(px, $){
 	var fsEx = px.fsEx;
 	var filelist;
 	var $filelist;
-	this.git = pj.git();
-	// console.log(git);
 	this.gitUi = new px2dtGitUi(px, pj);
 
 	/**

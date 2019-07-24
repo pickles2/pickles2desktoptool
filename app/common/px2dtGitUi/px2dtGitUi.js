@@ -2,7 +2,7 @@ function px2dtGitUi(px, pj){
 	var _this = this;
 	this.px = px;
 	this.pj = pj;
-	this.git = pj.git();
+	this.git = pj.px2GitPhp( px, pj );
 	var divDb = {
 		'sitemaps':{
 			'label':'サイトマップ'

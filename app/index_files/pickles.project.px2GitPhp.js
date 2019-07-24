@@ -4,7 +4,6 @@
 module.exports = function( px, pj ) {
 	var _this = this;
 
-	var nodePhpBin = px.nodePhpBin;
 	var utils79 = px.utils79;
 	var path_px2git = require('path').resolve(__dirname+'/../common/php/git/px2-git.php');
 	var entryScript = require('path').resolve(pj.get('path'), pj.get('entry_script'));

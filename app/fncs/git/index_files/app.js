@@ -131,44 +131,12 @@ window.contApp = new (function(){
 		var pj = px.getCurrentProject();
 		$('.cont_console').text('');
 
-
-		var stdout = '';
-		px.commandQueue.client.addQueueItem(
-			[
-				'git',
-				'status'
-			],
-			{
-				'cdName': 'git',
-				'tags': [
-					'pj-'+pj.get('id'),
-					'git-status'
-				],
-				'accept': function(queueId){
-					// console.log(queueId);
-				},
-				'open': function(message){
-				},
-				'stdout': function(message){
-					for(var idx in message.data){
-						stdout += message.data[idx];
-					}
-					$('.cont_console').text(stdout);
-				},
-				'stderr': function(message){
-					for(var idx in message.data){
-						stdout += message.data[idx];
-					}
-					$('.cont_console').text(stdout);
-				},
-				'close': function(message){
-					$('.cont_console').text( stdout );
-					$(btn).removeAttr('disabled').focus();
-					px.message( 'Git のステータス表示を完了しました。' );
-					return;
-				}
-			}
-		);
+		pj.git().parser.git(['status'], function(result){
+			// console.log(result);
+			$('.cont_console').text( result.stdout );
+			$(btn).removeAttr('disabled').focus();
+			px.message( 'Git のステータス表示を完了しました。' );
+		});
 	}
 
 	/**
@@ -179,44 +147,12 @@ window.contApp = new (function(){
 		var pj = px.getCurrentProject();
 		$('.cont_console').text('');
 
-
-		var stdout = '';
-		px.commandQueue.client.addQueueItem(
-			[
-				'git',
-				'pull'
-			],
-			{
-				'cdName': 'git',
-				'tags': [
-					'pj-'+pj.get('id'),
-					'git-pull'
-				],
-				'accept': function(queueId){
-					// console.log(queueId);
-				},
-				'open': function(message){
-				},
-				'stdout': function(message){
-					for(var idx in message.data){
-						stdout += message.data[idx];
-					}
-					$('.cont_console').text(stdout);
-				},
-				'stderr': function(message){
-					for(var idx in message.data){
-						stdout += message.data[idx];
-					}
-					$('.cont_console').text(stdout);
-				},
-				'close': function(message){
-					$('.cont_console').text( stdout );
-					$(btn).removeAttr('disabled').focus();
-					px.message( 'git-pull を完了しました。' );
-					return;
-				}
-			}
-		);
+		pj.git().parser.git(['pull'], function(result){
+			// console.log(result);
+			$('.cont_console').text( result.stdout );
+			$(btn).removeAttr('disabled').focus();
+			px.message( 'git-pull を完了しました。' );
+		});
 	}
 
 	/**
@@ -235,85 +171,22 @@ window.contApp = new (function(){
 		new Promise(function(rlv){rlv();})
 			.then(function(){ return new Promise(function(rlv, rjt){
 				// git-add
-				px.commandQueue.client.addQueueItem(
-					[
-						'git',
-						'add',
-						'./'
-					],
-					{
-						'cdName': 'git',
-						'tags': [
-							'pj-'+pj.get('id'),
-							'git-commit'
-						],
-						'accept': function(queueId){
-							// console.log(queueId);
-						},
-						'open': function(message){
-						},
-						'stdout': function(message){
-							for(var idx in message.data){
-								stdout += message.data[idx];
-							}
-							$('.cont_console').text(stdout);
-						},
-						'stderr': function(message){
-							for(var idx in message.data){
-								stdout += message.data[idx];
-							}
-							$('.cont_console').text(stdout);
-						},
-						'close': function(message){
-							$('.cont_console').text( stdout );
-							rlv();
-							return;
-						}
-					}
-				);
+				pj.git().parser.git(['add', './'], function(result){
+					// console.log(result);
+					$('.cont_console').text( result.stdout );
+					rlv();
+				});
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
 				// git-commit
-				px.commandQueue.client.addQueueItem(
-					[
-						'git',
-						'commit',
-						'-m',
-						commit_message
-					],
-					{
-						'cdName': 'git',
-						'tags': [
-							'pj-'+pj.get('id'),
-							'git-commit'
-						],
-						'accept': function(queueId){
-							// console.log(queueId);
-						},
-						'open': function(message){
-						},
-						'stdout': function(message){
-							for(var idx in message.data){
-								stdout += message.data[idx];
-							}
-							$('.cont_console').text(stdout);
-						},
-						'stderr': function(message){
-							for(var idx in message.data){
-								stdout += message.data[idx];
-							}
-							$('.cont_console').text(stdout);
-						},
-						'close': function(message){
-							$('.cont_console').text( stdout );
-							$(btn).removeAttr('disabled').focus();
-							px.message( 'git-commit を完了しました。' );
-							rlv();
-							return;
-						}
-					}
-				);
+				pj.git().parser.git(['commit', '-m', commit_message], function(result){
+					// console.log(result);
+					$('.cont_console').text( result.stdout );
+					$(btn).removeAttr('disabled').focus();
+					px.message( 'git-commit を完了しました。' );
+					rlv();
+				});
 				return;
 			}); })
 		;
@@ -328,44 +201,12 @@ window.contApp = new (function(){
 		var pj = px.getCurrentProject();
 		$('.cont_console').text('');
 
-
-		var stdout = '';
-		px.commandQueue.client.addQueueItem(
-			[
-				'git',
-				'push'
-			],
-			{
-				'cdName': 'git',
-				'tags': [
-					'pj-'+pj.get('id'),
-					'git-push'
-				],
-				'accept': function(queueId){
-					// console.log(queueId);
-				},
-				'open': function(message){
-				},
-				'stdout': function(message){
-					for(var idx in message.data){
-						stdout += message.data[idx];
-					}
-					$('.cont_console').text(stdout);
-				},
-				'stderr': function(message){
-					for(var idx in message.data){
-						stdout += message.data[idx];
-					}
-					$('.cont_console').text(stdout);
-				},
-				'close': function(message){
-					$('.cont_console').text( stdout );
-					$(btn).removeAttr('disabled').focus();
-					px.message( 'git-push を完了しました。' );
-					return;
-				}
-			}
-		);
+		pj.git().parser.git(['push'], function(result){
+			// console.log(result);
+			$('.cont_console').text( result.stdout );
+			$(btn).removeAttr('disabled').focus();
+			px.message( 'git-push を完了しました。' );
+		});
 	}
 
 	/**

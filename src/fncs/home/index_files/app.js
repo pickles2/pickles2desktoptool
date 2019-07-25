@@ -4,6 +4,7 @@ window.contApp = new (function(){
 	var pj = px.getCurrentProject();
 	this.pj = pj;
 	var status = pj.status();
+	this.gitBar = new(require('../../../fncs/home/index_files/apis.ignore/gitBar.js'))(this, px, $);
 
 	/**
 	 * installer collection
@@ -105,6 +106,21 @@ window.contApp = new (function(){
 				return;
 			} ,
 			function(it, arg){
+				// --------------------------------------
+				// Gitバーを表示する
+				var $gitBar = $('.cont-git-bar');
+				if(!status.gitDirExists){
+					$gitBar.remove();
+					it.next(arg);
+					return;
+				}
+				_this.gitBar.init( $gitBar, function(){
+					it.next(arg);
+				} );
+			} ,
+			function(it, arg){
+				// --------------------------------------
+				// Hintを表示する
 				var hint = px.hint.getRandom();
 				// console.log(hint);
 				$('.cont_hint').html( hint );

@@ -75,6 +75,15 @@ module.exports = function(px){
 		}
 	});
 	_menu.push({
+		"label":px.lb.get('menu.openAppInBrowser'),
+		"cond":"pxStandby",
+		"area":"shoulder",
+		"app":null,
+		"click": function(){
+			px.openAppInBrowser();
+		}
+	});
+	_menu.push({
 		"label":px.lb.get('menu.openInTexteditor'),
 		"cond":"homeDirExists",
 		"area":"shoulder",
@@ -102,14 +111,31 @@ module.exports = function(px){
 		}
 	});
 	_menu.push({
-		"label":px.lb.get('menu.projectConfig'),
+		"label":px.lb.get('menu.config'),
 		"cond":"pxStandby",
 		"area":"shoulder",
-		"app":"fncs/config/index.html",
-		"click": function(){
-			px.subapp($(this).data('app'));
-		}
+		"submenu": [
+			{
+				"label":px.lb.get('menu.projectConfig'),
+				"cond":"pxStandby",
+				"area":"shoulder",
+				"app":"fncs/config/index.html",
+				"click": function(){
+					px.subapp($(this).data('app'));
+				}
+			},
+			{
+				"label":_appName+" "+px.lb.get('menu.desktoptoolConfig'),
+				"cond":"always",
+				"area":"shoulder",
+				"app":null,
+				"click": function(){
+					px.editPx2DTConfig();
+				}
+			}
+		]
 	});
+
 	_menu.push({
 		"label":px.lb.get('menu.composer'),
 		"cond":"composerJsonExists",
@@ -129,24 +155,6 @@ module.exports = function(px){
 		}
 	});
 	_menu.push({
-		"label":px.lb.get('menu.preview'),
-		"cond":"pxStandby",
-		"area":"shoulder",
-		"app":"fncs/preview/index.html",
-		"click": function(){
-			px.subapp($(this).data('app'));
-		}
-	});
-	_menu.push({
-		"label":px.lb.get('menu.search'),
-		"cond":"pxStandby",
-		"area":"shoulder",
-		"app":"fncs/search/index.html",
-		"click": function(){
-			px.subapp($(this).data('app'));
-		}
-	});
-	_menu.push({
 		"label":px.lb.get('menu.module'),
 		"cond":"pxStandby",
 		"area":"shoulder",
@@ -156,58 +164,65 @@ module.exports = function(px){
 		}
 	});
 	_menu.push({
-		"label":px.lb.get('menu.styleguideGenerator'),
+		"label":px.lb.get('menu.tool'),
 		"cond":"pxStandby",
 		"area":"shoulder",
-		"app":"fncs/styleguide_generator/index.html",
-		"click": function(){
-			px.subapp($(this).data('app'));
-		}
-	});
-	_menu.push({
-		"label":px.lb.get('menu.mkContentFilesByList'),
-		"cond":"pxStandby",
-		"area":"shoulder",
-		"app":"fncs/make_content_files_by_list/index.html",
-		"click": function(){
-			px.subapp($(this).data('app'));
-		}
-	});
-	_menu.push({
-		"label":px.lb.get('menu.mkContentFileList'),
-		"cond":"pxStandby",
-		"area":"shoulder",
-		"app":"fncs/make_content_file_list/index.html",
-		"click": function(){
-			px.subapp($(this).data('app'));
-		}
-	});
-	_menu.push({
-		"label":px.lb.get('menu.contentsProcessor'),
-		"cond":"pxStandby",
-		"area":"shoulder",
-		"app":"fncs/contents_processor/index.html",
-		"click": function(){
-			px.subapp($(this).data('app'));
-		}
-	});
-	_menu.push({
-		"label":px.lb.get('menu.moveContents'),
-		"cond":"pxStandby",
-		"area":"shoulder",
-		"app":"fncs/move_contents/index.html",
-		"click": function(){
-			px.subapp($(this).data('app'));
-		}
-	});
-	_menu.push({
-		"label":px.lb.get('menu.updateGuiContents'),
-		"cond":"pxStandby",
-		"area":"shoulder",
-		"app":"fncs/rebuild_guiedit_contents/index.html",
-		"click": function(){
-			px.subapp($(this).data('app'));
-		}
+		"submenu": [
+			{
+				"label":px.lb.get('menu.styleguideGenerator'),
+				"cond":"pxStandby",
+				"area":"shoulder",
+				"app":"fncs/styleguide_generator/index.html",
+				"click": function(){
+					px.subapp($(this).data('app'));
+				}
+			},
+			{
+				"label":px.lb.get('menu.mkContentFilesByList'),
+				"cond":"pxStandby",
+				"area":"shoulder",
+				"app":"fncs/make_content_files_by_list/index.html",
+				"click": function(){
+					px.subapp($(this).data('app'));
+				}
+			},
+			{
+				"label":px.lb.get('menu.mkContentFileList'),
+				"cond":"pxStandby",
+				"area":"shoulder",
+				"app":"fncs/make_content_file_list/index.html",
+				"click": function(){
+					px.subapp($(this).data('app'));
+				}
+			},
+			{
+				"label":px.lb.get('menu.contentsProcessor'),
+				"cond":"pxStandby",
+				"area":"shoulder",
+				"app":"fncs/contents_processor/index.html",
+				"click": function(){
+					px.subapp($(this).data('app'));
+				}
+			},
+			{
+				"label":px.lb.get('menu.moveContents'),
+				"cond":"pxStandby",
+				"area":"shoulder",
+				"app":"fncs/move_contents/index.html",
+				"click": function(){
+					px.subapp($(this).data('app'));
+				}
+			},
+			{
+				"label":px.lb.get('menu.updateGuiContents'),
+				"cond":"pxStandby",
+				"area":"shoulder",
+				"app":"fncs/rebuild_guiedit_contents/index.html",
+				"click": function(){
+					px.subapp($(this).data('app'));
+				}
+			}
+		]
 	});
 	_menu.push({
 		"label":px.lb.get('menu.clearcache'),
@@ -235,43 +250,79 @@ module.exports = function(px){
 	// 	}
 	// });
 	_menu.push({
-		"label":px.lb.get('menu.systemInfo'),
-		"cond":"always",
+		"label":px.lb.get('menu.preview'),
+		"cond":"pxStandby",
 		"area":"shoulder",
-		"app":null,
+		"app":"fncs/preview/index.html",
 		"click": function(){
-			var $iframe = $('<iframe>')
-				.attr({
-					'src': 'mods/systeminfo/index.html'
-				})
-				.css({
-					'width':'100%',
-					'height':460
-				})
-			;
-			px.dialog({
-				'title': px.lb.get('menu.systemInfo'),
-				'body': $iframe
-			});
+			px.subapp($(this).data('app'));
 		}
 	});
 	_menu.push({
-		"label":_appName+" "+px.lb.get('menu.desktoptoolConfig'),
-		"cond":"always",
+		"label":px.lb.get('menu.search'),
+		"cond":"pxStandby",
 		"area":"shoulder",
-		"app":null,
+		"app":"fncs/search/index.html",
 		"click": function(){
-			px.editPx2DTConfig();
+			px.subapp($(this).data('app'));
 		}
 	});
 	_menu.push({
-		"label":px.lb.get('menu.help'),
+		"label":px.lb.get('menu.system'),
 		"cond":"always",
 		"area":"shoulder",
-		"app":null,
-		"click": function(){
-			px.openHelp();
-		}
+		"submenu": [
+			{
+				"label":px.lb.get('menu.systemInfo'),
+				"cond":"always",
+				"area":"shoulder",
+				"app":null,
+				"click": function(){
+					var $iframe = $('<iframe>')
+						.attr({
+							'src': 'mods/systeminfo/index.html'
+						})
+						.css({
+							'width':'100%',
+							'height':460
+						})
+					;
+					px.dialog({
+						'title': px.lb.get('menu.systemInfo'),
+						'body': $iframe
+					});
+				}
+			},
+			{
+				"label":px.lb.get('menu.developerTool'),
+				"cond":"always",
+				"area":"shoulder",
+				"app":null,
+				"click": function(){
+					// ブラウザの DevTools を開く
+					nw.Window.get().showDevTools();
+					// FYI: nodeJs の DevTools は スクリプト上から開けない
+				}
+			},
+			{
+				"label":_appName+" "+px.lb.get('menu.desktoptoolConfig'),
+				"cond":"always",
+				"area":"shoulder",
+				"app":null,
+				"click": function(){
+					px.editPx2DTConfig();
+				}
+			},
+			{
+				"label":px.lb.get('menu.commandlog'),
+				"cond":"always",
+				"area":"shoulder",
+				"app":null,
+				"click": function(){
+					px.commandQueue.show();
+				}
+			}
+		]
 	});
 	if( px.packageJson.manifestUrl ){
 		_menu.push({
@@ -285,14 +336,12 @@ module.exports = function(px){
 		});
 	}
 	_menu.push({
-		"label":px.lb.get('menu.developerTool'),
+		"label":px.lb.get('menu.help'),
 		"cond":"always",
 		"area":"shoulder",
 		"app":null,
 		"click": function(){
-			// ブラウザの DevTools を開く
-			nw.Window.get().showDevTools();
-			// FYI: nodeJs の DevTools は スクリプト上から開けない
+			px.openHelp();
 		}
 	});
 	_menu.push({
@@ -315,56 +364,75 @@ module.exports = function(px){
 	/**
 	 * グローバルメニューを描画
 	 */
-	this.drawGlobalMenu = function($shoulderMenu, _current_app){
+	this.drawGlobalMenu = function($shoulderMenu, _current_app, _menuList, $parent){
 		var cpj = px.getCurrentProject();
 		var cpj_s = null;
 		if( cpj !== null ){
 			cpj_s = cpj.status()
 		}
+		var menuList = [];
+		if(_menuList){
+			menuList = _menuList;
+		}else{
+			menuList = _menu;
+		}
 
-		for( var i in _menu ){
-			if( _menu[i].cond == 'projectSelected' ){
+		for( var i in menuList ){
+			if( menuList[i].cond == 'projectSelected' ){
 				if( cpj === null ){
 					continue;
 				}
-			}else if( _menu[i].cond == 'composerJsonExists' ){
+			}else if( menuList[i].cond == 'composerJsonExists' ){
 				if( cpj === null || !cpj_s.composerJsonExists ){
 					continue;
 				}
-			}else if( _menu[i].cond == 'homeDirExists' ){
+			}else if( menuList[i].cond == 'homeDirExists' ){
 				if( cpj === null || !cpj_s.homeDirExists ){
 					continue;
 				}
-			}else if( _menu[i].cond == 'pxStandby' ){
+			}else if( menuList[i].cond == 'pxStandby' ){
 				if( cpj === null || !cpj_s.isPxStandby ){
 					continue;
 				}
-			}else if( _menu[i].cond != 'always' ){
+			}else if( menuList[i].cond != 'always' ){
 				continue;
 			}
 
 			var $tmpMenu = $('<a>')
 				.attr({
-					"href":(_menu[i].href || "javascript:;"),
-					"data-name": _menu[i].app
+					"href":(menuList[i].href || "javascript:;"),
+					"data-name": menuList[i].app
 				})
-				.on('click', (_menu[i].click || function(){}))
-				.text(_menu[i].label)
-				.data('app', _menu[i].app)
-				.addClass( ( _current_app==_menu[i].app ? 'current' : '' ) )
+				.text(menuList[i].label)
+				.data('app', menuList[i].app)
+				.addClass( ( _current_app==menuList[i].app ? 'current' : '' ) )
 			;
+			if( menuList[i].click ){
+				$tmpMenu.on('click', menuList[i].click);
+			}
 
-			switch( _menu[i].area ){
-				case 'shoulder':
-					$shoulderMenu.find('ul').append( $('<li>')
-						.append( $tmpMenu )
-					);
-					break;
-				default:
-					$('.px2-header__global-menu ul').append( $('<li>')
-						.append( $tmpMenu )
-					);
-					break;
+			var $li = $('<li>');
+			if( _menuList && $parent ){
+				$parent.append( $li.append($tmpMenu) );
+			}else{
+				switch( menuList[i].area ){
+					case 'shoulder':
+						$shoulderMenu.find('>ul').append( $li
+							.append( $tmpMenu )
+						);
+						break;
+					default:
+						$('.px2-header__global-menu > ul').append( $li
+							.append( $tmpMenu )
+						);
+						break;
+				}
+			}
+
+			if( menuList[i].submenu ){
+				var $ul = $( '<ul>' );
+				$li.append( $ul );
+				this.drawGlobalMenu($shoulderMenu, _current_app, menuList[i].submenu, $ul);
 			}
 		}
 		return;

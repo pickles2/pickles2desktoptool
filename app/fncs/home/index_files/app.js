@@ -358,26 +358,92 @@ module.exports = function(contApp, px, $){
 		$elm = tmp$elm;
 
 		$elm.html('Gitの情報を収集しています...');
-		callback(); // ← ひとまず待ってもらう用事はないので返してしまう。
+		callback(); // ← 待ってもらう用事はないので返してしまう。
 
-		pj.git().parser.git(['status'], function(result){
-			console.log(result);
-			setTimeout(function(){
+		var status,
+			branches;
+		new Promise(function(rlv){rlv();})
+			.then(function(){ return new Promise(function(rlv, rjt){
+				pj.git().parser.git(['status'], function(result){
+					// console.log(result);
+					status = result;
+					rlv();
+				});
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				pj.git().parser.git(['branch'], function(result){
+					// console.log(result);
+					branches = result;
+					rlv();
+				});
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				var $select = $('<select>').on('change', function(){
+					var newBranchName = $(this).val();
+					gitCheckout(newBranchName);
+				});
+				for(var i = 0; i<branches.branches.length; i++){
+					$select.append( $('<option>')
+						.val(branches.branches[i])
+						.text(branches.branches[i])
+						.attr({'selected': (branches.branches[i] == branches.currentBranchName ? 'selected' : false)})
+					);
+				}
 				$elm.html( '' );
-				var changes = result.staged.deleted.length
-					+ result.staged.modified.length
-					+ result.staged.untracked.length
-					+ result.notStaged.deleted.length
-					+ result.notStaged.modified.length
-					+ result.notStaged.untracked.length;
-				$elm.append( $('<div>').text('branch: '+result.currentBranchName) );
+				var changes = status.staged.deleted.length
+					+ status.staged.modified.length
+					+ status.staged.untracked.length
+					+ status.notStaged.deleted.length
+					+ status.notStaged.modified.length
+					+ status.notStaged.untracked.length;
+				$elm.append( $('<div>').text('branch: ').append( $select ) );
 				$elm.append( $('<div>').text('Uncommited changes: '+(changes)) );
-			}, 500)
-
-			// px.message( 'Git のステータス表示を完了しました。' );
-		});
+				rlv();
+				return;
+			}); })
+		;
 
 	} // this.init();
+
+	function gitCheckout(newBranchName){
+
+		new Promise(function(rlv){rlv();})
+			.then(function(){ return new Promise(function(rlv, rjt){
+				pj.git().parser.git(['status'], function(result){
+					console.log(result);
+					var status = result;
+					var changes = status.staged.deleted.length
+						+ status.staged.modified.length
+						+ status.staged.untracked.length
+						+ status.notStaged.deleted.length
+						+ status.notStaged.modified.length
+						+ status.notStaged.untracked.length;
+					if( changes ){
+						alert('コミットされていない変更があります。コミットするか、変更を破棄してから再度実行してください。');
+						return;
+					}
+					rlv();
+				});
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				pj.git().parser.git(['checkout', newBranchName], function(result){
+					console.log(result);
+					rlv();
+				});
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				px.message('ブランチを切り替えました。');
+				px.subapp();
+				rlv();
+				return;
+			}); })
+		;
+
+	}
 
 	return this;
 }

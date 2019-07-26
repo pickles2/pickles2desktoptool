@@ -39,7 +39,7 @@ module.exports = function( px, pj ) {
 				'close': function(message){
 					setTimeout(function(){
 						var code = message.data;
-						console.log(stdout, stderr, code);
+						// console.log(stdout, stderr, code);
 						callback(code, stdout);
 					},500);
 					return;

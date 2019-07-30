@@ -3103,6 +3103,8 @@ var utils = require('./utils');
 
 var scopeOptionWarned = false;
 var _VERSION_STRING = require('../package.json').version;
+var _DEFAULT_OPEN_DELIMITER = '<';
+var _DEFAULT_CLOSE_DELIMITER = '>';
 var _DEFAULT_DELIMITER = '%';
 var _DEFAULT_LOCALS_NAME = 'locals';
 var _NAME = 'ejs';
@@ -3188,9 +3190,10 @@ function getIncludePath(path, options) {
   var includePath;
   var filePath;
   var views = options.views;
+  var match = /^[A-Za-z]+:\\|^\//.exec(path);
 
   // Abs path
-  if (path.charAt(0) == '/') {
+  if (match && match.length) {
     includePath = exports.resolveInclude(path.replace(/^\/*/,''), options.root || '/', true);
   }
   // Relative paths
@@ -3540,6 +3543,12 @@ exports.renderFile = function () {
  * @public
  */
 
+/**
+ * EJS template class
+ * @public
+ */
+exports.Template = Template;
+
 exports.clearCache = function () {
   exports.cache.reset();
 };
@@ -3554,10 +3563,12 @@ function Template(text, opts) {
   this.source = '';
   this.dependencies = [];
   options.client = opts.client || false;
-  options.escapeFunction = opts.escape || utils.escapeXML;
+  options.escapeFunction = opts.escape || opts.escapeFunction || utils.escapeXML;
   options.compileDebug = opts.compileDebug !== false;
   options.debug = !!opts.debug;
   options.filename = opts.filename;
+  options.openDelimiter = opts.openDelimiter || exports.openDelimiter || _DEFAULT_OPEN_DELIMITER;
+  options.closeDelimiter = opts.closeDelimiter || exports.closeDelimiter || _DEFAULT_CLOSE_DELIMITER;
   options.delimiter = opts.delimiter || exports.delimiter || _DEFAULT_DELIMITER;
   options.strict = opts.strict || false;
   options.context = opts.context;
@@ -3593,7 +3604,11 @@ Template.prototype = {
   createRegex: function () {
     var str = _REGEX_STRING;
     var delim = utils.escapeRegExpChars(this.opts.delimiter);
-    str = str.replace(/%/g, delim);
+    var open = utils.escapeRegExpChars(this.opts.openDelimiter);
+    var close = utils.escapeRegExpChars(this.opts.closeDelimiter);
+    str = str.replace(/%/g, delim)
+      .replace(/</g, open)
+      .replace(/>/g, close);
     return new RegExp(str);
   },
 
@@ -3604,7 +3619,7 @@ Template.prototype = {
     var prepended = '';
     var appended = '';
     var escapeFn = opts.escapeFunction;
-    var asyncCtor;
+    var ctor;
 
     if (!this.source) {
       this.generateSource();
@@ -3654,7 +3669,7 @@ Template.prototype = {
         // Have to use generated function for this, since in envs without support,
         // it breaks in parsing
         try {
-          asyncCtor = (new Function('return (async function(){}).constructor;'))();
+          ctor = (new Function('return (async function(){}).constructor;'))();
         }
         catch(e) {
           if (e instanceof SyntaxError) {
@@ -3666,9 +3681,9 @@ Template.prototype = {
         }
       }
       else {
-        asyncCtor = Function;
+        ctor = Function;
       }
-      fn = new asyncCtor(opts.localsName + ', escapeFn, include, rethrow', src);
+      fn = new ctor(opts.localsName + ', escapeFn, include, rethrow', src);
     }
     catch(e) {
       // istanbul ignore else
@@ -3714,9 +3729,9 @@ Template.prototype = {
 
     if (opts.rmWhitespace) {
       // Have to use two separate replace here as `^` and `$` operators don't
-      // work well with `\r`.
+      // work well with `\r` and empty lines don't work well with the `m` flag.
       this.templateText =
-        this.templateText.replace(/\r/g, '').replace(/^\s+|\s+$/gm, '');
+        this.templateText.replace(/[\r\n]+/g, '\n').replace(/^\s+|\s+$/gm, '');
     }
 
     // Slurp spaces and tabs before <%_ and after _%>
@@ -3726,6 +3741,8 @@ Template.prototype = {
     var self = this;
     var matches = this.parseTemplateText();
     var d = this.opts.delimiter;
+    var o = this.opts.openDelimiter;
+    var c = this.opts.closeDelimiter;
 
     if (matches && matches.length) {
       matches.forEach(function (line, index) {
@@ -3737,12 +3754,12 @@ Template.prototype = {
         var includeSrc;
         // If this is an opening tag, check for closing tags
         // FIXME: May end up with some false positives here
-        // Better to store modes as k/v with '<' + delimiter as key
+        // Better to store modes as k/v with openDelimiter + delimiter as key
         // Then this can simply check against the map
-        if ( line.indexOf('<' + d) === 0        // If it is a tag
-          && line.indexOf('<' + d + d) !== 0) { // and is not escaped
+        if ( line.indexOf(o + d) === 0        // If it is a tag
+          && line.indexOf(o + d + d) !== 0) { // and is not escaped
           closing = matches[index + 2];
-          if (!(closing == d + '>' || closing == '-' + d + '>' || closing == '_' + d + '>')) {
+          if (!(closing == d + c || closing == '-' + d + c || closing == '_' + d + c)) {
             throw new Error('Could not find matching close tag for "' + line + '".');
           }
         }
@@ -3750,7 +3767,7 @@ Template.prototype = {
         if ((include = line.match(/^\s*include\s+(\S+)/))) {
           opening = matches[index - 1];
           // Must be in EVAL or RAW mode
-          if (opening && (opening == '<' + d || opening == '<' + d + '-' || opening == '<' + d + '_')) {
+          if (opening && (opening == o + d || opening == o + d + '-' || opening == o + d + '_')) {
             includeOpts = utils.shallowCopy({}, self.opts);
             includeObj = includeSource(include[1], includeOpts);
             if (self.opts.compileDebug) {
@@ -3818,11 +3835,6 @@ Template.prototype = {
       line = line.replace(/^(?:\r\n|\r|\n)/, '');
       this.truncate = false;
     }
-    else if (this.opts.rmWhitespace) {
-      // rmWhitespace has already removed trailing spaces, just need
-      // to remove linebreaks
-      line = line.replace(/^\n/, '');
-    }
     if (!line) {
       return line;
     }
@@ -3843,35 +3855,37 @@ Template.prototype = {
   scanLine: function (line) {
     var self = this;
     var d = this.opts.delimiter;
+    var o = this.opts.openDelimiter;
+    var c = this.opts.closeDelimiter;
     var newLineCount = 0;
 
     newLineCount = (line.split('\n').length - 1);
 
     switch (line) {
-    case '<' + d:
-    case '<' + d + '_':
+    case o + d:
+    case o + d + '_':
       this.mode = Template.modes.EVAL;
       break;
-    case '<' + d + '=':
+    case o + d + '=':
       this.mode = Template.modes.ESCAPED;
       break;
-    case '<' + d + '-':
+    case o + d + '-':
       this.mode = Template.modes.RAW;
       break;
-    case '<' + d + '#':
+    case o + d + '#':
       this.mode = Template.modes.COMMENT;
       break;
-    case '<' + d + d:
+    case o + d + d:
       this.mode = Template.modes.LITERAL;
-      this.source += '    ; __append("' + line.replace('<' + d + d, '<' + d) + '")' + '\n';
+      this.source += '    ; __append("' + line.replace(o + d + d, o + d) + '")' + '\n';
       break;
-    case d + d + '>':
+    case d + d + c:
       this.mode = Template.modes.LITERAL;
-      this.source += '    ; __append("' + line.replace(d + d + '>', d + '>') + '")' + '\n';
+      this.source += '    ; __append("' + line.replace(d + d + c, d + c) + '")' + '\n';
       break;
-    case d + '>':
-    case '-' + d + '>':
-    case '_' + d + '>':
+    case d + c:
+    case '-' + d + c:
+    case '_' + d + c:
       if (this.mode == Template.modes.LITERAL) {
         this._addOutput(line);
       }
@@ -4152,6 +4166,9 @@ exports.cache = {
   get: function (key) {
     return this._data[key];
   },
+  remove: function (key) {
+    delete this._data[key];
+  },
   reset: function () {
     this._data = {};
   }
@@ -4159,30 +4176,31 @@ exports.cache = {
 
 },{}],17:[function(require,module,exports){
 module.exports={
-  "_from": "ejs@^2.4.1",
-  "_id": "ejs@2.6.1",
+  "_from": "ejs@2.6.2",
+  "_id": "ejs@2.6.2",
   "_inBundle": false,
-  "_integrity": "sha512-0xy4A/twfrRCnkhfk8ErDi5DqdAsAqeGxht4xkCUrsvhhbQNs7E+4jV0CN7+NKIY0aHE72+XvqtBIXzD31ZbXQ==",
+  "_integrity": "sha512-PcW2a0tyTuPHz3tWyYqtK6r1fZ3gp+3Sop8Ph+ZYN81Ob5rwmbHEzaqs10N3BEsaGTkh/ooniXK+WwszGlc2+Q==",
   "_location": "/ejs",
   "_phantomChildren": {},
   "_requested": {
-    "type": "range",
+    "type": "version",
     "registry": true,
-    "raw": "ejs@^2.4.1",
+    "raw": "ejs@2.6.2",
     "name": "ejs",
     "escapedName": "ejs",
-    "rawSpec": "^2.4.1",
+    "rawSpec": "2.6.2",
     "saveSpec": null,
-    "fetchSpec": "^2.4.1"
+    "fetchSpec": "2.6.2"
   },
   "_requiredBy": [
+    "#USER",
     "/",
     "/broccoli-html-editor",
     "/langbank"
   ],
-  "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.6.1.tgz",
-  "_shasum": "498ec0d495655abc6f23cd61868d926464071aa0",
-  "_spec": "ejs@^2.4.1",
+  "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.6.2.tgz",
+  "_shasum": "3a32c63d1cd16d11266cd4703b14fec4e74ab4f6",
+  "_spec": "ejs@2.6.2",
   "_where": "/mydoc_TomK/projs/pickles2/pickles2/node-pickles2-contents-editor",
   "author": {
     "name": "Matthew Eernisse",
@@ -4237,7 +4255,7 @@ module.exports={
     "lint": "eslint \"**/*.js\" Jakefile",
     "test": "jake test"
   },
-  "version": "2.6.1"
+  "version": "2.6.2"
 }
 
 },{}],18:[function(require,module,exports){
@@ -22608,6 +22626,7 @@ module.exports = function(px2ce){
 	var Promise = require('es6-promise').Promise;
 	var px2conf = {}
 		moduleCssJs = {css: '', js: ''},
+		localCssJs = {css: '', js: ''},
 		pagesByLayout = [];
 	var editorLib = null;
 	if(window.ace){
@@ -22625,15 +22644,26 @@ module.exports = function(px2ce){
 	var show_instanceTreeView = false;
 
 	function getCanvasPageUrl(){
+		var rtn = getPreviewUrl();
 		if( px2ce.target_mode == 'theme_layout' ){
-			var path_html = px2ce.__dirname + '/editor/broccoli/canvas.html'
-			path_html += '?css='+utils79.base64_encode(moduleCssJs.css);
-			path_html += '&js='+utils79.base64_encode(moduleCssJs.js);
-			return path_html;
+			rtn = px2ce.__dirname + '/editor/broccoli/canvas.html'
+			rtn += '?css='+utils79.base64_encode(moduleCssJs.css + "/* */\n" + localCssJs.css);
+			rtn += '&js='+utils79.base64_encode(moduleCssJs.js + "/* */\n" + localCssJs.js);
 		}
-		var pathname = px2conf.path_controot + page_path;
-		pathname = pathname.replace( new RegExp('\/+', 'g'), '/' );
-		return px2ce.options.preview.origin + pathname;
+		var hash = '';
+		var query = '';
+		if(rtn.match(/^([\s\S]*?)\#([\s\S]*)$/g)){
+			rtn = RegExp.$1;
+			hash = RegExp.$2;
+		}
+		if(rtn.match(/^([\s\S]*?)\?([\s\S]*)$/g)){
+			rtn = RegExp.$1;
+			query = RegExp.$2;
+		}
+		rtn += (query.length ? '?'+query+'&' : '?') + 'PICKLES2_CONTENTS_EDITOR=broccoli';
+		rtn += (hash.length ? '#'+hash : '');
+		// console.log(rtn);
+		return rtn;
 	}
 	function getPreviewUrl(){
 		if( px2ce.target_mode == 'theme_layout' ){
@@ -22648,7 +22678,11 @@ module.exports = function(px2ce){
 			return px2ce.options.preview.origin + pathname;
 		}
 
-		return getCanvasPageUrl();
+		var pathname = px2conf.path_controot + px2ce.page_path;
+		pathname = pathname.replace( new RegExp('\/+', 'g'), '/' );
+		var rtn = px2ce.options.preview.origin + pathname;
+		// console.log(rtn);
+		return rtn;
 	}
 
 	/**
@@ -22672,40 +22706,46 @@ module.exports = function(px2ce){
 				rlv();
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
-				toolbar.init({
-					"btns":[
-						{
-							"label": px2ce.lb.get('ui_label.toggle_instance_treeview'),
-							"click": function(){
-								show_instanceTreeView = (show_instanceTreeView ? false : true);
-								_this.redraw(function(){
-									// alert('完了');
-								});
-							}
-						},
-						{
-							"label": px2ce.lb.get('ui_label.open_in_browser'),
-							"click": function(){
-								px2ce.openUrlInBrowser( getPreviewUrl() );
-							}
+				var btns = [
+					{
+						"label": px2ce.lb.get('ui_label.toggle_instance_treeview'),
+						"click": function(){
+							show_instanceTreeView = (show_instanceTreeView ? false : true);
+							_this.redraw(function(){
+								// alert('完了');
+							});
 						}
-						// ↓ CSSとJavaScriptをBroccoli編集画面から編集できる機能を
-						// 　試作してみたが、乱用された場合にコンテンツデザインの
-						// 　一貫性を損ねるリスクがあるので、
-						// 　ひとまずペンディングにする。
-						// {
-						// 	"label": 'CSS',
-						// 	"click": function(){
-						// 		openCssJsEditor('css');
-						// 	}
-						// },
-						// {
-						// 	"label": 'JavaScript',
-						// 	"click": function(){
-						// 		openCssJsEditor('js');
-						// 	}
-						// }
-					],
+					},
+					{
+						"label": px2ce.lb.get('ui_label.open_in_browser'),
+						"click": function(){
+							px2ce.openUrlInBrowser( getPreviewUrl() );
+						}
+					}
+				];
+
+				if( px2ce.target_mode == 'theme_layout' ){
+					// ↓ CSSとJavaScriptをBroccoli編集画面から編集できる機能
+					// 　テーマ編集にのみ適用する。
+					// 　当初、コンテンツ編集に導入する想定で試作してみたが、
+					// 　濫用された場合にコンテンツデザインの一貫性を損ねるリスクがあるため却下とし、
+					// 　テーマ編集のみの適用範囲で再実装した。
+					btns.push({
+						"label": 'CSS',
+						"click": function(){
+							openCssJsEditor('css');
+						}
+					});
+					btns.push({
+						"label": 'JavaScript',
+						"click": function(){
+							openCssJsEditor('js');
+						}
+					});
+				}
+
+				toolbar.init({
+					"btns":btns,
 					"onFinish": function(){
 						// 完了イベント
 						px2ce.finish();
@@ -22751,6 +22791,26 @@ module.exports = function(px2ce){
 					},
 					function(CssJs){
 						moduleCssJs = CssJs;
+						rlv();
+					}
+				);
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// ローカルのCSS, JS ソースを取得する
+				if( px2ce.target_mode != 'theme_layout' ){
+					// テーマ編集時のみ必要。
+					rlv();
+					return;
+				}
+
+				px2ce.gpiBridge(
+					{
+						'api': 'getLocalCssJsSrc',
+						'theme_id': px2ce.theme_id,
+						'layout_id': px2ce.layout_id
+					},
+					function(CssJs){
+						localCssJs = CssJs;
 						rlv();
 					}
 				);
@@ -22826,13 +22886,42 @@ module.exports = function(px2ce){
 
 						saveContentsSrc(loadedCodes, function(){
 							var $broccoliCanvas = $canvas.find('.pickles2-contents-editor--broccoli-canvas');
-							$broccoliCanvas.find('iframe')
-								.attr({
-									'src': $broccoliCanvas.attr('data-broccoli-preview')
-								})
-							;
 
-							px2style.closeModal();
+							new Promise(function(rlv){rlv();})
+								.then(function(){ return new Promise(function(rlv, rjt){
+									if( px2ce.target_mode != 'theme_layout' ){
+										rlv();
+										return;
+									}
+									px2ce.gpiBridge(
+										{
+											'api': 'getLocalCssJsSrc',
+											'theme_id': px2ce.theme_id,
+											'layout_id': px2ce.layout_id
+										},
+										function(CssJs){
+											localCssJs = CssJs;
+											rlv();
+										}
+									);
+								}); })
+								.then(function(){ return new Promise(function(rlv, rjt){
+									$elmCanvas.attr({
+										"data-broccoli-preview": getCanvasPageUrl()
+									});
+									rlv();
+								}); })
+								.then(function(){ return new Promise(function(rlv, rjt){
+									$broccoliCanvas.find('iframe')
+										.attr({
+											'src': $broccoliCanvas.attr('data-broccoli-preview')
+										})
+									;
+
+									px2style.closeModal();
+									rlv();
+								}); })
+							;
 						});
 					}
 				},
@@ -23079,6 +23168,23 @@ module.exports = function(px2ce){
 		$elmTabs;
 
 	function getCanvasPageUrl(){
+		var rtn = getPreviewUrl();
+		var hash = '';
+		var query = '';
+		if(rtn.match(/^([\s\S]*?)\#([\s\S]*)$/g)){
+			rtn = RegExp.$1;
+			hash = RegExp.$2;
+		}
+		if(rtn.match(/^([\s\S]*?)\?([\s\S]*)$/g)){
+			rtn = RegExp.$1;
+			query = RegExp.$2;
+		}
+		rtn += (query.length ? '?'+query+'&' : '?') + 'PICKLES2_CONTENTS_EDITOR=default';
+		rtn += (hash.length ? '#'+hash : '');
+		// console.log(rtn);
+		return rtn;
+	}
+	function getPreviewUrl(){
 		if( px2ce.target_mode == 'theme_layout' ){
 			var page_path = '/index.html';
 			if( pagesByLayout.length ){
@@ -23092,10 +23198,9 @@ module.exports = function(px2ce){
 		}
 		var pathname = px2conf.path_controot + px2ce.page_path;
 		pathname = pathname.replace( new RegExp('\/+', 'g'), '/' );
-		return px2ce.options.preview.origin + pathname;
-	}
-	function getPreviewUrl(){
-		return getCanvasPageUrl();
+		var rtn = px2ce.options.preview.origin + pathname;
+		// console.log(rtn);
+		return rtn;
 	}
 
 	/**

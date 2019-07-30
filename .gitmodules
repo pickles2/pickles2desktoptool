@@ -37,3 +37,9 @@
 [submodule "submodules/ace-builds"]
 	path = submodules/ace-builds
 	url = https://github.com/ajaxorg/ace-builds.git
+[submodule "submodules/node-pickles2-contents-editor"]
+	path = submodules/node-pickles2-contents-editor
+	url = https://github.com/pickles2/node-pickles2-contents-editor.git
+[submodule "submodules/node-pickles2-module-editor"]
+	path = submodules/node-pickles2-module-editor
+	url = https://github.com/pickles2/node-pickles2-module-editor.git

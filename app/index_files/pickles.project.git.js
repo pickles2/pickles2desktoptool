@@ -2,8 +2,8 @@
  * px.project.git
  */
 module.exports = function( px, pj ) {
-	var GitParser = require('git-parser');
-	this.parser = new GitParser(function(cmdAry, callback){
+	var GitParse79 = require('gitparse79');
+	this.parser = new GitParse79(function(cmdAry, callback){
 
 		var cmd = JSON.parse(JSON.stringify(cmdAry));
 		cmd.unshift(px.cmd('git'));

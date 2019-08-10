@@ -37,6 +37,9 @@ gulp.task("client-libs", function() {
 	gulp.src(["node_modules/remote-finder/dist/**/*"])
 		.pipe(gulp.dest( './app/common/remote-finder/dist/' ))
 	;
+	gulp.src(["submodules/gitui79.js/dist/**/*"])
+		.pipe(gulp.dest( './app/common/gitui79/dist/' ))
+	;
 	gulp.src(["submodules/ace-builds/src-noconflict/**/*"])
 		.pipe(gulp.dest( './app/common/ace-builds/src-noconflict/' ))
 	;

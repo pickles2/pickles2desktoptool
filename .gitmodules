@@ -43,3 +43,6 @@
 [submodule "submodules/node-pickles2-module-editor"]
 	path = submodules/node-pickles2-module-editor
 	url = https://github.com/pickles2/node-pickles2-module-editor.git
+[submodule "submodules/gitui79.js"]
+	path = submodules/gitui79.js
+	url = https://github.com/tomk79/gitui79.js.git

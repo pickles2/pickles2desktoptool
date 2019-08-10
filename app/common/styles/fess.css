@@ -6,464 +6,123 @@ html, body {
 .current {
   font-weight: bold; }
 
-.contents {
-  /*! normalize.css v3.0.1 | MIT License | git.io/normalize */
-  /**
-   * 1. Set default font family to sans-serif.
-   * 2. Prevent iOS text size adjust after orientation change, without disabling
-   *    user zoom.
-   */
-  /**
-   * Remove default margin.
-   */
-  /* HTML5 display definitions
-   ========================================================================== */
-  /**
-   * Correct `block` display not defined for any HTML5 element in IE 8/9.
-   * Correct `block` display not defined for `details` or `summary` in IE 10/11 and Firefox.
-   * Correct `block` display not defined for `main` in IE 11.
-   */
-  /**
-   * 1. Correct `inline-block` display not defined in IE 8/9.
-   * 2. Normalize vertical alignment of `progress` in Chrome, Firefox, and Opera.
-   */
-  /**
-   * Prevent modern browsers from displaying `audio` without controls.
-   * Remove excess height in iOS 5 devices.
-   */
-  /**
-   * Address `[hidden]` styling not present in IE 8/9/10.
-   * Hide the `template` element in IE 8/9/11, Safari, and Firefox < 22.
-   */
-  /* Links
-   ========================================================================== */
-  /**
-   * Remove the gray background color from active links in IE 10.
-   */
-  /**
-   * Improve readability when focused and also mouse hovered in all browsers.
-   */
-  /* Text-level semantics
-   ========================================================================== */
-  /**
-   * Address styling not present in IE 8/9/10/11, Safari, and Chrome.
-   */
-  /**
-   * Address style set to `bolder` in Firefox 4+, Safari, and Chrome.
-   */
-  /**
-   * Address styling not present in Safari and Chrome.
-   */
-  /**
-   * Address variable `h1` font-size and margin within `section` and `article`
-   * contexts in Firefox 4+, Safari, and Chrome.
-   */
-  /**
-   * Address styling not present in IE 8/9.
-   */
-  /**
-   * Address inconsistent and variable font size in all browsers.
-   */
-  /**
-   * Prevent `sub` and `sup` affecting `line-height` in all browsers.
-   */
-  /* Embedded content
-   ========================================================================== */
-  /**
-   * Remove border when inside `a` element in IE 8/9/10.
-   */
-  /**
-   * Correct overflow not hidden in IE 9/10/11.
-   */
-  /* Grouping content
-   ========================================================================== */
-  /**
-   * Address margin not present in IE 8/9 and Safari.
-   */
-  /**
-   * Address differences between Firefox and other browsers.
-   */
-  /**
-   * Contain overflow in all browsers.
-   */
-  /**
-   * Address odd `em`-unit font size rendering in all browsers.
-   */
-  /* Forms
-   ========================================================================== */
-  /**
-   * Known limitation: by default, Chrome and Safari on OS X allow very limited
-   * styling of `select`, unless a `border` property is set.
-   */
-  /**
-   * 1. Correct color not being inherited.
-   *    Known issue: affects color of disabled elements.
-   * 2. Correct font properties not being inherited.
-   * 3. Address margins set differently in Firefox 4+, Safari, and Chrome.
-   */
-  /**
-   * Address `overflow` set to `hidden` in IE 8/9/10/11.
-   */
-  /**
-   * Address inconsistent `text-transform` inheritance for `button` and `select`.
-   * All other form control elements do not inherit `text-transform` values.
-   * Correct `button` style inheritance in Firefox, IE 8/9/10/11, and Opera.
-   * Correct `select` style inheritance in Firefox.
-   */
-  /**
-   * 1. Avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio`
-   *    and `video` controls.
-   * 2. Correct inability to style clickable `input` types in iOS.
-   * 3. Improve usability and consistency of cursor style between image-type
-   *    `input` and others.
-   */
-  /**
-   * Re-set default cursor for disabled elements.
-   */
-  /**
-   * Remove inner padding and border in Firefox 4+.
-   */
-  /**
-   * Address Firefox 4+ setting `line-height` on `input` using `!important` in
-   * the UA stylesheet.
-   */
-  /**
-   * It's recommended that you don't attempt to style these elements.
-   * Firefox's implementation doesn't respect box-sizing, padding, or width.
-   *
-   * 1. Address box sizing set to `content-box` in IE 8/9/10.
-   * 2. Remove excess padding in IE 8/9/10.
-   */
-  /**
-   * Fix the cursor style for Chrome's increment/decrement buttons. For certain
-   * `font-size` values of the `input`, it causes the cursor style of the
-   * decrement button to change from `default` to `text`.
-   */
-  /**
-   * 1. Address `appearance` set to `searchfield` in Safari and Chrome.
-   * 2. Address `box-sizing` set to `border-box` in Safari and Chrome
-   *    (include `-moz` to future-proof).
-   */
-  /**
-   * Remove inner padding and search cancel button in Safari and Chrome on OS X.
-   * Safari (but not Chrome) clips the cancel button when the search input has
-   * padding (and `textfield` appearance).
-   */
-  /**
-   * Define consistent border, margin, and padding.
-   */
-  /**
-   * 1. Correct `color` not being inherited in IE 8/9/10/11.
-   * 2. Remove padding so people aren't caught out if they zero out fieldsets.
-   */
-  /**
-   * Remove default vertical scrollbar in IE 8/9/10/11.
-   */
-  /**
-   * Don't inherit the `font-weight` (applied by a rule above).
-   * NOTE: the default cannot safely be changed in Chrome and Safari on OS X.
-   */
-  /* Tables
-   ========================================================================== */
-  /**
-   * Remove most spacing between table cells.
-   */
-  /* ライブラリ同士の衝突吸収 */
-  /**
-   * [static] まわりこみ制御
-   */
-  /**
-   * [static] レイアウト制御
-   */
-  /**
-   * [static] マージン制御
-   */
-  /**
-   * [static] パディング制御
-   */
-  /**
-   * [parts] 文字サイズ
-   */
-  /**
-   * [parts] リンク
-   */
-  /**
-   * [parts] アイコン付きリンク
-   */
-  /**
-   * [parts] ページ内リンク(下向き)
-   */
-  /**
-   * [parts] ページ内リンク(上向き)
-   */
-  /**
-   * [parts] 戻るリンク
-   */
-  /**
-   * [parts] 付加リンクモジュール：別ウィンドウリンク
-   */
-  /**
-   * [parts] 付加リンクモジュール：ダウンロードリンク
-   */
-  /**
-   * [parts] 付加リンクモジュール：PDF
-   */
-  /**
-   * [parts] リンクリスト .anchor_links
-   */
-  /**
-   * [parts] 詳細リンクリスト .more_links
-   */
-  /**
-   * [parts] ページトップリンク .page_top
-   */
-  /**
-   * [parts] 強調
-   */
-  /**
-   * [parts] 強勢(アクセント)
-   */
-  /**
-   * [parts] エラー表示
-   */
-  /**
-   * [parts] 注釈表示
-   */
-  /**
-   * [parts] 画像置換
-   */
-  /**
-   * [parts] 読み上げブラウザ対応のための隠しナビゲーション
-   */
-  /**
-   * [parts] カレントページ
-   */
-  /**
-   * [parts] 通常のリスト
-   */
-  /**
-   * [parts] 注釈リスト
-   */
-  /**
-   * [parts] リストマークがないリスト
-   */
-  /**
-   * [parts] 水平並びリスト
-   */
-  /**
-   * 注釈定義リスト
-   */
-  /**
-   * [parts] デフォルトテーブルスタイル
-   */
-  /**
-   * [parts] ソースコード
-   */
-  /**
-   * [parts] 日付入りリスト .date_list
-   */
-  /**
-   * [parts] フォーム要素
-   */
-  /**
-   * [parts] 必須項目
-   */
-  /**
-   * [box] 注意喚起ボックス
-   */
-  /**
-   * [box] トピックボックス
-   */
-  /**
-   * [box] 付加情報ボックス
-   */
-  /**
-   * [unit] ユニット
-   * モジュールの単位となる。前後にデフォルトマージン付加
-   */
-  /**
-   * [static] .clearfix (and [unit] unit)
-   */
-  /**
-   * [unit] カラムレイアウト
-   */
-  /**
-   * [unit] フォーム送信ボタン
-   */
-  /**
-   * [unit] エラー通知ボックス
-   */
-  /**
-   * [unit] 注意喚起ユニット
-   */
-  /**
-   * [unit] ページャー
-   */
-  /**
-   * [unit] サムネイルリスト
-   */
-  /**
-   * [unit] 回り込み画像
-   */
-  /**
-   * [unit] カラムレイアウト
-   */
-  /**
-   * [unit] サムネイルリスト
-   */
-  /**
-   * [unit] 回り込み画像
-   */
-  /**
-   * [parts] ソースコード
-   */
-  /**
-   * [parts] 日付入りリスト .date_list
-   */
-  /**
-   * [parts] フォーム要素
-   */
-  /**
-   * [parts] 必須項目
-   */
-  /**
-   * [parts] リンクリスト .anchor_links
-   */
-  /**
-   * [box] 注意喚起ボックス
-   */
-  /**
-   * [box] トピックボックス
-   */
-  /**
-   * [box] 付加情報ボックス
-   */ }
-  .contents html {
-    font-family: sans-serif;
-    /* 1 */
-    -ms-text-size-adjust: 100%;
-    /* 2 */
-    -webkit-text-size-adjust: 100%;
-    /* 2 */ }
-  .contents body {
-    margin: 0; }
-  .contents article, .contents aside, .contents details, .contents figcaption, .contents figure, .contents footer, .contents header, .contents hgroup, .contents main, .contents nav, .contents section, .contents summary {
+  article, .contents aside, .contents details, .contents figcaption, .contents figure, .contents footer, .contents header, .contents hgroup, .contents main, .contents nav, .contents section, .contents summary {
     display: block; }
-  .contents audio, .contents canvas, .contents progress, .contents video {
+  audio, .contents canvas, .contents progress, .contents video {
     display: inline-block;
     /* 1 */
     vertical-align: baseline;
     /* 2 */ }
-  .contents audio:not([controls]) {
+  audio:not([controls]) {
     display: none;
     height: 0; }
-  .contents [hidden], .contents template {
+  [hidden], .contents template {
     display: none; }
-  .contents a {
+  a {
     background: transparent; }
-  .contents a:active, .contents a:hover {
+  a:active, .contents a:hover {
     outline: 0; }
-  .contents abbr[title] {
+  abbr[title] {
     border-bottom: 1px dotted; }
-  .contents b, .contents strong {
+  b, .contents strong {
     font-weight: bold; }
-  .contents dfn {
+  dfn {
     font-style: italic; }
-  .contents h1 {
+  h1 {
     font-size: 2em;
     margin: 0.67em 0; }
-  .contents mark {
+  mark {
     background: #ff0;
     color: #000; }
-  .contents small {
+  small {
     font-size: 80%; }
-  .contents sub, .contents sup {
+  sub, .contents sup {
     font-size: 75%;
     line-height: 0;
     position: relative;
     vertical-align: baseline; }
-  .contents sup {
+  sup {
     top: -0.5em; }
-  .contents sub {
+  sub {
     bottom: -0.25em; }
-  .contents img {
+  img {
     border: 0; }
-  .contents svg:not(:root) {
+  svg:not(:root) {
     overflow: hidden; }
-  .contents figure {
+  figure {
     margin: 1em 40px; }
-  .contents hr {
+  hr {
     -moz-box-sizing: content-box;
     box-sizing: content-box;
     height: 0; }
-  .contents pre {
+  pre {
     overflow: auto; }
-  .contents code, .contents kbd, .contents pre, .contents samp {
+  code, .contents kbd, .contents pre, .contents samp {
     font-family: monospace, monospace;
     font-size: 1em; }
-  .contents button, .contents input, .contents optgroup, .contents select, .contents textarea {
+  button, .contents input, .contents optgroup, .contents select, .contents textarea {
     /*color: inherit;*/
     /* 1 */
     font: inherit;
     /* 2 */
     margin: 0;
     /* 3 */ }
-  .contents button {
+  button {
     overflow: visible; }
-  .contents button, .contents select {
+  button, .contents select {
     text-transform: none; }
-  .contents button, .contents html input[type="button"], .contents input[type="reset"], .contents input[type="submit"] {
+  button, .contents html input[type="button"], .contents input[type="reset"], .contents input[type="submit"] {
     /* 1 */
     -webkit-appearance: button;
     /* 2 */
     cursor: pointer;
     /* 3 */ }
-  .contents button[disabled], .contents html input[disabled] {
+  button[disabled], .contents html input[disabled] {
     cursor: default; }
-  .contents button::-moz-focus-inner, .contents input::-moz-focus-inner {
+  button::-moz-focus-inner, .contents input::-moz-focus-inner {
     border: 0;
     padding: 0; }
-  .contents input {
+  input {
     line-height: normal; }
-  .contents input[type="checkbox"], .contents input[type="radio"] {
+  input[type="checkbox"], .contents input[type="radio"] {
     box-sizing: border-box;
     /* 1 */
     padding: 0;
     /* 2 */ }
-  .contents input[type="number"]::-webkit-inner-spin-button, .contents input[type="number"]::-webkit-outer-spin-button {
+  input[type="number"]::-webkit-inner-spin-button, .contents input[type="number"]::-webkit-outer-spin-button {
     height: auto; }
-  .contents input[type="search"] {
+  input[type="search"] {
     -webkit-appearance: textfield;
     /* 1 */
     -moz-box-sizing: content-box;
     -webkit-box-sizing: content-box;
     /* 2 */
     box-sizing: content-box; }
-  .contents input[type="search"]::-webkit-search-cancel-button, .contents input[type="search"]::-webkit-search-decoration {
+  input[type="search"]::-webkit-search-cancel-button, .contents input[type="search"]::-webkit-search-decoration {
     -webkit-appearance: none; }
-  .contents fieldset {
+  fieldset {
     border: 1px solid #c0c0c0;
     margin: 0 2px;
     padding: 0.35em 0.625em 0.75em; }
-  .contents legend {
+  legend {
     border: 0;
     /* 1 */
     padding: 0;
     /* 2 */ }
-  .contents textarea {
+  textarea {
     overflow: auto; }
-  .contents optgroup {
+  optgroup {
     font-weight: bold; }
-  .contents table {
+  table {
     border-collapse: collapse;
     border-spacing: 0; }
-  .contents p, .contents ul, .contents ol, .contents dl {
+  p, .contents ul, .contents ol, .contents dl {
     margin: 1em 0; }
-  .contents dl dd {
+  dl dd {
     margin-left: 2em; }
-  .contents p, .contents li, .contents dt, .contents dd {
+  p, .contents li, .contents dt, .contents dd {
     line-height: 1.6; }
-  .contents .center {
+  .center {
     /**
      * FESS 1.2.2
      * @author Tomoya Koyanagi <tomk79@gmail.com>
@@ -472,347 +131,347 @@ html, body {
      * [static] 文字組み
      */
     text-align: center; }
-  .contents .left {
+  .left {
     text-align: left; }
-  .contents .right {
+  .right {
     text-align: right; }
-  .contents .fl {
+  .fl {
     float: left; }
-  .contents .fr {
+  .fr {
     float: right; }
-  .contents .fc {
+  .fc {
     float: none;
     clear: both; }
-  .contents .inline {
+  .inline {
     display: inline !important; }
-  .contents .block {
+  .block {
     display: block !important; }
-  .contents .mt1em {
+  .mt1em {
     margin-top: 1em !important; }
-  .contents .mt1p5em {
+  .mt1p5em {
     margin-top: 1.5em !important; }
-  .contents .mt2em {
+  .mt2em {
     margin-top: 2em !important; }
-  .contents .mt0 {
+  .mt0 {
     margin-top: 0 !important; }
-  .contents .mt1 {
+  .mt1 {
     margin-top: 1px !important; }
-  .contents .mt2 {
+  .mt2 {
     margin-top: 2px !important; }
-  .contents .mt3 {
+  .mt3 {
     margin-top: 3px !important; }
-  .contents .mt4 {
+  .mt4 {
     margin-top: 4px !important; }
-  .contents .mt5 {
+  .mt5 {
     margin-top: 5px !important; }
-  .contents .mt6 {
+  .mt6 {
     margin-top: 6px !important; }
-  .contents .mt7 {
+  .mt7 {
     margin-top: 7px !important; }
-  .contents .mt8 {
+  .mt8 {
     margin-top: 8px !important; }
-  .contents .mt9 {
+  .mt9 {
     margin-top: 9px !important; }
-  .contents .mt10 {
+  .mt10 {
     margin-top: 10px !important; }
-  .contents .mt15 {
+  .mt15 {
     margin-top: 15px !important; }
-  .contents .mt20 {
+  .mt20 {
     margin-top: 20px !important; }
-  .contents .mt25 {
+  .mt25 {
     margin-top: 25px !important; }
-  .contents .mt30 {
+  .mt30 {
     margin-top: 30px !important; }
-  .contents .mb1em {
+  .mb1em {
     margin-bottom: 1em !important; }
-  .contents .mb1p5em {
+  .mb1p5em {
     margin-bottom: 1.5em !important; }
-  .contents .mb2em {
+  .mb2em {
     margin-bottom: 2em !important; }
-  .contents .mb0 {
+  .mb0 {
     margin-bottom: 0 !important; }
-  .contents .mb1 {
+  .mb1 {
     margin-bottom: 1px !important; }
-  .contents .mb2 {
+  .mb2 {
     margin-bottom: 2px !important; }
-  .contents .mb3 {
+  .mb3 {
     margin-bottom: 3px !important; }
-  .contents .mb4 {
+  .mb4 {
     margin-bottom: 4px !important; }
-  .contents .mb5 {
+  .mb5 {
     margin-bottom: 5px !important; }
-  .contents .mb6 {
+  .mb6 {
     margin-bottom: 6px !important; }
-  .contents .mb7 {
+  .mb7 {
     margin-bottom: 7px !important; }
-  .contents .mb8 {
+  .mb8 {
     margin-bottom: 8px !important; }
-  .contents .mb9 {
+  .mb9 {
     margin-bottom: 9px !important; }
-  .contents .mb10 {
+  .mb10 {
     margin-bottom: 10px !important; }
-  .contents .mb15 {
+  .mb15 {
     margin-bottom: 15px !important; }
-  .contents .mb20 {
+  .mb20 {
     margin-bottom: 20px !important; }
-  .contents .mb25 {
+  .mb25 {
     margin-bottom: 25px !important; }
-  .contents .mb30 {
+  .mb30 {
     margin-bottom: 30px !important; }
-  .contents .ml0 {
+  .ml0 {
     margin-left: 0 !important; }
-  .contents .ml1 {
+  .ml1 {
     margin-left: 1px !important; }
-  .contents .ml2 {
+  .ml2 {
     margin-left: 2px !important; }
-  .contents .ml3 {
+  .ml3 {
     margin-left: 3px !important; }
-  .contents .ml4 {
+  .ml4 {
     margin-left: 4px !important; }
-  .contents .ml5 {
+  .ml5 {
     margin-left: 5px !important; }
-  .contents .ml6 {
+  .ml6 {
     margin-left: 6px !important; }
-  .contents .ml7 {
+  .ml7 {
     margin-left: 7px !important; }
-  .contents .ml8 {
+  .ml8 {
     margin-left: 8px !important; }
-  .contents .ml9 {
+  .ml9 {
     margin-left: 9px !important; }
-  .contents .ml10 {
+  .ml10 {
     margin-left: 10px !important; }
-  .contents .ml15 {
+  .ml15 {
     margin-left: 15px !important; }
-  .contents .ml20 {
+  .ml20 {
     margin-left: 20px !important; }
-  .contents .ml25 {
+  .ml25 {
     margin-left: 25px !important; }
-  .contents .ml30 {
+  .ml30 {
     margin-left: 30px !important; }
-  .contents .mr0 {
+  .mr0 {
     margin-right: 0 !important; }
-  .contents .mr1 {
+  .mr1 {
     margin-right: 1px !important; }
-  .contents .mr2 {
+  .mr2 {
     margin-right: 2px !important; }
-  .contents .mr3 {
+  .mr3 {
     margin-right: 3px !important; }
-  .contents .mr4 {
+  .mr4 {
     margin-right: 4px !important; }
-  .contents .mr5 {
+  .mr5 {
     margin-right: 5px !important; }
-  .contents .mr6 {
+  .mr6 {
     margin-right: 6px !important; }
-  .contents .mr7 {
+  .mr7 {
     margin-right: 7px !important; }
-  .contents .mr8 {
+  .mr8 {
     margin-right: 8px !important; }
-  .contents .mr9 {
+  .mr9 {
     margin-right: 9px !important; }
-  .contents .mr10 {
+  .mr10 {
     margin-right: 10px !important; }
-  .contents .mr15 {
+  .mr15 {
     margin-right: 15px !important; }
-  .contents .mr20 {
+  .mr20 {
     margin-right: 20px !important; }
-  .contents .mr25 {
+  .mr25 {
     margin-right: 25px !important; }
-  .contents .mr30 {
+  .mr30 {
     margin-right: 30px !important; }
-  .contents .pt1em {
+  .pt1em {
     padding-top: 1em !important; }
-  .contents .pt1p5em {
+  .pt1p5em {
     padding-top: 1.5em !important; }
-  .contents .pt2em {
+  .pt2em {
     padding-top: 2em !important; }
-  .contents .pt0 {
+  .pt0 {
     padding-top: 0 !important; }
-  .contents .pt1 {
+  .pt1 {
     padding-top: 1px !important; }
-  .contents .pt2 {
+  .pt2 {
     padding-top: 2px !important; }
-  .contents .pt3 {
+  .pt3 {
     padding-top: 3px !important; }
-  .contents .pt4 {
+  .pt4 {
     padding-top: 4px !important; }
-  .contents .pt5 {
+  .pt5 {
     padding-top: 5px !important; }
-  .contents .pt6 {
+  .pt6 {
     padding-top: 6px !important; }
-  .contents .pt7 {
+  .pt7 {
     padding-top: 7px !important; }
-  .contents .pt8 {
+  .pt8 {
     padding-top: 8px !important; }
-  .contents .pt9 {
+  .pt9 {
     padding-top: 9px !important; }
-  .contents .pt10 {
+  .pt10 {
     padding-top: 10px !important; }
-  .contents .pt15 {
+  .pt15 {
     padding-top: 15px !important; }
-  .contents .pt20 {
+  .pt20 {
     padding-top: 20px !important; }
-  .contents .pt25 {
+  .pt25 {
     padding-top: 25px !important; }
-  .contents .pt30 {
+  .pt30 {
     padding-top: 30px !important; }
-  .contents .pb1em {
+  .pb1em {
     padding-bottom: 1em !important; }
-  .contents .pb1p5em {
+  .pb1p5em {
     padding-bottom: 1.5em !important; }
-  .contents .pb2em {
+  .pb2em {
     padding-bottom: 2em !important; }
-  .contents .pb0 {
+  .pb0 {
     padding-bottom: 0 !important; }
-  .contents .pb1 {
+  .pb1 {
     padding-bottom: 1px !important; }
-  .contents .pb2 {
+  .pb2 {
     padding-bottom: 2px !important; }
-  .contents .pb3 {
+  .pb3 {
     padding-bottom: 3px !important; }
-  .contents .pb4 {
+  .pb4 {
     padding-bottom: 4px !important; }
-  .contents .pb5 {
+  .pb5 {
     padding-bottom: 5px !important; }
-  .contents .pb6 {
+  .pb6 {
     padding-bottom: 6px !important; }
-  .contents .pb7 {
+  .pb7 {
     padding-bottom: 7px !important; }
-  .contents .pb8 {
+  .pb8 {
     padding-bottom: 8px !important; }
-  .contents .pb9 {
+  .pb9 {
     padding-bottom: 9px !important; }
-  .contents .pb10 {
+  .pb10 {
     padding-bottom: 10px !important; }
-  .contents .pb15 {
+  .pb15 {
     padding-bottom: 15px !important; }
-  .contents .pb20 {
+  .pb20 {
     padding-bottom: 20px !important; }
-  .contents .pb25 {
+  .pb25 {
     padding-bottom: 25px !important; }
-  .contents .pb30 {
+  .pb30 {
     padding-bottom: 30px !important; }
-  .contents .pl0 {
+  .pl0 {
     padding-left: 0 !important; }
-  .contents .pl1 {
+  .pl1 {
     padding-left: 1px !important; }
-  .contents .pl2 {
+  .pl2 {
     padding-left: 2px !important; }
-  .contents .pl3 {
+  .pl3 {
     padding-left: 3px !important; }
-  .contents .pl4 {
+  .pl4 {
     padding-left: 4px !important; }
-  .contents .pl5 {
+  .pl5 {
     padding-left: 5px !important; }
-  .contents .pl6 {
+  .pl6 {
     padding-left: 6px !important; }
-  .contents .pl7 {
+  .pl7 {
     padding-left: 7px !important; }
-  .contents .pl8 {
+  .pl8 {
     padding-left: 8px !important; }
-  .contents .pl9 {
+  .pl9 {
     padding-left: 9px !important; }
-  .contents .pl10 {
+  .pl10 {
     padding-left: 10px !important; }
-  .contents .pl15 {
+  .pl15 {
     padding-left: 15px !important; }
-  .contents .pl20 {
+  .pl20 {
     padding-left: 20px !important; }
-  .contents .pl25 {
+  .pl25 {
     padding-left: 25px !important; }
-  .contents .pl30 {
+  .pl30 {
     padding-left: 30px !important; }
-  .contents .pr0 {
+  .pr0 {
     padding-right: 0 !important; }
-  .contents .pr1 {
+  .pr1 {
     padding-right: 1px !important; }
-  .contents .pr2 {
+  .pr2 {
     padding-right: 2px !important; }
-  .contents .pr3 {
+  .pr3 {
     padding-right: 3px !important; }
-  .contents .pr4 {
+  .pr4 {
     padding-right: 4px !important; }
-  .contents .pr5 {
+  .pr5 {
     padding-right: 5px !important; }
-  .contents .pr6 {
+  .pr6 {
     padding-right: 6px !important; }
-  .contents .pr7 {
+  .pr7 {
     padding-right: 7px !important; }
-  .contents .pr8 {
+  .pr8 {
     padding-right: 8px !important; }
-  .contents .pr9 {
+  .pr9 {
     padding-right: 9px !important; }
-  .contents .pr10 {
+  .pr10 {
     padding-right: 10px !important; }
-  .contents .pr15 {
+  .pr15 {
     padding-right: 15px !important; }
-  .contents .pr20 {
+  .pr20 {
     padding-right: 20px !important; }
-  .contents .pr25 {
+  .pr25 {
     padding-right: 25px !important; }
-  .contents .pr30 {
+  .pr30 {
     padding-right: 30px !important; }
-  .contents .xxlarge {
+  .xxlarge {
     font-size: 150%; }
-  .contents .xlarge {
+  .xlarge {
     font-size: 123%; }
-  .contents .large {
+  .large {
     font-size: 108%; }
-  .contents .medium {
+  .medium {
     font-size: 108%; }
-  .contents .small {
+  .small {
     font-size: 85%; }
-  .contents .xsmall {
+  .xsmall {
     font-size: 77%; }
-  .contents .xxsmall {
+  .xxsmall {
     font-size: 60%; }
-  .contents a.icon:before {
+  a.icon:before {
     content: "⇒ "; }
-  .contents a.down:before {
+  a.down:before {
     content: "↓ "; }
-  .contents a.up:before {
+  a.up:before {
     content: "↑ "; }
-  .contents a.back:before {
+  a.back:before {
     content: "← "; }
-  .contents a span.blank:after {
+  a span.blank:after {
     content: " □"; }
-  .contents a span.download:after {
+  a span.download:after {
     content: " [↓]"; }
-  .contents a span.pdf:after {
+  a span.pdf:after {
     content: " (PDF)"; }
-  .contents .anchor_links {
+  .anchor_links {
     padding: 1.5em;
     border: 1px solid #999; }
-  .contents .anchor_links .anchor_links-heading {
+  .anchor_links .anchor_links-heading {
     text-align: center;
     font-weight: bold;
     margin: 0 0 0.5em 0; }
-  .contents .anchor_links ul {
+  .anchor_links ul {
     margin: 0;
     padding: 0 0 0 1.5em; }
-  .contents .more_links {
+  .more_links {
     margin-top: 0.5em;
     margin-bottom: 2em;
     border-top: dashed 1px #ddd; }
-  .contents .more_links ul {
+  .more_links ul {
     margin: 0.3em 0 0 0;
     text-align: right; }
-  .contents .more_links ul li {
+  .more_links ul li {
     display: inline-block;
     *display: inline;
     *zoom: 1;
     padding: 0 0 0 1em; }
-  .contents .page_top {
+  .page_top {
     text-align: right; }
-  .contents strong {
+  strong {
     font-weight: bold; }
-  .contents em {
+  em {
     font-weight: normal;
     font-style: normal; }
-  .contents .error {
+  .error {
     color: #f00; }
-  .contents .notes {
+  .notes {
     color: #999; }
-  .contents .imgrep {
+  .imgrep {
     display: block;
     position: relative;
     top: auto;
@@ -821,7 +480,7 @@ html, body {
     border: 0 solid transparent !important;
     overflow: hidden;
     zoom: 100%; }
-  .contents .imgrep .imgrep-panel {
+  .imgrep .imgrep-panel {
     display: block;
     position: absolute;
     top: 0;
@@ -831,7 +490,7 @@ html, body {
     background-repeat: no-repeat;
     background-color: transparent;
     zoom: 100%; }
-  .contents .aural {
+  .aural {
     display: block;
     visibility: hidden;
     position: absolute;
@@ -841,38 +500,38 @@ html, body {
     width: 0;
     height: 0;
     background-color: transparent; }
-  .contents .current {
+  .current {
     font-weight: bold; }
-  .contents ul li {
+  ul li {
     list-style-type: disc;
     text-indent: 0; }
-  .contents ul.notes li.notes-li {
+  ul.notes li.notes-li {
     list-style-type: none;
     text-indent: -1em; }
-  .contents ul.nomark {
+  ul.nomark {
     padding-left: 0; }
-  .contents ul.nomark li.nomark-li {
+  ul.nomark li.nomark-li {
     list-style-type: none;
     padding-left: 0; }
-  .contents ul.horizontal {
+  ul.horizontal {
     padding-left: 0; }
-  .contents ul.horizontal li.horizontal-li {
+  ul.horizontal li.horizontal-li {
     list-style-type: none;
     padding-left: 0;
     padding-right: 20;
     display: inline; }
-  .contents dl.notes {
+  dl.notes {
     padding: 0 0 0 0;
     margin-left: 0;
     margin-right: 0; }
-  .contents dl.notes dt.notes-dt {
+  dl.notes dt.notes-dt {
     padding: 0 0 0 0;
     margin: 0 0 0 0;
     float: left;
     clear: left;
     border: 0 none;
     font-weight: normal; }
-  .contents dl.notes dd.notes-dd {
+  dl.notes dd.notes-dd {
     padding: 0 0 0 5px;
     margin: 0 0 0 0;
     float: none;
@@ -880,159 +539,159 @@ html, body {
     display: block;
     overflow: hidden;
     zoom: 100%; }
-  .contents table.def {
+  table.def {
     border: none;
     border-collapse: collapse;
     text-align: left; }
-  .contents table.def th, .contents table.def td {
+  table.def th, .contents table.def td {
     border: 1px solid #999;
     background: #fff;
     padding: 10px; }
-  .contents table.def th {
+  table.def th {
     background: #e7e7e7; }
-  .contents table.def thead th, .contents table.def tfoot th {
+  table.def thead th, .contents table.def tfoot th {
     background: #d9d9d9;
     text-align: center; }
-  .contents table.def thead td, .contents table.def tfoot td {
+  table.def thead td, .contents table.def tfoot td {
     background: #eee; }
-  .contents .code {
+  .code {
     margin: 1em 0; }
-  .contents .code pre, .contents .code textarea {
+  .code pre, .contents .code textarea {
     margin: 0;
     border: 1px solid #999;
     background: #f5f5f5;
     padding: 1em;
     font-size: small;
     line-height: 1.5; }
-  .contents .code pre {
+  .code pre {
     display: block;
     width: auto;
     background: #e8e8e8;
     border: 1px dashed #999;
     overflow: auto; }
-  .contents .code pre code {
+  .code pre code {
     border: none;
     padding: 0;
     margin: 0;
     background-color: transparent; }
-  .contents .code textarea {
+  .code textarea {
     display: block;
     width: 100%;
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     height: 16em; }
-  .contents .date_list table {
+  .date_list table {
     width: 100%;
     border: none;
     border-collapse: collapse; }
-  .contents .date_list table th, .contents .date_list table td {
+  .date_list table th, .contents .date_list table td {
     border-top: 1px solid #999;
     border-bottom: 1px solid #999;
     padding: 10px; }
-  .contents .date_list table th {
+  .date_list table th {
     background: #e7e7e7; }
-  .contents .date_list table thead th, .contents .date_list table tfoot th {
+  .date_list table thead th, .contents .date_list table tfoot th {
     background: #d9d9d9; }
-  .contents .date_list table thead td, .contents .date_list table tfoot td {
+  .date_list table thead td, .contents .date_list table tfoot td {
     background: #eee; }
-  .contents .date_list table th {
+  .date_list table th {
     white-space: nowrap; }
-  .contents .date_list table thead {
+  .date_list table thead {
     text-align: center; }
-  .contents table.form_elements {
+  table.form_elements {
     border: none;
     border-collapse: collapse;
     text-align: left;
     width: 100%; }
-  .contents table.form_elements thead {
+  table.form_elements thead {
     display: none; }
-  .contents table.form_elements th, .contents table.form_elements td {
+  table.form_elements th, .contents table.form_elements td {
     border: 1px solid #999;
     background: #fff;
     padding: 10px; }
-  .contents table.form_elements th {
+  table.form_elements th {
     background: #e7e7e7; }
-  .contents table.form_elements thead th, .contents table.form_elements tfoot th {
+  table.form_elements thead th, .contents table.form_elements tfoot th {
     background: #d9d9d9;
     text-align: center; }
-  .contents table.form_elements thead td, .contents table.form_elements tfoot td {
+  table.form_elements thead td, .contents table.form_elements tfoot td {
     background: #eee; }
-  .contents table.form_elements tbody th {
+  table.form_elements tbody th {
     width: 30%; }
-  .contents table.form_elements tbody td {
+  table.form_elements tbody td {
     width: 70%; }
-  .contents table.form_elements .form_elements-notes {
+  table.form_elements .form_elements-notes {
     font-size: 85%;
     color: #999;
     margin: 0;
     padding: 0; }
-  .contents table.form_elements .form_elements-notes li {
+  table.form_elements .form_elements-notes li {
     list-style-type: none;
     margin: 0; }
-  .contents table.form_elements .form_elements-list {
+  table.form_elements .form_elements-list {
     margin: 0;
     padding: 0; }
-  .contents table.form_elements .form_elements-list li {
+  table.form_elements .form_elements-list li {
     margin: 0;
     padding: 0;
     list-style-type: none; }
-  .contents table.form_elements .form_elements-list_horizontal {
+  table.form_elements .form_elements-list_horizontal {
     margin: 0;
     padding: 0; }
-  .contents table.form_elements .form_elements-list_horizontal li {
+  table.form_elements .form_elements-list_horizontal li {
     margin: 0;
     padding: 0;
     list-style-type: none;
     display: inline; }
-  .contents table.form_elements .form_elements-error th {
+  table.form_elements .form_elements-error th {
     background-color: #fcc; }
-  .contents table.form_elements .form_elements-error td {
+  table.form_elements .form_elements-error td {
     background-color: #fff2f2; }
-  .contents table.form_elements ul.form_elements-errors {
+  table.form_elements ul.form_elements-errors {
     color: #f00;
     margin: 0;
     padding: 0; }
-  .contents table.form_elements ul.form_elements-errors li {
+  table.form_elements ul.form_elements-errors li {
     list-style-type: none;
     margin: 0; }
-  .contents .must {
+  .must {
     color: #f00;
     font-weight: bold;
     display: inline;
     white-space: nowrap;
     margin-left: 0.5em;
     margin-right: 0.5em; }
-  .contents .attention_box {
+  .attention_box {
     padding: 0.5em 1em;
     background-color: #fcc; }
-  .contents .attention_box .attention_box-heading {
+  .attention_box .attention_box-heading {
     font-weight: bold;
     margin: 1em 0;
     font-size: 120%; }
-  .contents .topic_box {
+  .topic_box {
     padding: 0.5em 1em;
     background-color: #cec; }
-  .contents .topic_box .topic_box-heading {
+  .topic_box .topic_box-heading {
     font-weight: bold;
     margin: 1em 0;
     font-size: 120%; }
-  .contents .aside_box {
+  .aside_box {
     padding: 0.5em 1em;
     background-color: #ddd;
     font-size: 86%; }
-  .contents .aside_box .aside_box-heading {
+  .aside_box .aside_box-heading {
     font-weight: bold;
     margin: 1em 0;
     font-size: 120%; }
-  .contents div.unit {
+  div.unit {
     margin-top: 1em;
     margin-bottom: 1.5em;
     clear: both; }
-  .contents .unit, .contents .clearfix {
+  .unit, .contents .clearfix {
     display: block;
     float: none;
     clear: both; }
-  .contents .unit:after, .contents .clearfix:after {
+  .unit:after, .contents .clearfix:after {
     content: " ";
     display: block;
     visibility: hidden;
@@ -1040,50 +699,50 @@ html, body {
     font-size: 0.1em;
     line-height: 0;
     clear: both; }
-  .contents .unit, .contents .clearfix {
+  .unit, .contents .clearfix {
     /* clearfix(for IE6,7) (IE8以降不要) */
     zoom: 1; }
-  .contents .cols {
+  .cols {
     margin-left: -20px;
     overflow: hidden; }
-  .contents .cols .cols-col {
+  .cols .cols-col {
     float: left;
     margin: 0 0 0 0; }
-  .contents .cols .cols-col.cols-3of4 {
+  .cols .cols-col.cols-3of4 {
     width: 75%; }
-  .contents .cols .cols-col.cols-1of2 {
+  .cols .cols-col.cols-1of2 {
     width: 50%; }
-  .contents .cols .cols-col.cols-2of3 {
+  .cols .cols-col.cols-2of3 {
     width: 66.666%; }
-  .contents .cols .cols-col.cols-1of3 {
+  .cols .cols-col.cols-1of3 {
     width: 33.333%; }
-  .contents .cols .cols-col.cols-1of4 {
+  .cols .cols-col.cols-1of4 {
     width: 25%; }
-  .contents .cols .cols-col.cols-1of5 {
+  .cols .cols-col.cols-1of5 {
     width: 20%; }
-  .contents .cols .cols-col.cols-2of5 {
+  .cols .cols-col.cols-2of5 {
     width: 40%; }
-  .contents .cols .cols-col.cols-3of5 {
+  .cols .cols-col.cols-3of5 {
     width: 60%; }
-  .contents .cols .cols-col.cols-4of5 {
+  .cols .cols-col.cols-4of5 {
     width: 80%; }
-  .contents .cols .cols-pad {
+  .cols .cols-pad {
     margin-left: 20px; }
-  .contents .cols .cols-last {
+  .cols .cols-last {
     float: right;
     *margin-right: -10px; }
-  .contents .form_buttons {
+  .form_buttons {
     position: relative;
     text-align: center; }
-  .contents .form_buttons ul, .contents .form_buttons ul li {
+  .form_buttons ul, .contents .form_buttons ul li {
     margin: 0;
     padding: 0;
     list-style-type: none; }
-  .contents .form_buttons ul li.form_buttons-revise {
+  .form_buttons ul li.form_buttons-revise {
     position: absolute;
     left: 0;
     bottom: 0; }
-  .contents .form_error_box {
+  .form_error_box {
     border: 2px solid #f90;
     padding: 0 20px;
     background-color: #fff5f5;
@@ -1091,35 +750,35 @@ html, body {
     margin-left: 20px;
     margin-right: 20px;
     border-radius: 10px; }
-  .contents .form_error_box a {
+  .form_error_box a {
     color: #f00; }
-  .contents .attention {
+  .attention {
     border: 1px solid #999;
     padding: 0 20px;
     margin-left: 20px;
     margin-right: 20px;
     border-radius: 10px;
     background-color: #f9f9f9; }
-  .contents .attention .attention-heading {
+  .attention .attention-heading {
     font-weight: bold;
     margin: 1em 0;
     font-size: 120%; }
-  .contents .pager ul {
+  .pager ul {
     text-align: center;
     padding: 0;
     margin: 0; }
-  .contents .pager ul li {
+  .pager ul li {
     display: inline;
     list-style-type: none;
     padding: 0 5px 0 5px; }
-  .contents .thumb_list ul {
+  .thumb_list ul {
     text-align: left;
     padding: 0;
     margin: 0;
     font-size: 0;
     margin-left: -10px;
     zoom: 1; }
-  .contents .thumb_list li {
+  .thumb_list li {
     display: inline-block;
     *display: inline;
     *zoom: 1;
@@ -1131,57 +790,57 @@ html, body {
     padding: 0;
     vertical-align: top;
     font-size: small; }
-  .contents .thumb_list li .thumb_list-pad {
+  .thumb_list li .thumb_list-pad {
     margin-left: 10px; }
-  .contents .thumb_list li a {
+  .thumb_list li a {
     display: block;
     width: 100%;
     height: 100%; }
-  .contents .thumb_list li img {
+  .thumb_list li img {
     width: 100%;
     height: auto; }
-  .contents .thumb_list li:nth-child(4n+1) {
+  .thumb_list li:nth-child(4n+1) {
     clear: left; }
-  .contents .float_media .float_media-r1of2 {
+  .float_media .float_media-r1of2 {
     float: right;
     width: 50%;
     margin-left: 20px;
     margin-bottom: 20px; }
-  .contents .float_media .float_media-l1of2 {
+  .float_media .float_media-l1of2 {
     float: left;
     width: 50%;
     margin-right: 20px;
     margin-bottom: 20px; }
-  .contents .float_media .float_media-r1of3 {
+  .float_media .float_media-r1of3 {
     float: right;
     width: 33%;
     margin-left: 20px;
     margin-bottom: 20px; }
-  .contents .float_media .float_media-l1of3 {
+  .float_media .float_media-l1of3 {
     float: left;
     width: 33%;
     margin-right: 20px;
     margin-bottom: 20px; }
-  .contents .float_media .float_media-r1of4 {
+  .float_media .float_media-r1of4 {
     float: right;
     width: 25%;
     margin-left: 20px;
     margin-bottom: 20px; }
-  .contents .float_media .float_media-l1of4 {
+  .float_media .float_media-l1of4 {
     float: left;
     width: 25%;
     margin-right: 20px;
     margin-bottom: 20px; }
-  .contents .float_media .float_media-l1of2 img, .contents .float_media .float_media-l1of3 img, .contents .float_media .float_media-l1of4 img, .contents .float_media .float_media-r1of2 img, .contents .float_media .float_media-r1of3 img, .contents .float_media .float_media-r1of4 img {
+  .float_media .float_media-l1of2 img, .contents .float_media .float_media-l1of3 img, .contents .float_media .float_media-l1of4 img, .contents .float_media .float_media-r1of2 img, .contents .float_media .float_media-r1of3 img, .contents .float_media .float_media-r1of4 img {
     width: 100%;
     height: auto; }
-  .contents .float_media .float_media-caption {
+  .float_media .float_media-caption {
     font-size: 85%; }
-  .contents .float_media .float_media-body_rect {
+  .float_media .float_media-body_rect {
     overflow: hidden; }
-  .contents .float_media .float_media-body_rect *:first-child {
+  .float_media .float_media-body_rect *:first-child {
     margin-top: 0; }
-  .contents code {
+  code {
     color: #933;
     border: 1px solid #999;
     padding: 0 0.7em;
@@ -1190,100 +849,100 @@ html, body {
     background-color: #f5f5f5;
     border-radius: 0.2em; }
   @media all and (max-width: 520px) {
-  .contents .cols .cols-col.cols-3of4 {
+  .cols .cols-col.cols-3of4 {
     width: auto;
     float: none; } }
   @media all and (max-width: 520px) {
-  .contents .cols .cols-col.cols-1of2 {
+  .cols .cols-col.cols-1of2 {
     width: auto;
     float: none; } }
   @media all and (max-width: 520px) {
-  .contents .cols .cols-col.cols-2of3 {
+  .cols .cols-col.cols-2of3 {
     width: auto;
     float: none; } }
   @media all and (max-width: 520px) {
-  .contents .cols .cols-col.cols-1of3 {
+  .cols .cols-col.cols-1of3 {
     width: auto;
     float: none; } }
   @media all and (max-width: 520px) {
-  .contents .cols .cols-col.cols-1of4 {
+  .cols .cols-col.cols-1of4 {
     width: auto;
     float: none; } }
   @media all and (max-width: 520px) {
-  .contents .thumb_list li {
+  .thumb_list li {
     width: 33%;
     *width: 32.9%; } }
   @media all and (max-width: 420px) {
-  .contents .thumb_list li {
+  .thumb_list li {
     width: 50%;
     *width: 49.9%; } }
-  .contents .float_media .float_media-caption {
+  .float_media .float_media-caption {
     font-size: 77%;
     margin-top: 0.5em;
     line-height: 1.3; }
   @media all and (max-width: 460px) {
-  .contents .code pre {
+  .code pre {
     white-space: pre-wrap; } }
   @media all and (max-width: 460px) {
-  .contents .date_list table {
+  .date_list table {
     width: auto;
     display: block;
     border-bottom: 1px solid; }
-  .contents .date_list table th, .contents .date_list table td {
+  .date_list table th, .contents .date_list table td {
     width: auto;
     display: block;
     border-bottom: 0; }
-  .contents .date_list table th {
+  .date_list table th {
     background: #e7e7e7; }
-  .contents .date_list table thead, .contents .date_list table tfoot {
+  .date_list table thead, .contents .date_list table tfoot {
     display: none; }
-  .contents .date_list table th {
+  .date_list table th {
     white-space: nowrap; } }
   @media all and (max-width: 520px) {
-  .contents table.form_elements {
+  table.form_elements {
     border-bottom: 1px solid; }
-  .contents table.form_elements, .contents table.form_elements tbody {
+  table.form_elements, .contents table.form_elements tbody {
     display: block;
     width: auto; }
-  .contents table.form_elements thead tr, .contents table.form_elements thead th, .contents table.form_elements thead td, .contents table.form_elements tbody tr, .contents table.form_elements tbody th, .contents table.form_elements tbody td {
+  table.form_elements thead tr, .contents table.form_elements thead th, .contents table.form_elements thead td, .contents table.form_elements tbody tr, .contents table.form_elements tbody th, .contents table.form_elements tbody td {
     display: block;
     width: auto;
     border-bottom: 0; } }
-  .contents .must {
+  .must {
     border: 1px solid #f63;
     background-color: #fdd;
     padding: 0.2em 0.8em;
     font-size: 90%;
     border-radius: 1.2em; }
-  .contents .anchor_links {
+  .anchor_links {
     border-radius: 1em; }
-  .contents .attention_box {
+  .attention_box {
     border-radius: 1em;
     border: 1px solid #f96;
     margin-left: 20px;
     margin-right: 20px;
     padding: 1.5em 3em; }
-  .contents .attention_box :first-child {
+  .attention_box :first-child {
     margin-top: 0; }
-  .contents .attention_box :last-child {
+  .attention_box :last-child {
     margin-bottom: 0; }
-  .contents .topic_box {
+  .topic_box {
     border-radius: 1em;
     border: 1px solid #4a7;
     margin-left: 20px;
     margin-right: 20px;
     padding: 1.5em 3em; }
-  .contents .topic_box :first-child {
+  .topic_box :first-child {
     margin-top: 0; }
-  .contents .topic_box :last-child {
+  .topic_box :last-child {
     margin-bottom: 0; }
-  .contents .aside_box {
+  .aside_box {
     border-radius: 1em;
     border: 1px solid #999;
     margin-left: 20px;
     margin-right: 20px;
     padding: 1.5em 3em; }
-  .contents .aside_box :first-child {
+  .aside_box :first-child {
     margin-top: 0; }
-  .contents .aside_box :last-child {
+  .aside_box :last-child {
     margin-bottom: 0; }

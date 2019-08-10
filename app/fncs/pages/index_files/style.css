@@ -108,3 +108,7 @@
   height: 100%;
   overflow: auto;
   background-color: #fff; }
+
+.cont_page-dropdown-menu {
+  left: auto;
+  right: 0; }

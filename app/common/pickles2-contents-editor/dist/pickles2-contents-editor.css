@@ -41,10 +41,18 @@
   padding: 20px;
   margin-top: 3em; }
 
-.pickles2-contents-editor--default-canvas iframe {
-  width: 100%;
-  height: 100%;
-  border: none; }
+.pickles2-contents-editor--default-canvas {
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  overflow-scrolling: touch; }
+  .pickles2-contents-editor--default-canvas iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    border: none;
+    border-width: 0; }
 
 .pickles2-contents-editor--default-editor-body > div {
   width: 100%;

@@ -45,43 +45,16 @@ window.contApp = new (function(){
 			;
 		}else{
 			// gitリポジトリが存在する場合
-			var gitUi79 = new GitUi79( document.getElementsByClassName('contents')[0], function( cmdAry, callback ){
+			var $elm = document.querySelector('.contents');
+			var gitUi79 = new GitUi79( $elm, function( cmdAry, callback ){
 				pj.git().parser.git(cmdAry, function(result){
-					console.log(result);
+					// console.log(result);
 					callback(result.code, result.stdout);
 				});
 			}, {} );
 			gitUi79.init(function(){
-				alert('OK');
+				console.log('gitUi79: Standby.');
 			});
-
-			// $cont
-			// 	.append( $('<div class="btn-group">')
-			// 		.append( $btnGitStatus
-			// 			.on('click', function(){ git_status(this); } )
-			// 			.text('ステータスを表示する')
-			// 		)
-			// 		.append( $btnGitPull
-			// 			.on('click', function(){ git_pull(this); } )
-			// 			.text('履歴をダウンロードする')
-			// 		)
-			// 		.append( $btnGitCommit
-			// 			.on('click', function(){ git_commit(this); } )
-			// 			.text('コミットする')
-			// 		)
-			// 		.append( $btnGitPush
-			// 			.on('click', function(){ git_push(this); } )
-			// 			.text('履歴をアップロードする')
-			// 		)
-			// 	)
-			// 	.append( $pre
-			// 		.addClass( 'cont_console' )
-			// 		.css({
-			// 			'max-height': 360,
-			// 			'height': 360
-			// 		})
-			// 	)
-			// ;
 		}
 	}
 
@@ -131,92 +104,6 @@ window.contApp = new (function(){
 			}
 		);
 	}
-
-	// /**
-	//  * git-status
-	//  */
-	// function git_status(btn){
-	// 	$(btn).attr('disabled', 'disabled');
-	// 	var pj = px.getCurrentProject();
-	// 	$('.cont_console').text('');
-
-	// 	pj.git().parser.git(['status'], function(result){
-	// 		// console.log(result);
-	// 		$('.cont_console').text( result.stdout );
-	// 		$(btn).removeAttr('disabled').focus();
-	// 		px.message( 'Git のステータス表示を完了しました。' );
-	// 	});
-	// }
-
-	// /**
-	//  * git-pull
-	//  */
-	// function git_pull(btn){
-	// 	$(btn).attr('disabled', 'disabled');
-	// 	var pj = px.getCurrentProject();
-	// 	$('.cont_console').text('');
-
-	// 	pj.git().parser.git(['pull'], function(result){
-	// 		// console.log(result);
-	// 		$('.cont_console').text( result.stdout );
-	// 		$(btn).removeAttr('disabled').focus();
-	// 		px.message( 'git-pull を完了しました。' );
-	// 	});
-	// }
-
-	// /**
-	//  * git-commit
-	//  */
-	// function git_commit(btn){
-	// 	var pj = px.getCurrentProject();
-	// 	var commit_message = prompt('Commit Message?');
-	// 	if(!commit_message){return;}
-
-	// 	$(btn).attr('disabled', 'disabled');
-	// 	$('.cont_console').text('');
-
-	// 	var stdout = '';
-
-	// 	new Promise(function(rlv){rlv();})
-	// 		.then(function(){ return new Promise(function(rlv, rjt){
-	// 			// git-add
-	// 			pj.git().parser.git(['add', './'], function(result){
-	// 				// console.log(result);
-	// 				$('.cont_console').text( result.stdout );
-	// 				rlv();
-	// 			});
-	// 			return;
-	// 		}); })
-	// 		.then(function(){ return new Promise(function(rlv, rjt){
-	// 			// git-commit
-	// 			pj.git().parser.git(['commit', '-m', commit_message], function(result){
-	// 				// console.log(result);
-	// 				$('.cont_console').text( result.stdout );
-	// 				$(btn).removeAttr('disabled').focus();
-	// 				px.message( 'git-commit を完了しました。' );
-	// 				rlv();
-	// 			});
-	// 			return;
-	// 		}); })
-	// 	;
-
-	// }
-
-	// /**
-	//  * git-push
-	//  */
-	// function git_push(btn){
-	// 	$(btn).attr('disabled', 'disabled');
-	// 	var pj = px.getCurrentProject();
-	// 	$('.cont_console').text('');
-
-	// 	pj.git().parser.git(['push'], function(result){
-	// 		// console.log(result);
-	// 		$('.cont_console').text( result.stdout );
-	// 		$(btn).removeAttr('disabled').focus();
-	// 		px.message( 'git-push を完了しました。' );
-	// 	});
-	// }
 
 	/**
 	 * イベント

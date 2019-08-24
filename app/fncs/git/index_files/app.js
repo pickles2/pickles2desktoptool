@@ -50,6 +50,10 @@ window.contApp = new (function(){
 			var gitUi79 = new GitUi79( $elm, function( cmdAry, callback ){
 				pj.git().parser.git(cmdAry, function(result){
 					// console.log(result);
+					result.stdout = (function(str){
+						str = str.replace(/((?:[a-zA-Z\-\_]+))\:\/\/([^\s\/\\]*?\:)([^\s\/\\]*)\@/gi, '$1://$2********@');
+						return str;
+					})(result.stdout);
 					callback(result.code, result.stdout);
 				});
 			}, {} );

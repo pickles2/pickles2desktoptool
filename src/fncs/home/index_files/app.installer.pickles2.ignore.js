@@ -1,4 +1,4 @@
-window.contApp.installer.pickles2 = new (function( px, contApp ){
+module.exports = function(px, contApp, $){
 	var _this = this;
 	this.pj = false;
 
@@ -170,7 +170,7 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 				);
 			},
 			function(it1){
-				$body.append( $('#template-installer-pickles2-setup-finalize-option').html() );
+				$body.append( contApp.getTemplate('installer-pickles2-setup-finalize-option') );
 
 				var dlgOpt = {
 					'title': 'Pickles 2 プロジェクトのセットアップ',
@@ -539,4 +539,4 @@ window.contApp.installer.pickles2 = new (function( px, contApp ){
 
 	}
 
-})( window.px, window.contApp );
+}

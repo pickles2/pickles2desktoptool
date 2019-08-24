@@ -1,0 +1,62 @@
+<div class="px2-p">
+	<form action="javascript:;" onsubmit="cont_createProject(this);return false;" class="inline">
+		<table class="form_elements" style="width:100%;">
+			<colgroup><col width="30%" /><col width="70%" /></colgroup>
+			<tr>
+				<th>Project Name <span class="must">Required</span></th>
+				<td>
+					<p>他のプロジェクトと区別できる表示名を入力してください。日本語やその他のマルチバイト文字も使えます。</p>
+					<div class="error_name"></div>
+					<div class="overflow:hidden;"><input type="text" name="pj_name" value="" placeholder="Your Project Name" class="form-control" /></div>
+				</td>
+			</tr>
+			<tr>
+				<th>Path <span class="must">Required</span></th>
+				<td>
+					<ul class="form_elements-notes">
+						<li>変更する場合のみ、選択してください。</li>
+					</ul>
+					<p>プロジェクトのパスを選択してください。</p>
+					<p>新規のプロジェクトを作成する場合は、何も格納されていない空のディレクトリを選択してください。</p>
+					<p>既存のプロジェクトを選ぶ場合は、<code>composer.json</code> が置かれているディレクトリを選択してください。</p>
+					<div class="error_path"></div>
+					<div class="overflow:hidden;"><input type="file" name="pj_path" value="" nwdirectory /></div>
+				</td>
+			</tr>
+			<tr>
+				<th>Home Directory</th>
+				<td>
+					<div class="error_home_dir"></div>
+					<div class="overflow:hidden;"><input type="text" name="pj_home_dir" value="" placeholder="px-files/" class="form-control" /></div>
+				</td>
+			</tr>
+			<tr>
+				<th>Entry Script</th>
+				<td>
+					<div class="error_entry_script"></div>
+					<div class="overflow:hidden;"><input type="text" name="pj_entry_script" value="" placeholder=".px_execute.php" class="form-control" /></div>
+				</td>
+			</tr>
+		</table>
+		<h2>Optional</h2>
+		<table class="form_elements" style="width:100%;">
+			<colgroup><col width="30%" /><col width="70%" /></colgroup>
+			<tr>
+				<th>External Preview Server Origin</th>
+				<td>
+					<p>プレビュー用に外部のウェブサーバーアプリケーションを使用する場合、そのURLを入力してください。空欄にした場合は、内蔵のウェブサーバーを使用します。</p>
+					<div class="error_external_preview_server_origin"></div>
+					<div class="overflow:hidden;"><input type="text" name="pj_external_preview_server_origin" value="" placeholder="eg. http://localhost:8080" class="form-control" /></div>
+				</td>
+			</tr>
+			<tr>
+				<th>External App Server Origin</th>
+				<td>
+					<p>パブリッシュされた最終的な成果をプレビューするために、外部のウェブサーバーアプリケーションを使用する場合、そのURLを入力してください。空欄にした場合は、内蔵のウェブサーバーを使用します。</p>
+					<div class="error_external_app_server_origin"></div>
+					<div class="overflow:hidden;"><input type="text" name="pj_external_app_server_origin" value="" placeholder="eg. http://localhost:8081" class="form-control" /></div>
+				</td>
+			</tr>
+		</table>
+	</form>
+</div>

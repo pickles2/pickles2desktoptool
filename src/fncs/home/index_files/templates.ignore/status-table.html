@@ -1,0 +1,15 @@
+<% for (var key in status) { %>
+	<% if(key == 'api' || key == 'px2dthelper'){ %>
+		<% for (var key2 in status[key]) { %>
+			<tr>
+				<th><%= key %>.<%= key2 %></th>
+				<td><%= status[key][key2] %></td>
+			</tr>
+		<% } %>
+	<% }else{ %>
+		<tr>
+			<th><%= key %></th>
+			<td><%= status[key] %></td>
+		</tr>
+	<% } %>
+<% } %>

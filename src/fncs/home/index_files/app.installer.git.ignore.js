@@ -1,4 +1,4 @@
-window.contApp.installer.git = new (function( px, contApp ){
+module.exports = function(px, contApp, $){
 	var _this = this;
 
 	/**
@@ -145,4 +145,4 @@ window.contApp.installer.git = new (function( px, contApp ){
 		return this;
 	}
 
-})( window.px, window.contApp );
+};

@@ -4,12 +4,31 @@ window.contApp = new (function(){
 	var pj = px.getCurrentProject();
 	this.pj = pj;
 	var status = pj.status();
-	this.gitBar = new(require('../../../fncs/home/index_files/apis.ignore/gitBar.js'))(this, px, $);
+	this.gitBar = new(require('./apis.ignore/gitBar.js'))(this, px, $);
+
+	var templates = {
+		'install-pickles2': require('./templates.ignore/install-pickles2.html'),
+		'standby': require('./templates.ignore/standby.html'),
+		'reselectProject-path': require('./templates.ignore/reselectProject-path.html'),
+		'reselectProject-entryScript': require('./templates.ignore/reselectProject-entryScript.html'),
+		'installer-pickles2-setup-finalize-option': require('./templates.ignore/installer-pickles2-setup-finalize-option.html'),
+		'is-not-empty-dir': require('./templates.ignore/is-not-empty-dir.html'),
+		'install-composer': require('./templates.ignore/install-composer.html'),
+		'conf-not-exists': require('./templates.ignore/conf-not-exists.html'),
+		'form-editProject': require('./templates.ignore/form-editProject.html'),
+		'status-table': require('./templates.ignore/status-table.html')
+	};
+	this.getTemplate = function(name){
+		return templates[name];
+	}
 
 	/**
 	 * installer collection
 	 */
-	this.installer = {};
+	this.installer = {
+		pickles2: new (require('./app.installer.pickles2.ignore.js'))( window.px, this, $ ),
+		git: new (require('./app.installer.git.ignore.js'))( window.px, this, $ )
+	};
 
 	/**
 	 * initialize
@@ -29,7 +48,7 @@ window.contApp = new (function(){
 				it.next(arg);
 			} ,
 			function(it, arg){
-				var statusTable = px.utils.bindEjs( $('#template-status-table').html(), {'status': status} );
+				var statusTable = px.utils.bindEjs( templates['status-table'], {'status': status} );
 				$('.tpl_status_table').html( statusTable );
 				it.next(arg);
 			} ,
@@ -39,7 +58,7 @@ window.contApp = new (function(){
 				if( !status.pathExists ){
 					// パスの選択しなおし
 					$mainTaskUi
-						.html( $('#template-reselectProject-path').html() )
+						.html( templates['reselectProject-path'] )
 						.find('form')
 							.on('submit', function(){
 								_this.selectProjectPath( $(this).find('[name=pj_path]').val() );
@@ -49,7 +68,7 @@ window.contApp = new (function(){
 				}else if( status.pathContainsFileCount && !status.entryScriptExists ){
 					// EntryScript が存在しない。
 					$mainTaskUi
-						.html( $('#template-reselectProject-entryScript').html() )
+						.html( templates['reselectProject-entryScript'] )
 						.find('form')
 							.on('submit', function(){
 								_this.editProject();
@@ -59,7 +78,7 @@ window.contApp = new (function(){
 				}else if( status.pathExists && !status.composerJsonExists && status.pathContainsFileCount ){
 					// ディレクトリが空ではないためセットアップできない画面
 					$mainTaskUi
-						.html( $('#template-is-not-empty-dir').html() )
+						.html( templates['is-not-empty-dir'] )
 						.find('form')
 							.on('submit', function(){
 								_this.selectProjectPath( $(this).find('[name=pj_path]').val() );
@@ -69,7 +88,7 @@ window.contApp = new (function(){
 				}else if( status.pathExists && !status.composerJsonExists ){
 					// インストールボタン
 					$mainTaskUi
-						.html( $('#template-install-pickles2').html() )
+						.html( templates['install-pickles2'] )
 						.find('form')
 							.on('submit', function(){
 								install(this);
@@ -79,17 +98,17 @@ window.contApp = new (function(){
 				}else if( status.pathExists && !status.vendorDirExists ){
 					// `composer install` ボタン
 					$mainTaskUi
-						.html( $('#template-install-composer').html() )
+						.html( templates['install-composer'] )
 					;
 				}else if( !status.isPxStandby || !status.pathExists || !status.confFileExists ){
 					// 何らかのエラーがある可能性があります
 					$mainTaskUi
-						.html( $('#template-conf-not-exists').html() )
+						.html( templates['conf-not-exists'] )
 					;
 				}else{
 					// ちゃんとインストールできてます
 					$mainTaskUi
-						.html( $('#template-standby').html() )
+						.html( templates['standby'] )
 					;
 				}
 
@@ -253,7 +272,7 @@ window.contApp = new (function(){
 	 * プロジェクトを編集する
 	 */
 	this.editProject = function(){
-		var $form = $( $('#template-form-editProject').html() );
+		var $form = $( templates['form-editProject'] );
 		var px2dtLDA_pj = px.px2dtLDA.project(pj.projectId);
 		$form.find('[name=pj_name]').val(px2dtLDA_pj.getName());
 		// $form.find('[name=pj_path]').val(pj.get('path'));//←セットできない！

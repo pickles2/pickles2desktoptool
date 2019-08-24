@@ -1,0 +1,36 @@
+<form action="javascript:;" class="inline">
+	<div class="center">
+		<h2>プロジェクトに Pickles 2 をセットアップします</h2>
+		<div class="cont_setup_options left">
+			<h3>セットアップオプション</h3>
+			<ul>
+				<li><label><input type="radio" name="setup_method" value="pickles2" checked="checked" /> Packagist から Pickles 2 プロジェクトテンプレート をセットアップ</label></li>
+				<li><label><input type="radio" name="setup_method" value="git" /> Gitリポジトリ から クローン</label>
+					<div>Repository URL: <input type="text" name="git_url_repository" value="" style="max-width:100%;" /></div>
+				</li>
+			</ul>
+		</div>
+		<div class="cont_setup_description">
+			<p>
+				<img src="../images/install_image_clip.png" alt="Composer ☓ Packagist ☓ Pickles 2" />
+			</p>
+			<p>
+				Pickles 2 の プロジェクトテンプレート を Packagest から自動的に取得し、セットアップを完了します。<br />
+			</p>
+		</div>
+		<p>
+			次のボタンを押して、セットアップを続けてください。<br />
+		</p>
+		<p>
+			<button class="px2-btn px2-btn--primary">プロジェクトをセットアップする</button>
+		</p>
+	</div>
+</form>
+<div class="more_links">
+	<ul>
+		<li><a href="javascript:px.getCurrentProject().open();" class="px2-link px2-link--burette">フォルダを開く</a></li>
+		<li><a href="javascript:px.openInTextEditor( contApp.pj.get('path') );" class="px2-link px2-link--burette">外部テキストエディタで開く</a></li>
+		<li><a href="javascript:px.openInGitClient( contApp.pj.get('path') );" class="px2-link px2-link--burette">外部Gitクライアントで開く</a></li>
+		<li><a href="javascript:px.openInTerminal( contApp.pj.get('path') );" class="px2-link px2-link--burette">コマンドラインで開く</a></li>
+	</ul>
+</div><!-- /.more_links -->

@@ -2,14 +2,18 @@ var fsx = require('fs-extra');
 var gulp = require('gulp');
 var sass = require('gulp-sass');//CSSコンパイラ
 var plumber = require("gulp-plumber");//コンパイルエラーが起きても watch を抜けないようになる
+var concat = require('gulp-concat');//ファイルの結合ツール
 var rename = require("gulp-rename");//ファイル名の置き換えを行う
 var browserify = require("gulp-browserify");//NodeJSのコードをブラウザ向けコードに変換
+var webpack = require('webpack');
+var webpackStream = require('webpack-stream');
 var packageJson = require(__dirname+'/package.json');
 var _tasks = [
 	'provisional',
 	'client-libs',
 	'.html',
 	'.js',
+	'webpack:home',
 	'.css',
 	'.css.scss'
 ];
@@ -59,12 +63,40 @@ gulp.task('.html', function(){
 
 // src 中の *.js を処理
 gulp.task('.js', function(){
-	gulp.src(["src/**/*.js","!src/**/*.ignore*","!src/**/*.ignore*/*"])
+	gulp.src(["src/**/*.js","!src/**/*.ignore*","!src/**/*.ignore*/*","!src/**/*.webpack.js"])
 		.pipe(plumber())
 		.pipe(browserify({}))
 		.pipe(gulp.dest( './app/' ))
 	;
 });
+
+// Webpack: home を処理
+gulp.task("webpack:home", function() {
+	return webpackStream({
+		mode: 'production',
+		entry: "./src/fncs/home/index_files/app.webpack.js",
+		output: {
+			filename: "app.js"
+		},
+		module:{
+			rules:[
+				{
+					test:/\.html$/,
+					use:['html-loader']
+				},
+				{
+					test: /\.(jpg|png)$/,
+					use: ['url-loader']
+				}
+			]
+		}
+	}, webpack)
+		.pipe(plumber())
+		.pipe(gulp.dest( './app/fncs/home/index_files/' ))
+		.pipe(concat('app.js'))
+	;
+});
+
 
 // src 中の *.css.scss を処理
 gulp.task('.css.scss', function(){

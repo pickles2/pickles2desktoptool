@@ -4118,7 +4118,21 @@ module.exports = function(app, px, pj){
 						.addClass('px2-btn--primary')
 						.on('click', function(){
 							var val = $body.find('textarea').val();
-							px.fs.writeFileSync( realpath_comment_file, val );
+							if( val.length ){
+								if( !px.utils79.is_dir( px.utils79.dirname(realpath_comment_file) ) ){
+									px.fsEx.mkdirSync(px.utils79.dirname(realpath_comment_file));
+								}
+								px.fs.writeFileSync( realpath_comment_file, val );
+								px.message('コンテンツコメントを保存しました。');
+							}else{
+								if( px.utils79.is_file( realpath_comment_file ) ){
+									px.fsEx.removeSync(realpath_comment_file);
+								}
+								if( px.utils79.is_dir( px.utils79.dirname(realpath_comment_file) ) ){
+									px.fsEx.removeSync(px.utils79.dirname(realpath_comment_file));
+								}
+								px.message('コンテンツコメントを削除しました。');
+							}
 
 							_this.updateComment(function(){
 								px.closeDialog();
@@ -4140,6 +4154,7 @@ module.exports = function(app, px, pj){
 		if(!px.utils.isFile( realpath_comment_file )){
 			$commentView.text('no comment.');
 			$commentView.hide();
+			$(window).resize();
 
 			callback(true);
 			return;
@@ -4154,6 +4169,7 @@ module.exports = function(app, px, pj){
 				return false;
 			});
 			$commentView.html($html);
+			$(window).resize();
 
 			callback(true);
 		});

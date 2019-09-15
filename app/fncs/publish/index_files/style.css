@@ -38,6 +38,11 @@
       display: none;
       color: #f00;
       font-weight: bold; }
+      .contents .cont_results-errorMessage a {
+        color: #f00; }
+        .contents .cont_results-errorMessage a:hover {
+          color: #f66;
+          text-decoration: none; }
     .contents .cont_results-error {
       background: #fff6f6; }
       .contents .cont_results-error .cont_results-errorMessage {

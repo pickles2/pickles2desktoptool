@@ -56,6 +56,13 @@
 			display: none;
 			color: #f00;
 			font-weight: bold;
+			a{
+				color: #f00;
+				&:hover{
+					color: #f66;
+					text-decoration: none;
+				}
+			}
 		}
 
 		// エラーがある場合の表示

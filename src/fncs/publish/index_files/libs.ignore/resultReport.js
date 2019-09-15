@@ -6,6 +6,7 @@ module.exports = function(contApp, px, $){
 
 	var $scene, $results, $rows, $summaries, $spentTime, $totalFileCount, $errorMessage;
 	var publishStatus;
+	var errorReports = [];
 
 	/**
 	 * レポート表示の初期化
@@ -64,12 +65,14 @@ module.exports = function(contApp, px, $){
 					return;
 				}
 
+				errorReports = [];
 				d3.csv( 'file://'+contApp.getRealpathPublishDir()+"alert_log.csv" )
 					.row(function(d) {
 						var rtn = {};
 						rtn.datetime = d['datetime'];
 						rtn.path = d['path'];
 						rtn.errorMessage = d['error_message'];
+						errorReports.push(rtn);
 						return rtn;
 					})
 					.get(function(error, csv) {
@@ -94,9 +97,15 @@ module.exports = function(contApp, px, $){
 
 						if( publishStatus.alertLogExists ){
 							$results.addClass('cont_results-error');
+							var $a = $('<a href="#">');
+							$a.text(arg.alertLogCsv.length + '件のエラーが検出されています。');
 							$errorMessage
-								.text( arg.alertLogCsv.length + '件のエラーが検出されています。' )
+								.html( '' )
+								.append( $a )
 							;
+							$a.on('click', function(){
+								_this.openErrorReports();
+							});
 						}
 						return;
 					}
@@ -183,6 +192,56 @@ module.exports = function(contApp, px, $){
 		]);
 
 	} // this.init();
+
+	/**
+	 * エラー内容を表示する
+	 */
+	this.openErrorReports = function(){
+
+		$body = $('<div>');
+		if( !errorReports.length ){
+			$body.append('<p>エラーレポートはありません。</p>')
+		}else{
+			$body.append('<p>'+errorReports.length+'件のエラーがあります。</p>')
+			var $table = $('<table class="px2-table"><thead></thead><tbody></tbody></table>');
+			$body.append($table);
+			$table.find('thead')
+				.append( $('<tr>')
+					.append( $('<td>').text('時刻') )
+					.append( $('<td>').text('パス') )
+					.append( $('<td>').text('メッセージ') )
+				)
+			;
+			errorReports.forEach(function(error){
+				$table.find('tbody')
+					.append( $('<tr>')
+						.append( $('<td>').text(error.datetime) )
+						.append( $('<td>').text(error.path) )
+						.append( $('<td>').text(error.errorMessage) )
+					)
+				;
+			});
+		}
+
+		px2style.modal({
+			title: 'エラーレポート一覧',
+			body: $body,
+			buttons: [
+				$('<button class="px2-btn px2-btn--primary">')
+					.text('OK')
+					.on('click', function(){
+						_this.closeErrorReports();
+					})
+			]
+		});
+	}
+
+	/**
+	 * エラー内容表示を閉じる
+	 */
+	this.closeErrorReports = function(){
+		px2style.closeModal();
+	}
 
 	return this;
 }

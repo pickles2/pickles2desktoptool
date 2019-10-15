@@ -198,7 +198,7 @@ var nw = new NwBuilder({
 	version: '0.37.0',// <- version number of node-webkit
 	flavor: 'sdk',
 	macIcns: './app/common/images/appicon-osx.icns',
-	winIco: './app/common/images/appicon-win.ico',
+	// winIco: './app/common/images/appicon-win.ico',
 	zip: false,
 	platforms: platforms
 });

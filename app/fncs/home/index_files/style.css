@@ -59,8 +59,27 @@
     color: #999;
     padding: 3em; }
 
-.contents .cont-git-bar {
-  border: 1px solid #349;
-  border-radius: 3px;
-  padding: 10px 20px;
-  background-color: #eef; }
+.cont-git-bar {
+  display: flex;
+  border-top: 1px solid #9a9994;
+  border-bottom: 1px solid #9a9994;
+  border-radius: 0;
+  background-color: #f0efe7;
+  margin: 1em 0; }
+  .cont-git-bar__heading {
+    font-weight: bold;
+    font-size: 36px;
+    width: 120px;
+    text-align: center;
+    padding: 10px 20px;
+    color: #ef391a; }
+  .cont-git-bar__body {
+    width: auto;
+    padding: 10px 20px; }
+  @media all and (max-width: 400px) {
+    .cont-git-bar {
+      flex-direction: column; }
+      .cont-git-bar__heading {
+        font-size: 24px;
+        width: auto;
+        text-align: center; } }

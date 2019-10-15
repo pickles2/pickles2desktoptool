@@ -127,7 +127,7 @@ window.contApp = new (function(){
 			function(it, arg){
 				// --------------------------------------
 				// Gitバーを表示する
-				var $gitBar = $('.cont-git-bar');
+				var $gitBar = $('.cont-git-bar__body');
 				if(!status.gitDirExists){
 					$gitBar.remove();
 					it.next(arg);

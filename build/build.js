@@ -21,6 +21,14 @@ if( utils79.is_file( './apple_identity.txt' ) ){
 	APPLE_IDENTITY = fs.readFileSync('./apple_identity.txt').toString();
 	APPLE_IDENTITY = utils79.trim(APPLE_IDENTITY);
 }
+var codesignJson = null;
+if( utils79.is_file( './apple_codesign.json' ) ){
+	var codesignJson = fs.readFileSync('./apple_codesign.json').toString();
+	codesignJson = JSON.parse(codesignJson);
+	if( codesignJson.apple_identity && APPLE_IDENTITY === null ){
+		APPLE_IDENTITY = codesignJson.apple_identity;
+	}
+}
 
 function pad(str, len){
 	str += '';
@@ -241,7 +249,7 @@ nw.build().then(function () {
 						var proc = require('child_process').spawn(
 							'codesign',
 							[
-								'--deep-verify',
+								'--deep',
 								'--options=runtime',
 								'--timestamp',
 								'--check-notarization',
@@ -313,6 +321,32 @@ nw.build().then(function () {
 					);
 				}
 				itPj.next(param);
+			},
+			function(itPj, param){
+				// macOS版 を Notarize
+				if( !codesignJson ){
+					itPj.next(param);
+					return;
+				}
+
+				writeLog('upload for macOS Noterize...');
+				var proc = require('child_process').spawn(
+					'xcrun',
+					[
+						'altool',
+						'--notarize-app',
+						'--primary-bundle-id', codesignJson.primary_bundle_id,
+						'--username', codesignJson.apple_developer_account,
+						'--password', codesignJson.apple_developer_password,
+						'--file',
+						__dirname + '/dist/' + appName+'-'+versionSign+'-osx64.zip'
+					],
+					{}
+				);
+				proc.on('close', function(){
+					writeLog('done!');
+					itPjSign.next(param);
+				});
 			},
 			function(itPj, param){
 				writeLog('cleanup...');

@@ -345,7 +345,7 @@ nw.build().then(function () {
 				);
 				proc.on('close', function(){
 					writeLog('done!');
-					itPjSign.next(param);
+					itPj.next(param);
 				});
 			},
 			function(itPj, param){

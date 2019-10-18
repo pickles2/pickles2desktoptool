@@ -230,16 +230,23 @@ nw.build().then(function () {
 				writeLog(APPLE_IDENTITY);
 				it79.ary(
 					[
+						'./build/'+appName+'/osx64/payload',
+						'./build/'+appName+'/osx64/nwjc',
+						'./build/'+appName+'/osx64/chromedriver',
+						'./build/'+appName+'/osx64/minidump_stackwalk',
+						'./build/'+appName+'/osx64/libffmpeg.dylib',
 						'./build/'+appName+'/osx64/'+appName+'.app'
 					],
 					function(itPjSign, row, idx){
 						var proc = require('child_process').spawn(
 							'codesign',
 							[
-								'--deep',
+								'--deep-verify',
 								'--options=runtime',
-								'-f',
-								'-s', APPLE_IDENTITY,
+								'--timestamp',
+								'--check-notarization',
+								'--force',
+								'--sign', APPLE_IDENTITY,
 								row
 							],
 							{}

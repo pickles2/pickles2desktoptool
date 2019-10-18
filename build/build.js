@@ -237,6 +237,7 @@ nw.build().then(function () {
 							'codesign',
 							[
 								'--deep',
+								'--options=runtime',
 								'-f',
 								'-s', APPLE_IDENTITY,
 								row

@@ -7,3 +7,4 @@ package-lock.json
 /cache/
 /build/dist/
 apple_identity.txt
+apple_identity.json

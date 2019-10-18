@@ -3,20 +3,22 @@
 TMP_DIR_PREFIX="_tmp_build_px2dt_";
 TMP_DIR_NAME=$(date '+%Y%m%d_%H%M%S');
 REPOSITORY_URL="https://github.com/pickles2/app-pickles2.git";
-APPLE_IDENTITY;
-APPLE_CODESIGN_JSON;
+APPLE_IDENTITY='';
+APPLE_CODESIGN_JSON='';
 
-while getopts i: OPT
+while getopts "is:" OPT
 do
     case $OPT in
-        "i" ) APPLE_IDENTITY="$OPTARG" ;;
+        "i" )
+            APPLE_IDENTITY="$OPTARG"
+            ;;
+        "s" )
+            APPLE_CODESIGN_JSON="$OPTARG"
+            ;;
     esac
-    case $OPT in
-        "s" ) APPLE_CODESIGN_JSON="$OPTARG" ;;
-    esac
+    shift `expr $OPTIND - 1`
 done
 
-shift `expr $OPTIND - 1`
 
 BRANCH_NAME=$1;
 if [ ! $1 ]; then

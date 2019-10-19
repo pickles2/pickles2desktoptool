@@ -252,7 +252,7 @@ nw.build().then(function () {
 								'--deep',
 								'--options=runtime',
 								'--timestamp',
-								'--check-notarization',
+								// '--check-notarization',
 								'--force',
 								'--sign', APPLE_IDENTITY,
 								row

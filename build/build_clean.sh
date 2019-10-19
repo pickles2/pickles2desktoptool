@@ -2,34 +2,34 @@
 
 TMP_DIR_PREFIX="_tmp_build_px2dt_";
 TMP_DIR_NAME=$(date '+%Y%m%d_%H%M%S');
+CURRENT_DIR=$(pwd);
 REPOSITORY_URL="https://github.com/pickles2/app-pickles2.git";
 APPLE_IDENTITY='';
 APPLE_CODESIGN_JSON='';
 
-while getopts "is:" OPT
+while getopts s:i: OPT
 do
     case $OPT in
         "i" )
-            APPLE_IDENTITY="$OPTARG"
+            APPLE_IDENTITY="$OPTARG";
             ;;
         "s" )
-            APPLE_CODESIGN_JSON="$OPTARG"
+            APPLE_CODESIGN_JSON="$OPTARG";
             ;;
     esac
-    shift `expr $OPTIND - 1`
 done
 
-
-BRANCH_NAME=$1;
+BRANCH_NAME=${@:$#:1};
 if [ ! $1 ]; then
     BRANCH_NAME="develop";
 fi
 
 echo "-------------------------";
-echo "build Start!";
-echo "temporary dir = ~/${TMP_DIR_PREFIX}${TMP_DIR_NAME}/"
-echo "repository = ${REPOSITORY_URL}"
-echo "branch name = ${BRANCH_NAME}"
+echo "Build Start!";
+echo "Current Dir = ${CURRENT_DIR}"
+echo "Temporary Dir = ~/${TMP_DIR_PREFIX}${TMP_DIR_NAME}/"
+echo "Repository = ${REPOSITORY_URL}"
+echo "Branch Name = ${BRANCH_NAME}"
 if [ $APPLE_IDENTITY ]; then
     echo "Apple IDENTITY = ${APPLE_IDENTITY}"
 fi
@@ -40,16 +40,23 @@ echo $(date '+%Y/%m/%d %H:%M:%S');
 
 sleep 1s; echo ""; echo "=-=-=-=-=-=-=-=-=-= making build directory";
 mkdir ~/${TMP_DIR_PREFIX}${TMP_DIR_NAME};
-
-sleep 1s; echo ""; echo "=-=-=-=-=-=-=-=-=-= git clone";
-git clone --depth 1 -b ${BRANCH_NAME} ${REPOSITORY_URL} ~/${TMP_DIR_PREFIX}${TMP_DIR_NAME}/;
-
-if [ $APPLE_CODESIGN_JSON ]; then
-    cp ${APPLE_CODESIGN_JSON} ~/${TMP_DIR_PREFIX}${TMP_DIR_NAME}/apple_codesign.json;
-fi
 cd ~/${TMP_DIR_PREFIX}${TMP_DIR_NAME}/;
 pwd
 
+sleep 1s; echo ""; echo "=-=-=-=-=-=-=-=-=-= git clone";
+git clone --depth 1 -b ${BRANCH_NAME} ${REPOSITORY_URL} ./;
+
+if [ $APPLE_CODESIGN_JSON ]; then
+    sleep 1s; echo ""; echo "=-=-=-=-=-=-=-=-=-= copying apple_codesign.json";
+    cd ${CURRENT_DIR};
+    echo ""; 
+    echo "cd $(pwd);"
+    cp -v ${APPLE_CODESIGN_JSON} ~/${TMP_DIR_PREFIX}${TMP_DIR_NAME}/apple_codesign.json;
+    cd ~/${TMP_DIR_PREFIX}${TMP_DIR_NAME}/;
+    echo "cd $(pwd);"
+fi
+
+sleep 1s; echo ""; echo "=-=-=-=-=-=-=-=-=-= git submodule";
 git submodule update --init --recursive --force;
 
 sleep 1s; echo ""; echo "=-=-=-=-=-=-=-=-=-= composer install --no-dev";

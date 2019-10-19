@@ -64,7 +64,7 @@ $ npm run build
 ### Build application cleanly
 
 ```
-$ sh build/build_clean.sh [-i ${AppleIdentity}] {$branch_or_version}
+$ sh build/build_clean.sh [-i ${AppleIdentity}] [-s ${path_to_apple_coodesign.json}] {$branch_or_version}
 ```
 
 ユーザーのホームディレクトリに、クリーンビルドされたZIPファイルが出力されます。

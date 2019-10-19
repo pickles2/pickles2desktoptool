@@ -250,7 +250,7 @@ nw.build().then(function () {
 							'codesign',
 							[
 								'--deep',
-								'--options=runtime',
+								// '--options=runtime',
 								'--timestamp',
 								// '--check-notarization',
 								'--force',

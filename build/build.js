@@ -363,7 +363,7 @@ function notarizeMacOsBuild(realpathZip, callback){
 		return;
 	}
 
-	writeLog('upload for macOS Noterize...');
+	writeLog('upload for macOS Notarize...');
 	var proc = require('child_process').spawn(
 		'xcrun',
 		[

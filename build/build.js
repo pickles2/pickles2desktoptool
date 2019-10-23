@@ -304,6 +304,17 @@ nw.build().then(function () {
 						proc.on('close', function(){
 							writeLog('success. - '+'./build/dist/'+zipFileName);
 							process.chdir(__dirname);
+
+							if( platformName == 'osx64' ){
+								notarizeMacOsBuild(
+									__dirname + '/dist/' + zipFileName,
+									function(){
+										it2.next();
+									}
+								);
+								return;
+							}
+
 							it2.next();
 						});
 					},
@@ -321,32 +332,6 @@ nw.build().then(function () {
 					);
 				}
 				itPj.next(param);
-			},
-			function(itPj, param){
-				// macOS版 を Notarize
-				if( !codesignJson ){
-					itPj.next(param);
-					return;
-				}
-
-				writeLog('upload for macOS Noterize...');
-				var proc = require('child_process').spawn(
-					'xcrun',
-					[
-						'altool',
-						'--notarize-app',
-						'--primary-bundle-id', codesignJson.primary_bundle_id,
-						'--username', codesignJson.apple_developer_account,
-						'--password', codesignJson.apple_developer_password,
-						'--file',
-						__dirname + '/dist/' + appName+'-'+versionSign+'-osx64.zip'
-					],
-					{}
-				);
-				proc.on('close', function(){
-					writeLog('done!');
-					itPj.next(param);
-				});
 			},
 			function(itPj, param){
 				writeLog('cleanup...');
@@ -367,3 +352,34 @@ nw.build().then(function () {
 	writeLog(error);
 	console.error(error);
 });
+
+// Apple の公証に提出する
+function notarizeMacOsBuild(realpathZip, callback){
+	callback = callback || function(){};
+
+	// macOS版 を Notarize
+	if( !codesignJson ){
+		callback();
+		return;
+	}
+
+	writeLog('upload for macOS Noterize...');
+	var proc = require('child_process').spawn(
+		'xcrun',
+		[
+			'altool',
+			'--notarize-app',
+			'--primary-bundle-id', codesignJson.primary_bundle_id,
+			'--username', codesignJson.apple_developer_account,
+			'--password', codesignJson.apple_developer_password,
+			'--file',
+			realpathZip
+		],
+		{}
+	);
+	proc.on('close', function(){
+		writeLog('done!');
+		callback();
+	});
+	return;
+}

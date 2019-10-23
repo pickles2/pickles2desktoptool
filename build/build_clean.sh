@@ -18,8 +18,9 @@ do
             ;;
     esac
 done
+shift `expr $OPTIND - 1`
 
-BRANCH_NAME=${@:$#:1};
+BRANCH_NAME=$1;
 if [ ! $1 ]; then
     BRANCH_NAME="develop";
 fi

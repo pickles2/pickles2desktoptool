@@ -29,7 +29,7 @@
     "git-parser": "file:submodules/node-git-parser",
     "glob": "^5.0.10",
     "iterate79": "^1.1.0",
-    "jquery": "^2.1.4",
+    "jquery": "^3.4.1",
     "langbank": "0.0.2",
     "marked": "0.3.*",
     "mime": "^2.4.4",

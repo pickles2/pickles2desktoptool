@@ -28,10 +28,12 @@
 		var selectedInstance = null;
 		var selectedInstanceRegion = [];
 		var $canvas;
-		var redrawTimer;
 		var serverConfig; // サーバー側から取得した設定情報
 		this.__dirname = __dirname;
 		var bootupInfomations;
+		var uiState;
+		var timer_redraw,
+			timer_onPreviewLoad;
 
 		/**
 		 * broccoli-client を初期化する
@@ -58,6 +60,8 @@
 
 			this.options = options;
 
+			uiState = 'initialize';
+
 			$canvas = $(options.elmCanvas);
 			$canvas
 				.addClass('broccoli')
@@ -70,6 +74,7 @@
 			$canvas.find('iframe')
 				.bind('load', function(){
 					console.log('broccoli: preview loaded');
+					_this.setUiState('standby');
 					onPreviewLoad( callback );
 				})
 			;
@@ -133,36 +138,6 @@
 			bindDropCancel(options.elmInstancePathView);
 			bindDropCancel(options.elmInstanceTreeView);
 			bindDropCancel(options.elmModulePalette);
-
-			$(window)
-				.bind('copy', function(e){
-					switch(e.target.tagName.toLowerCase()){
-						case 'textarea': case 'input': return;break;
-					}
-					e.stopPropagation();
-					e.preventDefault();
-					_this.copy();
-					return;
-				})
-				.bind('cut', function(e){
-					switch(e.target.tagName.toLowerCase()){
-						case 'textarea': case 'input': return;break;
-					}
-					e.stopPropagation();
-					e.preventDefault();
-					_this.cut();
-					return;
-				})
-				.bind('paste', function(e){
-					switch(e.target.tagName.toLowerCase()){
-						case 'textarea': case 'input': return;break;
-					}
-					e.stopPropagation();
-					e.preventDefault();
-					_this.paste();
-					return;
-				})
-			;
 
 
 			it79.fnc(
@@ -284,6 +259,15 @@
 					} ,
 					function(it1, data){
 						console.log('broccoli: init done.');
+
+						clearTimeout(timer_onPreviewLoad);
+						var timeout = 30;
+						timer_onPreviewLoad = setTimeout(function(){
+							// 何らかの理由で、 iframeの読み込み完了イベントが発生しなかった場合、
+							// 強制的にトリガーする。
+							console.error('Loading preview timeout ('+(timeout)+'sec): Force trigger onPreviewLoad();');
+							onPreviewLoad();
+						}, timeout*1000);
 						// callback(); // <- onPreviewLoad() がコールするので、ここでは呼ばない。
 						it1.next();
 					}
@@ -293,11 +277,57 @@
 		}
 
 		/**
+		 * UIの状態をセットする
+		 */
+		this.setUiState = function( state ){
+			uiState = state;
+			var $window = $(window)
+			$window
+				.off('copy')
+				.off('cut')
+				.off('paste')
+			;
+
+			if( uiState == 'standby' ){
+				$window
+					.on('copy', function(e){
+						switch(e.target.tagName.toLowerCase()){
+							case 'textarea': case 'input': return;break;
+						}
+						e.stopPropagation();
+						e.preventDefault();
+						_this.copy();
+						return;
+					})
+					.on('cut', function(e){
+						switch(e.target.tagName.toLowerCase()){
+							case 'textarea': case 'input': return;break;
+						}
+						e.stopPropagation();
+						e.preventDefault();
+						_this.cut();
+						return;
+					})
+					.on('paste', function(e){
+						switch(e.target.tagName.toLowerCase()){
+							case 'textarea': case 'input': return;break;
+						}
+						e.stopPropagation();
+						e.preventDefault();
+						_this.paste();
+						return;
+					})
+				;
+			}
+		}
+
+		/**
 		 * プレビューがロードされたら実行
 		 */
 		function onPreviewLoad( callback ){
 			callback = callback || function(){};
 			if(_this.postMessenger===undefined){return;}// broccoli.init() の実行前
+			clearTimeout(timer_onPreviewLoad);
 
 			it79.fnc(
 				{},
@@ -369,8 +399,8 @@
 					function( it1, data ){
 						// タイマー処理
 						// ウィンドウサイズの変更などの際に、無駄な再描画連打を減らすため
-						clearTimeout( redrawTimer );
-						redrawTimer = setTimeout(function(){
+						clearTimeout( timer_redraw );
+						timer_redraw = setTimeout(function(){
 							it1.next(data);
 						}, 100);
 					} ,
@@ -1140,6 +1170,7 @@
 		 */
 		this.lightbox = function( callback ){
 			callback = callback||function(){};
+			this.setUiState('lightbox');
 
 			var $dom = $('<div>')
 				.addClass('broccoli--lightbox-inner')
@@ -1194,6 +1225,7 @@
 					}
 				)
 			;
+			this.setUiState('standby');
 			return this;
 		}
 
@@ -2533,6 +2565,9 @@ module.exports = function(broccoli, targetElm, callback){
 	 * モジュールのボタンを生成する
 	 */
 	function generateModuleButton( mod, depth ){
+		var timerTouchStart;
+		var isTouchStartHold = false;
+
 		depth = depth || 0;
 		var $button = $('<a class="broccoli--module-palette--draggablebutton">');
 		if(depth){
@@ -2599,6 +2634,19 @@ module.exports = function(broccoli, targetElm, callback){
 					;
 				});
 			})
+			.on('touchstart', function(e){
+				// タッチデバイス向けの処理
+				clearTimeout(timerTouchStart);
+				if( isTouchStartHold ){
+					$(this).dblclick();
+					return;
+				}
+				isTouchStartHold = true;
+				timerTouchStart = setTimeout(function(){
+					isTouchStartHold = false;
+				}, 250);
+				return;
+			})
 			// .tooltip({'placement':'left'})
 		;
 		return $button;
@@ -2641,15 +2689,15 @@ module.exports = function(broccoli, targetElm, callback){
 		if( $img.size() ){
 			html += '<div class="broccoli--module-info-content-thumb"><img src="'+$img.attr('src')+'" /></div>';
 		}
-		html += '<h1 class="broccoli__user-selectable">'+$elm.attr('data-name')+'</h1>';
-		html += '<p class="broccoli__user-selectable">'+$elm.attr('data-id')+'</p>';
+		html += '<h1>'+$elm.attr('data-name')+'</h1>';
+		html += '<p>'+$elm.attr('data-id')+'</p>';
 		html += '<hr />';
 		var readme = $elm.attr('data-readme');
 		var $readme = $('<div>'+readme+'</div>')
 		$readme.find('a').each(function(){
 			$(this).attr({'target':'_blank'})
 		});
-		html += '<div class="broccoli__user-selectable">'+ (readme ? $readme.html() : '<p style="text-align:center; margin: 100px auto;">-- no readme --</p>' ) +'</div>';
+		html += '<div>'+ (readme ? $readme.html() : '<p style="text-align:center; margin: 100px auto;">-- no readme --</p>' ) +'</div>';
 
 		var pics = JSON.parse( $elm.attr('data-pics') );
 		if( pics.length ){
@@ -4835,6 +4883,8 @@ module.exports = function(broccoli){
 	 * パネルにイベントハンドラをセットする
 	 */
 	this.setPanelEventHandlers = function($panel){
+		var timerTouchStart;
+		var isTouchStartHold = false;
 		var timerFocus;
 		$panel
 			.attr({
@@ -4897,6 +4947,21 @@ module.exports = function(broccoli){
 				_this.onDblClick(e, this, function(){
 					// console.log('dblclick event done.');
 				});
+				return;
+			})
+			.on('touchstart', function(e){
+				// タッチデバイス向けの処理
+				clearTimeout(timerTouchStart);
+				if( isTouchStartHold ){
+					_this.onDblClick(e, this, function(){
+						// console.log('dblclick event done.');
+					});
+					return;
+				}
+				isTouchStartHold = true;
+				timerTouchStart = setTimeout(function(){
+					isTouchStartHold = false;
+				}, 250);
 				return;
 			})
 			.on('dragleave', function(e){
@@ -5835,25 +5900,27 @@ module.exports = function(broccoli){
 						"data-is-updated": 'no'
 					})
 					.css({
-						'min-width':'100px',
+						'min-width':'10%',
 						'max-width':'100%',
-						'min-height':'100px',
-						'max-height':'200px'
+						'min-height':'1px',
+						'max-height':'200px',
+						'user-select': 'none',
+						'pointer-events': 'none'
 					})
 				)
-				.bind('dragleave', function(e){
+				.on('dragleave', function(e){
 					e.stopPropagation();
 					e.preventDefault();
 					$(this).css({'background': '#fff'});
 				})
-				.bind('dragover', function(e){
+				.on('dragover', function(e){
 					// console.log(123478987654.123456);
 					e.stopPropagation();
 					e.preventDefault();
 					$(this).css({'background': '#eee'});
 					// console.log(event);
 				})
-				.bind('drop', function(e){
+				.on('drop', function(e){
 					e.stopPropagation();
 					e.preventDefault();
 					var event = e.originalEvent;

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CURRENT_DIR=$(pwd);
-REPOSITORY_URL="https://github.com/pickles2/app-pickles2.git";
+APP_NAME="Pickles2";
 
 ZIPNAME=$1;
 if [ ! $1 ]; then
@@ -18,26 +18,26 @@ echo "";
 sleep 1s;
 
 echo "--- unzip...";
-unzip -qq -d "Pickles2-tmp/" "${ZIPNAME}";
+unzip -qq -d "_tmp-apple-staple-app-zip/" "${ZIPNAME}";
 sleep 1s;
 
 echo "--- staple...";
-xcrun stapler staple ./Pickles2-tmp/Pickles2.app;
+xcrun stapler staple ./_tmp-apple-staple-app-zip/${APP_NAME}.app;
 sleep 1s;
 
 echo "--- rezip...";
-cd ./Pickles2-tmp/;
-zip -q -y -r "../Pickles2-tmp.zip" ".";
+cd ./_tmp-apple-staple-app-zip/;
+zip -q -y -r "../apple-staple-app-tmp.zip" ".";
 cd ${CURRENT_DIR};
 sleep 1s;
 
 echo "--- replace...";
 rm ${ZIPNAME};
-mv Pickles2-tmp.zip ${ZIPNAME};
+mv apple-staple-app-tmp.zip ${ZIPNAME};
 sleep 1s;
 
 echo "--- cleanup...";
-rm -r Pickles2-tmp/;
+rm -r _tmp-apple-staple-app-zip/;
 sleep 1s;
 
 echo "";

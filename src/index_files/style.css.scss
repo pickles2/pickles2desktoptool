@@ -95,6 +95,24 @@ body{
 	z-index: 10000;
 	background-color: #f9f9f9;
 	border-top: 1px solid #aaa;
+	display: flex;
+	&__left{
+		display: flex;
+		flex-grow: 1;
+		div{
+			padding: 2px 4px;
+			font-size: 11px;
+		}
+	}
+	&__right{
+		justify-content: flex-end;
+		display: flex;
+		flex-grow: 1;
+		div{
+			padding: 2px 4px;
+			font-size: 11px;
+		}
+	}
 }
 
 // Contents

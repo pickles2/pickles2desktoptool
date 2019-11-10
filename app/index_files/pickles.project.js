@@ -12,7 +12,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	var _pjError = [];
 	var _projectStatus = null;
 	var _px2package = {};
-
+	var _gitStatus = null;
 
 	/**
 	 * projectオブジェクトを初期化
@@ -144,6 +144,20 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
+				// Checking Git Status
+				_this.updateGitStatus(function(){
+					rlv();
+				});
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// Update Status Bar
+				_this.updateStatusBar(function(){
+					rlv();
+				});
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
 				cbStandby();
 				rlv();
 				return;
@@ -158,6 +172,40 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	 */
 	this.status = function(){
 		return _projectStatus;
+	}
+
+	/**
+	 * Git の状態を更新する
+	 */
+	this.updateGitStatus = function( callback ){
+		callback = callback || function(){};
+		_this.git().parser.git(['status'], function(result){
+			// console.log(result);
+			_gitStatus = result;
+			callback();
+		});
+		return;
+	}
+
+	/**
+	 * ステータスバーを更新する
+	 */
+	this.updateStatusBar = function( callback ){
+		callback = callback || function(){};
+		var changes = _gitStatus.staged.deleted.length
+			+ _gitStatus.staged.modified.length
+			+ _gitStatus.staged.untracked.length
+			+ _gitStatus.notStaged.deleted.length
+			+ _gitStatus.notStaged.modified.length
+			+ _gitStatus.notStaged.untracked.length;
+		px.statusbar.set(
+			[],
+			[
+				_gitStatus.currentBranchName,
+				changes + ' Uncommited Changes',
+			]
+		);
+		callback();
 	}
 
 	/**

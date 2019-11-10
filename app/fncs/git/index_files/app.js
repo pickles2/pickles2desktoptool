@@ -54,7 +54,11 @@ window.contApp = new (function(){
 						str = str.replace(/((?:[a-zA-Z\-\_]+))\:\/\/([^\s\/\\]*?\:)([^\s\/\\]*)\@/gi, '$1://$2********@');
 						return str;
 					})(result.stdout);
-					callback(result.code, result.stdout);
+					pj.updateGitStatus(function(){
+						pj.updateStatusBar(function(){
+							callback(result.code, result.stdout);
+						});
+					});
 				});
 			}, {} );
 			gitUi79.init(function(){

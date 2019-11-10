@@ -985,6 +985,7 @@ new (function($, window){
 			px2style.header.init({"current":""});
 			$cont.html( $('script#template-selectProject-page').html() );
 			$cont.find('.cont_top_footer p').text( _packageJson.pickles2.credit );
+			_this.statusbar.set([], []);
 
 			this.getProjectList(function(list){
 				if( list.length ){
@@ -1258,6 +1259,13 @@ new (function($, window){
 				it.next(arg);
 
 			} ,
+			function(it1, arg){
+				// ステータスバー設定
+				var statusbar = require('./index_files/statusbar.js');
+				_this.statusbar = new statusbar(_this, $statusbar);
+				_this.statusbar.set([], []);
+				it1.next(arg);
+			},
 			function(it, arg){
 				var $ul = $shoulderMenu.find('ul').hide();
 				$shoulderMenu

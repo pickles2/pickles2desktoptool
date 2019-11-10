@@ -81,7 +81,21 @@
   width: 100%;
   z-index: 10000;
   background-color: #f9f9f9;
-  border-top: 1px solid #aaa; }
+  border-top: 1px solid #aaa;
+  display: flex; }
+  .theme-statusbar__left {
+    display: flex;
+    flex-grow: 1; }
+    .theme-statusbar__left div {
+      padding: 2px 4px;
+      font-size: 11px; }
+  .theme-statusbar__right {
+    justify-content: flex-end;
+    display: flex;
+    flex-grow: 1; }
+    .theme-statusbar__right div {
+      padding: 2px 4px;
+      font-size: 11px; }
 
 .contents {
   position: fixed;

@@ -140,7 +140,7 @@ new (function($, window){
 
 	this.nodePhpBin = {};//init内で初期化される
 
-	var $header, $footer, $main, $contents, $shoulderMenu;
+	var $header, $statusbar, $main, $contents, $shoulderMenu;
 	var _menu = [];
 
 	this.cookie = $.cookie;
@@ -1112,12 +1112,12 @@ new (function($, window){
 				'left':0 ,
 				'top': $header.outerHeight()+0 ,
 				'right': 0 ,
-				'height': $(window).height() - $header.outerHeight() - $footer.outerHeight() - 0
+				'height': $(window).height() - $header.outerHeight() - $statusbar.outerHeight() - 0
 			})
 		;
 		$contents.find('>iframe')
 			.css({
-				'height': $contents.innerHeight() - 7
+				'height': $contents.innerHeight() - 0
 			})
 		;
 		px2style.header.init({"current":_current_app});
@@ -1238,7 +1238,7 @@ new (function($, window){
 				// DOMスキャン
 				$header   = $('.px2-header');
 				$contents = $('.contents');
-				$footer   = $('.theme-footer');
+				$statusbar   = $('.theme-statusbar');
 				// $dialog   = $('<div>');
 				$shoulderMenu = $('.px2-header__shoulder-menu');
 

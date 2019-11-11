@@ -129,7 +129,7 @@ window.contApp = new (function(){
 				// Gitバーを表示する
 				var $gitBar = $('.cont-git-bar__body');
 				if(!status.gitDirExists){
-					$gitBar.remove();
+					$('.cont-git-bar').remove();
 					it.next(arg);
 					return;
 				}

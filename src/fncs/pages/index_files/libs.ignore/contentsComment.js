@@ -119,6 +119,7 @@ module.exports = function(app, px, pj){
 							}
 
 							_this.updateComment(function(){
+								pj.updateGitStatus();
 								px.closeDialog();
 							});
 						})

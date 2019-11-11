@@ -3663,6 +3663,7 @@ window.contApp = new (function( px ){
 	 */
 	this.commitContents = function( page_path ){
 		this.gitUi.commit('contents', {'page_path': page_path}, function(result){
+			_pj.updateGitStatus();
 			console.log('(コミットを実行しました)', result);
 		});
 		return this;
@@ -3854,6 +3855,7 @@ window.contApp = new (function( px ){
 				return;
 			}
 			$elms.previewIframe.attr( 'src', gotoUrl );
+			_pj.updateGitStatus();
 			callback();
 		} );
 		return;
@@ -3964,6 +3966,7 @@ window.contApp = new (function( px ){
 			.css({'overflow':'auto'})
 		;
 		_this.loadPreview( _currentPagePath, {'force':true}, function(){
+			_pj.updateGitStatus();
 			pageDraw.redraw(_currentPageInfo, {}, function(){
 			});
 		} );
@@ -4135,6 +4138,7 @@ module.exports = function(app, px, pj){
 							}
 
 							_this.updateComment(function(){
+								pj.updateGitStatus();
 								px.closeDialog();
 							});
 						})
@@ -4434,6 +4438,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 									$bs3btn.find('.dropdown-toggle').click();
 									var pathCont = pj.findPageContent( $(this).attr('data-path') );
 									px.openInTextEditor( pj.get_realpath_controot()+pathCont );
+									pj.updateGitStatus();
 									return false;
 								})
 							)
@@ -4450,6 +4455,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 								.on('click', function(){
 									$bs3btn.find('.dropdown-toggle').click();
 									app.openResourcesDirectory( $(this).attr('data-path') );
+									pj.updateGitStatus();
 									return false;
 								})
 								.removeAttr('disabled')
@@ -4588,6 +4594,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 							.on('click', function(){
 								$bs3btn.find('.dropdown-toggle').click();
 								app.openMaterialsDirectory( $(this).attr('data-path') );
+								pj.updateGitStatus();
 								return false;
 							})
 						)
@@ -4766,6 +4773,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 														}
 														app.loadPreview( app.getCurrentPagePath(), {"force":true}, function(){
 															_this.redraw(pj_info, {}, function(){
+																pj.updateGitStatus();
 																px.closeDialog();
 															});
 														} );
@@ -4855,6 +4863,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 													}
 													app.loadPreview( app.getCurrentPagePath(), {"force":true}, function(){
 														_this.redraw(pj_info, {}, function(){
+															pj.updateGitStatus();
 															px.closeDialog();
 														});
 													} );
@@ -4896,6 +4905,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 										"complete": function(data, code){
 											console.log('------result:', data, code);
 											alert('完了しました。');
+											pj.updateGitStatus();
 											px.progress.close();
 											return;
 										}

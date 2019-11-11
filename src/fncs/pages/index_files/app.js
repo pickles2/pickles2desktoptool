@@ -223,6 +223,7 @@ window.contApp = new (function( px ){
 	 */
 	this.commitContents = function( page_path ){
 		this.gitUi.commit('contents', {'page_path': page_path}, function(result){
+			_pj.updateGitStatus();
 			console.log('(コミットを実行しました)', result);
 		});
 		return this;
@@ -414,6 +415,7 @@ window.contApp = new (function( px ){
 				return;
 			}
 			$elms.previewIframe.attr( 'src', gotoUrl );
+			_pj.updateGitStatus();
 			callback();
 		} );
 		return;
@@ -524,6 +526,7 @@ window.contApp = new (function( px ){
 			.css({'overflow':'auto'})
 		;
 		_this.loadPreview( _currentPagePath, {'force':true}, function(){
+			_pj.updateGitStatus();
 			pageDraw.redraw(_currentPageInfo, {}, function(){
 			});
 		} );

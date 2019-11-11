@@ -83,19 +83,17 @@
   background-color: #f9f9f9;
   border-top: 1px solid #aaa;
   display: flex; }
+  .theme-statusbar__left, .theme-statusbar__right {
+    display: flex;
+    flex-grow: 1; }
+    .theme-statusbar__left div, .theme-statusbar__right div {
+      padding: 2px 5px;
+      margin: 1px 2px;
+      font-size: 11px; }
   .theme-statusbar__left {
-    display: flex;
-    flex-grow: 1; }
-    .theme-statusbar__left div {
-      padding: 2px 4px;
-      font-size: 11px; }
+    justify-content: flex-start; }
   .theme-statusbar__right {
-    justify-content: flex-end;
-    display: flex;
-    flex-grow: 1; }
-    .theme-statusbar__right div {
-      padding: 2px 4px;
-      font-size: 11px; }
+    justify-content: flex-end; }
 
 .contents {
   position: fixed;

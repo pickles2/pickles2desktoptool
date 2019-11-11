@@ -96,22 +96,21 @@ body{
 	background-color: #f9f9f9;
 	border-top: 1px solid #aaa;
 	display: flex;
-	&__left{
+	&__left,
+	&__right{
 		display: flex;
 		flex-grow: 1;
 		div{
-			padding: 2px 4px;
+			padding: 2px 5px;
+			margin: 1px 2px;
 			font-size: 11px;
 		}
 	}
+	&__left{
+		justify-content: flex-start;
+	}
 	&__right{
 		justify-content: flex-end;
-		display: flex;
-		flex-grow: 1;
-		div{
-			padding: 2px 4px;
-			font-size: 11px;
-		}
 	}
 }
 

@@ -155,6 +155,7 @@ window.contApp = new (function( px ){
 											console.error('Failed to parse JSON String -> ' + rtn);
 										}
 										px.fs.unlinkSync( realpathDataDir+tmpFileName );
+										_pj.updateGitStatus(function(){});
 										callback( rtn );
 									}
 								}

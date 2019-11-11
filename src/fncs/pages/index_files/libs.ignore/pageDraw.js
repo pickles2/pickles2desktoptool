@@ -252,6 +252,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 									$bs3btn.find('.dropdown-toggle').click();
 									var pathCont = pj.findPageContent( $(this).attr('data-path') );
 									px.openInTextEditor( pj.get_realpath_controot()+pathCont );
+									pj.updateGitStatus();
 									return false;
 								})
 							)
@@ -268,6 +269,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 								.on('click', function(){
 									$bs3btn.find('.dropdown-toggle').click();
 									app.openResourcesDirectory( $(this).attr('data-path') );
+									pj.updateGitStatus();
 									return false;
 								})
 								.removeAttr('disabled')
@@ -406,6 +408,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 							.on('click', function(){
 								$bs3btn.find('.dropdown-toggle').click();
 								app.openMaterialsDirectory( $(this).attr('data-path') );
+								pj.updateGitStatus();
 								return false;
 							})
 						)
@@ -584,6 +587,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 														}
 														app.loadPreview( app.getCurrentPagePath(), {"force":true}, function(){
 															_this.redraw(pj_info, {}, function(){
+																pj.updateGitStatus();
 																px.closeDialog();
 															});
 														} );
@@ -673,6 +677,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 													}
 													app.loadPreview( app.getCurrentPagePath(), {"force":true}, function(){
 														_this.redraw(pj_info, {}, function(){
+															pj.updateGitStatus();
 															px.closeDialog();
 														});
 													} );
@@ -714,6 +719,7 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 										"complete": function(data, code){
 											console.log('------result:', data, code);
 											alert('完了しました。');
+											pj.updateGitStatus();
 											px.progress.close();
 											return;
 										}

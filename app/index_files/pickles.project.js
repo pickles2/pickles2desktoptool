@@ -145,16 +145,8 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
 				// Checking Git Status
-				_this.updateGitStatus(function(){
-					rlv();
-				});
-				return;
-			}); })
-			.then(function(){ return new Promise(function(rlv, rjt){
-				// Update Status Bar
-				_this.updateStatusBar(function(){
-					rlv();
-				});
+				_this.updateGitStatus(function(){});
+				rlv();
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
@@ -182,7 +174,9 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 		_this.git().parser.git(['status'], function(result){
 			// console.log(result);
 			_gitStatus = result;
-			callback();
+			_this.updateStatusBar(function(){
+				callback();
+			});
 		});
 		return;
 	}
@@ -192,19 +186,26 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	 */
 	this.updateStatusBar = function( callback ){
 		callback = callback || function(){};
-		var changes = _gitStatus.staged.deleted.length
-			+ _gitStatus.staged.modified.length
-			+ _gitStatus.staged.untracked.length
-			+ _gitStatus.notStaged.deleted.length
-			+ _gitStatus.notStaged.modified.length
-			+ _gitStatus.notStaged.untracked.length;
-		px.statusbar.set(
-			[],
-			[
+		var contentsL = [];
+		var contentsR = [];
+		if(this.status().gitDirExists){
+			var changes = _gitStatus.staged.deleted.length
+				+ _gitStatus.staged.modified.length
+				+ _gitStatus.staged.untracked.length
+				+ _gitStatus.notStaged.deleted.length
+				+ _gitStatus.notStaged.modified.length
+				+ _gitStatus.notStaged.untracked.length;
+
+			contentsR = [
 				_gitStatus.currentBranchName,
 				changes + ' Uncommited Changes',
-			]
-		);
+			];
+		}else{
+			contentsR = [
+				'Git is not initialized.',
+			];
+		}
+		px.statusbar.set( contentsL, contentsR );
 		callback();
 	}
 

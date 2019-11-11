@@ -54,9 +54,7 @@ window.contApp = new (function(){
 						return str;
 					})(result.stdout);
 					pj.updateGitStatus(function(){
-						pj.updateStatusBar(function(){
-							callback(result.code, result.stdout);
-						});
+						callback(result.code, result.stdout);
 					});
 				});
 			}, {} );

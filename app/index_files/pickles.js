@@ -984,7 +984,11 @@ new (function($, window){
 			// プロジェクト選択画面を描画
 			px2style.header.init({"current":""});
 			$cont.html( $('script#template-selectProject-page').html() );
-			$cont.find('.cont_top_footer p').text( _packageJson.pickles2.credit );
+			$cont.find('.cont_top_footer')
+				.html('')
+				.append( $('<p>').text(_packageJson.pickles2.credit) )
+				.append( $('<p>').text('version: ' + _this.getVersion()) )
+			;
 			_this.statusbar.set([], []);
 
 			this.getProjectList(function(list){

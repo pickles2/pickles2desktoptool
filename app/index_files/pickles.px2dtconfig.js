@@ -29,6 +29,7 @@
 		$tpl.find('[name=apps_git_client]').val( px.getDb().apps.gitClient );
 		$tpl.find('[name=language]').val( px.getDb().language );
 		$tpl.find('[name=checkForUpdate]').attr( {"checked": (px.getDb().extra.px2dt.checkForUpdate=='autoCheck' ? 'checked' : null)} );
+		$tpl.find('[name=data_directory]').val( px.getDataDir() );
 
 		// placeholder
 		var placeholder = '';
@@ -48,10 +49,11 @@
 			'git',
 			'apps_texteditor',
 			'apps_texteditor_for_dir',
-			'apps_git_client'
+			'apps_git_client',
+			'data_directory'
 		];
 		for(var idx in fileInputs){
-			if( px.getPlatform()=='win' ){
+			if( px.getPlatform()=='win' || fileInputs[idx] == 'data_directory' ){
 				$tpl.find('[name='+fileInputs[idx]+'__file]')
 					.bind('change', function(){
 						var val = $(this).val();if(!val){return;}
@@ -104,6 +106,13 @@
 								px.closeDialog();
 							});
 						});
+
+						var tmpDataDir = $tpl.find('[name=data_directory]').val();
+						if( tmpDataDir && px.utils79.is_dir(tmpDataDir) ){
+							localStorage.setItem("realpath_data_dir", tmpDataDir);
+						}else{
+							localStorage.removeItem("realpath_data_dir");
+						}
 					})
 			]
 		});

@@ -16,12 +16,26 @@ new (function($, window){
 	// jQuery
 	this.$ = $;
 
+	// utils
+	var _utils79 = require('utils79');
+	this.utils79 = _utils79;
+	var _utils = require('./index_files/_utils.node.js');
+	this.utils = _utils;
+
 	// package.json
 	var _packageJson = require('../package.json');
 	this.packageJson = _packageJson;
 
 	// data
-	var _path_data_dir = (process.env.HOME||process.env.LOCALAPPDATA) + '/'+_packageJson.pickles2.dataDirName+'/';
+	var _path_data_dir = (function(){
+		var rtn = (process.env.HOME||process.env.LOCALAPPDATA) + '/'+_packageJson.pickles2.dataDirName;
+		var tmp_path_data_dir = localStorage.getItem("realpath_data_dir");
+		if( tmp_path_data_dir && _utils79.is_dir(tmp_path_data_dir) ){
+			return tmp_path_data_dir;
+		}
+		return rtn;
+	})();
+
 
 
 	/**
@@ -43,12 +57,6 @@ new (function($, window){
 	this.getVersion = function(){
 		return _packageJson.version;
 	}
-
-	// utils
-	var _utils79 = require('utils79');
-	this.utils79 = _utils79;
-	var _utils = require('./index_files/_utils.node.js');
-	this.utils = _utils;
 
 	// filesystem
 	var _fs = require('fs');
@@ -691,7 +699,7 @@ new (function($, window){
 	 */
 	this.cmd = function(cmd){
 		if( cmd == 'composer' ){
-			return _path_data_dir+'commands/composer/composer.phar';
+			return _path_data_dir+'/commands/composer/composer.phar';
 		}
 		if( cmd == 'open' ){
 			if(_platform=='win'){

@@ -33,7 +33,7 @@
     "langbank": "0.0.2",
     "marked": "^0.7.0",
     "mime": "^2.4.4",
-    "mkdirp": "0.*",
+    "mkdirp": "^0.5.1",
     "morgan": "^1.7.0",
     "node-php-bin": "^0.2.3",
     "node-search-in-directory": "0.0.1",
@@ -92,7 +92,7 @@
   "devManifestUrl": "https://pickles2.pxt.jp/release/app_dev/Pickles2/package.json",
   "window": {
     "title": "Pickles 2",
-    "toolbar": true,
+    "toolbar": false,
     "frame": true,
     "width": 340,
     "height": 420,

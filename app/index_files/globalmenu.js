@@ -57,58 +57,65 @@ module.exports = function(px){
 		}
 	});
 	_menu.push({
-		"label":px.lb.get('menu.openFolder'),
+		"label":px.lb.get('menu.externalTools'),
 		"cond":"homeDirExists",
 		"area":"shoulder",
-		"app":null,
-		"click": function(){
-			px.getCurrentProject().open();
-		}
-	});
-	_menu.push({
-		"label":px.lb.get('menu.openInBrowser'),
-		"cond":"pxStandby",
-		"area":"shoulder",
-		"app":null,
-		"click": function(){
-			px.openInBrowser();
-		}
-	});
-	_menu.push({
-		"label":px.lb.get('menu.openAppInBrowser'),
-		"cond":"pxStandby",
-		"area":"shoulder",
-		"app":null,
-		"click": function(){
-			px.openAppInBrowser();
-		}
-	});
-	_menu.push({
-		"label":px.lb.get('menu.openInTexteditor'),
-		"cond":"homeDirExists",
-		"area":"shoulder",
-		"app":null,
-		"click": function(){
-			px.openInTextEditor( px.getCurrentProject().get('path') );
-		}
-	});
-	_menu.push({
-		"label":px.lb.get('menu.openInGitClient'),
-		"cond":"homeDirExists",
-		"area":"shoulder",
-		"app":null,
-		"click": function(){
-			px.openInGitClient( px.getCurrentProject().get('path') );
-		}
-	});
-	_menu.push({
-		"label":px.lb.get('menu.openInTerminal'),
-		"cond":"homeDirExists",
-		"area":"shoulder",
-		"app":null,
-		"click": function(){
-			px.openInTerminal( px.getCurrentProject().get('path') );
-		}
+		"submenu": [
+			{
+				"label":px.lb.get('menu.openFolder'),
+				"cond":"homeDirExists",
+				"area":"shoulder",
+				"app":null,
+				"click": function(){
+					px.getCurrentProject().open();
+				}
+			},
+			{
+				"label":px.lb.get('menu.openInBrowser'),
+				"cond":"pxStandby",
+				"area":"shoulder",
+				"app":null,
+				"click": function(){
+					px.openInBrowser();
+				}
+			},
+			{
+				"label":px.lb.get('menu.openAppInBrowser'),
+				"cond":"pxStandby",
+				"area":"shoulder",
+				"app":null,
+				"click": function(){
+					px.openAppInBrowser();
+				}
+			},
+			{
+				"label":px.lb.get('menu.openInTexteditor'),
+				"cond":"homeDirExists",
+				"area":"shoulder",
+				"app":null,
+				"click": function(){
+					px.openInTextEditor( px.getCurrentProject().get('path') );
+				}
+			},
+			{
+				"label":px.lb.get('menu.openInGitClient'),
+				"cond":"homeDirExists",
+				"area":"shoulder",
+				"app":null,
+				"click": function(){
+					px.openInGitClient( px.getCurrentProject().get('path') );
+				}
+			},
+			{
+				"label":px.lb.get('menu.openInTerminal'),
+				"cond":"homeDirExists",
+				"area":"shoulder",
+				"app":null,
+				"click": function(){
+					px.openInTerminal( px.getCurrentProject().get('path') );
+				}
+			}
+		]
 	});
 	_menu.push({
 		"label":px.lb.get('menu.config'),

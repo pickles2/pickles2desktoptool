@@ -14,7 +14,7 @@
   "license": "MIT",
   "dependencies": {
     "broccoli-field-table": "^0.1.0",
-    "broccoli-html-editor": "^0.3.8",
+    "broccoli-html-editor": "^0.3.11",
     "broccoli-processor": "file:submodules/node-broccoli-processor",
     "broccoli-styleguide-generator": "file:submodules/node-broccoli-styleguide-generator",
     "cheerio": "^0.22.0",

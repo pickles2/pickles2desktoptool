@@ -848,6 +848,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 				}
 			}
 		} catch (e) {
+			console.error(e);
 		}
 		return engineName;
 	}
@@ -1152,13 +1153,13 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 						}
 					);
 				});
-			}
+			};
 			broccoliProcessorOptions.rebuild = function(callbackRebuild){
 				// console.log('=-=-=-=-=-= callbackRebuild', page_path);
 				_this.buildGuiEditContent(page_path, function(){
 					callbackRebuild(true);
 				});
-			}
+			};
 			broccoliProcessorOptions.jsonIndentSize = 4;
 		}
 

@@ -228,6 +228,24 @@ module.exports = function(px){
 				"click": function(){
 					px.subapp($(this).data('app'));
 				}
+			},
+			{
+				"label":px.lb.get('menu.preview'),
+				"cond":"pxStandby",
+				"area":"shoulder",
+				"app":"fncs/preview/index.html",
+				"click": function(){
+					px.subapp($(this).data('app'));
+				}
+			},
+			{
+				"label":px.lb.get('menu.search'),
+				"cond":"pxStandby",
+				"area":"shoulder",
+				"app":"fncs/search/index.html",
+				"click": function(){
+					px.subapp($(this).data('app'));
+				}
 			}
 		]
 	});
@@ -256,24 +274,6 @@ module.exports = function(px){
 	// 		window.location.href='index.html?';
 	// 	}
 	// });
-	_menu.push({
-		"label":px.lb.get('menu.preview'),
-		"cond":"pxStandby",
-		"area":"shoulder",
-		"app":"fncs/preview/index.html",
-		"click": function(){
-			px.subapp($(this).data('app'));
-		}
-	});
-	_menu.push({
-		"label":px.lb.get('menu.search'),
-		"cond":"pxStandby",
-		"area":"shoulder",
-		"app":"fncs/search/index.html",
-		"click": function(){
-			px.subapp($(this).data('app'));
-		}
-	});
 	_menu.push({
 		"label":px.lb.get('menu.system'),
 		"cond":"always",
@@ -360,6 +360,10 @@ module.exports = function(px){
 			px.exit();
 		}
 	});
+
+
+
+
 
 	/**
 	 * グローバルメニューの定義を取得

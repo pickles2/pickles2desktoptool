@@ -8,6 +8,8 @@ window.contApp = new (function(px, $){
 	var hitCount = 0;
 	var targetCount = 0;
 
+	var publicCacheDir = pj.getConfig().public_cache_dir || '/caches/';
+
 
 	/**
 	 * 初期化
@@ -141,7 +143,7 @@ window.contApp = new (function(px, $){
 				rtn['target'].push(px.fs.realpathSync(pj.get('path')+'/'+pj.get('home_dir')+'/sitemaps')+'/**/*');
 				break;
 			case 'sys-caches':
-				rtn['target'].push(px.fs.realpathSync(pj.get('path')+'/caches')+'/**/*');
+				rtn['target'].push(px.fs.realpathSync(pj.get('path')+'/'+publicCacheDir)+'/**/*');
 				rtn['target'].push(px.fs.realpathSync(pj.get('path')+'/'+pj.get('home_dir')+'/_sys')+'/**/*');
 				break;
 			case 'packages':
@@ -162,6 +164,9 @@ window.contApp = new (function(px, $){
 		}
 
 		function setIgnore( checkbox, path ){
+			if( !px.utils79.is_dir(path) ){
+				return;
+			}
 			path = px.fs.realpathSync(path);
 			path = new RegExp( px.php.preg_quote( path ) );
 			if( $form.find('input[name=ignore-'+checkbox+']:checked').size() ){
@@ -175,7 +180,7 @@ window.contApp = new (function(px, $){
 		}
 		setIgnore( 'sitemap', pj.get('path')+'/'+pj.get('home_dir')+'sitemaps/' );
 		setIgnore( 'px-files', pj.get('path')+'/'+pj.get('home_dir') );
-		setIgnore( 'sys-caches', pj.get('path')+'/'+'caches/' );
+		setIgnore( 'sys-caches', pj.get('path')+'/'+publicCacheDir );
 		setIgnore( 'sys-caches', pj.get('path')+'/'+pj.get('home_dir')+'_sys/' );
 
 		if(pj.get_realpath_composer_root()){

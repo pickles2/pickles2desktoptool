@@ -1,270 +1,270 @@
 /**
  * globamenu.js
  *
- * `px.lb` は、多言語対応機能です。
+ * `main.lb` は、多言語対応機能です。
  * `app/common/language/language.csv` にある言語ファイルから、
  * ユーザーが選択した言語コードに対応するテキストを取り出します。
  */
-module.exports = function(px){
-	var _appName = px.packageJson.window.title;
-	var nw = px.nw;
-	var $ = px.$;
+module.exports = function(main){
+	var _appName = main.packageJson.window.title;
+	var nw = main.nw;
+	var $ = main.$;
 
 	var _menu = [];
 	_menu.push({
-		"label":px.lb.get('menu.home'),
+		"label":main.lb.get('menu.home'),
 		"cond":"projectSelected",
 		"area":"mainmenu",
 		"app":"fncs/home/index.html",
-		"href":"javascript:px.subapp();"
+		"href":"javascript:main.subapp();"
 	});
 	_menu.push({
-		"label":px.lb.get('menu.sitemap'),
+		"label":main.lb.get('menu.sitemap'),
 		"cond":"pxStandby",
 		"area":"mainmenu",
 		"app":"fncs/sitemap/index.html",
-		"href": "javascript:px.subapp('fncs/sitemap/index.html');"
+		"href": "javascript:main.subapp('fncs/sitemap/index.html');"
 	});
 	_menu.push({
-		"label":px.lb.get('menu.theme'),
+		"label":main.lb.get('menu.theme'),
 		"cond":"pxStandby",
 		"area":"mainmenu",
 		"app":"fncs/theme/index.html",
-		"href": "javascript:px.subapp('fncs/theme/index.html');"
+		"href": "javascript:main.subapp('fncs/theme/index.html');"
 	});
 	_menu.push({
-		"label":px.lb.get('menu.pages'),
+		"label":main.lb.get('menu.pages'),
 		"cond":"pxStandby",
 		"area":"mainmenu",
 		"app":"fncs/pages/index.html",
-		"href": "javascript:px.subapp('fncs/pages/index.html');"
+		"href": "javascript:main.subapp('fncs/pages/index.html');"
 	});
 	_menu.push({
-		"label":px.lb.get('menu.publish'),
+		"label":main.lb.get('menu.publish'),
 		"cond":"pxStandby",
 		"area":"mainmenu",
 		"app":"fncs/publish/index.html",
-		"href": "javascript:px.subapp('fncs/publish/index.html');"
+		"href": "javascript:main.subapp('fncs/publish/index.html');"
 	});
 	_menu.push({
-		"label":px.lb.get('menu.dashboard'),
+		"label":main.lb.get('menu.dashboard'),
 		"cond":"projectSelected",
 		"area":"shoulder",
 		"app":"index.html",
 		"click": function(){
-			px.deselectProject();
-			px.subapp();
+			main.deselectProject();
+			main.subapp();
 		}
 	});
 	_menu.push({
-		"label":px.lb.get('menu.externalTools'),
+		"label":main.lb.get('menu.externalTools'),
 		"cond":"homeDirExists",
 		"area":"shoulder",
 		"submenu": [
 			{
-				"label":px.lb.get('menu.openFolder'),
+				"label":main.lb.get('menu.openFolder'),
 				"cond":"homeDirExists",
 				"area":"shoulder",
 				"app":null,
 				"click": function(){
-					px.getCurrentProject().open();
+					main.getCurrentProject().open();
 				}
 			},
 			{
-				"label":px.lb.get('menu.openInBrowser'),
+				"label":main.lb.get('menu.openInBrowser'),
 				"cond":"pxStandby",
 				"area":"shoulder",
 				"app":null,
 				"click": function(){
-					px.openInBrowser();
+					main.openInBrowser();
 				}
 			},
 			{
-				"label":px.lb.get('menu.openAppInBrowser'),
+				"label":main.lb.get('menu.openAppInBrowser'),
 				"cond":"pxStandby",
 				"area":"shoulder",
 				"app":null,
 				"click": function(){
-					px.openAppInBrowser();
+					main.openAppInBrowser();
 				}
 			},
 			{
-				"label":px.lb.get('menu.openInTexteditor'),
+				"label":main.lb.get('menu.openInTexteditor'),
 				"cond":"homeDirExists",
 				"area":"shoulder",
 				"app":null,
 				"click": function(){
-					px.openInTextEditor( px.getCurrentProject().get('path') );
+					main.openInTextEditor( main.getCurrentProject().get('path') );
 				}
 			},
 			{
-				"label":px.lb.get('menu.openInGitClient'),
+				"label":main.lb.get('menu.openInGitClient'),
 				"cond":"homeDirExists",
 				"area":"shoulder",
 				"app":null,
 				"click": function(){
-					px.openInGitClient( px.getCurrentProject().get('path') );
+					main.openInGitClient( main.getCurrentProject().get('path') );
 				}
 			},
 			{
-				"label":px.lb.get('menu.openInTerminal'),
+				"label":main.lb.get('menu.openInTerminal'),
 				"cond":"homeDirExists",
 				"area":"shoulder",
 				"app":null,
 				"click": function(){
-					px.openInTerminal( px.getCurrentProject().get('path') );
+					main.openInTerminal( main.getCurrentProject().get('path') );
 				}
 			}
 		]
 	});
 	_menu.push({
-		"label":px.lb.get('menu.config'),
+		"label":main.lb.get('menu.config'),
 		"cond":"pxStandby",
 		"area":"shoulder",
 		"submenu": [
 			{
-				"label":px.lb.get('menu.projectConfig'),
+				"label":main.lb.get('menu.projectConfig'),
 				"cond":"pxStandby",
 				"area":"shoulder",
 				"app":"fncs/config/index.html",
 				"click": function(){
-					px.subapp($(this).data('app'));
+					main.subapp($(this).data('app'));
 				}
 			},
 			{
-				"label":_appName+" "+px.lb.get('menu.desktoptoolConfig'),
+				"label":_appName+" "+main.lb.get('menu.desktoptoolConfig'),
 				"cond":"always",
 				"area":"shoulder",
 				"app":null,
 				"click": function(){
-					px.editPx2DTConfig();
+					main.editPx2DTConfig();
 				}
 			}
 		]
 	});
 
 	_menu.push({
-		"label":px.lb.get('menu.composer'),
+		"label":main.lb.get('menu.composer'),
 		"cond":"composerJsonExists",
 		"area":"shoulder",
 		"app":"fncs/composer/index.html",
 		"click": function(){
-			px.subapp($(this).data('app'));
+			main.subapp($(this).data('app'));
 		}
 	});
 	_menu.push({
-		"label":px.lb.get('menu.git'),
+		"label":main.lb.get('menu.git'),
 		"cond":"homeDirExists",
 		"area":"shoulder",
 		"app":"fncs/git/index.html",
 		"click": function(){
-			px.subapp($(this).data('app'));
+			main.subapp($(this).data('app'));
 		}
 	});
 	_menu.push({
-		"label":px.lb.get('menu.module'),
+		"label":main.lb.get('menu.module'),
 		"cond":"pxStandby",
 		"area":"shoulder",
 		"app":"fncs/module/index.html",
 		"click": function(){
-			px.subapp($(this).data('app'));
+			main.subapp($(this).data('app'));
 		}
 	});
 	_menu.push({
-		"label":px.lb.get('menu.tool'),
+		"label":main.lb.get('menu.tool'),
 		"cond":"pxStandby",
 		"area":"shoulder",
 		"submenu": [
 			{
-				"label":px.lb.get('menu.styleguideGenerator'),
+				"label":main.lb.get('menu.styleguideGenerator'),
 				"cond":"pxStandby",
 				"area":"shoulder",
 				"app":"fncs/styleguide_generator/index.html",
 				"click": function(){
-					px.subapp($(this).data('app'));
+					main.subapp($(this).data('app'));
 				}
 			},
 			{
-				"label":px.lb.get('menu.mkContentFilesByList'),
+				"label":main.lb.get('menu.mkContentFilesByList'),
 				"cond":"pxStandby",
 				"area":"shoulder",
 				"app":"fncs/make_content_files_by_list/index.html",
 				"click": function(){
-					px.subapp($(this).data('app'));
+					main.subapp($(this).data('app'));
 				}
 			},
 			{
-				"label":px.lb.get('menu.mkContentFileList'),
+				"label":main.lb.get('menu.mkContentFileList'),
 				"cond":"pxStandby",
 				"area":"shoulder",
 				"app":"fncs/make_content_file_list/index.html",
 				"click": function(){
-					px.subapp($(this).data('app'));
+					main.subapp($(this).data('app'));
 				}
 			},
 			{
-				"label":px.lb.get('menu.contentsProcessor'),
+				"label":main.lb.get('menu.contentsProcessor'),
 				"cond":"pxStandby",
 				"area":"shoulder",
 				"app":"fncs/contents_processor/index.html",
 				"click": function(){
-					px.subapp($(this).data('app'));
+					main.subapp($(this).data('app'));
 				}
 			},
 			{
-				"label":px.lb.get('menu.moveContents'),
+				"label":main.lb.get('menu.moveContents'),
 				"cond":"pxStandby",
 				"area":"shoulder",
 				"app":"fncs/move_contents/index.html",
 				"click": function(){
-					px.subapp($(this).data('app'));
+					main.subapp($(this).data('app'));
 				}
 			},
 			{
-				"label":px.lb.get('menu.updateGuiContents'),
+				"label":main.lb.get('menu.updateGuiContents'),
 				"cond":"pxStandby",
 				"area":"shoulder",
 				"app":"fncs/rebuild_guiedit_contents/index.html",
 				"click": function(){
-					px.subapp($(this).data('app'));
+					main.subapp($(this).data('app'));
 				}
 			},
 			{
-				"label":px.lb.get('menu.preview'),
+				"label":main.lb.get('menu.preview'),
 				"cond":"pxStandby",
 				"area":"shoulder",
 				"app":"fncs/preview/index.html",
 				"click": function(){
-					px.subapp($(this).data('app'));
+					main.subapp($(this).data('app'));
 				}
 			},
 			{
-				"label":px.lb.get('menu.search'),
+				"label":main.lb.get('menu.search'),
 				"cond":"pxStandby",
 				"area":"shoulder",
 				"app":"fncs/search/index.html",
 				"click": function(){
-					px.subapp($(this).data('app'));
+					main.subapp($(this).data('app'));
 				}
 			}
 		]
 	});
 	_menu.push({
-		"label":px.lb.get('menu.clearcache'),
+		"label":main.lb.get('menu.clearcache'),
 		"cond":"pxStandby",
 		"area":"shoulder",
 		"app":"fncs/clearcache/index.html",
 		"click": function(){
-			px.subapp($(this).data('app'));
+			main.subapp($(this).data('app'));
 		}
 	});
 	_menu.push({
-		"label":px.lb.get('menu.filesAndFolders'),
+		"label":main.lb.get('menu.filesAndFolders'),
 		"cond":"pxStandby",
 		"area":"shoulder",
 		"app":"fncs/files_and_folders/index.html",
 		"click": function(){
-			px.subapp($(this).data('app'));
+			main.subapp($(this).data('app'));
 		}
 	});
 	// _menu.push({
@@ -275,12 +275,12 @@ module.exports = function(px){
 	// 	}
 	// });
 	_menu.push({
-		"label":px.lb.get('menu.system'),
+		"label":main.lb.get('menu.system'),
 		"cond":"always",
 		"area":"shoulder",
 		"submenu": [
 			{
-				"label":px.lb.get('menu.systemInfo'),
+				"label":main.lb.get('menu.systemInfo'),
 				"cond":"always",
 				"area":"shoulder",
 				"app":null,
@@ -294,14 +294,14 @@ module.exports = function(px){
 							'height':460
 						})
 					;
-					px.dialog({
-						'title': px.lb.get('menu.systemInfo'),
+					main.dialog({
+						'title': main.lb.get('menu.systemInfo'),
 						'body': $iframe
 					});
 				}
 			},
 			{
-				"label":px.lb.get('menu.developerTool'),
+				"label":main.lb.get('menu.developerTool'),
 				"cond":"always",
 				"area":"shoulder",
 				"app":null,
@@ -312,52 +312,52 @@ module.exports = function(px){
 				}
 			},
 			{
-				"label":_appName+" "+px.lb.get('menu.desktoptoolConfig'),
+				"label":_appName+" "+main.lb.get('menu.desktoptoolConfig'),
 				"cond":"always",
 				"area":"shoulder",
 				"app":null,
 				"click": function(){
-					px.editPx2DTConfig();
+					main.editPx2DTConfig();
 				}
 			},
 			{
-				"label":px.lb.get('menu.commandlog'),
+				"label":main.lb.get('menu.commandlog'),
 				"cond":"always",
 				"area":"shoulder",
 				"app":null,
 				"click": function(){
-					px.commandQueue.show();
+					main.commandQueue.show();
 				}
 			}
 		]
 	});
-	if( px.packageJson.manifestUrl ){
+	if( main.packageJson.manifestUrl ){
 		_menu.push({
-			"label":px.lb.get('menu.checkForUpdate'),
+			"label":main.lb.get('menu.checkForUpdate'),
 			"cond":"always",
 			"area":"shoulder",
 			"app":null,
 			"click": function(){
-				px.updater.checkNewVersion();
+				main.updater.checkNewVersion();
 			}
 		});
 	}
 	_menu.push({
-		"label":px.lb.get('menu.help'),
+		"label":main.lb.get('menu.help'),
 		"cond":"always",
 		"area":"shoulder",
 		"app":null,
 		"click": function(){
-			px.openHelp();
+			main.openHelp();
 		}
 	});
 	_menu.push({
-		"label":px.lb.get('menu.exit'),
+		"label":main.lb.get('menu.exit'),
 		"cond":"always",
 		"area":"shoulder",
 		"app":null,
 		"click": function(){
-			px.exit();
+			main.exit();
 		}
 	});
 
@@ -376,7 +376,7 @@ module.exports = function(px){
 	 * グローバルメニューを描画
 	 */
 	this.drawGlobalMenu = function($shoulderMenu, _current_app, _menuList, $parent){
-		var cpj = px.getCurrentProject();
+		var cpj = main.getCurrentProject();
 		var cpj_s = null;
 		if( cpj !== null ){
 			cpj_s = cpj.status()

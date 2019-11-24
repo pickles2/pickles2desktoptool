@@ -15,6 +15,7 @@ menu.openInGitClient,Open in Git client,Gitクライアントで開く,在Git cl
 menu.openInTerminal,Open in Terminal,コマンドラインで開く,在Terminal中打开,在Terminal中打開
 menu.config,"Config",設定,,
 menu.projectConfig,Project Config(config.php),プロジェクト共有設定(config.php),项目设定(config.php),項目設定(config.php)
+menu.projectIndividualConfig,Project Individual Config,プロジェクト個人設定,,
 menu.desktoptoolConfig,"Application Config","アプリケーション設定",桌面工具设定,桌面工具設定
 menu.composer,Composer,Composer,Composer,Composer
 menu.git,Git,Git,Git,Git

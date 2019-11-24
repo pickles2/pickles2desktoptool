@@ -1,5 +1,6 @@
-module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
+module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 	var _this = this;
+	var px = main;
 
 	this.projectInfo = projectInfo;
 	this.projectId = projectId;
@@ -18,7 +19,6 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	 * projectオブジェクトを初期化
 	 */
 	function init(){
-		var pj = _this;
 
 		new Promise(function(rlv){rlv();})
 			.then(function(){ return new Promise(function(rlv, rjt){
@@ -115,7 +115,7 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 				}
 
 				/**
-				 * px.site
+				 * pj.site
 				 */
 				_this.site = new (require('./pickles.project.site.js'))(px, _this, function(){
 					rlv();
@@ -1517,6 +1517,14 @@ module.exports = function( window, px, projectInfo, projectId, cbStandby ) {
 	 */
 	this.configEditor = function(){
 		return new (require('./pickles.project.configEditor.js'))(px, this);
+	}
+
+	/**
+	 * プロジェクト個人設定編集画面を開く
+	 */
+	this.editProjectIndividualConfig = function(callback){
+		var individualConfig = require('./pickles.project.individualConfig.js');
+		individualConfig(main, this, callback);
 	}
 
 	/**

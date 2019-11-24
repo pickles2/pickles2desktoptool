@@ -1,10 +1,11 @@
-window.px = window.parent.px;
+window.px = window.parent.main;
+window.main = window.parent.main;
 window.contApp = new (function(){
 	var _this = this;
-	var pj = px.getCurrentProject();
+	var pj = main.getCurrentProject();
 	this.pj = pj;
 	var status = pj.status();
-	this.gitBar = new(require('./apis.ignore/gitBar.js'))(this, px, $);
+	this.gitBar = new(require('./apis.ignore/gitBar.js'))(this, main, $);
 
 	var templates = {
 		'install-pickles2': require('./templates.ignore/install-pickles2.html'),
@@ -15,7 +16,6 @@ window.contApp = new (function(){
 		'is-not-empty-dir': require('./templates.ignore/is-not-empty-dir.html'),
 		'install-composer': require('./templates.ignore/install-composer.html'),
 		'conf-not-exists': require('./templates.ignore/conf-not-exists.html'),
-		'form-editProject': require('./templates.ignore/form-editProject.html'),
 		'status-table': require('./templates.ignore/status-table.html')
 	};
 	this.getTemplate = function(name){
@@ -26,17 +26,17 @@ window.contApp = new (function(){
 	 * installer collection
 	 */
 	this.installer = {
-		pickles2: new (require('./app.installer.pickles2.ignore.js'))( window.px, this, $ ),
-		git: new (require('./app.installer.git.ignore.js'))( window.px, this, $ )
+		pickles2: new (require('./app.installer.pickles2.ignore.js'))( window.main, this, $ ),
+		git: new (require('./app.installer.git.ignore.js'))( window.main, this, $ )
 	};
 
 	/**
 	 * initialize
 	 */
 	function init(){
-		var px2dtLDA_pj = px.px2dtLDA.project(pj.projectId);
+		var px2dtLDA_pj = main.px2dtLDA.project(pj.projectId);
 
-		px.utils.iterateFnc([
+		main.utils.iterateFnc([
 			function(it, arg){
 				$('.tpl_name').text( pj.get('name') );
 				$('.tpl_path').text( pj.get('path') );
@@ -44,11 +44,11 @@ window.contApp = new (function(){
 				$('.tpl_entry_script').text( pj.get('entry_script') );
 				$('.tpl_external_preview_server_origin').text( px2dtLDA_pj.getExtendedData('external_preview_server_origin')||'' );
 				$('.tpl_external_app_server_origin').text( px2dtLDA_pj.getExtendedData('external_app_server_origin')||'' );
-				$('address.center').text( px.packageJson.pickles2.credit );
+				$('address.center').text( main.packageJson.pickles2.credit );
 				it.next(arg);
 			} ,
 			function(it, arg){
-				var statusTable = px.utils.bindEjs( templates['status-table'], {'status': status} );
+				var statusTable = main.utils.bindEjs( templates['status-table'], {'status': status} );
 				$('.tpl_status_table').html( statusTable );
 				it.next(arg);
 			} ,
@@ -69,11 +69,6 @@ window.contApp = new (function(){
 					// EntryScript が存在しない。
 					$mainTaskUi
 						.html( templates['reselectProject-entryScript'] )
-						.find('form')
-							.on('submit', function(){
-								_this.editProject();
-								return false;
-							})
 					;
 				}else if( status.pathExists && !status.composerJsonExists && status.pathContainsFileCount ){
 					// ディレクトリが空ではないためセットアップできない画面
@@ -140,7 +135,7 @@ window.contApp = new (function(){
 			function(it, arg){
 				// --------------------------------------
 				// Hintを表示する
-				var hint = px.hint.getRandom();
+				var hint = main.hint.getRandom();
 				// console.log(hint);
 				$('.cont_hint').html( hint );
 				it.next(arg);
@@ -151,12 +146,12 @@ window.contApp = new (function(){
 					it.next(arg);
 					return;
 				}
-				px.composerInstallChecker.getStatus(pj, function(checked){
+				main.composerInstallChecker.getStatus(pj, function(checked){
 					// console.log('composerInstallChecker.check() done.', checked.status);
 					if( checked.status == 'update_found' ){
 						$('.cont_info').append( $('<div class="alert alert-info">')
 							.append( $('<span>').text('composer パッケージのいくつかに、更新が見つかりました。') )
-							.append( $('<a href="javascript:px.subapp(\'fncs/composer/index.html\');">').text('composer install を実行してください') )
+							.append( $('<a href="javascript:main.subapp(\'fncs/composer/index.html\');">').text('composer install を実行してください') )
 							.append( $('<span>').text('。') )
 						);
 					}
@@ -170,24 +165,24 @@ window.contApp = new (function(){
 					readmePath = pj.get_realpath_git_root();
 				}
 				var htmlSrc = '<p class="cont_readme_content-no_readme">--- NO README.md ---</p>';
-				if( px.utils.isDirectory(readmePath) ){
+				if( main.utils.isDirectory(readmePath) ){
 					var filenames = ['README.md','readme.md','README.html','readme.html','README.txt','readme.txt'];
 					for( var idx in filenames ){
-						if( px.utils.isFile(readmePath+'/'+filenames[idx]) ){
-							var ext = px.utils.getExtension(filenames[idx]);
+						if( main.utils.isFile(readmePath+'/'+filenames[idx]) ){
+							var ext = main.utils.getExtension(filenames[idx]);
 							switch(ext){
 								case 'md':
-									htmlSrc = px.fs.readFileSync( readmePath+'/'+filenames[idx] );
+									htmlSrc = main.fs.readFileSync( readmePath+'/'+filenames[idx] );
 									htmlSrc = htmlSrc.toString();
-									htmlSrc = px.utils.markdown(htmlSrc);
+									htmlSrc = main.utils.markdown(htmlSrc);
 									break;
 								case 'html':
-									htmlSrc = px.fs.readFileSync( readmePath+'/'+filenames[idx] );
+									htmlSrc = main.fs.readFileSync( readmePath+'/'+filenames[idx] );
 									htmlSrc = htmlSrc.toString();
 									break;
 								case 'txt':
 								default:
-									htmlSrc = px.fs.readFileSync( readmePath+'/'+filenames[idx] );
+									htmlSrc = main.fs.readFileSync( readmePath+'/'+filenames[idx] );
 									htmlSrc = htmlSrc.toString();
 									htmlSrc = $('<div>').text(htmlSrc).html();
 									htmlSrc = htmlSrc.replace(/\r\n|\r|\n/g, '<br />');
@@ -203,7 +198,7 @@ window.contApp = new (function(){
 					.append( htmlSrc )
 					.find('a').each(function(){
 						$(this).on('click', function(){
-							px.utils.openURL( $(this).attr('href') );
+							main.utils.openURL( $(this).attr('href') );
 							return false;
 						});
 					})
@@ -220,23 +215,23 @@ window.contApp = new (function(){
 	 */
 	this.selectProjectPath = function(path){
 		var validatePjInfo = {path: path};
-		var result = px.validateProjectInfo(validatePjInfo);
+		var result = main.validateProjectInfo(validatePjInfo);
 		if( result.errorMsg.path ){
 			console.error(result.errorMsg.path);
 			alert(result.errorMsg.path);
 			return false;
 		}
 
-		var pj = px.getCurrentProject();
+		var pj = main.getCurrentProject();
 		pj.projectInfo.path = path;
-		if( !px.updateProject(pj.projectId, pj.projectInfo) ){
+		if( !main.updateProject(pj.projectId, pj.projectInfo) ){
 			var msg = 'ERROR: FAILED to update project info.';
 			console.error(msg);
 			alert(msg);
 			return false;
 		}
-		px.save(function(){
-			px.subapp();
+		main.save(function(){
+			main.subapp();
 		});
 		return true;
 	}
@@ -260,93 +255,11 @@ window.contApp = new (function(){
 			complete: function(){
 				$(btn).removeAttr('disabled');
 				var currentPjId = pj.projectId;
-				px.deselectProject();
-				px.selectProject( currentPjId, function(){
-					px.subapp();
+				main.deselectProject();
+				main.selectProject( currentPjId, function(){
+					main.subapp();
 				} );
 			}
-		} );
-	}
-
-	/**
-	 * プロジェクトを編集する
-	 */
-	this.editProject = function(){
-		var $form = $( templates['form-editProject'] );
-		var px2dtLDA_pj = px.px2dtLDA.project(pj.projectId);
-		$form.find('[name=pj_name]').val(px2dtLDA_pj.getName());
-		// $form.find('[name=pj_path]').val(pj.get('path'));//←セットできない！
-		$form.find('[name=pj_home_dir]').val(px2dtLDA_pj.get().home_dir);
-		$form.find('[name=pj_entry_script]').val(px2dtLDA_pj.getEntryScript());
-		$form.find('[name=pj_external_preview_server_origin]').val(px2dtLDA_pj.getExtendedData('external_preview_server_origin'));
-		$form.find('[name=pj_external_app_server_origin]').val(px2dtLDA_pj.getExtendedData('external_app_server_origin'));
-
-		$form.find('.error_name').html('');
-		$form.find('.error_path').html('');
-		$form.find('.error_home_dir').html('');
-		$form.find('.error_entry_script').html('');
-		$form.find('.error_external_preview_server_origin').html('');
-		$form.find('.error_external_app_server_origin').html('');
-
-		px.dialog( {
-			title: 'プロジェクト情報を編集',
-			body: $form ,
-			buttons: [
-				$('<button>')
-					.text(px.lb.get('ui_label.cancel'))
-					.on('click', function(){
-						px.closeDialog();
-					} ) ,
-				$('<button>')
-					.text('OK')
-					.addClass('px2-btn--primary')
-					.on('click', function(){
-						$form.find('.error_name').html('');
-						$form.find('.error_path').html('');
-						$form.find('.error_home_dir').html('');
-						$form.find('.error_entry_script').html('');
-						$form.find('.error_external_preview_server_origin').html('');
-						$form.find('.error_external_app_server_origin').html('');
-
-						var projectInfo = px2dtLDA_pj.get();
-
-						var newProjectInfo = JSON.parse( JSON.stringify( projectInfo ) );
-
-						newProjectInfo.name = $form.find('[name=pj_name]').val();
-						var tmpPath = $form.find('[name=pj_path]').val();
-						if( typeof(tmpPath) == typeof('') && tmpPath.length ){
-							newProjectInfo.path = tmpPath;//指定があったら上書き
-						}
-						newProjectInfo.home_dir = $form.find('[name=pj_home_dir]').val()
-						newProjectInfo.entry_script = $form.find('[name=pj_entry_script]').val()
-						newProjectInfo.external_preview_server_origin = $form.find('[name=pj_external_preview_server_origin]').val();
-						newProjectInfo.external_app_server_origin = $form.find('[name=pj_external_app_server_origin]').val();
-
-						var result = px.validateProjectInfo(newProjectInfo);
-						if( result.isError ){
-							alert('エラー: 入力不備があります。');
-							for( var fieldName in result.errorMsg ){
-								$form.find('.error_'+fieldName).html('').append('<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><span class="sr-only">Error:</span> '+result.errorMsg[fieldName]+'</div>');
-							}
-							return false;
-						}
-				
-						px2dtLDA_pj.setName(newProjectInfo.name);
-						if( tmpPath.length ){
-							px2dtLDA_pj.setPath(newProjectInfo.path);
-						}
-						projectInfo.home_dir = newProjectInfo.home_dir;
-						px2dtLDA_pj.setEntryScript(newProjectInfo.entry_script);
-						px2dtLDA_pj.setExtendedData('external_preview_server_origin', (newProjectInfo.external_preview_server_origin || undefined));
-						px2dtLDA_pj.setExtendedData('external_app_server_origin', (newProjectInfo.external_app_server_origin || undefined));
-
-						px.save(function(){
-							px.closeDialog();
-							px.message('プロジェクト情報を更新しました。');
-							px.subapp();
-						});
-					} )
-			]
 		} );
 	}
 

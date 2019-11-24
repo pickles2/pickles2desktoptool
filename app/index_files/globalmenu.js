@@ -132,6 +132,15 @@ module.exports = function(main){
 				}
 			},
 			{
+				"label":main.lb.get('menu.projectIndividualConfig'),
+				"cond":"pxStandby",
+				"area":"shoulder",
+				"app":null,
+				"click": function(){
+					main.getCurrentProject().editProjectIndividualConfig();
+				}
+			},
+			{
 				"label":_appName+" "+main.lb.get('menu.desktoptoolConfig'),
 				"cond":"always",
 				"area":"shoulder",

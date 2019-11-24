@@ -370,19 +370,20 @@ process.chdir = function (dir) {
 };
 
 },{}],3:[function(require,module,exports){
-window.px = window.parent.px;
-window.contApp = new (function( px ){
+window.px = window.parent.main;
+window.main = window.parent.main;
+window.contApp = new (function( main ){
 	var _this = this;
-	var _pj = px.getCurrentProject();
+	var _pj = main.getCurrentProject();
 	var remoteFinder;
 	var $elms = {};
 	$elms.editor = $('<div>');
-	var mkfile = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/mkfile.js'))(this, px, _pj, $);
-	var mkdir = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/mkdir.js'))(this, px, _pj, $);
-	var open = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/open.js'))(this, px, _pj, $);
-	var copy = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/copy.js'))(this, px, _pj, $);
-	var rename = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/rename.js'))(this, px, _pj, $);
-	var remove = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/remove.js'))(this, px, _pj, $);
+	var mkfile = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/mkfile.js'))(this, main, _pj, $);
+	var mkdir = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/mkdir.js'))(this, main, _pj, $);
+	var open = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/open.js'))(this, main, _pj, $);
+	var copy = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/copy.js'))(this, main, _pj, $);
+	var rename = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/rename.js'))(this, main, _pj, $);
+	var remove = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/remove.js'))(this, main, _pj, $);
 
 	/**
 	 * 初期化
@@ -423,21 +424,21 @@ window.contApp = new (function( px ){
 		this.closeEditor();//一旦閉じる
 
 		// プログレスモード表示
-		px.progress.start({
+		main.progress.start({
 			'blindness':true,
 			'showProgressBar': true
 		});
 
 		var contPath = _pj.findPageContent( pagePath );
 		var contRealpath = _pj.get('path')+'/'+contPath;
-		var pathInfo = px.utils.parsePath(contPath);
+		var pathInfo = main.utils.parsePath(contPath);
 		if( _pj.site.getPathType( pagePath ) == 'dynamic' ){
 			var dynamicPathInfo = _pj.site.get_dynamic_path_info(pagePath);
 			pagePath = dynamicPathInfo.path;
 		}
 
-		if( px.fs.existsSync( contRealpath ) ){
-			contRealpath = px.fs.realpathSync( contRealpath );
+		if( main.fs.existsSync( contRealpath ) ){
+			contRealpath = main.fs.realpathSync( contRealpath );
 		}
 
 		$elms.editor = $('<div>')
@@ -512,6 +513,7 @@ window.contApp = new (function( px ){
 		$('body')
 			.css({'overflow':'auto'})
 		;
+		_pj.updateGitStatus();
 		return this;
 	} // closeEditor()
 
@@ -526,7 +528,7 @@ window.contApp = new (function( px ){
 		;
 	}
 
-})( window.parent.px );
+})( window.parent.main );
 
 },{"../../../fncs/files_and_folders/index_files/libs.ignore/copy.js":4,"../../../fncs/files_and_folders/index_files/libs.ignore/mkdir.js":5,"../../../fncs/files_and_folders/index_files/libs.ignore/mkfile.js":6,"../../../fncs/files_and_folders/index_files/libs.ignore/open.js":7,"../../../fncs/files_and_folders/index_files/libs.ignore/remove.js":8,"../../../fncs/files_and_folders/index_files/libs.ignore/rename.js":9}],4:[function(require,module,exports){
 /**

@@ -2,8 +2,9 @@
 /**
  * Publish: app.js
  */
-window.px = window.parent.px;
-window.contApp = new (function(px, $){
+window.px = window.parent.main;
+window.main = window.parent.main;
+window.contApp = new (function(main, $){
 	var _this = this;
 	var _pj, _realpathPublishDir;
 	var $cont;
@@ -11,19 +12,19 @@ window.contApp = new (function(px, $){
 	var currentQueueId;
 	var justClosedNow;
 
-	this.progressReport = new(require('../../../fncs/publish/index_files/libs.ignore/progressReport.js'))(this, px, $);
-	this.resultReport = new(require('../../../fncs/publish/index_files/libs.ignore/resultReport.js'))(this, px, $);
+	this.progressReport = new(require('../../../fncs/publish/index_files/libs.ignore/progressReport.js'))(this, main, $);
+	this.resultReport = new(require('../../../fncs/publish/index_files/libs.ignore/resultReport.js'))(this, main, $);
 
 	/**
 	 * initialize
 	 */
 	function init(){
-		px.progress.start({
+		main.progress.start({
 			'blindness':false
 		});
 
-		_pj = px.getCurrentProject();
-		_realpathPublishDir = px.path.resolve( _pj.get('path')+'/'+_pj.get('home_dir')+'/_sys/ram/publish/' )+'/';
+		_pj = main.getCurrentProject();
+		_realpathPublishDir = main.path.resolve( _pj.get('path')+'/'+_pj.get('home_dir')+'/_sys/ram/publish/' )+'/';
 		$cont = $('.contents');
 		$cont.html('');
 
@@ -33,7 +34,7 @@ window.contApp = new (function(px, $){
 		} catch (e) {
 		}
 
-		px.it79.fnc({}, [
+		main.it79.fnc({}, [
 			function(it){
 				$cont.append( $('#template-scenes').html() ).find('.cont_scene').hide();
 				_this.progressReport.init($cont);
@@ -56,8 +57,8 @@ window.contApp = new (function(px, $){
 				});
 			} ,
 			function(it){
-				px.commandQueue.client.destroyTerminal('publish');
-				px.commandQueue.client.createTerminal(null, {
+				main.commandQueue.client.destroyTerminal('publish');
+				main.commandQueue.client.createTerminal(null, {
 					"name": "publish",
 					"tags": [
 						'pj-'+_pj.get('id'),
@@ -101,7 +102,7 @@ window.contApp = new (function(px, $){
 			} ,
 			function(it){
 				setTimeout(function(){
-					px.progress.close();
+					main.progress.close();
 					it.next();
 				}, 10);
 			}
@@ -114,9 +115,9 @@ window.contApp = new (function(px, $){
 	this.checkPublishStatus = function(callback){
 		callback = callback || function(){};
 		var status = {};
-		px.it79.fnc({}, [
+		main.it79.fnc({}, [
 			function(it){
-				px.fs.exists( _realpathPublishDir+'applock.txt', function(result){
+				main.fs.exists( _realpathPublishDir+'applock.txt', function(result){
 					status.applockExists = result;
 					it.next();
 				} );
@@ -128,7 +129,7 @@ window.contApp = new (function(px, $){
 					it.next();
 					return;
 				}
-				px.fs.readFile( _realpathPublishDir+'applock.txt', function(err, data){
+				main.fs.readFile( _realpathPublishDir+'applock.txt', function(err, data){
 					if(err){
 						it.next();
 						return;
@@ -144,19 +145,19 @@ window.contApp = new (function(px, $){
 				} );
 			} ,
 			function(it){
-				px.fs.exists( _realpathPublishDir+'publish_log.csv', function(result){
+				main.fs.exists( _realpathPublishDir+'publish_log.csv', function(result){
 					status.publishLogExists = result;
 					it.next();
 				} );
 			} ,
 			function(it){
-				px.fs.exists( _realpathPublishDir+'alert_log.csv', function(result){
+				main.fs.exists( _realpathPublishDir+'alert_log.csv', function(result){
 					status.alertLogExists = result;
 					it.next();
 				} );
 			} ,
 			function(it){
-				px.fs.exists( _realpathPublishDir+'htdocs/', function(result){
+				main.fs.exists( _realpathPublishDir+'htdocs/', function(result){
 					status.htdocsExists = result;
 					it.next();
 				} );
@@ -248,7 +249,7 @@ window.contApp = new (function(px, $){
 			}
 		})();
 
-		px.dialog({
+		main.dialog({
 			'title': 'パブリッシュ',
 			'body': $body,
 			'buttons':[
@@ -262,8 +263,8 @@ window.contApp = new (function(px, $){
 						var tmp_ary_paths_region = str_paths_region_val.split(new RegExp('\r\n|\r|\n','g'));
 						var ary_paths_region = [];
 						for( var i in tmp_ary_paths_region ){
-							tmp_ary_paths_region[i] = px.php.trim(tmp_ary_paths_region[i]);
-							if( px.php.strlen(tmp_ary_paths_region[i]) ){
+							tmp_ary_paths_region[i] = main.php.trim(tmp_ary_paths_region[i]);
+							if( main.php.strlen(tmp_ary_paths_region[i]) ){
 								ary_paths_region.push( tmp_ary_paths_region[i] );
 							}
 						}
@@ -277,8 +278,8 @@ window.contApp = new (function(px, $){
 						var str_paths_ignore = '';
 						var ary_paths_ignore = str_paths_ignore_val.split(new RegExp('\r\n|\r|\n','g'));
 						for( var i in ary_paths_ignore ){
-							ary_paths_ignore[i] = px.php.trim(ary_paths_ignore[i]);
-							if( !px.php.strlen(ary_paths_ignore[i]) ){
+							ary_paths_ignore[i] = main.php.trim(ary_paths_ignore[i]);
+							if( !main.php.strlen(ary_paths_ignore[i]) ){
 								ary_paths_ignore[i] = undefined;
 								delete(ary_paths_ignore[i]);
 							}
@@ -290,7 +291,7 @@ window.contApp = new (function(px, $){
 						var keep_cache = ( $body.find('input[name=keep_cache]:checked').val() ? 1 : 0 );
 
 						// パブリッシュ条件入力ダイアログを閉じる
-						px.closeDialog();
+						main.closeDialog();
 
 						_pj.appdata.get().publishOption = _pj.appdata.get().publishOption || {};
 						_pj.appdata.get().publishOption.last = {
@@ -314,10 +315,10 @@ window.contApp = new (function(px, $){
 						}
 
 						// パブリッシュコマンドを発行する
-						px.commandQueue.client.addQueueItem(
+						main.commandQueue.client.addQueueItem(
 							[
 								'php',
-								px.path.resolve(_pj.get('path'), _pj.get('entry_script')),
+								main.path.resolve(_pj.get('path'), _pj.get('entry_script')),
 								'/?PX=publish.run&'+px2cmd_options
 							],
 							{
@@ -341,20 +342,22 @@ window.contApp = new (function(px, $){
 								'close': function(message){
 									justClosedNow = true;
 									if(message.data !== 0){
-										px.message( 'パブリッシュが正常に完了できませんでした。ご確認ください。' );
+										main.message( 'パブリッシュが正常に完了できませんでした。ご確認ください。' );
 									}else{
-										px.message( 'パブリッシュを完了しました。' );
+										main.message( 'パブリッシュを完了しました。' );
 									}
+									_pj.updateGitStatus();
 									return;
 								}
 							}
 						);
 					}),
 				$('<button>')
-					.text(px.lb.get('ui_label.cancel'))
+					.text(main.lb.get('ui_label.cancel'))
 					.addClass('px2-btn')
 					.on('click', function(){
-						px.closeDialog();
+						main.closeDialog();
+						_pj.updateGitStatus();
 					})
 			]
 		});
@@ -366,15 +369,15 @@ window.contApp = new (function(px, $){
 	 * パブリッシュを中断する
 	 */
 	this.cancel = function(){
-		px.commandQueue.client.killQueueItem(currentQueueId);
-		px.fs.unlinkSync( _realpathPublishDir+'applock.txt' );
+		main.commandQueue.client.killQueueItem(currentQueueId);
+		main.fs.unlinkSync( _realpathPublishDir+'applock.txt' );
 	}
 
 	/**
 	 * 一時パブリッシュ先ディレクトリを開く
 	 */
 	this.open_publish_tmp_dir = function(){
-		window.px.utils.openURL(_pj.get('path')+'/'+_pj.get('home_dir')+'/_sys/ram/publish/');
+		window.main.utils.openURL(_pj.get('path')+'/'+_pj.get('home_dir')+'/_sys/ram/publish/');
 	}
 
 	/**
@@ -389,13 +392,13 @@ window.contApp = new (function(px, $){
 
 		var path = '';
 		if( typeof(conf.path_publish_dir) == typeof('') ){
-			path = px.path.resolve( px.php.dirname(_pj.get('path')+'/'+_pj.get('entry_script')), conf.path_publish_dir );
+			path = main.path.resolve( main.php.dirname(_pj.get('path')+'/'+_pj.get('entry_script')), conf.path_publish_dir );
 		}
-		if( !px.utils.isDirectory(path) ){
+		if( !main.utils.isDirectory(path) ){
 			alert('設定されたパブリッシュ先ディレクトリが存在しません。存在する有効なディレクトリである必要があります。\nプロジェクト設定(config.php) で $conf->path_publish_dir を設定してください。');
 			return;
 		}
-		window.px.utils.openURL(path);
+		window.main.utils.openURL(path);
 	}
 
 	/**
@@ -441,7 +444,7 @@ window.contApp = new (function(px, $){
 	});
 
 	return this;
-})(px, $);
+})(main, $);
 
 },{"../../../fncs/publish/index_files/libs.ignore/progressReport.js":2,"../../../fncs/publish/index_files/libs.ignore/resultReport.js":3}],2:[function(require,module,exports){
 /**

@@ -1,4 +1,5 @@
-window.px = window.parent.px;
+window.px = window.parent.main;
+window.main = window.parent.main;
 window.contApp = new (function( px ){
 	var _this = this;
 	var _pj = px.getCurrentProject();
@@ -73,4 +74,4 @@ window.contApp = new (function( px ){
 		init(function(){});
 	})
 
-})( window.parent.px );
+})( window.parent.main );

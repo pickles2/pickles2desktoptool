@@ -19716,7 +19716,8 @@ function whitelist(str, chars) {
 }
 module.exports = exports['default'];
 },{"./util/assertString":98}],102:[function(require,module,exports){
-window.px = window.parent.px;
+window.px = window.parent.main;
+window.main = window.parent.main;
 window.contApp = new (function( px ){
 	var _this = this;
 	var it79 = require('iterate79');
@@ -19864,6 +19865,6 @@ window.contApp = new (function( px ){
 		resizeEvent();
 	});
 
-})( window.parent.px );
+})( window.parent.main );
 
 },{"iterate79":14,"path":16,"phpjs":18,"utils79":37}]},{},[102])

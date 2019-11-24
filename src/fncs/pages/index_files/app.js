@@ -1,14 +1,15 @@
-window.px = window.parent.px;
-window.contApp = new (function( px ){
-	if( !px ){ alert('px が宣言されていません。'); }
+window.px = window.parent.main;
+window.main = window.parent.main;
+window.contApp = new (function( main ){
+	if( !main ){ alert('px が宣言されていません。'); }
 	var it79 = require('iterate79');
 
 	var _this = this;
 	var app = this;
 	var $elms = {};
 
-	var _param = px.utils.parseUriParam( window.location.href );
-	var _pj = this.pj = px.getCurrentProject();
+	var _param = main.utils.parseUriParam( window.location.href );
+	var _pj = this.pj = main.getCurrentProject();
 	var _currentPagePath;
 	var _currentPageInfo;
 
@@ -16,7 +17,7 @@ window.contApp = new (function( px ){
 		pageDraw,
 		pageSearch;
 
-	this.gitUi = new px2dtGitUi(px, _pj);
+	this.gitUi = new px2dtGitUi(main, _pj);
 
 	/**
 	 * 初期化
@@ -37,7 +38,7 @@ window.contApp = new (function( px ){
 					},
 					function( errors ){
 						// API設定が不十分な場合のエラー処理
-						var html = px.utils.bindEjs(
+						var html = main.utils.bindEjs(
 							document.getElementById('template-not-enough-api-version').innerHTML,
 							{errors: errors}
 						);
@@ -61,8 +62,8 @@ window.contApp = new (function( px ){
 						},
 						function( errors ){
 							// API設定が不十分な場合のエラー処理
-							var html = px.utils.bindEjs(
-								px.fs.readFileSync('app/common/templates/broccoli-html-editor-php-is-not-available.html').toString(),
+							var html = main.utils.bindEjs(
+								main.fs.readFileSync('app/common/templates/broccoli-html-editor-php-is-not-available.html').toString(),
 								{errors: errors}
 							);
 							$('.contents').html( html );
@@ -105,7 +106,7 @@ window.contApp = new (function( px ){
 
 						it79.fnc({}, [
 							function(it, prop){
-								px.cancelDrop( $elms.previewIframe.get(0).contentWindow );
+								main.cancelDrop( $elms.previewIframe.get(0).contentWindow );
 
 								currentPagePath = app.extractPagePathFromPreviewLocation();
 
@@ -119,7 +120,7 @@ window.contApp = new (function( px ){
 										var attrHref = $(this).attr('href');
 										if( attrHref.match(/^[a-zA-Z0-9]+\:/i) && !attrHref.match(/^(?:javascript|data)\:/i) ){
 											if(confirm( 'サイト外のURLです。'+"\n"+attrHref+"\n"+'ブラウザで開きますか？' )){
-												px.utils.openURL(attrHref);
+												main.utils.openURL(attrHref);
 											}
 											return false;
 										}
@@ -185,20 +186,20 @@ window.contApp = new (function( px ){
 	this.openMaterialsDirectory = function( path ){
 		var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( path ) );
 		var realpathFiles = _pj.get_realpath_controot()+pathFiles;
-		if( !px.utils.isDirectory( realpathFiles ) ){
-			px.fs.mkdirSync( realpathFiles );
-			if( !px.utils.isDirectory( realpathFiles ) ){
+		if( !main.utils.isDirectory( realpathFiles ) ){
+			main.fs.mkdirSync( realpathFiles );
+			if( !main.utils.isDirectory( realpathFiles ) ){
 				return false;
 			}
 		}
 		var realpath_matDir = realpathFiles + 'materials.ignore/';
-		if( !px.utils.isDirectory( realpath_matDir ) ){
-			px.fs.mkdirSync( realpath_matDir );
-			if( !px.utils.isDirectory( realpath_matDir ) ){
+		if( !main.utils.isDirectory( realpath_matDir ) ){
+			main.fs.mkdirSync( realpath_matDir );
+			if( !main.utils.isDirectory( realpath_matDir ) ){
 				return false;
 			}
 		}
-		px.utils.openURL( realpath_matDir );
+		main.utils.openURL( realpath_matDir );
 		return this;
 	}
 
@@ -208,13 +209,13 @@ window.contApp = new (function( px ){
 	this.openResourcesDirectory = function( path ){
 		var pathFiles = _pj.getContentFilesByPageContent( _pj.findPageContent( path ) );
 		var realpathFiles = _pj.get_realpath_controot()+pathFiles;
-		if( !px.utils.isDirectory( realpathFiles ) ){
-			px.fs.mkdirSync( realpathFiles );
-			if( !px.utils.isDirectory( realpathFiles ) ){
+		if( !main.utils.isDirectory( realpathFiles ) ){
+			main.fs.mkdirSync( realpathFiles );
+			if( !main.utils.isDirectory( realpathFiles ) ){
 				return false;
 			}
 		}
-		px.utils.openURL( realpathFiles );
+		main.utils.openURL( realpathFiles );
 		return this;
 	}
 
@@ -255,7 +256,7 @@ window.contApp = new (function( px ){
 		}
 		var to = previewLocation.pathname;
 		var pathControot = _pj.getConfig().path_controot;
-		to = to.replace( new RegExp( '^'+px.utils.escapeRegExp( pathControot ) ), '' );
+		to = to.replace( new RegExp( '^'+main.utils.escapeRegExp( pathControot ) ), '' );
 		to = to.replace( new RegExp( '^\\/*' ), '/' );
 		to = to.replace( /\/$/, '/index.html' );
 
@@ -310,21 +311,21 @@ window.contApp = new (function( px ){
 				} catch (e) {
 				}
 				href = removeHash(href);
-				href = href.replace(new RegExp('^'+px.utils.escapeRegExp(path_controot)), '/');
+				href = href.replace(new RegExp('^'+main.utils.escapeRegExp(path_controot)), '/');
 				// console.log(href);
-				px.progress.close();
+				main.progress.close();
 				app.goto(href, options, callback);
 			});
 			return;
 		}
 
 		if( page_path.match(new RegExp('^alias[0-9]*\\:')) ){
-			px.message( 'このページはエイリアスです。' );
+			main.message( 'このページはエイリアスです。' );
 			redirectPage(page_path, options, callback);
 			return;
 		}
 
-		px.progress.start({"showProgressBar":false, 'blindness':false});
+		main.progress.start({"showProgressBar":false, 'blindness':false});
 
 		_currentPagePath = page_path;
 
@@ -337,7 +338,7 @@ window.contApp = new (function( px ){
 				// console.log(pageInfo);
 				// redirectPage(page_path, options, callback);
 				alert('Error: ページ情報がロードされませんでした。');
-				px.progress.close();
+				main.progress.close();
 				callback();
 				return;
 			}
@@ -346,20 +347,20 @@ window.contApp = new (function( px ){
 			pageDraw.redraw( _currentPageInfo, options, function(){
 				if( _currentPageInfo.path_type == 'alias' ){
 					// エイリアスはロードしない
-					px.progress.close();
+					main.progress.close();
 					callback();
 					return;
 				}
 
 				if( !_currentPageInfo.page_info ){
 					// ページ情報が正常にロードされていない場合
-					px.progress.close();
+					main.progress.close();
 					callback();
 					return;
 				}
 
 				app.loadPreview( _currentPageInfo.page_info.path, options, function(){
-					px.progress.close();
+					main.progress.close();
 					callback();
 				} );
 			} );
@@ -396,8 +397,8 @@ window.contApp = new (function( px ){
 		}
 
 		var currentPreviewPagePath = this.extractPagePathFromPreviewLocation();
-		var gotoUrl = px.preview.getUrl(page_path);
-		var currentPreviewPageUrl = px.preview.getUrl(currentPreviewPagePath);
+		var gotoUrl = main.preview.getUrl(page_path);
+		var currentPreviewPageUrl = main.preview.getUrl(currentPreviewPagePath);
 		// console.log(currentPreviewPageUrl, gotoUrl);
 
 		if( removeHash(currentPreviewPageUrl) === removeHash(gotoUrl) && !options.force ){
@@ -408,9 +409,9 @@ window.contApp = new (function( px ){
 		}
 		// $elms.pageinfo.html('<div style="text-align:center;">now loading ...</div>');
 
-		px.preview.serverStandby( function(result){
+		main.preview.serverStandby( function(result){
 			if(result === false){
-				px.message('プレビューサーバーの起動に失敗しました。');
+				main.message('プレビューサーバーの起動に失敗しました。');
 				callback();
 				return;
 			}
@@ -435,22 +436,22 @@ window.contApp = new (function( px ){
 		this.closeEditor();//一旦閉じる
 
 		// プログレスモード表示
-		px.progress.start({
+		main.progress.start({
 			'blindness':true,
 			'showProgressBar': true
 		});
 
 		var contPath = _pj.findPageContent( pagePath );
 		var contRealpath = _pj.get('path')+'/'+contPath;
-		var pathInfo = px.utils.parsePath(contPath);
+		var pathInfo = main.utils.parsePath(contPath);
 		var pagePath = pageInfo.path;
 		if( _pj.site.getPathType( pageInfo.path ) == 'dynamic' ){
 			var dynamicPathInfo = _pj.site.get_dynamic_path_info(pageInfo.path);
 			pagePath = dynamicPathInfo.path;
 		}
 
-		if( px.fs.existsSync( contRealpath ) ){
-			contRealpath = px.fs.realpathSync( contRealpath );
+		if( main.fs.existsSync( contRealpath ) ){
+			contRealpath = main.fs.realpathSync( contRealpath );
 		}
 
 		$elms.editor = $('<div>')
@@ -574,4 +575,4 @@ window.contApp = new (function( px ){
 
 	});
 
-})( window.parent.px );
+})( window.parent.main );

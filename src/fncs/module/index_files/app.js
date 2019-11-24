@@ -1,10 +1,12 @@
-window.px = window.parent.px;
-window.contApp = new (function( px ){
-	if( !px ){ alert('px が宣言されていません。'); }
+window.px = window.parent.main;
+window.main = window.parent.main;
+window.contApp = new (function( main ){
+	var px = main;
+	if( !main ){ alert('px が宣言されていません。'); }
 	var _this = this;
-	var pj = this.pj = px.getCurrentProject();
-	var it79 = px.it79;
-	var utils79 = px.utils79;
+	var pj = this.pj = main.getCurrentProject();
+	var it79 = main.it79;
+	var utils79 = main.utils79;
 	var guiEngine;
 	var client_resources;
 	var realpathDataDir;
@@ -33,8 +35,8 @@ window.contApp = new (function( px ){
 							},
 							function( errors ){
 								// API設定が不十分な場合のエラー処理
-								var html = px.utils.bindEjs(
-									px.fs.readFileSync('app/common/templates/broccoli-html-editor-php-is-not-available.html').toString(),
+								var html = main.utils.bindEjs(
+									main.fs.readFileSync('app/common/templates/broccoli-html-editor-php-is-not-available.html').toString(),
 									{errors: errors}
 								);
 								$('.contents').html( html );
@@ -142,9 +144,9 @@ window.contApp = new (function( px ){
 					pickles2ModuleEditor.init(
 						{
 							'elmCanvas': $content.get(0), // <- 編集画面を描画するための器となる要素
-							'lang': px.getDb().language,
+							'lang': main.getDb().language,
 							'preview':{ // プレビュー用サーバーの情報を設定します。
-								'origin': 'http://127.0.0.1:'+px.px2dtLDA.db.network.preview.port
+								'origin': 'http://127.0.0.1:'+main.px2dtLDA.db.network.preview.port
 							},
 							'gpiBridge': function(input, callback){
 								// GPI(General Purpose Interface) Bridge
@@ -152,7 +154,7 @@ window.contApp = new (function( px ){
 								// GPIは、これらのデータ通信を行うための汎用的なAPIです。
 								if( guiEngine == 'broccoli-html-editor-php' ){
 									var tmpFileName = '__tmp_'+utils79.md5( Date.now() )+'.json';
-									px.fs.writeFileSync( realpathDataDir+tmpFileName, JSON.stringify(input) );
+									main.fs.writeFileSync( realpathDataDir+tmpFileName, JSON.stringify(input) );
 									pj.execPx2(
 										'/?PX=px2dthelper.px2me.gpi&appMode=desktop&data_filename='+encodeURIComponent( tmpFileName ),
 										{
@@ -162,7 +164,7 @@ window.contApp = new (function( px ){
 												}catch(e){
 													console.error('Failed to parse JSON String -> ' + rtn);
 												}
-												px.fs.unlinkSync( realpathDataDir+tmpFileName );
+												main.fs.unlinkSync( realpathDataDir+tmpFileName );
 												callback( rtn );
 											}
 										}
@@ -215,4 +217,4 @@ window.contApp = new (function( px ){
 
 	});
 
-})( window.parent.px );
+})( window.parent.main );

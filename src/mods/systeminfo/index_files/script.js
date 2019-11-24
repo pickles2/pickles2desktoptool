@@ -1,15 +1,15 @@
 (function(){
-	var px = window.px = window.parent.px;
-	var systemInfoCollector = new (require('../../../mods/systeminfo/index_files/libs.ignore/system.js'))(window.px);
-	var applicationInfoCollector = new (require('../../../mods/systeminfo/index_files/libs.ignore/application.js'))(window.px);
+	var main = window.main = window.parent.main;
+	var systemInfoCollector = new (require('../../../mods/systeminfo/index_files/libs.ignore/system.js'))(window.main);
+	var applicationInfoCollector = new (require('../../../mods/systeminfo/index_files/libs.ignore/application.js'))(window.main);
 	var tableTemplate;
 
 	$(window).load( function(){
-		px.it79.fnc({}, [
+		main.it79.fnc({}, [
 			function(it1, arg){
 				console.log('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= System Info =-=-=-=-=-=');
-				console.log('------------------- px', px);
-				console.log('------------------- process', px.process);
+				console.log('------------------- main', main);
+				console.log('------------------- process', main.process);
 				console.log('------------------- window', window.parent);
 				tableTemplate = $('#template-table').html();
 				it1.next();
@@ -19,17 +19,17 @@
 				// ボタンアクション設定： フィードバック送信
 				$('.cont_support-page-link button')
 					.on('click', function(){
-						px.utils.openURL( px.packageJson.pickles2.forum.url );
+						main.utils.openURL( main.packageJson.pickles2.forum.url );
 						return false;
 					})
-					.text(px.packageJson.pickles2.forum.title + ' ページへ、フィードバックを投稿してください。')
+					.text(main.packageJson.pickles2.forum.title + ' ページへ、フィードバックを投稿してください。')
 				;
 
 				// --------------------------------------
 				// ボタンアクション設定： 設定データフォルダを開く
 				$('.cont_open-data-dir button')
 					.on('click', function(){
-						px.openDataDir();
+						main.openDataDir();
 						return false;
 					})
 				;
@@ -38,7 +38,7 @@
 				// ボタンアクション設定： Command Queue のメイン端末を開く
 				$('.cont_open-command-queue-main-terminal button')
 					.on('click', function(){
-						px.commandQueue.show();
+						main.commandQueue.show();
 						return false;
 					})
 				;
@@ -49,7 +49,7 @@
 				// --------------------------------------
 				// アプリケーション情報テーブル描画
 				applicationInfoCollector.getInfo(function(result){
-					var html = px.utils.bindEjs(
+					var html = main.utils.bindEjs(
 						tableTemplate,
 						{
 							"info": result
@@ -64,7 +64,7 @@
 				// --------------------------------------
 				// システム情報テーブル描画
 				systemInfoCollector.getInfo(function(result){
-					var html = px.utils.bindEjs(
+					var html = main.utils.bindEjs(
 						tableTemplate,
 						{
 							"info": result

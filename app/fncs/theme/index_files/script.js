@@ -3438,12 +3438,12 @@ process.chdir = function (dir) {
 };
 
 },{}],16:[function(require,module,exports){
-window.px = window.parent.px;
+window.main = window.parent.main;
 window.contApp = new (function(){
-	if( !px ){ alert('px が宣言されていません。'); }
+	if( !main ){ alert('px が宣言されていません。'); }
 	var it79 = require('iterate79');
 	var _this = this;
-	var pj = px.getCurrentProject();
+	var pj = main.getCurrentProject();
 	var status = pj.status();
 	var multithemePluginFunctionName = 'tomk79\\pickles2\\multitheme\\theme::exec';
 	var px2all,
@@ -3451,7 +3451,7 @@ window.contApp = new (function(){
 		realpathThemeCollectionDir,
 		multithemePluginOptions;
 	var $elms = {'editor': $('<div>')};
-	var realpathDefaultThumb = 'data:image/png;base64,'+px.fs.readFileSync( px.path.resolve( './app/common/images/no-image.png' ) ).toString('base64');
+	var realpathDefaultThumb = 'data:image/png;base64,'+main.fs.readFileSync( main.path.resolve( './app/common/images/no-image.png' ) ).toString('base64');
 
 	function init( callback ){
 		it79.fnc({}, [
@@ -3554,7 +3554,7 @@ window.contApp = new (function(){
 	this.pageHome = function(){
 		$('h1').text('テーマ');
 
-		if( !px.utils79.is_dir(realpathThemeCollectionDir) ){
+		if( !main.utils79.is_dir(realpathThemeCollectionDir) ){
 			// テーマコレクションディレクトリが存在しなければ終了
 			var err = 'Theme Collection Dir is NOT exists.';
 			console.log(err, realpathThemeCollectionDir);
@@ -3565,8 +3565,8 @@ window.contApp = new (function(){
 		// テーマコレクションをリスト化
 		listThemeCollection(function(themeCollection){
 
-			var html = px.utils.bindEjs(
-				px.fs.readFileSync('app/fncs/theme/index_files/templates/list.html').toString(),
+			var html = main.utils.bindEjs(
+				main.fs.readFileSync('app/fncs/theme/index_files/templates/list.html').toString(),
 				{
 					'themePluginList': themePluginList,
 					'themeCollection': themeCollection,
@@ -3589,11 +3589,11 @@ window.contApp = new (function(){
 		it79.fnc({}, [
 			function(it1, arg){
 				// レイアウトをリスト化
-				var ls = px.fs.readdirSync(realpathThemeCollectionDir+encodeURIComponent(themeId));
+				var ls = main.fs.readdirSync(realpathThemeCollectionDir+encodeURIComponent(themeId));
 				arg.layouts = [];
 				for( var idx in ls ){
 					var layoutId = ls[idx];
-					if( !px.utils79.is_file( realpathThemeCollectionDir+encodeURIComponent(themeId)+'/'+encodeURIComponent(layoutId) ) ){
+					if( !main.utils79.is_file( realpathThemeCollectionDir+encodeURIComponent(themeId)+'/'+encodeURIComponent(layoutId) ) ){
 						continue;
 					}
 					if( !layoutId.match(/\.html$/) ){
@@ -3601,7 +3601,7 @@ window.contApp = new (function(){
 					}
 					var layoutId = layoutId.replace(/\.[a-zA-Z0-9]+$/i, '');
 					var editMode = 'html';
-					if( px.utils79.is_file( realpathThemeCollectionDir+encodeURIComponent(themeId)+'/guieditor.ignore/'+encodeURIComponent(layoutId)+'/data/data.json' ) ){
+					if( main.utils79.is_file( realpathThemeCollectionDir+encodeURIComponent(themeId)+'/guieditor.ignore/'+encodeURIComponent(layoutId)+'/data/data.json' ) ){
 						editMode = 'html.gui';
 					}
 
@@ -3615,28 +3615,28 @@ window.contApp = new (function(){
 			function(it1, arg){
 				// README 取得
 				arg.readme = '';
-				if( px.utils79.is_file( realpathThemeCollectionDir+themeId+'/README.md' ) ){
-					arg.readme = px.fs.readFileSync( realpathThemeCollectionDir+themeId+'/README.md' ).toString();
-					arg.readme = px.utils.markdown( arg.readme );
-				}else if( px.utils79.is_file( realpathThemeCollectionDir+themeId+'/README.html' ) ){
-					arg.readme = px.fs.readFileSync( realpathThemeCollectionDir+themeId+'/README.html' ).toString();
+				if( main.utils79.is_file( realpathThemeCollectionDir+themeId+'/README.md' ) ){
+					arg.readme = main.fs.readFileSync( realpathThemeCollectionDir+themeId+'/README.md' ).toString();
+					arg.readme = main.utils.markdown( arg.readme );
+				}else if( main.utils79.is_file( realpathThemeCollectionDir+themeId+'/README.html' ) ){
+					arg.readme = main.fs.readFileSync( realpathThemeCollectionDir+themeId+'/README.html' ).toString();
 				}
 				it1.next(arg);
 			},
 			function(it1, arg){
 				// サムネイル取得
 				arg.thumb = '';
-				var realpathImage = px.path.resolve( './app/common/images/no-image.png' );
-				if( px.utils79.is_file( realpathThemeCollectionDir+themeId+'/thumb.png' ) ){
-					realpathImage = px.path.resolve( realpathThemeCollectionDir+themeId+'/thumb.png' );
+				var realpathImage = main.path.resolve( './app/common/images/no-image.png' );
+				if( main.utils79.is_file( realpathThemeCollectionDir+themeId+'/thumb.png' ) ){
+					realpathImage = main.path.resolve( realpathThemeCollectionDir+themeId+'/thumb.png' );
 				}
-				arg.thumb = 'data:image/png;base64,'+px.fs.readFileSync( realpathImage ).toString('base64');
+				arg.thumb = 'data:image/png;base64,'+main.fs.readFileSync( realpathImage ).toString('base64');
 				it1.next(arg);
 			},
 			function(it1, arg){
 				// テンプレート描画
-				var html = px.utils.bindEjs(
-					px.fs.readFileSync('app/fncs/theme/index_files/templates/theme-home.html').toString(),
+				var html = main.utils.bindEjs(
+					main.fs.readFileSync('app/fncs/theme/index_files/templates/theme-home.html').toString(),
 					{
 						'themeId': themeId,
 						'layouts': arg.layouts,
@@ -3656,7 +3656,7 @@ window.contApp = new (function(){
 				});
 				$('.contents').find('a').on('click', function(e){
 					var href = this.href;
-					px.utils.openURL( href );
+					main.utils.openURL( href );
 					return false;
 				});
 				$('.contents').find('.cont-theme-home-set-default__btn-set-default').on('click', function(e){
@@ -3667,6 +3667,7 @@ window.contApp = new (function(){
 						}
 						multithemePluginOptions.default_theme_id = themeId;
 						_this.pageThemeHome(themeId);
+						pj.updateGitStatus();
 					});
 				});
 				it1.next(arg);
@@ -3682,8 +3683,8 @@ window.contApp = new (function(){
 		// テーマコレクションをリスト化
 		listThemeCollection(function(themeCollection){
 
-			var html = px.utils.bindEjs(
-				px.fs.readFileSync('app/fncs/theme/index_files/templates/form-theme.html').toString(),
+			var html = main.utils.bindEjs(
+				main.fs.readFileSync('app/fncs/theme/index_files/templates/form-theme.html').toString(),
 				{
 					'themeId': theme_id,
 					'themePluginList': themePluginList,
@@ -3738,35 +3739,35 @@ window.contApp = new (function(){
 
 
 				var realpathTheme = realpathThemeCollectionDir+encodeURIComponent(newThemeId)+'/';
-				if( px.utils79.is_dir( realpathTheme ) ){
+				if( main.utils79.is_dir( realpathTheme ) ){
 					$errMsg.text('テーマID '+newThemeId+' は、すでに存在します。');
 					return;
 				}
 
 				if( theme_id ){
 					// フォルダ名変更
-					px.fs.renameSync( realpathThemeCollectionDir+theme_id+'/', realpathTheme );
+					main.fs.renameSync( realpathThemeCollectionDir+theme_id+'/', realpathTheme );
 				}else{
 					// フォルダ生成
-					px.fsEx.mkdirsSync( realpathTheme );
+					main.fsEx.mkdirsSync( realpathTheme );
 					if( !importFrom ){
-						px.fs.writeFileSync( realpathTheme+'/default.html', '' );
-						px.fs.writeFileSync( realpathTheme+'/plain.html', '' );
-						px.fs.writeFileSync( realpathTheme+'/naked.html', '' );
-						px.fs.writeFileSync( realpathTheme+'/popup.html', '' );
-						px.fs.writeFileSync( realpathTheme+'/top.html', '' );
+						main.fs.writeFileSync( realpathTheme+'/default.html', '' );
+						main.fs.writeFileSync( realpathTheme+'/plain.html', '' );
+						main.fs.writeFileSync( realpathTheme+'/naked.html', '' );
+						main.fs.writeFileSync( realpathTheme+'/popup.html', '' );
+						main.fs.writeFileSync( realpathTheme+'/top.html', '' );
 					}else{
 						importFrom.match(/^(themeCollection|themePlugin)\:([\S]+)$/);
 						var fromDiv = RegExp.$1;
 						var fromId = RegExp.$2;
 						if( fromDiv == 'themeCollection' ){
-							px.utils.copy_r(
+							main.utils.copy_r(
 								realpathThemeCollectionDir+fromId,
 								realpathTheme
 							);
 						}else if(fromDiv == 'themePlugin'){
 							var pluginInfo = themePluginList[fromId];
-							px.utils.copy_r(
+							main.utils.copy_r(
 								pluginInfo.path,
 								realpathTheme
 							);
@@ -3775,8 +3776,9 @@ window.contApp = new (function(){
 				}
 
 				var msg = (theme_id ? 'テーマ '+theme_id+' を '+newThemeId+' にリネームしました。' : 'テーマ '+newThemeId+' を作成しました。')
-				px.message(msg);
+				main.message(msg);
 				px2style.closeModal();
+				pj.updateGitStatus();
 				_this.pageThemeHome(newThemeId);
 			});
 
@@ -3796,8 +3798,8 @@ window.contApp = new (function(){
 	 * テーマを削除する
 	 */
 	this.deleteTheme = function(theme_id){
-		var html = px.utils.bindEjs(
-			px.fs.readFileSync('app/fncs/theme/index_files/templates/form-theme-delete.html').toString(),
+		var html = main.utils.bindEjs(
+			main.fs.readFileSync('app/fncs/theme/index_files/templates/form-theme-delete.html').toString(),
 			{
 				'themeId': theme_id
 			}
@@ -3827,10 +3829,11 @@ window.contApp = new (function(){
 
 		$form.on('submit', function(e){
 			// フォルダを削除
-			px.fsEx.removeSync( realpathThemeCollectionDir+theme_id+'/' );
+			main.fsEx.removeSync( realpathThemeCollectionDir+theme_id+'/' );
 
-			px.message('テーマ ' + theme_id + ' を削除しました。');
+			main.message('テーマ ' + theme_id + ' を削除しました。');
 			px2style.closeModal();
+			pj.updateGitStatus();
 			_this.pageHome();
 		});
 
@@ -3844,8 +3847,8 @@ window.contApp = new (function(){
 		if( !theme_id ){
 			return;
 		}
-		var html = px.utils.bindEjs(
-			px.fs.readFileSync('app/fncs/theme/index_files/templates/form-layout.html').toString(),
+		var html = main.utils.bindEjs(
+			main.fs.readFileSync('app/fncs/theme/index_files/templates/form-layout.html').toString(),
 			{
 				'themeId': theme_id,
 				'layoutId': layout_id
@@ -3909,38 +3912,39 @@ window.contApp = new (function(){
 
 
 			var realpathLayout = realpathThemeCollectionDir+theme_id+'/'+encodeURIComponent(newLayoutId)+'.html';
-			if( px.utils79.is_file( realpathLayout ) ){
+			if( main.utils79.is_file( realpathLayout ) ){
 				$errMsg.text('レイアウトID '+newLayoutId+' は、すでに存在します。');
 				return;
 			}
 
 			if( layout_id ){
 				// ファイル名変更
-				px.fs.renameSync( realpathThemeCollectionDir+theme_id+'/'+encodeURIComponent(layout_id)+'.html', realpathLayout );
-				if( px.utils79.is_dir( realpathThemeCollectionDir+theme_id+'/guieditor.ignore/'+encodeURIComponent(layout_id)+'/' ) ){
-					px.fs.renameSync(
+				main.fs.renameSync( realpathThemeCollectionDir+theme_id+'/'+encodeURIComponent(layout_id)+'.html', realpathLayout );
+				if( main.utils79.is_dir( realpathThemeCollectionDir+theme_id+'/guieditor.ignore/'+encodeURIComponent(layout_id)+'/' ) ){
+					main.fs.renameSync(
 						realpathThemeCollectionDir+theme_id+'/guieditor.ignore/'+encodeURIComponent(layout_id)+'/',
 						realpathThemeCollectionDir+theme_id+'/guieditor.ignore/'+encodeURIComponent(newLayoutId)+'/'
 					);
 				}
-				if( px.utils79.is_dir( realpathThemeCollectionDir+theme_id+'/theme_files/layouts/'+encodeURIComponent(layout_id)+'/' ) ){
-					px.fs.renameSync(
+				if( main.utils79.is_dir( realpathThemeCollectionDir+theme_id+'/theme_files/layouts/'+encodeURIComponent(layout_id)+'/' ) ){
+					main.fs.renameSync(
 						realpathThemeCollectionDir+theme_id+'/theme_files/layouts/'+encodeURIComponent(layout_id)+'/',
 						realpathThemeCollectionDir+theme_id+'/theme_files/layouts/'+encodeURIComponent(newLayoutId)+'/'
 					);
 				}
 			}else{
 				// ファイル生成
-				px.fs.writeFileSync( realpathLayout, '<!DOCTYPE html>'+"\n" );
+				main.fs.writeFileSync( realpathLayout, '<!DOCTYPE html>'+"\n" );
 				if( editMode == 'html.gui' ){
-					px.fsEx.mkdirsSync( realpathThemeCollectionDir+theme_id+'/guieditor.ignore/'+encodeURIComponent(newLayoutId)+'/data/' );
-					px.fs.writeFileSync( realpathThemeCollectionDir+theme_id+'/guieditor.ignore/'+encodeURIComponent(newLayoutId)+'/data/data.json', '{}'+"\n" );
+					main.fsEx.mkdirsSync( realpathThemeCollectionDir+theme_id+'/guieditor.ignore/'+encodeURIComponent(newLayoutId)+'/data/' );
+					main.fs.writeFileSync( realpathThemeCollectionDir+theme_id+'/guieditor.ignore/'+encodeURIComponent(newLayoutId)+'/data/data.json', '{}'+"\n" );
 				}
 			}
 
 			var msg = (layout_id ? 'レイアウト '+layout_id+' を '+newLayoutId+' にリネームしました。' : 'レイアウト '+newLayoutId+' を作成しました。')
-			px.message(msg);
+			main.message(msg);
 			px2style.closeModal();
+			pj.updateGitStatus();
 			_this.pageThemeHome(theme_id);
 		});
 
@@ -3958,8 +3962,8 @@ window.contApp = new (function(){
 	 * レイアウトを削除する
 	 */
 	this.deleteLayout = function(theme_id, layout_id){
-		var html = px.utils.bindEjs(
-			px.fs.readFileSync('app/fncs/theme/index_files/templates/form-layout-delete.html').toString(),
+		var html = main.utils.bindEjs(
+			main.fs.readFileSync('app/fncs/theme/index_files/templates/form-layout-delete.html').toString(),
 			{
 				'themeId': theme_id,
 				'layoutId': layout_id
@@ -3990,16 +3994,17 @@ window.contApp = new (function(){
 
 		$form.on('submit', function(e){
 			// ファイルを削除
-			px.fs.unlinkSync( realpathThemeCollectionDir+theme_id+'/'+encodeURIComponent(layout_id)+'.html' );
-			if( px.utils79.is_dir( realpathThemeCollectionDir+theme_id+'/guieditor.ignore/'+encodeURIComponent(layout_id)+'/' ) ){
-				px.fsEx.removeSync( realpathThemeCollectionDir+theme_id+'/guieditor.ignore/'+encodeURIComponent(layout_id)+'/' );
+			main.fs.unlinkSync( realpathThemeCollectionDir+theme_id+'/'+encodeURIComponent(layout_id)+'.html' );
+			if( main.utils79.is_dir( realpathThemeCollectionDir+theme_id+'/guieditor.ignore/'+encodeURIComponent(layout_id)+'/' ) ){
+				main.fsEx.removeSync( realpathThemeCollectionDir+theme_id+'/guieditor.ignore/'+encodeURIComponent(layout_id)+'/' );
 			}
-			if( px.utils79.is_dir( realpathThemeCollectionDir+theme_id+'/theme_files/layouts/'+encodeURIComponent(layout_id)+'/' ) ){
-				px.fsEx.removeSync( realpathThemeCollectionDir+theme_id+'/theme_files/layouts/'+encodeURIComponent(layout_id)+'/' );
+			if( main.utils79.is_dir( realpathThemeCollectionDir+theme_id+'/theme_files/layouts/'+encodeURIComponent(layout_id)+'/' ) ){
+				main.fsEx.removeSync( realpathThemeCollectionDir+theme_id+'/theme_files/layouts/'+encodeURIComponent(layout_id)+'/' );
 			}
 
-			px.message('レイアウト ' + layout_id + ' を削除しました。');
+			main.message('レイアウト ' + layout_id + ' を削除しました。');
 			px2style.closeModal();
+			pj.updateGitStatus();
 			_this.pageThemeHome(theme_id);
 		});
 
@@ -4014,8 +4019,8 @@ window.contApp = new (function(){
 		// 　古い方法でパスを求める。
 		realpathThemeCollectionDir = pj.get('path')+'/'+pj.get('home_dir')+'/themes/';
 
-		var html = px.utils.bindEjs(
-			px.fs.readFileSync('app/fncs/theme/index_files/templates/not-enough-api-version.html').toString(),
+		var html = main.utils.bindEjs(
+			main.fs.readFileSync('app/fncs/theme/index_files/templates/not-enough-api-version.html').toString(),
 			{'errors': errors}
 		);
 		$('.contents').html( html );
@@ -4029,8 +4034,8 @@ window.contApp = new (function(){
 		// 　古い方法でパスを求める。
 		realpathThemeCollectionDir = pj.get('path')+'/'+pj.get('home_dir')+'/themes/';
 
-		var html = px.utils.bindEjs(
-			px.fs.readFileSync('app/common/templates/broccoli-html-editor-php-is-not-available.html').toString(),
+		var html = main.utils.bindEjs(
+			main.fs.readFileSync('app/common/templates/broccoli-html-editor-php-is-not-available.html').toString(),
 			{'errors': errors}
 		);
 		$('.contents').html( html );
@@ -4041,21 +4046,21 @@ window.contApp = new (function(){
 	 */
 	this.openEditor = function( themeId, layoutId ){
 		var realpathLayout = realpathThemeCollectionDir+themeId+'/'+layoutId+'.html';
-		if( !px.utils79.is_file( realpathLayout ) ){
+		if( !main.utils79.is_file( realpathLayout ) ){
 			alert('ERROR: Layout '+themeId + '/' + layoutId + ' is NOT exists.');
 			return;
 		}
 
-		px.preview.serverStandby( function(result){
+		main.preview.serverStandby( function(result){
 			if(result === false){
-				px.message('プレビューサーバーの起動に失敗しました。');
+				main.message('プレビューサーバーの起動に失敗しました。');
 				return;
 			}
 
 			_this.closeEditor();//一旦閉じる
 
 			// プログレスモード表示
-			px.progress.start({
+			main.progress.start({
 				'blindness':true,
 				'showProgressBar': true
 			});
@@ -4122,7 +4127,7 @@ window.contApp = new (function(){
 			;
 		} );
 
-		// px.progress.close();
+		// main.progress.close();
 		return;
 	} // openEditor()
 
@@ -4135,6 +4140,7 @@ window.contApp = new (function(){
 		$('body')
 			.css({'overflow':'auto'})
 		;
+		pj.updateGitStatus();
 		return;
 	} // closeEditor()
 
@@ -4146,8 +4152,9 @@ window.contApp = new (function(){
 		if(theme_id){
 			url += theme_id+'/';
 		}
-		px.fsEx.mkdirsSync( url );
-		px.utils.openURL( url );
+		main.fsEx.mkdirsSync( url );
+		main.utils.openURL( url );
+		pj.updateGitStatus();
 	}
 
 	/**
@@ -4161,7 +4168,8 @@ window.contApp = new (function(){
 		if(layout_id){
 			url += layout_id+'.html';
 		}
-		px.openInTextEditor( url );
+		main.openInTextEditor( url );
+		pj.updateGitStatus();
 	}
 
 	/**
@@ -4170,10 +4178,10 @@ window.contApp = new (function(){
 	function listThemeCollection(callback){
 		callback = callback || function(){};
 		var themeCollection = [];
-		var ls = px.fs.readdirSync(realpathThemeCollectionDir);
+		var ls = main.fs.readdirSync(realpathThemeCollectionDir);
 		// console.log(ls);
 		for( var idx in ls ){
-			if( !px.utils79.is_dir( realpathThemeCollectionDir+ls[idx]+'/' ) ){
+			if( !main.utils79.is_dir( realpathThemeCollectionDir+ls[idx]+'/' ) ){
 				continue;
 			}
 			var themeInfo = {};
@@ -4181,8 +4189,8 @@ window.contApp = new (function(){
 			themeInfo.name = ls[idx];
 			themeInfo.thumb = realpathDefaultThumb;
 
-			if( px.utils79.is_file( realpathThemeCollectionDir+ls[idx]+'/thumb.png' ) ){
-				themeInfo.thumb = 'data:image/png;base64,'+px.fs.readFileSync( px.path.resolve( realpathThemeCollectionDir+ls[idx]+'/thumb.png' ) ).toString('base64');
+			if( main.utils79.is_file( realpathThemeCollectionDir+ls[idx]+'/thumb.png' ) ){
+				themeInfo.thumb = 'data:image/png;base64,'+main.fs.readFileSync( main.path.resolve( realpathThemeCollectionDir+ls[idx]+'/thumb.png' ) ).toString('base64');
 			}
 
 			themeCollection.push( themeInfo );

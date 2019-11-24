@@ -1,15 +1,16 @@
-window.px = window.parent.px;
+window.px = window.parent.main;
+window.main = window.parent.main;
 
 window.cont_clearcache = function(btn){
 	$(btn).attr('disabled', 'disabled');
-	var pj = px.getCurrentProject();
+	var pj = main.getCurrentProject();
 	$('.cont_console').text('');
 	var $msg = $('<div>');
 
-	px.commandQueue.client.addQueueItem(
+	main.commandQueue.client.addQueueItem(
 		[
 			'php',
-			px.path.resolve(pj.get('path'), pj.get('entry_script')),
+			main.path.resolve(pj.get('path'), pj.get('entry_script')),
 			'/?PX=clearcache'
 		],
 		{
@@ -35,7 +36,7 @@ window.cont_clearcache = function(btn){
 			},
 			'close': function(message){
 				$(btn).removeAttr('disabled');
-				px.message( 'キャッシュをクリアしました。' );
+				main.message( 'キャッシュをクリアしました。' );
 				return;
 			}
 		}

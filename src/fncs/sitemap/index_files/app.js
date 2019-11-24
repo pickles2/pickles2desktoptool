@@ -1,14 +1,16 @@
-window.px = window.parent.px;
-window.contApp = new (function(px, $){
+window.px = window.parent.main;
+window.main = window.parent.main;
+window.contApp = new (function(main, $){
+	var px = main;
 	var _this = this;
 	var it79 = require('iterate79');
-	var utils79 = px.utils79;
-	var pj = px.getCurrentProject();
+	var utils79 = main.utils79;
+	var pj = main.getCurrentProject();
 	var realpath_sitemap_dir = pj.get('path')+'/'+pj.get('home_dir')+'/sitemaps/';
-	var fsEx = px.fsEx;
+	var fsEx = main.fsEx;
 	var filelist;
 	var $filelist;
-	this.gitUi = new px2dtGitUi(px, pj);
+	this.gitUi = new px2dtGitUi(main, pj);
 
 	/**
 	 * initialize
@@ -29,7 +31,7 @@ window.contApp = new (function(px, $){
 				filelistLoop:for( var idx in filelist_original ){
 					var filename_orig = filelist_original[idx];
 					var filename = filename_orig.replace(/\.[a-zA-Z0-9]+$/, '');
-					var ext = px.utils.getExtension(filename_orig).toLowerCase();
+					var ext = main.utils.getExtension(filename_orig).toLowerCase();
 					switch( ext ){
 						case 'csv':
 						case 'xlsx':
@@ -104,7 +106,7 @@ window.contApp = new (function(px, $){
 								e.stopPropagation();
 								e.preventDefault();
 								var path = realpath_sitemap_dir+$(this).attr('data-filename');
-								px.utils.openURL( path );
+								main.utils.openURL( path );
 								return false;
 							} )
 							.append( $('<h2>')
@@ -130,7 +132,7 @@ window.contApp = new (function(px, $){
 									e.stopPropagation();
 									e.preventDefault();
 									var path = realpath_sitemap_dir+$(this).attr('data-filename');
-									px.utils.openURL( path );
+									main.utils.openURL( path );
 									return false;
 								})
 								.text( filelist[idx].exts[ext].ext )
@@ -246,7 +248,7 @@ window.contApp = new (function(px, $){
 	 * フォルダを開く
 	 */
 	this.openInFinder = function(){
-		px.utils.openURL( realpath_sitemap_dir );
+		main.utils.openURL( realpath_sitemap_dir );
 	}
 
 	/**
@@ -284,4 +286,4 @@ window.contApp = new (function(px, $){
 		})
 	;
 
-})(px, $);
+})(main, $);

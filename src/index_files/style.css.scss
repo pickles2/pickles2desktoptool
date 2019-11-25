@@ -156,5 +156,23 @@ body{
 	}
 }
 
+.cont_project-list-filter{
+	position: relative;
+	button.cont_project-list-filter__clear{
+		position: absolute;
+		right: 5px;
+		top: calc(50% - 0.7em);
+		background-color: #eee;
+		color: #666;
+		border-radius: 50%;
+		border: none;
+		font-size: 10px;
+		&:active{
+			background-color: #e3e3e3;
+			color: #333;
+		}
+	}
+}
+
 // CmdQueue Terminal
 @import "./style.css.ignore/_commandQueue.css.scss";

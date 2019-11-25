@@ -42,13 +42,19 @@
 				<div class="row">
 					<div class="col-sm-6">
 						<h1>プロジェクトを選択してください</h1>
-						<div class="cont_project_list unit">
+						<div class="px2-p cont_project-list-filter">
+							<form action="javascript:;">
+								<input type="text" name="cont_project-list-filter__keyword" class="form-control" placeholder="Filter..." />
+								<button class="cont_project-list-filter__clear">×</button>
+							</form>
+						</div>
+						<div class="px2-p cont_project_list">
 							<p>...</p>
 						</div>
 					</div>
 					<div class="col-sm-6">
 						<h2>新規プロジェクト</h2>
-						<div class="cont_project_form unit">
+						<div class="cont_project_form px2-p">
 							<form action="javascript:;" onsubmit="cont_createProject(this);return false;" class="inline">
 								<table class="px2-table form_elements" style="width:100%;">
 									<colgroup><col width="30%" /><col width="70%" /></colgroup>
@@ -81,7 +87,7 @@
 		</script>
 		<script id="template-editPx2DTConfig" type="text/template">
 			<form action="javascript:;" method="post">
-				<div class="unit">
+				<div class="px2-p">
 					<h2>言語 - Language</h2>
 					<p><select name="language" class="form-control">
 						<option value="ja">Japanese - 日本語</option>
@@ -173,7 +179,7 @@
 					<input type="file" name="data_directory__file" nwdirectory /><a href="javascript:;" class="data_directory__file">フォルダを選択</a></div>
 
 				</div>
-				<div class="unit">
+				<div class="px2-p">
 					<p style="text-align: center;">これらの設定は、アプリケーションの再起動後に反映されます。</p>
 				</div>
 			</form>

@@ -632,7 +632,11 @@ new (function($, window){
 	this.selectProject = function( num, callback ){
 		callback = callback||function(){}
 		if( typeof(num) != typeof(0) ){
-			main.log( '[ERROR] FAILED to selectProject(' + typeof(num) + ')' );
+			var errorMsg = '[ERROR] main.selectProject() given a non number parametor; Given value is "'+num+'" as a ' + typeof(num) + '.';
+			main.log( errorMsg );
+			console.error( errorMsg );
+			alert(errorMsg);
+			callback();
 			return false;
 		}
 		_selectedProject = num;
@@ -1008,14 +1012,19 @@ new (function($, window){
 					for( var i = 0; i < list.length; i++ ){
 						$ul.append(
 							$('<a class="list-group-item">')
-								.attr('href', 'javascript:;')
-								.data('path', list[i].getPath())
-								.data('num', i)
+								.attr({
+									'href': 'javascript:;',
+									'data-name': list[i].getName(),
+									'data-path': list[i].getPath(),
+									'data-num': i
+								})
 								.on('click', function(){
 									var timer = setTimeout(function(){
 										main.progress.start({"showProgressBar":true, 'blindness':true});
 									}, 1000);
-									main.selectProject( $(this).data('num'), function(){
+									var listNumb = $(this).attr('data-num');
+									listNumb = Number(listNumb);
+									main.selectProject( listNumb, function(){
 										clearTimeout(timer);
 										main.progress.close();
 										main.subapp();
@@ -1030,7 +1039,49 @@ new (function($, window){
 						.append($ul)
 					;
 
+					(function(){
+						var filterTimer;
+						var $list = $('.cont_project_list a', $cont);
+						var filterUpdate = function(){
+							clearTimeout(filterTimer);
+							filterTimer = setTimeout(function(){
+								var keyword = $('.cont_project-list-filter input[name=cont_project-list-filter__keyword]').val();
+								var keywordLowerCase = keyword.toLowerCase();
+								$list.each(function(num){
+									var name = $(this).attr('data-name');
+									var nameLowerCase = name.toLowerCase();
+									if( !keywordLowerCase.length ){
+										$(this).show();
+									}else if( nameLowerCase.match(keywordLowerCase) ){
+										$(this).show();
+									}else{
+										$(this).hide();
+									}
+								});
+							}, 300);
+						};
+						$('.cont_project-list-filter form')
+							.on('submit', function(){
+								filterUpdate();
+							})
+						;
+						$('.cont_project-list-filter input[name=cont_project-list-filter__keyword]')
+							.on('keyup', function(){
+								filterUpdate();
+							})
+							.on('change', function(){
+								filterUpdate();
+							})
+						;
+						$('.cont_project-list-filter button')
+							.on('click', function(){
+								$('.cont_project-list-filter input[name=cont_project-list-filter__keyword]').val('');
+							})
+						;
+					})();
+
 				}else{
+					$('.cont_project-list-filter').hide();
 					$('.cont_project_list', $cont)
 						.html('<p>プロジェクトは登録されていません。</p>')
 					;

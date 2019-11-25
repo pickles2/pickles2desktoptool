@@ -1062,7 +1062,7 @@ new (function($, window){
 						};
 						$('.cont_project-list-filter form')
 							.on('submit', function(){
-								filterUpdate();
+								filterUpdate(); return false;
 							})
 						;
 						$('.cont_project-list-filter input[name=cont_project-list-filter__keyword]')
@@ -1076,6 +1076,7 @@ new (function($, window){
 						$('.cont_project-list-filter button')
 							.on('click', function(){
 								$('.cont_project-list-filter input[name=cont_project-list-filter__keyword]').val('');
+								filterUpdate();
 							})
 						;
 					})();

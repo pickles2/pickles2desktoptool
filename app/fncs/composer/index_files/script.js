@@ -74,9 +74,9 @@ window.cont_selfupdate_conposer = function(btn){
 				);
 			} ,
 			complete: function(data, error, code){
-				// $('.cont_console').text(
-				// 	$('.cont_console').text() + code
-				// );
+				$('#cont_maintenance .cont_console').text(
+					$('#cont_maintenance .cont_console').text() + "\n\n" + 'composer self-update 完了しました。'
+				);
 				$(btn).removeAttr('disabled');
 				px.message( 'composer self-update 完了しました。' );
 			}
@@ -146,6 +146,9 @@ window.cont_update_proj = function(btn){
 									+'または、「強制的に更新する」オプションを有効にして再実行すると解決する場合があります。'+"\n"
 								);
 							}
+							$('#cont_update .cont_console').text(
+								$('#cont_update .cont_console').text() + "\n\n" + 'composer update 完了しました。'
+							);
 							px.message( 'composer update 完了しました。' );
 						} );
 					}
@@ -218,6 +221,9 @@ window.cont_install_proj = function(btn){
 									+'または、「クリーンインストールする」オプションを有効にして再実行すると解決する場合があります。'+"\n"
 								);
 							}
+							$('#cont_install .cont_console').text(
+								$('#cont_install .cont_console').text() + "\n\n" + 'composer install 完了しました。'
+							);
 							px.message( 'composer install 完了しました。' );
 						} );
 					}

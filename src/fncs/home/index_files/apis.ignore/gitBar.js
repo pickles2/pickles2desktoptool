@@ -1,10 +1,10 @@
 /**
  * Home: git.js
  */
-module.exports = function(contApp, px, $){
+module.exports = function(contApp, main, $){
 	var _this = this;
 	var $elm;
-	var pj = px.getCurrentProject();
+	var pj = main.getCurrentProject();
 
 	/**
 	 * レポート表示の初期化
@@ -56,6 +56,12 @@ module.exports = function(contApp, px, $){
 					+ status.notStaged.untracked.length;
 				$elm.append( $('<div>').text('branch: ').append( $select ) );
 				$elm.append( $('<div>').text('Uncommited changes: '+(changes)) );
+				$elm.append( $('<div>').append( $('<a class="px2-link px2-link--burette">')
+					.attr({
+						'href': 'javascript:main.subapp(\'fncs/git/index.html\');'
+					})
+					.text('Git を操作する')
+				) );
 				rlv();
 				return;
 			}); })
@@ -92,8 +98,8 @@ module.exports = function(contApp, px, $){
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
-				px.message('ブランチを切り替えました。');
-				px.subapp();
+				main.message('ブランチを切り替えました。');
+				main.subapp();
 				rlv();
 				return;
 			}); })

@@ -1,29 +1,29 @@
 <h2>基本的な手順</h2>
 <div class="row">
 	<div class="col-sm-3">
-		<button class="px2-btn cont_mainmenu" onclick="px.subapp('fncs/sitemap/index.html');">サイトマップを編集する</button>
+		<button class="px2-btn cont_mainmenu" onclick="main.subapp('fncs/sitemap/index.html');">サイトマップを編集する</button>
 	</div>
 	<div class="col-sm-3">
-		<button class="px2-btn cont_mainmenu" onclick="px.subapp('fncs/theme/index.html');">テーマを編集する</button>
+		<button class="px2-btn cont_mainmenu" onclick="main.subapp('fncs/theme/index.html');">テーマを編集する</button>
 	</div>
 	<div class="col-sm-3">
-		<button class="px2-btn cont_mainmenu" onclick="px.subapp('fncs/pages/index.html');">コンテンツを編集する</button>
+		<button class="px2-btn cont_mainmenu" onclick="main.subapp('fncs/pages/index.html');">コンテンツを編集する</button>
 	</div>
 	<div class="col-sm-3">
-		<button class="px2-btn cont_mainmenu" onclick="px.subapp('fncs/publish/index.html');">パブリッシュする</button>
+		<button class="px2-btn cont_mainmenu" onclick="main.subapp('fncs/publish/index.html');">パブリッシュする</button>
 	</div>
 </div><!-- / .row -->
 <ul class="px2-horizontal-list px2-horizontal-list--right">
-	<li><a href="javascript:px.getCurrentProject().open();" class="px2-link px2-link--burette">フォルダを開く</a></li>
-	<li><a href="javascript:px.openInBrowser();" class="px2-link px2-link--burette">ブラウザで開く</a></li>
-	<li><a href="javascript:px.openInTextEditor( contApp.pj.get('path') );" class="px2-link px2-link--burette">外部テキストエディタで開く</a></li>
-	<li><a href="javascript:px.openInGitClient( contApp.pj.get('path') );" class="px2-link px2-link--burette">外部Gitクライアントで開く</a></li>
-	<li><a href="javascript:px.openInTerminal( contApp.pj.get('path') );" class="px2-link px2-link--burette">コマンドラインで開く</a></li>
+	<li><a href="javascript:main.getCurrentProject().open();" class="px2-link px2-link--burette">フォルダを開く</a></li>
+	<li><a href="javascript:main.openInBrowser();" class="px2-link px2-link--burette">ブラウザでプレビュー</a></li>
+	<li><a href="javascript:main.openAppInBrowser();" class="px2-link px2-link--burette">ブラウザでパブリッシュプレビュー</a></li>
+	<li><a href="javascript:main.subapp('fncs/git/index.html');" class="px2-link px2-link--burette">Git を操作する</a></li>
 </ul>
 <ul class="px2-horizontal-list px2-horizontal-list--right">
-	<li><a href="javascript:px.openAppInBrowser();" class="px2-link px2-link--burette">パブリッシュプレビュー</a></li>
-	<li><a href="javascript:px.subapp('fncs/config/index.html');" class="px2-link px2-link--burette">config.php を編集する</a></li>
-	<li><a href="javascript:px.subapp('fncs/composer/index.html');" class="px2-link px2-link--burette">composer を操作する</a></li>
+	<li><a href="javascript:main.openInTextEditor( contApp.pj.get('path') );" class="px2-link px2-link--burette">外部テキストエディタで開く</a></li>
+	<li><a href="javascript:main.openInGitClient( contApp.pj.get('path') );" class="px2-link px2-link--burette">外部Gitクライアントで開く</a></li>
+	<li><a href="javascript:main.openInTerminal( contApp.pj.get('path') );" class="px2-link px2-link--burette">コマンドラインで開く</a></li>
+	<li><a href="javascript:main.subapp('fncs/composer/index.html');" class="px2-link px2-link--burette">Composer を操作する</a></li>
 </ul>
 <div class="cont-git-bar">
 	<div class="cont-git-bar__heading">GIT</div>

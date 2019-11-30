@@ -57,65 +57,40 @@ module.exports = function(main){
 		}
 	});
 	_menu.push({
-		"label":main.lb.get('menu.externalTools'),
+		"label":main.lb.get('menu.openFolder'),
 		"cond":"homeDirExists",
 		"area":"shoulder",
-		"submenu": [
-			{
-				"label":main.lb.get('menu.openFolder'),
-				"cond":"homeDirExists",
-				"area":"shoulder",
-				"app":null,
-				"click": function(){
-					main.getCurrentProject().open();
-				}
-			},
-			{
-				"label":main.lb.get('menu.openInBrowser'),
-				"cond":"pxStandby",
-				"area":"shoulder",
-				"app":null,
-				"click": function(){
-					main.openInBrowser();
-				}
-			},
-			{
-				"label":main.lb.get('menu.openAppInBrowser'),
-				"cond":"pxStandby",
-				"area":"shoulder",
-				"app":null,
-				"click": function(){
-					main.openAppInBrowser();
-				}
-			},
-			{
-				"label":main.lb.get('menu.openInTexteditor'),
-				"cond":"homeDirExists",
-				"area":"shoulder",
-				"app":null,
-				"click": function(){
-					main.openInTextEditor( main.getCurrentProject().get('path') );
-				}
-			},
-			{
-				"label":main.lb.get('menu.openInGitClient'),
-				"cond":"homeDirExists",
-				"area":"shoulder",
-				"app":null,
-				"click": function(){
-					main.openInGitClient( main.getCurrentProject().get('path') );
-				}
-			},
-			{
-				"label":main.lb.get('menu.openInTerminal'),
-				"cond":"homeDirExists",
-				"area":"shoulder",
-				"app":null,
-				"click": function(){
-					main.openInTerminal( main.getCurrentProject().get('path') );
-				}
-			}
-		]
+		"app":null,
+		"click": function(){
+			main.getCurrentProject().open();
+		}
+	});
+	_menu.push({
+		"label":main.lb.get('menu.openInBrowser'),
+		"cond":"pxStandby",
+		"area":"shoulder",
+		"app":null,
+		"click": function(){
+			main.openInBrowser();
+		}
+	});
+	_menu.push({
+		"label":main.lb.get('menu.openAppInBrowser'),
+		"cond":"pxStandby",
+		"area":"shoulder",
+		"app":null,
+		"click": function(){
+			main.openAppInBrowser();
+		}
+	});
+	_menu.push({
+		"label":main.lb.get('menu.module'),
+		"cond":"pxStandby",
+		"area":"shoulder",
+		"app":"fncs/module/index.html",
+		"click": function(){
+			main.subapp($(this).data('app'));
+		}
 	});
 	_menu.push({
 		"label":main.lb.get('menu.config'),
@@ -166,15 +141,6 @@ module.exports = function(main){
 		"cond":"homeDirExists",
 		"area":"shoulder",
 		"app":"fncs/git/index.html",
-		"click": function(){
-			main.subapp($(this).data('app'));
-		}
-	});
-	_menu.push({
-		"label":main.lb.get('menu.module'),
-		"cond":"pxStandby",
-		"area":"shoulder",
-		"app":"fncs/module/index.html",
 		"click": function(){
 			main.subapp($(this).data('app'));
 		}
@@ -254,6 +220,40 @@ module.exports = function(main){
 				"app":"fncs/search/index.html",
 				"click": function(){
 					main.subapp($(this).data('app'));
+				}
+			}
+		]
+	});
+	_menu.push({
+		"label":main.lb.get('menu.externalTools'),
+		"cond":"homeDirExists",
+		"area":"shoulder",
+		"submenu": [
+			{
+				"label":main.lb.get('menu.openInTexteditor'),
+				"cond":"homeDirExists",
+				"area":"shoulder",
+				"app":null,
+				"click": function(){
+					main.openInTextEditor( main.getCurrentProject().get('path') );
+				}
+			},
+			{
+				"label":main.lb.get('menu.openInGitClient'),
+				"cond":"homeDirExists",
+				"area":"shoulder",
+				"app":null,
+				"click": function(){
+					main.openInGitClient( main.getCurrentProject().get('path') );
+				}
+			},
+			{
+				"label":main.lb.get('menu.openInTerminal'),
+				"cond":"homeDirExists",
+				"area":"shoulder",
+				"app":null,
+				"click": function(){
+					main.openInTerminal( main.getCurrentProject().get('path') );
 				}
 			}
 		]

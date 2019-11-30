@@ -1,4 +1,4 @@
-module.exports = function(px, contApp, $){
+module.exports = function(main, contApp, $){
 	var _this = this;
 	this.pj = false;
 
@@ -16,11 +16,11 @@ module.exports = function(px, contApp, $){
 	 */
 	function setup_composer_create_project_dialog(param, opt){
 		var realpath = _this.pj.get('path');
-		if( px.utils.isFile( realpath+'/.DS_Store' ) ){
-			px.fs.unlinkSync( realpath+'/.DS_Store' );
+		if( main.utils.isFile( realpath+'/.DS_Store' ) ){
+			main.fs.unlinkSync( realpath+'/.DS_Store' );
 		}
-		if( px.utils.isFile( realpath+'/Thumbs.db' ) ){
-			px.fs.unlinkSync( realpath+'/Thumbs.db' );
+		if( main.utils.isFile( realpath+'/Thumbs.db' ) ){
+			main.fs.unlinkSync( realpath+'/Thumbs.db' );
 		}
 		var $msg = $('<div>');
 
@@ -46,11 +46,11 @@ module.exports = function(px, contApp, $){
 					.attr({'disabled':'disabled'})
 			]
 		};
-		px.dialog( dlgOpt );
+		main.dialog( dlgOpt );
 
 
 		var stdout = '';
-		px.commandQueue.client.addQueueItem(
+		main.commandQueue.client.addQueueItem(
 			[
 				'composer',
 				'create-project',
@@ -88,7 +88,7 @@ module.exports = function(px, contApp, $){
 						dlgOpt.buttons[0]
 							.text('閉じる')
 							.on('click', function(){
-								px.closeDialog();
+								main.closeDialog();
 								opt.complete();
 							});
 					}else{
@@ -97,7 +97,7 @@ module.exports = function(px, contApp, $){
 							.text('次へ')
 							.addClass('px2-btn--primary')
 							.on('click', function(){
-								px.closeDialog();
+								main.closeDialog();
 								setup_finalize_option_dialog(opt);
 							});
 					}
@@ -116,12 +116,12 @@ module.exports = function(px, contApp, $){
 		var $body = $('<div>');
 		var gitUser = {};
 
-		px.it79.fnc({}, [
+		main.it79.fnc({}, [
 			function(it1){
 				gitUser.name = '';
 
-				px.utils.spawn(
-					px.cmd('git'),
+				main.utils.spawn(
+					main.cmd('git'),
 					[
 						'config',
 						'--global',
@@ -146,8 +146,8 @@ module.exports = function(px, contApp, $){
 			function(it1){
 				gitUser.email = '';
 
-				px.utils.spawn(
-					px.cmd('git'),
+				main.utils.spawn(
+					main.cmd('git'),
 					[
 						'config',
 						'--global',
@@ -197,10 +197,10 @@ module.exports = function(px, contApp, $){
 									}
 								}
 
-								px.closeDialog();
-								px.progress.start({"showProgressBar":true, 'blindness':true});
+								main.closeDialog();
+								main.progress.start({"showProgressBar":true, 'blindness':true});
 
-								px.it79.fnc({}, [
+								main.it79.fnc({}, [
 									function(it1){
 										finalize_composerJson(finalizeOptions, function(result){
 											if( !result ){
@@ -231,7 +231,7 @@ module.exports = function(px, contApp, $){
 										});
 									},
 									function(it1){
-										px.progress.close();
+										main.progress.close();
 										opt.complete();
 										it1.next();
 									}
@@ -239,13 +239,13 @@ module.exports = function(px, contApp, $){
 							})
 					]
 				};
-				px.dialog( dlgOpt );
+				main.dialog( dlgOpt );
 
 				it1.next();
 			},
 			function(it1){
-				$body.find('input[name=options_git_init_username]').val( px.utils79.trim(gitUser.name) );
-				$body.find('input[name=options_git_init_email]').val( px.utils79.trim(gitUser.email) );
+				$body.find('input[name=options_git_init_username]').val( main.utils79.trim(gitUser.name) );
+				$body.find('input[name=options_git_init_email]').val( main.utils79.trim(gitUser.email) );
 				it1.next();
 			}
 		]);
@@ -261,7 +261,7 @@ module.exports = function(px, contApp, $){
 		var composerJson = false;
 		(function(){
 			try{
-				var json = px.fs.readFileSync(realpath_composerJson);
+				var json = main.fs.readFileSync(realpath_composerJson);
 				json = JSON.parse(json);
 					// MEMO: 2018-10-01
 					// JSON.parse() した時点で、 項目の並び順が変わってしまう。
@@ -314,7 +314,7 @@ module.exports = function(px, contApp, $){
 
 		var newJsonSrc = JSON.stringify(composerJson, null, 4);
 
-		px.fs.writeFile(realpath_composerJson, newJsonSrc, function(err){
+		main.fs.writeFile(realpath_composerJson, newJsonSrc, function(err){
 			if(err){
 				console.error('Failed to write composer.json:', err);
 			}
@@ -330,7 +330,7 @@ module.exports = function(px, contApp, $){
 		var realpath_root = _this.pj.get('path');
 		var pj_name = _this.pj.get('name');
 
-		if( !px.utils79.is_dir(realpath_root) ){
+		if( !main.utils79.is_dir(realpath_root) ){
 			alert('ディレクトリが存在しません。');
 			console.error('Failed to write README.md:', 'ディレクトリが存在しません。');
 			callback(false);
@@ -338,11 +338,11 @@ module.exports = function(px, contApp, $){
 		}
 
 		// 既存のREADMEをすべて削除する
-		var ls = px.fs.readdirSync(realpath_root);
+		var ls = main.fs.readdirSync(realpath_root);
 		for(var idx in ls){
 			var tmpFileBaseName = ls[idx];
 			if( tmpFileBaseName.match(/^readme\.[\s\S]*$/i) ){
-				px.fs.unlinkSync( realpath_root+'/'+tmpFileBaseName );
+				main.fs.unlinkSync( realpath_root+'/'+tmpFileBaseName );
 			}
 		}
 
@@ -352,7 +352,7 @@ module.exports = function(px, contApp, $){
 		README += 'この README は、プロジェクトオーナーによって書き換えられることが望まれています。'+"\n";
 		README += 'プロジェクトの共有知識を記述するための場として活用してください。'+"\n";
 
-		px.fs.writeFile(realpath_root+'/README.md', README, function(err){
+		main.fs.writeFile(realpath_root+'/README.md', README, function(err){
 			if(err){
 				console.error('Failed to write README.md:', err);
 			}
@@ -369,7 +369,7 @@ module.exports = function(px, contApp, $){
 		function executeCommand(cmdAry, callback){
 			var stdout = '';
 			var phase = cmdAry.join(' ');
-			px.commandQueue.client.addQueueItem(
+			main.commandQueue.client.addQueueItem(
 				cmdAry,
 				{
 					'cdName': 'default',
@@ -407,7 +407,7 @@ module.exports = function(px, contApp, $){
 			return;
 		}
 
-		px.it79.fnc({}, [
+		main.it79.fnc({}, [
 			function(it1){
 				// git init
 				console.log('initialize .git');
@@ -480,9 +480,9 @@ module.exports = function(px, contApp, $){
 			function(it1){
 				// 一旦プロジェクトをリロード
 				console.log('Reload project...');
-				px.loadProject(function(){
+				main.loadProject(function(){
 					console.log('Reloaded.');
-					_this.pj = px.getCurrentProject();
+					_this.pj = main.getCurrentProject();
 					it1.next();
 				});
 			},
@@ -498,10 +498,10 @@ module.exports = function(px, contApp, $){
 					public_cache_dir = public_cache_dir.replace( /^[\/\\]*/, '' );
 					public_cache_dir = public_cache_dir.replace( /[\/\\]*$/, '/' );
 
-					var pathPublicCacheDir = px.path.relative(realpath_base, pjInfo.realpath_docroot+'/'+public_cache_dir);
+					var pathPublicCacheDir = main.path.relative(realpath_base, pjInfo.realpath_docroot+'/'+public_cache_dir);
 					pathPublicCacheDir = './'+pathPublicCacheDir+'/';
 
-					var pathHomeDir = px.path.relative(realpath_base, pjInfo.realpath_homedir);
+					var pathHomeDir = main.path.relative(realpath_base, pjInfo.realpath_homedir);
 					pathHomeDir = './'+pathHomeDir+'/';
 
 					executeCommand([

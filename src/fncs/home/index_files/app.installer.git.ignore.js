@@ -1,4 +1,4 @@
-module.exports = function(px, contApp, $){
+module.exports = function(main, contApp, $){
 	var _this = this;
 
 	/**
@@ -7,11 +7,11 @@ module.exports = function(px, contApp, $){
 	this.install = function( pj, param, opt ){
 
 		var path = pj.get('path');
-		if( px.utils.isFile( path+'/.DS_Store' ) ){
-			px.fs.unlinkSync( path+'/.DS_Store' );
+		if( main.utils.isFile( path+'/.DS_Store' ) ){
+			main.fs.unlinkSync( path+'/.DS_Store' );
 		}
-		if( px.utils.isFile( path+'/Thumbs.db' ) ){
-			px.fs.unlinkSync( path+'/Thumbs.db' );
+		if( main.utils.isFile( path+'/Thumbs.db' ) ){
+			main.fs.unlinkSync( path+'/Thumbs.db' );
 		}
 
 		var $msg = $('<div>');
@@ -39,18 +39,18 @@ module.exports = function(px, contApp, $){
 				.text('OK')
 				.on('click', function(){
 					// これがセットアップ完了の最後の処理
-					px.closeDialog();
+					main.closeDialog();
 					opt.complete();
 				})
 				.attr({'disabled':'disabled'})
 		];
 
-		$dialog = px.dialog( dlgOpt );
+		$dialog = main.dialog( dlgOpt );
 
-		px.utils.iterateFnc([
+		main.utils.iterateFnc([
 			function(it, prop){
 				$msg.text('Gitリポジトリからクローンしています。この処理はしばらく時間がかかります。')
-				px.commandQueue.client.addQueueItem(
+				main.commandQueue.client.addQueueItem(
 					[
 						'git',
 						'clone',
@@ -81,7 +81,7 @@ module.exports = function(px, contApp, $){
 							}
 							stdout += errMsg;
 							$pre.text(stdout);
-							px.log('git clone Error: '+ errMsg);
+							main.log('git clone Error: '+ errMsg);
 						},
 						'close': function(message){
 							it.next(prop);
@@ -92,11 +92,11 @@ module.exports = function(px, contApp, $){
 
 			} ,
 			function(it, prop){
-				px.commandQueue.server.setCurrentDir('composer', pj.get_realpath_composer_root());
-				px.commandQueue.server.setCurrentDir('git', pj.get_realpath_git_root());
+				main.commandQueue.server.setCurrentDir('composer', pj.get_realpath_composer_root());
+				main.commandQueue.server.setCurrentDir('git', pj.get_realpath_git_root());
 				$msg.text('composer により依存パッケージをセットアップしています。この処理はしばらく時間がかかります。');
 
-				px.commandQueue.client.addQueueItem(
+				main.commandQueue.client.addQueueItem(
 					[
 						'composer',
 						'install',
@@ -126,7 +126,7 @@ module.exports = function(px, contApp, $){
 							}
 							stdout += errMsg;
 							$pre.text(stdout);
-							px.log('composer install Error: '+ errMsg);
+							main.log('composer install Error: '+ errMsg);
 						},
 						'close': function(message){
 							$msg.text('Pickles のセットアップが完了しました。');

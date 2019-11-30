@@ -8,8 +8,8 @@ menu.publish,Publish,パブリッシュ,发布,發布
 menu.dashboard,Dashboard,ダッシュボード,控制版面,控制版面
 menu.externalTools,External Tools,外部アプリケーション,,
 menu.openFolder,Open Folder,フォルダを開く,打开文件夹,打開文件夾
-menu.openInBrowser,Open in Browser,ブラウザで開く,在浏览器中打开,在瀏覽器中打開
-menu.openAppInBrowser,Open Publish Preview in Browser,パブリッシュプレビュー,,
+menu.openInBrowser,Preview in Browser,ブラウザでプレビュー,在浏览器中打开,在瀏覽器中打開
+menu.openAppInBrowser,Preview Published Files in Browser,ブラウザでパブリッシュプレビュー,,
 menu.openInTexteditor,Open in Text editor,テキストエディタで開く,在Text editor中打开,在Text editor中打開
 menu.openInGitClient,Open in Git client,Gitクライアントで開く,在Git client中打开,在Git client中打開
 menu.openInTerminal,Open in Terminal,コマンドラインで開く,在Terminal中打开,在Terminal中打開
@@ -17,10 +17,10 @@ menu.config,"Config",設定,,
 menu.projectConfig,Project Config(config.php),プロジェクト共有設定(config.php),项目设定(config.php),項目設定(config.php)
 menu.projectIndividualConfig,Project Individual Config,プロジェクト個人設定,,
 menu.desktoptoolConfig,"Application Config","アプリケーション設定",桌面工具设定,桌面工具設定
-menu.composer,Composer,Composer,Composer,Composer
-menu.git,Git,Git,Git,Git
+menu.composer,Composer,Composerを操作する,Composer,Composer
+menu.git,Git,Gitを操作する,Git,Git
 menu.moveContents,Move Contents,コンテンツを移動する,移动内容,移動內容
-menu.module,Modules,モジュール,,
+menu.module,Edit Modules,モジュールを編集する,,
 menu.tool,"Tools",ツール,,
 menu.styleguideGenerator,"Style Guide Generator",スタイルガイド生成,,
 menu.mkContentFilesByList,Make Content Files by list,コンテンツファイルを一括作成,,
@@ -28,7 +28,7 @@ menu.mkContentFileList,Make Content File list,コンテンツファイルリス�
 menu.contentsProcessor,Contents Processor,コンテンツを一括加工,,
 menu.updateGuiContents,Update all GUI Edited Contents,GUI編集コンテンツを一括再構成,更新全部GUI编辑内容,更新全部GUI編輯內容
 menu.search,Search,検索,搜索,搜尋
-menu.clearcache,Clear Cache,キャッシュを消去,清除缓存,清除緩存
+menu.clearcache,Clear Cache,キャッシュを消去する,清除缓存,清除緩存
 menu.filesAndFolders,Files and Folders,ファイルとフォルダ,,
 menu.preview,Preview,プレビュー,预览,預覽
 menu.system,System,システム,系统,系統

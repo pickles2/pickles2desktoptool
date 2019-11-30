@@ -121,21 +121,62 @@
   .px2-list li {
     list-style-type: disc; }
 
-.px2-horizontal-list {
-  padding: 0; }
-  .px2-horizontal-list li {
-    display: inline-block;
+.px2-horizontal-list,
+.px2-horizontal-list > ul {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  padding-left: 0; }
+  .px2-horizontal-list > ul > li,
+  .px2-horizontal-list > li,
+  .px2-horizontal-list > ul > ul > li,
+  .px2-horizontal-list > ul > li {
     list-style-type: none;
-    margin: 0.1em 0.3em; }
+    padding-left: 0;
+    padding-right: 1em; }
+    .px2-horizontal-list > ul > li > p,
+    .px2-horizontal-list > li > p,
+    .px2-horizontal-list > ul > ul > li > p,
+    .px2-horizontal-list > ul > li > p {
+      margin: 0; }
 
 .px2-horizontal-list--left {
-  text-align: left; }
+  -ms-flex-pack: start;
+      justify-content: flex-start; }
 
 .px2-horizontal-list--center {
-  text-align: center; }
+  -ms-flex-pack: center;
+      justify-content: center; }
 
 .px2-horizontal-list--right {
-  text-align: right; }
+  -ms-flex-pack: end;
+      justify-content: flex-end; }
+
+.px2-vertical-list,
+.px2-vertical-list > ul {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -ms-flex-direction: column;
+      flex-direction: column;
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
+  padding-left: 0; }
+  .px2-vertical-list > ul > li,
+  .px2-vertical-list > li,
+  .px2-vertical-list > ul > ul > li,
+  .px2-vertical-list > ul > li {
+    list-style-type: none;
+    padding-left: 0; }
+    .px2-vertical-list > ul > li > p,
+    .px2-vertical-list > li > p,
+    .px2-vertical-list > ul > ul > li > p,
+    .px2-vertical-list > ul > li > p {
+      margin: 0; }
 
 .px2-ordered-list {
   padding: 0 0 0 40px; }
@@ -379,6 +420,27 @@
 .px2-p {
   margin-top: 1em;
   margin-bottom: 1em; }
+
+.px2-text-align-left {
+  text-align: left; }
+
+.px2-text-align-center {
+  text-align: center; }
+
+.px2-text-align-right {
+  text-align: right; }
+
+.px2-font-size-ss {
+  font-size: 74%; }
+
+.px2-font-size-s {
+  font-size: 88%; }
+
+.px2-font-size-l {
+  font-size: 112%; }
+
+.px2-font-size-ll {
+  font-size: 136%; }
 
 .px2-slim {
   margin: 0;
@@ -649,6 +711,8 @@
               color: #fff; }
       .px2-header__shoulder-menu > ul li.px2-header__shoulder-menu-group-opened > a::after {
         transform: rotate(90deg); }
+      .px2-header__shoulder-menu > ul > li:last-child {
+        margin-bottom: 30px; }
   .px2-header__hamburger, .px2-header__hamburger:before, .px2-header__hamburger:after {
     display: block;
     position: absolute;

@@ -20,7 +20,7 @@ module.exports = function(contApp, main, $){
 			branches;
 		new Promise(function(rlv){rlv();})
 			.then(function(){ return new Promise(function(rlv, rjt){
-				pj.git().parser.git(['status'], function(result){
+				pj.git().parser.git(['status', '-uall'], function(result){
 					// console.log(result);
 					status = result;
 					rlv();

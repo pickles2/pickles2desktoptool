@@ -161,6 +161,9 @@ new (function($, window){
 	})(this);
 	this.updater = updater;
 
+	// WASABI API Client
+	this.wasabiClient = null;
+
 	/**
 	 * アプリケーションの初期化
 	 */
@@ -408,6 +411,13 @@ new (function($, window){
 				},
 
 				function(it1){
+					// WASABI API Client
+					var wasabiClient = require('./index_files/wasabi/wasabi-client.js');
+					_this.wasabiClient = new wasabiClient(_this);
+					it1.next();
+				},
+
+				function(it1){
 					callback();
 				}
 
@@ -484,10 +494,14 @@ new (function($, window){
 				var filename = filelist[idx];
 				var filenamePjId = filename.replace(/\.[a-zA-Z0-9]+$/g, '');
 				try {
+					if( filenamePjId == 'wasabi' ){
+						continue;
+					}
 					if( !pjAllIds[filenamePjId] ){
 						main.fs.unlinkSync(baseDir+'/'+filename);
 					}
 				} catch (e) {
+					console.error(e);
 				}
 			}
 

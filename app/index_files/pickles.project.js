@@ -15,6 +15,12 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 	var _px2package = {};
 	var _gitStatus = null;
 
+	this.appdata = null;
+	this.px2proj = null;
+	this.site = null;
+	this.remoteFinder = null;
+	this.wasabiPjAgent = null;
+
 	/**
 	 * projectオブジェクトを初期化
 	 */
@@ -146,6 +152,12 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 			.then(function(){ return new Promise(function(rlv, rjt){
 				// Checking Git Status
 				_this.updateGitStatus(function(){});
+				rlv();
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// Setup WASABI API Client
+				_this.wasabiPjAgent = main.wasabiClient.createProjectAgent( _this );
 				rlv();
 				return;
 			}); })

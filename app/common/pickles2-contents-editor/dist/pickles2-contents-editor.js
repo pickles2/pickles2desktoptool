@@ -23195,6 +23195,8 @@ module.exports = function(px2ce){
 		$elmTextareas,
 		$elmTabs;
 
+	var timer_onPreviewLoad;
+
 	function getCanvasPageUrl(){
 		var rtn = getPreviewUrl();
 		var hash = '';
@@ -23377,6 +23379,15 @@ module.exports = function(px2ce){
 				;
 				// $iframe.attr({"src":"about:blank"});
 				_this.postMessenger = new (require('../../apis/postMessenger.js'))(px2ce, $iframe.get(0));
+
+				clearTimeout(timer_onPreviewLoad);
+				var timeout = 30;
+				timer_onPreviewLoad = setTimeout(function(){
+					// 何らかの理由で、 iframeの読み込み完了イベントが発生しなかった場合、
+					// 強制的にトリガーする。
+					console.error('Loading preview timeout ('+(timeout)+'sec): Force trigger onPreviewLoad();');
+					onPreviewLoad();
+				}, timeout*1000);
 
 				it1.next(arg);
 			},
@@ -23574,6 +23585,7 @@ module.exports = function(px2ce){
 	function onPreviewLoad( callback ){
 		callback = callback || function(){};
 		if(_this.postMessenger===undefined){return;}
+		clearTimeout(timer_onPreviewLoad);
 
 		it79.fnc({}, [
 			function( it1, data ){

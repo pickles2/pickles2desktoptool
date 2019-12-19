@@ -23,7 +23,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 		new Promise(function(rlv){rlv();})
 			.then(function(){ return new Promise(function(rlv, rjt){
 				// px2package 情報を読み込み
-				_px2package = px.px2dtLDA.project(projectId).px2package().getPrimaryProject();
+				_px2package = main.px2dtLDA.project(projectId).px2package().getPrimaryProject();
 				if(_px2package === false){
 					_px2package = {
 						'type': 'project',
@@ -36,9 +36,9 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
 				// cmdQueue にカレントディレクトリ情報をセット
-				px.commandQueue.server.setCurrentDir( 'default', _this.get('path') );
-				px.commandQueue.server.setCurrentDir( 'git', _this.get_realpath_git_root() );
-				px.commandQueue.server.setCurrentDir( 'composer', _this.get_realpath_composer_root() );
+				main.commandQueue.server.setCurrentDir( 'default', _this.get('path') );
+				main.commandQueue.server.setCurrentDir( 'git', _this.get_realpath_git_root() );
+				main.commandQueue.server.setCurrentDir( 'composer', _this.get_realpath_composer_root() );
 				rlv();
 				return;
 			}); })
@@ -53,12 +53,12 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 
 				// px2agent から プロジェクト情報を生成
 				var px2agentOption = {
-					'bin': px.nodePhpBin.getPath(),
-					'ini': px.nodePhpBin.getIniPath(),
-					'extension_dir': px.nodePhpBin.getExtensionDir()
+					'bin': main.nodePhpBin.getPath(),
+					'ini': main.nodePhpBin.getIniPath(),
+					'extension_dir': main.nodePhpBin.getExtensionDir()
 				};
 				// console.log(px2agentOption);
-				_px2proj = px.px2agent.createProject(
+				_px2proj = main.px2agent.createProject(
 					_path.resolve( _this.get('path') + '/' + _this.get('entry_script') ) ,
 					px2agentOption
 				);
@@ -139,7 +139,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
 				// composer パッケージの更新をチェックする。
-				px.composerInstallChecker.check(_this, function(checked){});
+				main.composerInstallChecker.check(_this, function(checked){});
 				rlv();
 				return;
 			}); })
@@ -205,7 +205,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 				'Git is not initialized.',
 			];
 		}
-		px.statusbar.set( contentsL, contentsR );
+		main.statusbar.set( contentsL, contentsR );
 		callback();
 	}
 
@@ -229,12 +229,12 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 		};
 		new Promise(function(rlv){rlv();})
 			.then(function(){ return new Promise(function(rlv, rjt){
-				status.pathExists = px.utils79.is_dir( _this.get('path') );
+				status.pathExists = main.utils79.is_dir( _this.get('path') );
 				status.pathContainsFileCount = false;
 				if( status.pathExists ){
 					try {
 						status.pathContainsFileCount = (function(){
-							var filelist = px.fs.readdirSync(_this.get('path'));
+							var filelist = main.fs.readdirSync(_this.get('path'));
 							var filelist_length = 0;
 							for(var i in filelist){
 								switch( filelist[i] ){
@@ -251,24 +251,24 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 					} catch (e) {
 					}
 				}
-				status.entryScriptExists = (status.pathExists && px.utils79.is_file( _this.get('path')+'/'+_this.get('entry_script') ) ? true : false);
+				status.entryScriptExists = (status.pathExists && main.utils79.is_file( _this.get('path')+'/'+_this.get('entry_script') ) ? true : false);
 				var homeDir = _this.get('path')+'/'+_this.get('home_dir');
-				status.homeDirExists = (status.pathExists && px.utils79.is_dir( homeDir ) ? true : false);
-				// status.confFileExists = (status.homeDirExists && (px.utils79.is_file( homeDir+'/config.php' )||px.utils79.is_file( homeDir+'/config.json' ) ) ? true : false);
+				status.homeDirExists = (status.pathExists && main.utils79.is_dir( homeDir ) ? true : false);
+				// status.confFileExists = (status.homeDirExists && (main.utils79.is_file( homeDir+'/config.php' )||main.utils79.is_file( homeDir+'/config.json' ) ) ? true : false);
 				status.confFileExists = false;
 				if(typeof(_config) === typeof({})){ status.confFileExists = true; }
-				// status.px2DTConfFileExists = (status.homeDirExists && px.utils79.is_file( homeDir+'/px2dtconfig.json' ) ? true : false);
+				// status.px2DTConfFileExists = (status.homeDirExists && main.utils79.is_file( homeDir+'/px2dtconfig.json' ) ? true : false);
 				status.px2DTConfFileExists = false;
 				if(typeof(_px2DTConfig) === typeof({})){ status.px2DTConfFileExists = true; }
-				status.composerJsonExists = (status.pathExists && px.utils79.is_file( _this.get_realpath_composer_root()+'/composer.json' ) ? true : false);
-				status.vendorDirExists = (status.pathExists && px.utils79.is_dir( _this.get_realpath_composer_root()+'/vendor/' ) ? true : false);
+				status.composerJsonExists = (status.pathExists && main.utils79.is_file( _this.get_realpath_composer_root()+'/composer.json' ) ? true : false);
+				status.vendorDirExists = (status.pathExists && main.utils79.is_dir( _this.get_realpath_composer_root()+'/vendor/' ) ? true : false);
 				status.isPxStandby = ( status.pathExists && status.entryScriptExists && status.homeDirExists && status.confFileExists && status.composerJsonExists && status.vendorDirExists ? true : false );
 				status.gitDirExists = (function(path){
 					function checkParentDir(path){
-						if( status.pathExists && px.utils79.is_dir( path+'/.git/' ) ){
+						if( status.pathExists && main.utils79.is_dir( path+'/.git/' ) ){
 							return true;
 						}
-						var nextPath = px.utils.dirname( path );
+						var nextPath = main.utils.dirname( path );
 						if( nextPath == path ){
 							return false;
 						}
@@ -391,7 +391,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 		callbackNg = callbackNg || function(){};
 		var pjStatus = this.status();
 		var errors = [];
-		var semver = px.semver;
+		var semver = main.semver;
 
 		function versionClean(version){
 			if(typeof(version) != typeof('')){return false;}
@@ -459,7 +459,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 	/** サイトマップファイルの一覧を取得する */
 	this.getSitemapFilelist = function(){
 		var pathDir = this.get('path')+'/'+this.get('home_dir')+'/sitemaps/';
-		var filelist = px.fs.readdirSync( pathDir );
+		var filelist = main.fs.readdirSync( pathDir );
 		var rtn = [];
 		for( var idx in filelist ){
 			if( filelist[idx].match( /^\~\$/ ) ){
@@ -485,10 +485,10 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 		for( var idx in filelist ){
 			try {
 				var filename = filelist[idx].replace(/\.[a-zA-Z0-9]+$/, '');
-				var ext = px.utils.getExtension(filelist[idx]).toLowerCase();
+				var ext = main.utils.getExtension(filelist[idx]).toLowerCase();
 				if( filename == basefilename ){
-					px.fs.unlinkSync( pathDir+filelist[idx] );
-					if( px.utils79.is_file( pathDir+filelist[idx] ) ){
+					main.fs.unlinkSync( pathDir+filelist[idx] );
+					if( main.utils79.is_file( pathDir+filelist[idx] ) ){
 						result = false; // 消えてない場合
 					}
 				}
@@ -551,11 +551,11 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 		_px2DTConfig = {};
 		var path = this.get('path')+'/'+this.get('home_dir')+'/px2dtconfig.json';
 
-		if( !px.utils79.is_file( path ) ){
+		if( !main.utils79.is_file( path ) ){
 			callback( null );
 			return this;
 		}
-		px.fs.readFile( path, {}, function(err, data_json_string){
+		main.fs.readFile( path, {}, function(err, data_json_string){
 			try{
 				_px2DTConfig = JSON.parse( data_json_string.toString() );
 			}catch(e){
@@ -606,7 +606,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 	 * node-php-bin の PHP などを考慮して、
 	 * -c, -d オプションの解決を自動的にやっている前提で、
 	 * composer コマンドを実行します。
-	 * 基本的には px.execComposer() をラップするメソッドですが、
+	 * 基本的には main.execComposer() をラップするメソッドですが、
 	 * cwd オプションを自動的に付与する点が異なります。
 	 *
 	 * @param  {Array}  cmd  `php`, `composer` を含まないコマンドオプションの配列
@@ -619,7 +619,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 		opts.error = opts.error||function(){};
 		opts.complete = opts.complete||function(){};
 		opts.cwd = this.get_realpath_composer_root();
-		px.execComposer(
+		main.execComposer(
 			cmd ,
 			opts
 		);
@@ -629,7 +629,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 	 * プロジェクトのフォルダを開く
 	 */
 	this.open = function(){
-		return window.px.utils.openURL(this.get('path'));
+		return window.main.utils.openURL(this.get('path'));
 	}
 
 	/**
@@ -704,7 +704,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 		}
 
 		for( var tmpExt in _config.funcs.processor ){
-			if( px.fs.existsSync( this.get_realpath_controot()+'/'+contLocalpath+'.'+ tmpExt) ){
+			if( main.fs.existsSync( this.get_realpath_controot()+'/'+contLocalpath+'.'+ tmpExt) ){
 				contLocalpath = contLocalpath+'.'+ tmpExt;
 				break;
 			}
@@ -718,7 +718,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 	this.isContentDoubleExtension = function( contentPath ){
 		var rtn = false;
 		for( var tmpExt in _config.funcs.processor ){
-			if( contentPath.match( new RegExp( '\\.[a-zA-Z0-9\\_\\-]+?\\.'+px.utils.escapeRegExp(tmpExt)+'$' ) ) ){
+			if( contentPath.match( new RegExp( '\\.[a-zA-Z0-9\\_\\-]+?\\.'+main.utils.escapeRegExp(tmpExt)+'$' ) ) ){
 				rtn = true;
 				break;
 			}
@@ -756,9 +756,9 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 			rtn = '{$dirname}/{$filename}_files/'; // <- default
 		}
 		var $data = {
-			'dirname': px.utils.dirname(contentPath),
-			'filename': px.utils.basename(px.utils.trim_extension(px.utils.trim_extension(contentPath))),
-			'ext': px.utils.getExtension(contentPath).toLowerCase(),
+			'dirname': main.utils.dirname(contentPath),
+			'filename': main.utils.basename(main.utils.trim_extension(main.utils.trim_extension(contentPath))),
+			'ext': main.utils.getExtension(contentPath).toLowerCase(),
 		};
 		rtn = rtn.replace( '{$dirname}', $data['dirname'], rtn );
 		rtn = rtn.replace( '{$filename}', $data['filename'], rtn );
@@ -879,7 +879,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 					},
 					'page_path': pagePath
 				};
-				options = px.utils79.base64_encode(JSON.stringify(options));
+				options = main.utils79.base64_encode(JSON.stringify(options));
 				var PxCommand = 'PX=px2dthelper.px2ce.gpi&appMode=desktop&data='+encodeURIComponent(options);
 
 				_px2proj.query(
@@ -946,10 +946,10 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 			'customFields': _pj.mkBroccoliCustomFieldOptionBackend() ,
 			'customFieldsIncludePath': _pj.mkBroccoliCustomFieldIncludePathOptionBackend() ,
 			'log': function(msg){
-				px.log(msg);
+				main.log(msg);
 			},
 			'commands':{
-				'php': px.nodePhpBinOptions
+				'php': main.nodePhpBinOptions
 			}
 		};
 
@@ -1009,7 +1009,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 			'href': require('./../common/broccoli/broccoli-field-href/server.js'),
 			// 'psd': require('broccoli-field-psd'),
 			'table': require('broccoli-field-table').get({
-				'php': px.nodePhpBinOptions
+				'php': main.nodePhpBinOptions
 			})
 		};
 
@@ -1054,7 +1054,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 					}
 					for(var idx in file){
 						var filePath = '.';
-						if( typeof(dir) == typeof('') && px.utils79.is_dir(require('path').resolve(entryScript, '..', dir)) ){
+						if( typeof(dir) == typeof('') && main.utils79.is_dir(require('path').resolve(entryScript, '..', dir)) ){
 							filePath = dir;
 						}
 						var pathJs = require('path').resolve(entryScript, '..', filePath, file[idx]);
@@ -1087,10 +1087,10 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 				'appMode': 'desktop', // 'web' or 'desktop'. default to 'web'
 				'entryScript': require('path').resolve( _pj.get('path'), _pj.get('entry_script') ),
 				'log': function(msg){
-					px.log(msg);
+					main.log(msg);
 				},
 				'commands':{
-					'php': px.nodePhpBinOptions
+					'php': main.nodePhpBinOptions
 				}
 			},
 			function(){
@@ -1115,7 +1115,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 			broccoliProcessorOptions.saveResourceDb = function(resourceDb, callbackSaveResourceDb){
 				// console.log('=-=-=-=-=-= callbackSaveResourceDb', page_path);
 				_this.px2dthelperGetAll('/', {}, function(px2all){
-					px.it79.ary(
+					main.it79.ary(
 						resourceDb,
 						function( itAry, resInfo, resKey ){
 							// console.log(resKey, resInfo);
@@ -1133,15 +1133,15 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 								'page_path': page_path
 							};
 
-							var tmpFileName = '__tmp_'+px.utils79.md5( Date.now() )+'.json';
-							px.fs.writeFileSync( realpathDataDir+tmpFileName, JSON.stringify(gpiOptions) );
+							var tmpFileName = '__tmp_'+main.utils79.md5( Date.now() )+'.json';
+							main.fs.writeFileSync( realpathDataDir+tmpFileName, JSON.stringify(gpiOptions) );
 							var PxCommand = 'PX=px2dthelper.px2ce.gpi&appMode=desktop&data_filename='+encodeURIComponent(tmpFileName);
 							_px2proj.query(
 								_this.getConcretePath(page_path)+'?'+PxCommand, {
 									"output": "json",
 									"complete": function(data, code){
 										console.log('------result:', data, code);
-										px.fs.unlinkSync( realpathDataDir+tmpFileName );
+										main.fs.unlinkSync( realpathDataDir+tmpFileName );
 										itAry.next();
 										return;
 									}
@@ -1199,10 +1199,10 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 	this.get_realpath_git_root = function(){
 		return (function(path){
 			function checkParentDir(path){
-				if( px.utils79.is_dir( path ) && px.utils79.is_dir( path+'/.git/' ) ){
-					return px.fs.realpathSync(path)+'/';
+				if( main.utils79.is_dir( path ) && main.utils79.is_dir( path+'/.git/' ) ){
+					return main.fs.realpathSync(path)+'/';
 				}
-				var nextPath = px.utils.dirname( path );
+				var nextPath = main.utils.dirname( path );
 				if( nextPath == path ){
 					return false;
 				}
@@ -1220,10 +1220,10 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 	this.get_realpath_composer_root = function(){
 		return (function(path){
 			function checkParentDir(path){
-				if( px.utils79.is_dir( path ) && px.utils79.is_file( path+'/composer.json' ) ){
-					return px.fs.realpathSync(path)+'/';
+				if( main.utils79.is_dir( path ) && main.utils79.is_file( path+'/composer.json' ) ){
+					return main.fs.realpathSync(path)+'/';
 				}
-				var nextPath = px.utils.dirname( path );
+				var nextPath = main.utils.dirname( path );
 				if( nextPath == path ){
 					return false;
 				}
@@ -1242,10 +1242,10 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 	this.get_realpath_npm_root = function(){
 		return (function(path){
 			function checkParentDir(path){
-				if( px.utils79.is_dir( path ) && px.utils79.is_file( path+'/package.json' ) ){
-					return px.fs.realpathSync(path)+'/';
+				if( main.utils79.is_dir( path ) && main.utils79.is_file( path+'/package.json' ) ){
+					return main.fs.realpathSync(path)+'/';
 				}
-				var nextPath = px.utils.dirname( path );
+				var nextPath = main.utils.dirname( path );
 				if( nextPath == path ){
 					return false;
 				}
@@ -1263,8 +1263,8 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 	 */
 	this.get_realpath_controot = function(){
 		var pathBase = this.get('path');
-		if( px.utils79.is_file( this.get('path')+'/'+this.get('entry_script') ) ){
-			pathBase = px.utils.dirname( px.fs.realpathSync( this.get('path')+'/'+this.get('entry_script') ) )+'/';
+		if( main.utils79.is_file( this.get('path')+'/'+this.get('entry_script') ) ){
+			pathBase = main.utils.dirname( main.fs.realpathSync( this.get('path')+'/'+this.get('entry_script') ) )+'/';
 		}
 		return pathBase;
 	}// get_realpath_controot()
@@ -1281,7 +1281,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 		var directory_index = [];
 		for( var idx in $tmp_di ){
 			var $file_name = $tmp_di[idx];
-			$file_name = px.php.trim( $file_name );
+			$file_name = main.php.trim( $file_name );
 			if( !$file_name.length ){ continue; }
 			directory_index.push( $file_name );
 		}
@@ -1300,7 +1300,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 		var $directory_index = this.get_directory_index();
 		for( var $key in $directory_index ){
 			var $row = $directory_index[$key];
-			$directory_index[$key] = px.utils.escapeRegExp($row);
+			$directory_index[$key] = main.utils.escapeRegExp($row);
 		}
 		var $rtn = '(?:'+$directory_index.join( '|' )+')';
 		return $rtn;
@@ -1332,11 +1332,11 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 		if( $path === null || $path === undefined ){
 			$path = '/';
 		}
-		$path = px.utils.get_realpath( '/'+$path );
-		if( px.utils79.is_dir('./'+$path) ){
+		$path = main.utils.get_realpath( '/'+$path );
+		if( main.utils79.is_dir('./'+$path) ){
 			$path += '/';
 		}
-		$path = px.utils.normalize_path( $path );
+		$path = main.utils.normalize_path( $path );
 
 		if( typeof($rtn[$path]) === typeof(true) ){
 			return $rtn[$path];
@@ -1345,16 +1345,16 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 		for( var $row in _config.paths_proc_type ){
 			var $type = _config.paths_proc_type[$row];
 			if(typeof($row) !== typeof('')){continue;}
-			var $preg_pattern = px.utils.escapeRegExp( px.utils.normalize_path( px.utils.get_realpath($row) ) );
+			var $preg_pattern = main.utils.escapeRegExp( main.utils.normalize_path( main.utils.get_realpath($row) ) );
 			if( $preg_pattern.match( new RegExp('\\*') ) ){
 				// ワイルドカードが使用されている場合
-				$preg_pattern = px.utils.escapeRegExp($row);
-				$preg_pattern = $preg_pattern.replace( new RegExp( px.utils.escapeRegExp('\\*'),'g'), '(?:.*?)');//ワイルドカードをパターンに反映
+				$preg_pattern = main.utils.escapeRegExp($row);
+				$preg_pattern = $preg_pattern.replace( new RegExp( main.utils.escapeRegExp('\\*'),'g'), '(?:.*?)');//ワイルドカードをパターンに反映
 				$preg_pattern = $preg_pattern+'$';//前方・後方一致
-			}else if(px.utils79.is_dir($row)){
-				$preg_pattern = px.utils.escapeRegExp( px.utils.normalize_path( px.utils.get_realpath($row) )+'/');
-			}else if(px.utils79.is_file($row)){
-				$preg_pattern = px.utils.escapeRegExp( px.utils.normalize_path( px.utils.get_realpath($row) ));
+			}else if(main.utils79.is_dir($row)){
+				$preg_pattern = main.utils.escapeRegExp( main.utils.normalize_path( main.utils.get_realpath($row) )+'/');
+			}else if(main.utils79.is_file($row)){
+				$preg_pattern = main.utils.escapeRegExp( main.utils.normalize_path( main.utils.get_realpath($row) ));
 			}
 			if( $path.match( new RegExp('^'+$preg_pattern) ) ){
 				$rtn[$path] = $type;
@@ -1373,14 +1373,14 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 	this.get_path_controot = function(){
 		var $rtn = '/';
 
-		if( px.utils.strlen( _config.path_controot ) ){
+		if( main.utils.strlen( _config.path_controot ) ){
 			$rtn = _config.path_controot;
 			$rtn = $rtn.replace(new RegExp('^(.*?)\\/*$'), '$1/');
-			$rtn = px.utils.normalize_path($rtn);
+			$rtn = main.utils.normalize_path($rtn);
 			return $rtn;
 		}
 
-		$rtn = px.utils.normalize_path($rtn);
+		$rtn = main.utils.normalize_path($rtn);
 		return $rtn;
 	}
 
@@ -1402,7 +1402,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 			return false;
 		}
 		var contPath = this.findPageContent(pagePath);
-		if( px.fs.existsSync( this.get_realpath_controot() + contPath ) ){
+		if( main.fs.existsSync( this.get_realpath_controot() + contPath ) ){
 			opt.error("Content Already Exists.");
 			opt.complete();
 			return false;
@@ -1420,7 +1420,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 				break;
 		}
 
-		var pathInfo = px.utils.parsePath( this.get_realpath_controot() + contPath );
+		var pathInfo = main.utils.parsePath( this.get_realpath_controot() + contPath );
 		var prop = {}
 		prop.realpath_cont = pathInfo.path;
 		prop.realpath_resource_dir = this.get_realpath_controot() + this.getContentFilesByPageContent(contPath);
@@ -1429,15 +1429,15 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 			prop.realpath_cont += '.'+prop.proc_type;
 		}
 
-		px.utils.iterateFnc([
+		main.utils.iterateFnc([
 			function(it, prop){
 				// 格納ディレクトリを作る
-				if( px.utils79.is_dir( px.utils.dirname( prop.realpath_cont ) ) ){
+				if( main.utils79.is_dir( main.utils.dirname( prop.realpath_cont ) ) ){
 					it.next(prop);
 					return;
 				}
 				// 再帰的に作る mkdirAll()
-				if( !px.utils.mkdirAll( px.utils.dirname( prop.realpath_cont ) ) ){
+				if( !main.utils.mkdirAll( main.utils.dirname( prop.realpath_cont ) ) ){
 					opt.error(err);
 					opt.complete();
 					return;
@@ -1446,7 +1446,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 			} ,
 			function(it, prop){
 				// コンテンツ自体を作る
-				px.fs.writeFile( prop.realpath_cont, '', function(err){
+				main.fs.writeFile( prop.realpath_cont, '', function(err){
 					if( err ){
 						opt.error(err);
 						opt.complete();
@@ -1457,16 +1457,16 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 			} ,
 			function(it, prop){
 				// リソースディレクトリを作る
-				if( !px.utils79.is_dir( prop.realpath_resource_dir ) ){
-					px.utils.mkdirAll( prop.realpath_resource_dir );
+				if( !main.utils79.is_dir( prop.realpath_resource_dir ) ){
+					main.utils.mkdirAll( prop.realpath_resource_dir );
 				}
 				if( prop.proc_type == 'html.gui' ){
 					try {
-						px.fs.mkdirSync( prop.realpath_resource_dir + '/guieditor.ignore/' );
+						main.fs.mkdirSync( prop.realpath_resource_dir + '/guieditor.ignore/' );
 					} catch (e) {
 						it.next(prop);
 					} finally {
-						px.fs.writeFile( prop.realpath_resource_dir + '/guieditor.ignore/data.json', '{}', function(err){
+						main.fs.writeFile( prop.realpath_resource_dir + '/guieditor.ignore/data.json', '{}', function(err){
 							if( err ){
 								opt.error(err);
 								opt.complete();

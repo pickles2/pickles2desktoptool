@@ -370,6 +370,561 @@ process.chdir = function (dir) {
 };
 
 },{}],3:[function(require,module,exports){
+/**
+ * Files and Folders: copy.js
+ */
+module.exports = function(contApp, px, _pj, $){
+	this.copy = function(copyFrom, callback){
+		var is_file;
+		var pageInfoAll;
+		px.it79.fnc({}, [
+			function(it1){
+				is_file = px.utils79.is_file( _pj.get('path')+copyFrom );
+				it1.next();
+			},
+			function(it1){
+				if(!is_file){
+					it1.next();
+					return;
+				}
+				_pj.execPx2(
+					copyFrom+'?PX=px2dthelper.get.all',
+					{
+						complete: function(resources){
+							try{
+								resources = JSON.parse(resources);
+							}catch(e){
+								console.error('Failed to parse JSON "client_resources".', e);
+							}
+							console.log(resources);
+							pageInfoAll = resources;
+							it1.next();
+						}
+					}
+				);
+
+			},
+			function(it1){
+				var $body = $('<div>').html( $('#template-copy').html() );
+				$body.find('.cont_target_item').text(copyFrom);
+				$body.find('[name=copy_to]').val(copyFrom);
+				if(is_file){
+					$body.find('.cont_contents_option').show();
+				}
+				px2style.modal({
+					'title': 'Copy',
+					'body': $body,
+					'buttons': [
+						$('<button type="button" class="px2-btn">')
+							.text('Cancel')
+							.on('click', function(e){
+								px2style.closeModal();
+							}),
+						$('<button class="px2-btn px2-btn--primary">')
+							.text('複製する')
+					],
+					'form': {
+						'submit': function(){
+							px2style.closeModal();
+							var copyTo = $body.find('[name=copy_to]').val();
+							if( !copyTo ){ return; }
+							if( copyTo == copyFrom ){ return; }
+
+							px.it79.fnc({}, [
+								function(it2){
+									if( is_file && $body.find('[name=is_copy_files_too]:checked').val() ){
+										// リソースも一緒に複製する
+										_pj.execPx2(
+											copyTo+'?PX=px2dthelper.get.all',
+											{
+												complete: function(resources){
+													try{
+														resources = JSON.parse(resources);
+													}catch(e){
+														console.error('Failed to parse JSON "client_resources".', e);
+													}
+													// console.log(resources);
+
+													var realpath_files_from = pageInfoAll.realpath_files;
+													var realpath_files_to = resources.realpath_files;
+													if(px.utils79.is_dir(realpath_files_from)){
+														px.fsEx.copySync( realpath_files_from, realpath_files_to );
+													}
+													it2.next();
+												}
+											}
+										);
+										return;
+									}
+									it2.next();
+								},
+								function(it2){
+									callback(copyFrom, copyTo);
+									it2.next();
+								}
+							]);
+
+						}
+					},
+					'width': 460
+				}, function(){
+					$body.find('[name=copy_to]').focus();
+				});
+				it1.next();
+			}
+		]);
+	}
+}
+
+},{}],4:[function(require,module,exports){
+/**
+ * Files and Folders: mkdir.js
+ */
+module.exports = function(contApp, px, _pj, $){
+	this.mkdir = function(current_dir, callback){
+		var $body = $('<div>').html( $('#template-mkdir').html() );
+		$body.find('.cont_current_dir').text(current_dir);
+		$body.find('[name=dirname]').on('change keyup', function(){
+			var dirname = $body.find('[name=dirname]').val();
+			if( dirname.match(/\.html?$/i) ){
+				$body.find('.cont_html_ext_option').show();
+			}else{
+				$body.find('.cont_html_ext_option').hide();
+			}
+		});
+		px2style.modal({
+			'title': 'Create new Directory',
+			'body': $body,
+			'buttons': [
+				$('<button type="button" class="px2-btn">')
+					.text('Cancel')
+					.on('click', function(e){
+						px2style.closeModal();
+					}),
+				$('<button class="px2-btn px2-btn--primary">')
+					.text('OK')
+			],
+			'form': {
+				'submit': function(){
+					px2style.closeModal();
+					var dirname = $body.find('[name=dirname]').val();
+					if( !dirname ){ return; }
+
+					callback( dirname );
+				}
+			},
+			'width': 460
+		}, function(){
+			$body.find('[name=dirname]').focus();
+		});
+	}
+}
+
+},{}],5:[function(require,module,exports){
+/**
+ * Files and Folders: mkfile.js
+ */
+module.exports = function(contApp, px, _pj, $){
+	this.mkfile = function(current_dir, callback){
+		var $body = $('<div>').html( $('#template-mkfile').html() );
+		$body.find('.cont_current_dir').text(current_dir);
+		$body.find('[name=filename]').on('change keyup', function(){
+			var filename = $body.find('[name=filename]').val();
+			if( filename.match(/\.html?$/i) ){
+				$body.find('.cont_html_ext_option').show();
+			}else{
+				$body.find('.cont_html_ext_option').hide();
+			}
+		});
+		px2style.modal({
+			'title': 'Create new File',
+			'body': $body,
+			'buttons': [
+				$('<button type="button" class="px2-btn">')
+					.text('Cancel')
+					.on('click', function(e){
+						px2style.closeModal();
+					}),
+				$('<button class="px2-btn px2-btn--primary">')
+					.text('OK')
+			],
+			'form': {
+				'submit': function(){
+					px2style.closeModal();
+					var filename = $body.find('[name=filename]').val();
+					if( !filename ){ return; }
+					var pageInfoAll;
+
+					px.it79.fnc({}, [
+						function(it1){
+							_pj.execPx2(
+								current_dir+filename+'?PX=px2dthelper.get.all',
+								{
+									complete: function(resources){
+										try{
+											resources = JSON.parse(resources);
+										}catch(e){
+											console.error('Failed to parse JSON "client_resources".', e);
+										}
+										// console.log(resources);
+										pageInfoAll = resources;
+										it1.next();
+									}
+								}
+							);
+
+						},
+						function(it1){
+							if( filename.match(/\.html?$/i) && $body.find('[name=is_guieditor]:checked').val() ){
+								// GUI編集モードが有効
+								var realpath_data_dir = pageInfoAll.realpath_data_dir;
+								px.fsEx.mkdirpSync( realpath_data_dir );
+								px.fs.writeFileSync( realpath_data_dir+'data.json', '{}' );
+							}
+							it1.next();
+						},
+						function(it1){
+							callback( filename );
+							it1.next();
+						}
+					]);
+
+				}
+			},
+			'width': 460
+		}, function(){
+			$body.find('[name=filename]').focus();
+		});
+	}
+}
+
+},{}],6:[function(require,module,exports){
+/**
+ * Files and Folders: open.js
+ */
+module.exports = function(contApp, px, _pj, $){
+
+	/**
+	 * ファイルを開く
+	 */
+	this.open = function(fileinfo, callback){
+		// console.log(fileinfo);
+		var realpath = _pj.get('path')+'/'+fileinfo.path;
+
+		switch( fileinfo.ext ){
+			case 'html':
+			case 'htm':
+				px.preview.serverStandby( function(result){
+					parsePx2FilePath(fileinfo.path, function(pxExternalPath, path_type){
+						if(path_type == 'contents'){
+							contApp.openEditor( pxExternalPath );
+						}else{
+							px.openInTextEditor( realpath );
+						}
+					});
+				} );
+				break;
+			case 'xlsx':
+			case 'csv':
+				px.utils.openURL( realpath );
+				break;
+			case 'php':
+			case 'inc':
+			case 'txt':
+			case 'md':
+			case 'css':
+			case 'scss':
+			case 'js':
+			case 'json':
+			case 'lock':
+			case 'gitignore':
+			case 'gitkeep':
+			case 'htaccess':
+			case 'htpasswd':
+				px.openInTextEditor( realpath );
+				break;
+			default:
+				px.utils.openURL( realpath );
+				break;
+		}
+		callback(true);
+	}
+
+
+	/**
+	 * ファイルのパスを、Pickles 2 の外部パス(path)に変換する。
+	 *
+	 * Pickles 2 のパスは、 document_root と cont_root を含まないが、
+	 * ファイルのパスはこれを一部含んでいる可能性がある。
+	 * これを確認し、必要に応じて除いたパスを返却する。
+	 */
+	function parsePx2FilePath( filepath, callback ){
+		var pxExternalPath = filepath;
+		var is_file;
+		var pageInfoAll;
+		var path_type;
+		var realpath_file = _pj.get('path')+'/'+filepath;
+		px.it79.fnc({}, [
+			function(it1){
+				is_file = px.utils79.is_file( realpath_file );
+				it1.next();
+			},
+			function(it1){
+				if(!is_file){
+					it1.next();
+					return;
+				}
+				_pj.execPx2(
+					'/?PX=px2dthelper.get.all',
+					{
+						complete: function(resources){
+							try{
+								resources = JSON.parse(resources);
+							}catch(e){
+								console.error('Failed to parse JSON "client_resources".', e);
+							}
+							// console.log(resources);
+							pageInfoAll = resources;
+							it1.next();
+						}
+					}
+				);
+
+			},
+			function(it1){
+				// 外部パスを求める
+				if( realpath_file.indexOf(pageInfoAll.realpath_docroot) === 0 ){
+					pxExternalPath = realpath_file.replace(pageInfoAll.realpath_docroot, '/');
+				}
+				if( pxExternalPath.indexOf(pageInfoAll.path_controot) === 0 ){
+					pxExternalPath = pxExternalPath.replace(pageInfoAll.path_controot, '/');
+				}
+				pxExternalPath = require('path').resolve('/', pxExternalPath);
+				it1.next();
+			},
+			function(it1){
+				// パスの種類を求める
+				// theme_collection, home_dir, or contents
+				function normalizePath(path){
+					path = path.replace(/^[a-zA-Z]\:/, '');
+					path = require('path').resolve(path);
+					path = path.split(/[\/\\\\]+/).join('/');
+					return path;
+				}
+				path_type = 'contents';
+				var realpath_target = normalizePath(realpath_file);
+				var realpath_homedir = normalizePath(pageInfoAll.realpath_homedir);
+				var realpath_theme_collection_dir = normalizePath(pageInfoAll.realpath_theme_collection_dir);
+				if( realpath_target.indexOf(realpath_theme_collection_dir) === 0 ){
+					path_type = 'theme_collection';
+				}else if( realpath_target.indexOf(realpath_homedir) === 0 ){
+					path_type = 'home_dir';
+				}
+				it1.next();
+			},
+			function(it1){
+				callback(pxExternalPath, path_type);
+				it1.next();
+			}
+		]);
+		return;
+	}
+
+}
+
+},{"path":1}],7:[function(require,module,exports){
+/**
+ * Files and Folders: remove.js
+ */
+module.exports = function(contApp, px, _pj, $){
+	this.remove = function(target_item, callback){
+		var is_file;
+		var pageInfoAll;
+		px.it79.fnc({}, [
+			function(it1){
+				is_file = px.utils79.is_file( _pj.get('path')+target_item );
+				it1.next();
+			},
+			function(it1){
+				if(!is_file){
+					it1.next();
+					return;
+				}
+				_pj.execPx2(
+					target_item+'?PX=px2dthelper.get.all',
+					{
+						complete: function(resources){
+							try{
+								resources = JSON.parse(resources);
+							}catch(e){
+								console.error('Failed to parse JSON "client_resources".', e);
+							}
+							console.log(resources);
+							pageInfoAll = resources;
+							it1.next();
+						}
+					}
+				);
+
+			},
+			function(it1){
+				var $body = $('<div>').html( $('#template-remove').html() );
+				$body.find('.cont_target_item').text(target_item);
+				if(is_file){
+					$body.find('.cont_contents_option').show();
+				}
+				px2style.modal({
+					'title': 'Remove',
+					'body': $body,
+					'buttons': [
+						$('<button type="button" class="px2-btn">')
+							.text('Cancel')
+							.on('click', function(e){
+								px2style.closeModal();
+							}),
+						$('<button class="px2-btn px2-btn--danger">')
+							.text('削除する')
+					],
+					'form': {
+						'submit': function(){
+							px2style.closeModal();
+
+							px.it79.fnc({}, [
+								function(it2){
+									if( is_file && $body.find('[name=is_remove_files_too]:checked').val() ){
+										// リソースも一緒に削除する
+										var realpath_files = pageInfoAll.realpath_files;
+										if(px.utils79.is_dir(realpath_files)){
+											px.fsEx.removeSync( realpath_files );
+										}
+									}
+									it2.next();
+								},
+								function(it2){
+									callback();
+									it2.next();
+								}
+							]);
+
+						}
+					},
+					'width': 460
+				}, function(){
+				});
+				it1.next();
+			}
+		]);
+	}
+}
+
+},{}],8:[function(require,module,exports){
+/**
+ * Files and Folders: rename.js
+ */
+module.exports = function(contApp, px, _pj, $){
+	this.rename = function(renameFrom, callback){
+		var is_file;
+		var pageInfoAll;
+		px.it79.fnc({}, [
+			function(it1){
+				is_file = px.utils79.is_file( _pj.get('path')+renameFrom );
+				it1.next();
+			},
+			function(it1){
+				if(!is_file){
+					it1.next();
+					return;
+				}
+				_pj.execPx2(
+					renameFrom+'?PX=px2dthelper.get.all',
+					{
+						complete: function(resources){
+							try{
+								resources = JSON.parse(resources);
+							}catch(e){
+								console.error('Failed to parse JSON "client_resources".', e);
+							}
+							console.log(resources);
+							pageInfoAll = resources;
+							it1.next();
+						}
+					}
+				);
+
+			},
+			function(it1){
+				var $body = $('<div>').html( $('#template-rename').html() );
+				$body.find('.cont_target_item').text(renameFrom);
+				$body.find('[name=rename_to]').val(renameFrom);
+				if(is_file){
+					$body.find('.cont_contents_option').show();
+				}
+				px2style.modal({
+					'title': 'Rename',
+					'body': $body,
+					'buttons': [
+						$('<button type="button" class="px2-btn">')
+							.text('Cancel')
+							.on('click', function(e){
+								px2style.closeModal();
+							}),
+						$('<button class="px2-btn px2-btn--primary">')
+							.text('移動する')
+					],
+					'form': {
+						'submit': function(){
+							px2style.closeModal();
+							var renameTo = $body.find('[name=rename_to]').val();
+							if( !renameTo ){ return; }
+							if( renameTo == renameFrom ){ return; }
+
+							px.it79.fnc({}, [
+								function(it2){
+									if( is_file && $body.find('[name=is_rename_files_too]:checked').val() ){
+										// リソースも一緒に移動する
+										_pj.execPx2(
+											renameTo+'?PX=px2dthelper.get.all',
+											{
+												complete: function(resources){
+													try{
+														resources = JSON.parse(resources);
+													}catch(e){
+														console.error('Failed to parse JSON "client_resources".', e);
+													}
+													// console.log(resources);
+
+													var realpath_files_from = pageInfoAll.realpath_files;
+													var realpath_files_to = resources.realpath_files;
+													if(px.utils79.is_dir(realpath_files_from)){
+														px.fsEx.renameSync( realpath_files_from, realpath_files_to );
+													}
+													it2.next();
+												}
+											}
+										);
+										return;
+									}
+									it2.next();
+								},
+								function(it2){
+									callback(renameFrom, renameTo);
+									it2.next();
+								}
+							]);
+
+						}
+					},
+					'width': 460
+				}, function(){
+					$body.find('[name=rename_to]').focus();
+				});
+				it1.next();
+			}
+		]);
+	}
+}
+
+},{}],9:[function(require,module,exports){
 window.px = window.parent.main;
 window.main = window.parent.main;
 window.contApp = new (function( main ){
@@ -530,559 +1085,4 @@ window.contApp = new (function( main ){
 
 })( window.parent.main );
 
-},{"../../../fncs/files_and_folders/index_files/libs.ignore/copy.js":4,"../../../fncs/files_and_folders/index_files/libs.ignore/mkdir.js":5,"../../../fncs/files_and_folders/index_files/libs.ignore/mkfile.js":6,"../../../fncs/files_and_folders/index_files/libs.ignore/open.js":7,"../../../fncs/files_and_folders/index_files/libs.ignore/remove.js":8,"../../../fncs/files_and_folders/index_files/libs.ignore/rename.js":9}],4:[function(require,module,exports){
-/**
- * Files and Folders: copy.js
- */
-module.exports = function(contApp, px, _pj, $){
-	this.copy = function(copyFrom, callback){
-		var is_file;
-		var pageInfoAll;
-		px.it79.fnc({}, [
-			function(it1){
-				is_file = px.utils79.is_file( _pj.get('path')+copyFrom );
-				it1.next();
-			},
-			function(it1){
-				if(!is_file){
-					it1.next();
-					return;
-				}
-				_pj.execPx2(
-					copyFrom+'?PX=px2dthelper.get.all',
-					{
-						complete: function(resources){
-							try{
-								resources = JSON.parse(resources);
-							}catch(e){
-								console.error('Failed to parse JSON "client_resources".', e);
-							}
-							console.log(resources);
-							pageInfoAll = resources;
-							it1.next();
-						}
-					}
-				);
-
-			},
-			function(it1){
-				var $body = $('<div>').html( $('#template-copy').html() );
-				$body.find('.cont_target_item').text(copyFrom);
-				$body.find('[name=copy_to]').val(copyFrom);
-				if(is_file){
-					$body.find('.cont_contents_option').show();
-				}
-				px2style.modal({
-					'title': 'Copy',
-					'body': $body,
-					'buttons': [
-						$('<button type="button" class="px2-btn">')
-							.text('Cancel')
-							.on('click', function(e){
-								px2style.closeModal();
-							}),
-						$('<button class="px2-btn px2-btn--primary">')
-							.text('複製する')
-					],
-					'form': {
-						'submit': function(){
-							px2style.closeModal();
-							var copyTo = $body.find('[name=copy_to]').val();
-							if( !copyTo ){ return; }
-							if( copyTo == copyFrom ){ return; }
-
-							px.it79.fnc({}, [
-								function(it2){
-									if( is_file && $body.find('[name=is_copy_files_too]:checked').val() ){
-										// リソースも一緒に複製する
-										_pj.execPx2(
-											copyTo+'?PX=px2dthelper.get.all',
-											{
-												complete: function(resources){
-													try{
-														resources = JSON.parse(resources);
-													}catch(e){
-														console.error('Failed to parse JSON "client_resources".', e);
-													}
-													// console.log(resources);
-
-													var realpath_files_from = pageInfoAll.realpath_files;
-													var realpath_files_to = resources.realpath_files;
-													if(px.utils79.is_dir(realpath_files_from)){
-														px.fsEx.copySync( realpath_files_from, realpath_files_to );
-													}
-													it2.next();
-												}
-											}
-										);
-										return;
-									}
-									it2.next();
-								},
-								function(it2){
-									callback(copyFrom, copyTo);
-									it2.next();
-								}
-							]);
-
-						}
-					},
-					'width': 460
-				}, function(){
-					$body.find('[name=copy_to]').focus();
-				});
-				it1.next();
-			}
-		]);
-	}
-}
-
-},{}],5:[function(require,module,exports){
-/**
- * Files and Folders: mkdir.js
- */
-module.exports = function(contApp, px, _pj, $){
-	this.mkdir = function(current_dir, callback){
-		var $body = $('<div>').html( $('#template-mkdir').html() );
-		$body.find('.cont_current_dir').text(current_dir);
-		$body.find('[name=dirname]').on('change keyup', function(){
-			var dirname = $body.find('[name=dirname]').val();
-			if( dirname.match(/\.html?$/i) ){
-				$body.find('.cont_html_ext_option').show();
-			}else{
-				$body.find('.cont_html_ext_option').hide();
-			}
-		});
-		px2style.modal({
-			'title': 'Create new Directory',
-			'body': $body,
-			'buttons': [
-				$('<button type="button" class="px2-btn">')
-					.text('Cancel')
-					.on('click', function(e){
-						px2style.closeModal();
-					}),
-				$('<button class="px2-btn px2-btn--primary">')
-					.text('OK')
-			],
-			'form': {
-				'submit': function(){
-					px2style.closeModal();
-					var dirname = $body.find('[name=dirname]').val();
-					if( !dirname ){ return; }
-
-					callback( dirname );
-				}
-			},
-			'width': 460
-		}, function(){
-			$body.find('[name=dirname]').focus();
-		});
-	}
-}
-
-},{}],6:[function(require,module,exports){
-/**
- * Files and Folders: mkfile.js
- */
-module.exports = function(contApp, px, _pj, $){
-	this.mkfile = function(current_dir, callback){
-		var $body = $('<div>').html( $('#template-mkfile').html() );
-		$body.find('.cont_current_dir').text(current_dir);
-		$body.find('[name=filename]').on('change keyup', function(){
-			var filename = $body.find('[name=filename]').val();
-			if( filename.match(/\.html?$/i) ){
-				$body.find('.cont_html_ext_option').show();
-			}else{
-				$body.find('.cont_html_ext_option').hide();
-			}
-		});
-		px2style.modal({
-			'title': 'Create new File',
-			'body': $body,
-			'buttons': [
-				$('<button type="button" class="px2-btn">')
-					.text('Cancel')
-					.on('click', function(e){
-						px2style.closeModal();
-					}),
-				$('<button class="px2-btn px2-btn--primary">')
-					.text('OK')
-			],
-			'form': {
-				'submit': function(){
-					px2style.closeModal();
-					var filename = $body.find('[name=filename]').val();
-					if( !filename ){ return; }
-					var pageInfoAll;
-
-					px.it79.fnc({}, [
-						function(it1){
-							_pj.execPx2(
-								current_dir+filename+'?PX=px2dthelper.get.all',
-								{
-									complete: function(resources){
-										try{
-											resources = JSON.parse(resources);
-										}catch(e){
-											console.error('Failed to parse JSON "client_resources".', e);
-										}
-										// console.log(resources);
-										pageInfoAll = resources;
-										it1.next();
-									}
-								}
-							);
-
-						},
-						function(it1){
-							if( filename.match(/\.html?$/i) && $body.find('[name=is_guieditor]:checked').val() ){
-								// GUI編集モードが有効
-								var realpath_data_dir = pageInfoAll.realpath_data_dir;
-								px.fsEx.mkdirpSync( realpath_data_dir );
-								px.fs.writeFileSync( realpath_data_dir+'data.json', '{}' );
-							}
-							it1.next();
-						},
-						function(it1){
-							callback( filename );
-							it1.next();
-						}
-					]);
-
-				}
-			},
-			'width': 460
-		}, function(){
-			$body.find('[name=filename]').focus();
-		});
-	}
-}
-
-},{}],7:[function(require,module,exports){
-/**
- * Files and Folders: open.js
- */
-module.exports = function(contApp, px, _pj, $){
-
-	/**
-	 * ファイルを開く
-	 */
-	this.open = function(fileinfo, callback){
-		// console.log(fileinfo);
-		var realpath = _pj.get('path')+'/'+fileinfo.path;
-
-		switch( fileinfo.ext ){
-			case 'html':
-			case 'htm':
-				px.preview.serverStandby( function(result){
-					parsePx2FilePath(fileinfo.path, function(pxExternalPath, path_type){
-						if(path_type == 'contents'){
-							contApp.openEditor( pxExternalPath );
-						}else{
-							px.openInTextEditor( realpath );
-						}
-					});
-				} );
-				break;
-			case 'xlsx':
-			case 'csv':
-				px.utils.openURL( realpath );
-				break;
-			case 'php':
-			case 'inc':
-			case 'txt':
-			case 'md':
-			case 'css':
-			case 'scss':
-			case 'js':
-			case 'json':
-			case 'lock':
-			case 'gitignore':
-			case 'gitkeep':
-			case 'htaccess':
-			case 'htpasswd':
-				px.openInTextEditor( realpath );
-				break;
-			default:
-				px.utils.openURL( realpath );
-				break;
-		}
-		callback(true);
-	}
-
-
-	/**
-	 * ファイルのパスを、Pickles 2 の外部パス(path)に変換する。
-	 *
-	 * Pickles 2 のパスは、 document_root と cont_root を含まないが、
-	 * ファイルのパスはこれを一部含んでいる可能性がある。
-	 * これを確認し、必要に応じて除いたパスを返却する。
-	 */
-	function parsePx2FilePath( filepath, callback ){
-		var pxExternalPath = filepath;
-		var is_file;
-		var pageInfoAll;
-		var path_type;
-		var realpath_file = _pj.get('path')+'/'+filepath;
-		px.it79.fnc({}, [
-			function(it1){
-				is_file = px.utils79.is_file( realpath_file );
-				it1.next();
-			},
-			function(it1){
-				if(!is_file){
-					it1.next();
-					return;
-				}
-				_pj.execPx2(
-					'/?PX=px2dthelper.get.all',
-					{
-						complete: function(resources){
-							try{
-								resources = JSON.parse(resources);
-							}catch(e){
-								console.error('Failed to parse JSON "client_resources".', e);
-							}
-							// console.log(resources);
-							pageInfoAll = resources;
-							it1.next();
-						}
-					}
-				);
-
-			},
-			function(it1){
-				// 外部パスを求める
-				if( realpath_file.indexOf(pageInfoAll.realpath_docroot) === 0 ){
-					pxExternalPath = realpath_file.replace(pageInfoAll.realpath_docroot, '/');
-				}
-				if( pxExternalPath.indexOf(pageInfoAll.path_controot) === 0 ){
-					pxExternalPath = pxExternalPath.replace(pageInfoAll.path_controot, '/');
-				}
-				pxExternalPath = require('path').resolve('/', pxExternalPath);
-				it1.next();
-			},
-			function(it1){
-				// パスの種類を求める
-				// theme_collection, home_dir, or contents
-				function normalizePath(path){
-					path = path.replace(/^[a-zA-Z]\:/, '');
-					path = require('path').resolve(path);
-					path = path.split(/[\/\\\\]+/).join('/');
-					return path;
-				}
-				path_type = 'contents';
-				var realpath_target = normalizePath(realpath_file);
-				var realpath_homedir = normalizePath(pageInfoAll.realpath_homedir);
-				var realpath_theme_collection_dir = normalizePath(pageInfoAll.realpath_theme_collection_dir);
-				if( realpath_target.indexOf(realpath_theme_collection_dir) === 0 ){
-					path_type = 'theme_collection';
-				}else if( realpath_target.indexOf(realpath_homedir) === 0 ){
-					path_type = 'home_dir';
-				}
-				it1.next();
-			},
-			function(it1){
-				callback(pxExternalPath, path_type);
-				it1.next();
-			}
-		]);
-		return;
-	}
-
-}
-
-},{"path":1}],8:[function(require,module,exports){
-/**
- * Files and Folders: remove.js
- */
-module.exports = function(contApp, px, _pj, $){
-	this.remove = function(target_item, callback){
-		var is_file;
-		var pageInfoAll;
-		px.it79.fnc({}, [
-			function(it1){
-				is_file = px.utils79.is_file( _pj.get('path')+target_item );
-				it1.next();
-			},
-			function(it1){
-				if(!is_file){
-					it1.next();
-					return;
-				}
-				_pj.execPx2(
-					target_item+'?PX=px2dthelper.get.all',
-					{
-						complete: function(resources){
-							try{
-								resources = JSON.parse(resources);
-							}catch(e){
-								console.error('Failed to parse JSON "client_resources".', e);
-							}
-							console.log(resources);
-							pageInfoAll = resources;
-							it1.next();
-						}
-					}
-				);
-
-			},
-			function(it1){
-				var $body = $('<div>').html( $('#template-remove').html() );
-				$body.find('.cont_target_item').text(target_item);
-				if(is_file){
-					$body.find('.cont_contents_option').show();
-				}
-				px2style.modal({
-					'title': 'Remove',
-					'body': $body,
-					'buttons': [
-						$('<button type="button" class="px2-btn">')
-							.text('Cancel')
-							.on('click', function(e){
-								px2style.closeModal();
-							}),
-						$('<button class="px2-btn px2-btn--danger">')
-							.text('削除する')
-					],
-					'form': {
-						'submit': function(){
-							px2style.closeModal();
-
-							px.it79.fnc({}, [
-								function(it2){
-									if( is_file && $body.find('[name=is_remove_files_too]:checked').val() ){
-										// リソースも一緒に削除する
-										var realpath_files = pageInfoAll.realpath_files;
-										if(px.utils79.is_dir(realpath_files)){
-											px.fsEx.removeSync( realpath_files );
-										}
-									}
-									it2.next();
-								},
-								function(it2){
-									callback();
-									it2.next();
-								}
-							]);
-
-						}
-					},
-					'width': 460
-				}, function(){
-				});
-				it1.next();
-			}
-		]);
-	}
-}
-
-},{}],9:[function(require,module,exports){
-/**
- * Files and Folders: rename.js
- */
-module.exports = function(contApp, px, _pj, $){
-	this.rename = function(renameFrom, callback){
-		var is_file;
-		var pageInfoAll;
-		px.it79.fnc({}, [
-			function(it1){
-				is_file = px.utils79.is_file( _pj.get('path')+renameFrom );
-				it1.next();
-			},
-			function(it1){
-				if(!is_file){
-					it1.next();
-					return;
-				}
-				_pj.execPx2(
-					renameFrom+'?PX=px2dthelper.get.all',
-					{
-						complete: function(resources){
-							try{
-								resources = JSON.parse(resources);
-							}catch(e){
-								console.error('Failed to parse JSON "client_resources".', e);
-							}
-							console.log(resources);
-							pageInfoAll = resources;
-							it1.next();
-						}
-					}
-				);
-
-			},
-			function(it1){
-				var $body = $('<div>').html( $('#template-rename').html() );
-				$body.find('.cont_target_item').text(renameFrom);
-				$body.find('[name=rename_to]').val(renameFrom);
-				if(is_file){
-					$body.find('.cont_contents_option').show();
-				}
-				px2style.modal({
-					'title': 'Rename',
-					'body': $body,
-					'buttons': [
-						$('<button type="button" class="px2-btn">')
-							.text('Cancel')
-							.on('click', function(e){
-								px2style.closeModal();
-							}),
-						$('<button class="px2-btn px2-btn--primary">')
-							.text('移動する')
-					],
-					'form': {
-						'submit': function(){
-							px2style.closeModal();
-							var renameTo = $body.find('[name=rename_to]').val();
-							if( !renameTo ){ return; }
-							if( renameTo == renameFrom ){ return; }
-
-							px.it79.fnc({}, [
-								function(it2){
-									if( is_file && $body.find('[name=is_rename_files_too]:checked').val() ){
-										// リソースも一緒に移動する
-										_pj.execPx2(
-											renameTo+'?PX=px2dthelper.get.all',
-											{
-												complete: function(resources){
-													try{
-														resources = JSON.parse(resources);
-													}catch(e){
-														console.error('Failed to parse JSON "client_resources".', e);
-													}
-													// console.log(resources);
-
-													var realpath_files_from = pageInfoAll.realpath_files;
-													var realpath_files_to = resources.realpath_files;
-													if(px.utils79.is_dir(realpath_files_from)){
-														px.fsEx.renameSync( realpath_files_from, realpath_files_to );
-													}
-													it2.next();
-												}
-											}
-										);
-										return;
-									}
-									it2.next();
-								},
-								function(it2){
-									callback(renameFrom, renameTo);
-									it2.next();
-								}
-							]);
-
-						}
-					},
-					'width': 460
-				}, function(){
-					$body.find('[name=rename_to]').focus();
-				});
-				it1.next();
-			}
-		]);
-	}
-}
-
-},{}]},{},[3])
+},{"../../../fncs/files_and_folders/index_files/libs.ignore/copy.js":3,"../../../fncs/files_and_folders/index_files/libs.ignore/mkdir.js":4,"../../../fncs/files_and_folders/index_files/libs.ignore/mkfile.js":5,"../../../fncs/files_and_folders/index_files/libs.ignore/open.js":6,"../../../fncs/files_and_folders/index_files/libs.ignore/remove.js":7,"../../../fncs/files_and_folders/index_files/libs.ignore/rename.js":8}]},{},[9])

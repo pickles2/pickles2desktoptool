@@ -94,3 +94,33 @@
 		}
 	}
 }
+
+// WASABI操作エリア
+.cont-wasabi-bar{
+	display: block;
+	border-top: 1px solid #99a;
+	border-bottom: 1px solid #99a;
+	border-radius: 0;
+	background-color: #eef;
+	margin: 1em 0;
+	&__heading{
+		font-weight: bold;
+		font-size: 36px;
+		text-align: center;
+		padding: 10px 20px;
+		color: #99a;
+	}
+	&__body{
+		padding: 10px 20px;
+	}
+	@media all and ( max-width: 400px ){
+		flex-direction: column;
+		&__heading{
+			font-size: 24px;
+			width: auto;
+			text-align: center;
+		}
+		&__body{
+		}
+	}
+}

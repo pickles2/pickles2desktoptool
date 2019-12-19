@@ -83,3 +83,26 @@
         font-size: 24px;
         width: auto;
         text-align: center; } }
+
+.cont-wasabi-bar {
+  display: block;
+  border-top: 1px solid #99a;
+  border-bottom: 1px solid #99a;
+  border-radius: 0;
+  background-color: #eef;
+  margin: 1em 0; }
+  .cont-wasabi-bar__heading {
+    font-weight: bold;
+    font-size: 36px;
+    text-align: center;
+    padding: 10px 20px;
+    color: #99a; }
+  .cont-wasabi-bar__body {
+    padding: 10px 20px; }
+  @media all and (max-width: 400px) {
+    .cont-wasabi-bar {
+      flex-direction: column; }
+      .cont-wasabi-bar__heading {
+        font-size: 24px;
+        width: auto;
+        text-align: center; } }

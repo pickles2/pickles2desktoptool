@@ -43,11 +43,13 @@ module.exports = function(main) {
 	/**
 	 * WASABI URL から、登録された API_KEY を取得する
 	 */
-	function getApiKeyByWasabiUrl(wasabiUrl){
+	function getApiKeyByWasabiUrl(wasabiUrl, callback){
+		callback = callback || function(){};
 		var baseDir = main.px2dtLDA.getAppDataDir('px2dt');
 		wasabiUrl = normalizeWasabiUrl(wasabiUrl);
 		if( !main.utils79.is_file( baseDir+'/wasabi.json' ) ){
-			return false;
+			callback(false);
+			return;
 		}
 		var API_KEY = false;
 		try{
@@ -58,15 +60,18 @@ module.exports = function(main) {
 			}
 		}catch(e){
 			console.error(e);
-			return false;
+			callback(false);
+			return;
 		}
-		return API_KEY;
+		callback(API_KEY);
+		return;
 	}
 
 	/**
 	 * API_KEY を WASABI URL と関連付けて保存する
 	 */
-	function updateApiKeyByWasabiUrl(wasabiUrl, apiKey){
+	function updateApiKeyByWasabiUrl(wasabiUrl, apiKey, callback){
+		callback = callback || function(){};
 		var baseDir = main.px2dtLDA.getAppDataDir('px2dt');
 		wasabiUrl = normalizeWasabiUrl(wasabiUrl);
 		try{
@@ -81,9 +86,11 @@ module.exports = function(main) {
 			main.fs.writeFileSync( baseDir+'/wasabi.json', JSON.stringify( json, null, 1 ) );
 		}catch(e){
 			console.error(e);
-			return false;
+			callback(false);
+			return;
 		}
-		return true;
+		callback(true);
+		return;
 	}
 
 
@@ -113,6 +120,28 @@ module.exports = function(main) {
 				return false;
 			}
 			return true;
+		}
+
+		/**
+		 * APP_KEY を取得する
+		 */
+		this.getAppKey = function(callback){
+			callback = callback || function(){};
+			getApiKeyByWasabiUrl(this.wasabiUrl, function(result){
+				callback(result);
+			});
+			return;
+		}
+
+		/**
+		 * APP_KEY を更新する
+		 */
+		this.updateAppKey = function(appKey, callback){
+			callback = callback || function(){};
+			updateApiKeyByWasabiUrl(this.wasabiUrl, appKey, function(result){
+				callback(result);
+			});
+			return;
 		}
 
 	}

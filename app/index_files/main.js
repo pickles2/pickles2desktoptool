@@ -1,4 +1,8 @@
 new (function($, window){
+
+	// ↓自署名証明書のSSLを許容する設定
+	process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
+
 	// pickles
 	var _this = this;
 	window.main = this;

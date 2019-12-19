@@ -98,6 +98,7 @@ module.exports = function(main) {
 	 * プロジェクトエージェント
 	 */
 	function projectAgent(pj){
+		var _this = this;
 		this.pj = pj;
 		this.projectId = false;
 		this.wasabiUrl = false;
@@ -144,6 +145,35 @@ module.exports = function(main) {
 			return;
 		}
 
+		/**
+		 * WASABIユーザー情報を取得する
+		 */
+		this.getUserInfo = function(callback){
+			callback = callback || function(){};
+			_this.getAppKey(function(apiKey){
+				var request = require('request');
+				var options = {
+					uri: _this.wasabiUrl+'api/user_info?apikey='+encodeURIComponent(apiKey),
+					headers: {
+						"Content-type": "application/x-www-form-urlencoded",
+					},
+					form: {
+						"apikey": apiKey
+					},
+					insecure: true
+				};
+				// console.log(options);
+
+				request.get(options, function(error, response, body){
+					// console.log(error, response, body);
+					var result = false;
+					try{
+						result = JSON.parse(body);
+					}catch(e){}
+					callback(result);
+				});
+			});
+		}
 	}
 
 	/**

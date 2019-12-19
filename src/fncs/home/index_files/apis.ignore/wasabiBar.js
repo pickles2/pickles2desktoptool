@@ -47,6 +47,15 @@ module.exports = function(contApp, main, $){
 				rlv();
 				return;
 			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// console.info(pj);
+				pj.wasabiPjAgent.getUserInfo(function(result){
+					// console.info(result);
+					$('.cont-wasabi-bar__wasabi-user-info').text(result.user.name + ' ('+result.user.account+')');
+					rlv();
+				});
+				return;
+			}); })
 		;
 
 	} // this.init();

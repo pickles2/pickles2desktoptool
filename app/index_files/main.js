@@ -1,4 +1,8 @@
 new (function($, window){
+
+	// ↓自署名証明書のSSLを許容する設定
+	process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
+
 	// pickles
 	var _this = this;
 	window.main = this;
@@ -160,6 +164,9 @@ new (function($, window){
 		return new Updater(px, $);
 	})(this);
 	this.updater = updater;
+
+	// WASABI API Client
+	this.wasabiClient = null;
 
 	/**
 	 * アプリケーションの初期化
@@ -408,12 +415,36 @@ new (function($, window){
 				},
 
 				function(it1){
+					// WASABI API Client
+					var wasabiClient = require('./index_files/wasabi/wasabi-client.js');
+					_this.wasabiClient = new wasabiClient(_this);
+					it1.next();
+				},
+
+				function(it1){
 					callback();
 				}
 
 			]
 		);
 		return;
+	}
+
+	/**
+	 * APP_KEY を取得する
+	 * 生成されていない場合は、生成して記憶します。
+	 */
+	this.getAppKey = function(){
+		// あれば取得して返す
+		var appkey = localStorage.getItem('app_key');
+		if( appkey && appkey.length ){
+			return this.utils79.base64_decode(appkey);
+		}
+
+		// なければ生成して返す
+		appkey = this.utils79.md5((new Date().getTime())+'-'+Math.floor( Math.random() * 1000000 ));
+		localStorage.setItem('app_key', this.utils79.base64_encode(appkey));
+		return this.utils79.base64_decode(localStorage.getItem('app_key'));
 	}
 
 	/**
@@ -467,10 +498,14 @@ new (function($, window){
 				var filename = filelist[idx];
 				var filenamePjId = filename.replace(/\.[a-zA-Z0-9]+$/g, '');
 				try {
+					if( filenamePjId == 'wasabi' ){
+						continue;
+					}
 					if( !pjAllIds[filenamePjId] ){
 						main.fs.unlinkSync(baseDir+'/'+filename);
 					}
 				} catch (e) {
+					console.error(e);
 				}
 			}
 

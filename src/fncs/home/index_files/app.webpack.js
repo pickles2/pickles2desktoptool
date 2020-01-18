@@ -6,6 +6,7 @@ window.contApp = new (function(){
 	this.pj = pj;
 	var status = pj.status();
 	this.gitBar = new(require('./apis.ignore/gitBar.js'))(this, main, $);
+	this.wasabiBar = new(require('./apis.ignore/wasabiBar.js'))(this, main, $);
 
 	var templates = {
 		'install-pickles2': require('./templates.ignore/install-pickles2.html'),
@@ -16,7 +17,8 @@ window.contApp = new (function(){
 		'is-not-empty-dir': require('./templates.ignore/is-not-empty-dir.html'),
 		'install-composer': require('./templates.ignore/install-composer.html'),
 		'conf-not-exists': require('./templates.ignore/conf-not-exists.html'),
-		'status-table': require('./templates.ignore/status-table.html')
+		'status-table': require('./templates.ignore/status-table.html'),
+		'wasabi-bar': require('./templates.ignore/wasabi-bar.html')
 	};
 	this.getTemplate = function(name){
 		return templates[name];
@@ -129,6 +131,19 @@ window.contApp = new (function(){
 					return;
 				}
 				_this.gitBar.init( $gitBar, function(){
+					it.next(arg);
+				} );
+			} ,
+			function(it, arg){
+				// --------------------------------------
+				// WASABIバーを表示する
+				var $wasabiBar = $('.cont-wasabi-bar');
+				if(!pj.wasabiPjAgent.hasWasabi()){
+					$('.cont-wasabi-bar').remove();
+					it.next(arg);
+					return;
+				}
+				_this.wasabiBar.init( $wasabiBar, function(){
 					it.next(arg);
 				} );
 			} ,

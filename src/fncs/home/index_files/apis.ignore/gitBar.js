@@ -1,5 +1,5 @@
 /**
- * Home: git.js
+ * Home: gitBar.js
  */
 module.exports = function(contApp, main, $){
 	var _this = this;

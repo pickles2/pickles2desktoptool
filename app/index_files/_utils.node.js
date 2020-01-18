@@ -36,7 +36,11 @@
 		// console.log( opts.cd );
 		// console.log( process.cwd() );
 
-		var proc = require('child_process').spawn(cmd, cliOpts);
+		var proc = require('child_process').spawn(cmd, cliOpts, {
+			env: {
+				LANG: 'en_US'
+			}
+		});
 		if( opts.success ){ proc.stdout.on('data', opts.success); }
 		if( opts.error ){ proc.stderr.on('data', opts.error); }
 		if( opts.complete ){ proc.on('close', opts.complete); }

@@ -50,8 +50,24 @@ module.exports = function(contApp, main, $){
 			.then(function(){ return new Promise(function(rlv, rjt){
 				// console.info(pj);
 				pj.wasabiPjAgent.getUserInfo(function(result){
-					// console.info(result);
+					console.info('WASABI UserInfo:', result);
 					$('.cont-wasabi-bar__wasabi-user-info').text(result.user.name + ' ('+result.user.account+')');
+					rlv();
+				});
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// console.info(pj);
+				pj.wasabiPjAgent.callWasabiApi('projects/'+pj.wasabiPjAgent.projectId+'/permissions', {}, function(result){
+					console.info('WASABI Project Permissions:', result);
+					rlv();
+				});
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// console.info(pj);
+				pj.wasabiPjAgent.callWasabiApi('projects/'+pj.wasabiPjAgent.projectId+'/app/pickles2', {}, function(result){
+					console.info('WASABI App Pickles 2:', result);
 					rlv();
 				});
 				return;

@@ -155,7 +155,7 @@ module.exports = function(main) {
 			_this.getAppKey(function(apiKey){
 				var request = require('request');
 				var options = {
-					uri: _this.wasabiUrl+api+'?apikey='+encodeURIComponent(apiKey),
+					uri: _this.wasabiUrl+'api/'+api+'?apikey='+encodeURIComponent(apiKey),
 					headers: {
 						"Content-type": "application/x-www-form-urlencoded",
 					},
@@ -183,7 +183,7 @@ module.exports = function(main) {
 		 */
 		this.getUserInfo = function(callback){
 			this.callWasabiApi(
-				'api/user_info',
+				'user_info',
 				{},
 				callback
 			);

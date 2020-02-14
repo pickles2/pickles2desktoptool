@@ -146,14 +146,16 @@ module.exports = function(main) {
 		}
 
 		/**
-		 * WASABIユーザー情報を取得する
+		 * WASABI API を呼び出す
 		 */
-		this.getUserInfo = function(callback){
+		this.callWasabiApi = function(api, options, callback){
+			api = api || '';
+			options = options || {};
 			callback = callback || function(){};
 			_this.getAppKey(function(apiKey){
 				var request = require('request');
 				var options = {
-					uri: _this.wasabiUrl+'api/user_info?apikey='+encodeURIComponent(apiKey),
+					uri: _this.wasabiUrl+api+'?apikey='+encodeURIComponent(apiKey),
 					headers: {
 						"Content-type": "application/x-www-form-urlencoded",
 					},
@@ -173,6 +175,19 @@ module.exports = function(main) {
 					callback(result);
 				});
 			});
+			return;
+		}
+
+		/**
+		 * WASABIユーザー情報を取得する
+		 */
+		this.getUserInfo = function(callback){
+			this.callWasabiApi(
+				'api/user_info',
+				{},
+				callback
+			);
+			return;
 		}
 	}
 

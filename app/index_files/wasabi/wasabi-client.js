@@ -148,25 +148,25 @@ module.exports = function(main) {
 		/**
 		 * WASABI API を呼び出す
 		 */
-		this.callWasabiApi = function(api, options, callback){
+		this.callWasabiApi = function(api, params, options, callback){
 			api = api || '';
-			options = options || {};
+			params = params || {};
 			callback = callback || function(){};
 			_this.getAppKey(function(apiKey){
 				var request = require('request');
-				var options = {
-					uri: _this.wasabiUrl+'api/'+api+'?apikey='+encodeURIComponent(apiKey),
-					headers: {
-						"Content-type": "application/x-www-form-urlencoded",
-					},
-					form: {
-						"apikey": apiKey
-					},
-					insecure: true
-				};
+				// var querystring = require('querystring');
+				// params = querystring.stringify(params);
+				options.insecure = true;
+				options.uri = _this.wasabiUrl+'api/'+api;
+				options.form = params;
+				// options.body = params;
+				options.method = options.method || 'get';
+				options.headers = options.headers || {};
+				options.headers["Content-type"] = "application/x-www-form-urlencoded";
+				options.headers["x-wasabi-apikey"] = apiKey;
 				// console.log(options);
 
-				request.get(options, function(error, response, body){
+				request(options, function(error, response, body){
 					// console.log(error, response, body);
 					var result = false;
 					try{
@@ -179,11 +179,25 @@ module.exports = function(main) {
 		}
 
 		/**
+		 * WASABIプロジェクトAPIを呼び出す
+		 */
+		this.callWasabiProjectApi = function(api, params, options, callback){
+			this.callWasabiApi(
+				'projects/'+this.projectId+'/'+api,
+				params,
+				options,
+				callback
+			);
+			return;
+		}
+
+		/**
 		 * WASABIユーザー情報を取得する
 		 */
 		this.getUserInfo = function(callback){
 			this.callWasabiApi(
 				'user_info',
+				{},
 				{},
 				callback
 			);

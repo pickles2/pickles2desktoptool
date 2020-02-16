@@ -35,7 +35,7 @@ module.exports = function(app, px, pj){
 
 
 		setTimeout(function(){
-			_this.updateComment();
+			_this.refresh();
 		}, 10);
 
 		return;
@@ -118,7 +118,7 @@ module.exports = function(app, px, pj){
 								px.message('コンテンツコメントを削除しました。');
 							}
 
-							_this.updateComment(function(){
+							_this.refresh(function(){
 								pj.updateGitStatus();
 								px.closeDialog();
 							});
@@ -134,7 +134,7 @@ module.exports = function(app, px, pj){
 	 * コメント表示欄を更新する
 	 * @return {[type]} [description]
 	 */
-	this.updateComment = function(callback){
+	this.refresh = function(callback){
 		callback = callback || function(){};
 		if(!px.utils.isFile( realpath_comment_file )){
 			$commentView.text('no comment.');

@@ -32,6 +32,33 @@
 		font-size: x-small;
 	}
 }
+.cont-wasabi-view{
+	overflow: auto;
+	margin: 10px 0 0 0; padding: 10px;
+	position: relative;
+	height: 200px;
+	width: 100%;
+	background: #f9f9f9;
+	font-size: x-small;
+	font-weight: normal;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	h1{
+		font-weight: bold;
+		font-size: medium;
+	}
+	h2{
+		font-weight: bold;
+		font-size: small;
+	}
+	h3,
+	h4,
+	h5,
+	h6{
+		font-weight: bold;
+		font-size: x-small;
+	}
+}
 
 .cont_page_info{
 	border: 1px solid #000;

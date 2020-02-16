@@ -31,7 +31,7 @@ module.exports = function(contApp, main, $){
 				$elm.find('.cont-wasabi-bar__wasabi-url').text(pj.wasabiPjAgent.wasabiUrl);
 				$elm.find('.cont-wasabi-bar__wasabi-pj-id').text(pj.wasabiPjAgent.projectId);
 				$elm.find('input[name=wasabi-appkey]').val(appKey);
-				$elm.find('form').on('submit', function(){
+				$elm.find('.cont-wasabi-bar__form-appkey form').on('submit', function(){
 					var newAppKey = $elm.find('input[name=wasabi-appkey]').val();
 					// alert(newAppKey);
 					pj.wasabiPjAgent.updateAppKey(newAppKey, function(result){
@@ -51,35 +51,11 @@ module.exports = function(contApp, main, $){
 				// console.info(pj);
 				pj.wasabiPjAgent.getUserInfo(function(result){
 					console.info('WASABI UserInfo:', result);
-					$('.cont-wasabi-bar__wasabi-user-info').text(result.user.name + ' ('+result.user.account+')');
-					rlv();
-				});
-				return;
-			}); })
-			.then(function(){ return new Promise(function(rlv, rjt){
-				// console.info(pj);
-				pj.wasabiPjAgent.callWasabiProjectApi('permissions', {}, {}, function(result){
-					console.info('WASABI Project Permissions:', result);
-					rlv();
-				});
-				return;
-			}); })
-			.then(function(){ return new Promise(function(rlv, rjt){
-				// console.info(pj);
-				pj.wasabiPjAgent.callWasabiProjectApi('app/pickles2', {}, {}, function(result){
-					console.info('WASABI App Pickles 2:', result);
-					rlv();
-				});
-				return;
-			}); })
-			.then(function(){ return new Promise(function(rlv, rjt){
-				// console.info(pj);
-				pj.wasabiPjAgent.callWasabiProjectApi('app/pickles2/update_page', {
-					"path": "/index.html"
-				}, {
-					'method': 'post'
-				}, function(result){
-					console.info('WASABI App Pickles 2:', result);
+					if(result){
+						$('.cont-wasabi-bar__wasabi-user-info').text(result.user.name + ' ('+result.user.account+')');
+					}else{
+						$('.cont-wasabi-bar__wasabi-user-info').text('認証に失敗しました。');
+					}
 					rlv();
 				});
 				return;

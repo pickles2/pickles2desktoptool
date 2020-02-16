@@ -14,6 +14,7 @@ window.contApp = new (function( main ){
 	var _currentPageInfo;
 
 	var contentsComment,
+		wasabiComment,
 		pageDraw,
 		pageSearch;
 
@@ -85,6 +86,7 @@ window.contApp = new (function( main ){
 				$elms.previewIframe = $elms.preview.find('iframe');
 				$elms.pageinfo = $('.cont_page_info');
 				$elms.commentView = $('.cont_comment_view');
+				$elms.wasabiView = $('.cont-wasabi-view');
 				$elms.workspaceSearch = $('.cont_workspace_search');
 				$elms.breadcrumb = $('.cont_breadcrumb');
 
@@ -145,7 +147,8 @@ window.contApp = new (function( main ){
 			},
 			function(it1, arg){
 				contentsComment = new (require('../../../fncs/pages/index_files/libs.ignore/contentsComment.js'))(_this, px, _pj);
-				pageDraw = new (require('../../../fncs/pages/index_files/libs.ignore/pageDraw.js'))(_this, px, _pj, $elms, contentsComment);
+				wasabiComment = new (require('../../../fncs/pages/index_files/libs.ignore/wasabi.js'))(_this, px, _pj);
+				pageDraw = new (require('../../../fncs/pages/index_files/libs.ignore/pageDraw.js'))(_this, px, _pj, $elms, contentsComment, wasabiComment);
 				pageSearch = new (require('../../../fncs/pages/index_files/libs.ignore/pageSearch.js'))(_this, px, _pj, $elms);
 				it1.next(arg);
 			},
@@ -549,7 +552,7 @@ window.contApp = new (function( main ){
 		var $workspaceContainer = $('.cont_workspace_container');
 		$workspaceContainer
 			.css({
-				'height': $(window).innerHeight() - $('.container').outerHeight() - ( $elms.commentView.is(':visible') ? $elms.commentView.outerHeight() + 10 : 0 ) - $elms.workspaceSearch.outerHeight() - heightBreadcrumb - 20,
+				'height': $(window).innerHeight() - $('.container').outerHeight() - ( $elms.commentView.is(':visible') ? $elms.commentView.outerHeight() + 10 : 0 ) - ( $elms.wasabiView.is(':visible') ? $elms.wasabiView.outerHeight() + 10 : 0 ) - $elms.workspaceSearch.outerHeight() - heightBreadcrumb - 20,
 				'margin-top': 10
 			})
 		;

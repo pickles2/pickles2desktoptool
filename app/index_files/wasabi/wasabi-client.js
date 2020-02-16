@@ -154,13 +154,13 @@ module.exports = function(main) {
 			callback = callback || function(){};
 			_this.getAppKey(function(apiKey){
 				var request = require('request');
-				// var querystring = require('querystring');
-				// params = querystring.stringify(params);
+				var querystring = require('querystring');
+
 				options.insecure = true;
-				options.uri = _this.wasabiUrl+'api/'+api;
-				options.form = params;
-				// options.body = params;
 				options.method = options.method || 'get';
+				options.uri = _this.wasabiUrl+'api/'+api+( options.method.toLowerCase() === 'get' ? '?'+querystring.stringify(params) : '' );
+				options.form = ( options.method.toLowerCase() === 'post' ? params : {} );
+				// options.body = params;
 				options.headers = options.headers || {};
 				options.headers["Content-type"] = "application/x-www-form-urlencoded";
 				options.headers["x-wasabi-apikey"] = apiKey;

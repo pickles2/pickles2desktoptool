@@ -3475,7 +3475,7 @@ module.exports = function(app, px, pj){
 
 
 		setTimeout(function(){
-			_this.updateComment();
+			_this.refresh();
 		}, 10);
 
 		return;
@@ -3558,7 +3558,7 @@ module.exports = function(app, px, pj){
 								px.message('コンテンツコメントを削除しました。');
 							}
 
-							_this.updateComment(function(){
+							_this.refresh(function(){
 								pj.updateGitStatus();
 								px.closeDialog();
 							});
@@ -3574,7 +3574,7 @@ module.exports = function(app, px, pj){
 	 * コメント表示欄を更新する
 	 * @return {[type]} [description]
 	 */
-	this.updateComment = function(callback){
+	this.refresh = function(callback){
 		callback = callback || function(){};
 		if(!px.utils.isFile( realpath_comment_file )){
 			$commentView.text('no comment.');
@@ -3608,7 +3608,7 @@ module.exports = function(app, px, pj){
 /**
  * pageDraw.js
  */
-module.exports = function(app, px, pj, $elms, contentsComment){
+module.exports = function(app, px, pj, $elms, contentsComment, wasabiComment){
 	var it79 = require('iterate79');
 	var _this = this;
 
@@ -3777,6 +3777,12 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 				// --------------------------------------
 				// コンテンツコメント機能
 				contentsComment.init( prop.pageInfo, $elms.commentView );
+				it.next(prop);
+			} ,
+			function(it, prop){
+				// --------------------------------------
+				// WASABI Integration
+				wasabiComment.init( prop.pageInfo, $elms.wasabiView );
 				it.next(prop);
 			} ,
 			function(it, prop){
@@ -4655,6 +4661,239 @@ module.exports = function(app, px, pj, $elms){
 }
 
 },{"iterate79":13}],19:[function(require,module,exports){
+/**
+ * wasabi.js
+ */
+module.exports = function(app, px, pj){
+	var _this = this;
+	var realpath_comment_file;
+	var pageInfo;
+	var $wasabiView;
+	var wasabiProjectMembers;
+	var wasabiPermissions;
+	var wasabiPageStatusInfo;
+	var wasabiUserInfo;
+
+	/**
+	 * 初期化
+	 */
+	this.init = function( _pageInfo, _$wasabiView ){
+		pageInfo = _pageInfo;
+		$wasabiView = _$wasabiView;
+
+		if( !pj.wasabiPjAgent.hasWasabi() ){
+			$wasabiView.hide();
+			return;
+		}
+		$wasabiView.show();
+
+		var appKey = '';
+		new Promise(function(rlv){rlv();})
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// console.info(pj);
+				pj.wasabiPjAgent.getAppKey(function(result){
+					appKey = result;
+					// console.log(appKey);
+					// console.log(pageInfo);
+					rlv();
+				});
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// console.info(pj);
+				pj.wasabiPjAgent.getUserInfo(function(result){
+					console.info('WASABI UserInfo:', result);
+					wasabiUserInfo = result;
+					if( !wasabiUserInfo ){
+						_this.refresh();
+						return;
+					}
+					rlv();
+				});
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// console.info(pj);
+				pj.wasabiPjAgent.callWasabiProjectApi('permissions', {}, {}, function(result){
+					console.info('WASABI Project Permissions:', result);
+					wasabiPermissions = result;
+					rlv();
+				});
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// console.info(pj);
+				$wasabiView
+					.html('...')
+					.off('dblclick')
+					.on('dblclick', function(){
+						_this.edit();
+						return false;
+					})
+				;
+
+				setTimeout(function(){
+					rlv();
+				}, 10);
+
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				pj.wasabiPjAgent.callWasabiProjectApi('members', {}, {}, function(result){
+					console.info('WASABI Project Members:', result);
+					wasabiProjectMembers = result.members;
+					rlv();
+				});
+
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				_this.refresh();
+				rlv();
+				return;
+			}); })
+		;
+
+
+		return;
+	}
+
+	/**
+	 * コメントを編集する
+	 * @return {[type]} [description]
+	 */
+	this.edit = function(){
+		var $body = $('<div>');
+		$body.append('<div>Assignee: <select name="cont-wasabi-assignee-selector"></select></div>');
+		$body.append('<div>Status: <select name="cont-wasabi-status-selector"></select></div>');
+
+		px.dialog({
+			'title': '状態を編集',
+			'body': $body,
+			'buttons':[
+				$('<button>')
+					.text(px.lb.get('ui_label.cancel'))
+					.on('click', function(){
+						px.closeDialog();
+					}),
+				$('<button>')
+					.text('OK')
+					.addClass('px2-btn--primary')
+					.on('click', function(){
+
+						var assigneeId = $body.find('select[name=cont-wasabi-assignee-selector]').val();
+						var status = $body.find('select[name=cont-wasabi-status-selector]').val();
+						pj.wasabiPjAgent.callWasabiProjectApi('app/pickles2/update_page', {
+							"title": pageInfo.title,
+							"status": status,
+							"assignee_id": assigneeId,
+							"path": pageInfo.path
+						}, {
+							'method': 'post'
+						}, function(result){
+							console.info('WASABI App Pickles 2 update_page:', result);
+							if( !result.result ){
+								alert('ERROR: '+result.error_message);
+							}
+
+							_this.refresh(function(){
+								// pj.updateGitStatus();
+								px.closeDialog();
+							});
+						});
+
+					})
+			]
+		});
+
+		var $select = $body.find('select[name=cont-wasabi-assignee-selector]');
+		$select.append( $('<option>').attr({'value': ""}).text("(Unassigned)") );
+		for(var idx in wasabiProjectMembers){
+			$select
+				.append( $('<option>')
+					.attr({
+						'value': wasabiProjectMembers[idx].user_id,
+						'selected': (wasabiPageStatusInfo.assignee_id == wasabiProjectMembers[idx].user_id ? true : false)
+					})
+					.text(wasabiProjectMembers[idx].name)
+				);
+		}
+
+		var $status = $body.find('select[name=cont-wasabi-status-selector]');
+		$status
+			.append( $('<option>').attr({'value': 'opened', 'selected': (wasabiPageStatusInfo.status == 'opened' ? true : false)}).text('Open') )
+			.append( $('<option>').attr({'value': 'inprogress', 'selected': (wasabiPageStatusInfo.status == 'inprogress' ? true : false)}).text('In Progress') )
+			.append( $('<option>').attr({'value': 'resolved', 'selected': (wasabiPageStatusInfo.status == 'resolved' ? true : false)}).text('Resolved') )
+			.append( $('<option>').attr({'value': 'closed', 'selected': (wasabiPageStatusInfo.status == 'closed' ? true : false)}).text('Closed') )
+		;
+
+		return;
+	}
+
+	/**
+	 * コメント表示欄を更新する
+	 * @return {[type]} [description]
+	 */
+	this.refresh = function(callback){
+		callback = callback || function(){};
+
+		if( !pj.wasabiPjAgent.hasWasabi() ){
+			$wasabiView.hide();
+			callback(false);
+			return;
+		}
+
+		$wasabiView.show();
+		$wasabiView.text('状態を更新しています...');
+
+		new Promise(function(rlv){rlv();})
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// console.info(pj);
+				if( !wasabiUserInfo ){
+					$wasabiView.html('').append('<div>WASABI認証に失敗しました。</div>');
+					return;
+				}
+				rlv();
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// console.info(pj);
+				pj.wasabiPjAgent.callWasabiProjectApi('app/pickles2/page', {
+					"path": pageInfo.path
+				}, {}, function(result){
+					console.info('WASABI App Pickles 2 page:', result);
+					wasabiPageStatusInfo = result;
+					rlv();
+				});
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				// console.info(pj);
+				var $canvas = $('<div>');
+				$canvas.append( '<div>Assignee: <span class="cont-wasabi-assignee"></span></div>' );
+				$canvas.append( '<div>Status: <span class="cont-wasabi-status"></span></div>' );
+
+				$wasabiView.html('').append($canvas);
+				$wasabiView.find('.cont-wasabi-assignee').text( wasabiPageStatusInfo.assignee.name );
+				$wasabiView.find('.cont-wasabi-status').text( wasabiPageStatusInfo.status );
+
+				rlv();
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				callback(true);
+				rlv();
+				return;
+			}); })
+		;
+
+		return;
+	}
+
+	return;
+}
+
+},{}],20:[function(require,module,exports){
 window.px = window.parent.main;
 window.main = window.parent.main;
 window.contApp = new (function( main ){
@@ -4671,6 +4910,7 @@ window.contApp = new (function( main ){
 	var _currentPageInfo;
 
 	var contentsComment,
+		wasabiComment,
 		pageDraw,
 		pageSearch;
 
@@ -4742,6 +4982,7 @@ window.contApp = new (function( main ){
 				$elms.previewIframe = $elms.preview.find('iframe');
 				$elms.pageinfo = $('.cont_page_info');
 				$elms.commentView = $('.cont_comment_view');
+				$elms.wasabiView = $('.cont-wasabi-view');
 				$elms.workspaceSearch = $('.cont_workspace_search');
 				$elms.breadcrumb = $('.cont_breadcrumb');
 
@@ -4802,7 +5043,8 @@ window.contApp = new (function( main ){
 			},
 			function(it1, arg){
 				contentsComment = new (require('../../../fncs/pages/index_files/libs.ignore/contentsComment.js'))(_this, px, _pj);
-				pageDraw = new (require('../../../fncs/pages/index_files/libs.ignore/pageDraw.js'))(_this, px, _pj, $elms, contentsComment);
+				wasabiComment = new (require('../../../fncs/pages/index_files/libs.ignore/wasabi.js'))(_this, px, _pj);
+				pageDraw = new (require('../../../fncs/pages/index_files/libs.ignore/pageDraw.js'))(_this, px, _pj, $elms, contentsComment, wasabiComment);
 				pageSearch = new (require('../../../fncs/pages/index_files/libs.ignore/pageSearch.js'))(_this, px, _pj, $elms);
 				it1.next(arg);
 			},
@@ -5206,7 +5448,7 @@ window.contApp = new (function( main ){
 		var $workspaceContainer = $('.cont_workspace_container');
 		$workspaceContainer
 			.css({
-				'height': $(window).innerHeight() - $('.container').outerHeight() - ( $elms.commentView.is(':visible') ? $elms.commentView.outerHeight() + 10 : 0 ) - $elms.workspaceSearch.outerHeight() - heightBreadcrumb - 20,
+				'height': $(window).innerHeight() - $('.container').outerHeight() - ( $elms.commentView.is(':visible') ? $elms.commentView.outerHeight() + 10 : 0 ) - ( $elms.wasabiView.is(':visible') ? $elms.wasabiView.outerHeight() + 10 : 0 ) - $elms.workspaceSearch.outerHeight() - heightBreadcrumb - 20,
 				'margin-top': 10
 			})
 		;
@@ -5234,4 +5476,4 @@ window.contApp = new (function( main ){
 
 })( window.parent.main );
 
-},{"../../../fncs/pages/index_files/libs.ignore/contentsComment.js":16,"../../../fncs/pages/index_files/libs.ignore/pageDraw.js":17,"../../../fncs/pages/index_files/libs.ignore/pageSearch.js":18,"iterate79":13}]},{},[19])
+},{"../../../fncs/pages/index_files/libs.ignore/contentsComment.js":16,"../../../fncs/pages/index_files/libs.ignore/pageDraw.js":17,"../../../fncs/pages/index_files/libs.ignore/pageSearch.js":18,"../../../fncs/pages/index_files/libs.ignore/wasabi.js":19,"iterate79":13}]},{},[20])

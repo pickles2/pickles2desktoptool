@@ -1,7 +1,7 @@
 /**
  * pageDraw.js
  */
-module.exports = function(app, px, pj, $elms, contentsComment){
+module.exports = function(app, px, pj, $elms, contentsComment, wasabiComment){
 	var it79 = require('iterate79');
 	var _this = this;
 
@@ -170,6 +170,12 @@ module.exports = function(app, px, pj, $elms, contentsComment){
 				// --------------------------------------
 				// コンテンツコメント機能
 				contentsComment.init( prop.pageInfo, $elms.commentView );
+				it.next(prop);
+			} ,
+			function(it, prop){
+				// --------------------------------------
+				// WASABI Integration
+				wasabiComment.init( prop.pageInfo, $elms.wasabiView );
 				it.next(prop);
 			} ,
 			function(it, prop){

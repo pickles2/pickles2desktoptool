@@ -120,7 +120,7 @@ module.exports = function(app, px, pj){
 
 						var assigneeId = $body.find('select[name=cont-wasabi-assignee-selector]').val();
 						var status = $body.find('select[name=cont-wasabi-status-selector]').val();
-						pj.wasabiPjAgent.callWasabiProjectApi('app/pickles2/update_page', {
+						pj.wasabiPjAgent.callWasabiProjectApi('app/Pickles2/update_page', {
 							"title": pageInfo.title,
 							"status": status,
 							"assignee_id": assigneeId,
@@ -195,7 +195,7 @@ module.exports = function(app, px, pj){
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
 				// console.info(pj);
-				pj.wasabiPjAgent.callWasabiProjectApi('app/pickles2/page', {
+				pj.wasabiPjAgent.callWasabiProjectApi('app/Pickles2/page', {
 					"path": pageInfo.path
 				}, {}, function(result){
 					console.info('WASABI App Pickles 2 page:', result);

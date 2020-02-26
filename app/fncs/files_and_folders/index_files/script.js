@@ -933,6 +933,7 @@ window.contApp = new (function( main ){
 	var remoteFinder;
 	var $elms = {};
 	$elms.editor = $('<div>');
+	$elms.remoteFinder = $('<div>');
 	var mkfile = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/mkfile.js'))(this, main, _pj, $);
 	var mkdir = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/mkdir.js'))(this, main, _pj, $);
 	var open = new (require('../../../fncs/files_and_folders/index_files/libs.ignore/open.js'))(this, main, _pj, $);
@@ -944,6 +945,7 @@ window.contApp = new (function( main ){
 	 * 初期化
 	 */
 	$(window).on('load', function(){
+		$elms.remoteFinder = $('#cont_finder');
 		remoteFinder = new RemoteFinder(
 			document.getElementById('cont_finder'),
 			{
@@ -969,6 +971,7 @@ window.contApp = new (function( main ){
 		$(window).on('resize', function(){
 			onWindowResize();
 		});
+		onWindowResize();
 	});
 
 	/**
@@ -1079,6 +1082,11 @@ window.contApp = new (function( main ){
 		$elms.editor
 			.css({
 				'height': $(window).innerHeight() - 0
+			})
+		;
+		$elms.remoteFinder
+			.css({
+				'height': $(window).innerHeight() - $('.container').eq(0).innerHeight() - 10
 			})
 		;
 	}

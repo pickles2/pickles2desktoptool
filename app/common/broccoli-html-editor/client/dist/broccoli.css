@@ -228,7 +228,15 @@
   top: -8px;
   width: 90%;
   margin: 0 auto;
-  height: 1px; }
+  height: 1px;
+  z-index: 100000000;
+  animation: broccoli--panel-drop-to-insert-here 0.5s infinite; }
+
+@keyframes broccoli--panel-drop-to-insert-here {
+  0% {
+    opacity: 1; }
+  50% {
+    opacity: 0.6; } }
   .broccoli--panel-drop-to-insert-here:before, .broccoli--panel-drop-to-insert-here:after {
     content: ' ';
     width: 0;
@@ -269,6 +277,22 @@
   .broccoli--panel__drag-entered > .broccoli--panel-drop-to-insert-here {
     display: block !important; }
 
+.broccoli--panel__drag-entered-u {
+  background: linear-gradient(rgba(231, 244, 255, 0.8), rgba(231, 244, 255, 0)) !important; }
+  .broccoli--panel__drag-entered-u[data-broccoli-sub-mod-name] {
+    background: linear-gradient(rgba(232, 255, 231, 0.8), rgba(232, 255, 231, 0)) !important; }
+  .broccoli--panel__drag-entered-u > .broccoli--panel-drop-to-insert-here {
+    top: -8px;
+    bottom: auto; }
+
+.broccoli--panel__drag-entered-d {
+  background: linear-gradient(rgba(231, 244, 255, 0), rgba(231, 244, 255, 0.8)) !important; }
+  .broccoli--panel__drag-entered-d[data-broccoli-sub-mod-name] {
+    background: linear-gradient(rgba(232, 255, 231, 0), rgba(232, 255, 231, 0.8)) !important; }
+  .broccoli--panel__drag-entered-d > .broccoli--panel-drop-to-insert-here {
+    top: auto;
+    bottom: -8px; }
+
 .broccoli--edit-window h2 {
   font-weight: bold;
   text-align: center;
@@ -290,9 +314,27 @@
 .broccoli--edit-window .has-error h3 {
   color: #a94442; }
 
-.broccoli--edit-window-window-message-field {
+.broccoli--edit-window-field-required h3::before {
+  content: "*";
+  color: #f33;
+  margin-right: 0.5em;
+  font-size: 80%; }
+
+.broccoli--edit-window-message-field {
   display: none;
   margin: 10px; }
+
+.broccoli--edit-window-module-readme-inner {
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  background-color: #f9f9f9;
+  padding: 20px;
+  max-height: 400px;
+  overflow: auto;
+  margin: 0.5em 1em 2em; }
+
+.broccoli--edit-window-module-readme-switch {
+  text-align: right; }
 
 .broccoli--edit-window-builtin-fields {
   border: 1px solid #99e;
@@ -387,31 +429,50 @@
         margin: 0 0.5em; }
 
 .broccoli--edit-window-form-buttons {
-  margin-top: 1em; }
+  margin-top: 1em;
+  padding-bottom: 0.5em; }
 
 .broccoli--edit-window-field-error-message {
   display: none; }
 
-.broccoli--lightbox {
+.broccoli__lightbox {
   position: fixed;
   top: 0;
   left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000000;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column;
+  -ms-flex-pack: center;
+      justify-content: center;
+  -ms-flex-align: center;
+      align-items: center;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   overflow-scrolling: touch;
-  background-color: rgba(0, 0, 0, 0.5);
-  width: 100%;
-  height: 100%;
-  z-index: 10000; }
-  .broccoli--lightbox-inner {
-    width: 90%;
+  background-color: rgba(0, 0, 0, 0.5); }
+  .broccoli__lightbox-inner {
+    width: 100%;
+    max-width: calc(100% - 40px);
+    height: auto;
+    max-height: calc(100% - 5px);
+    overflow: auto;
     background-color: #fff;
     padding: 1em;
-    margin: 30px auto 100px;
+    margin: 20px auto 20px;
     border-radius: 5px;
     box-shadow: 0 10px 40px 20px rgba(0, 0, 0, 0.3); }
+    .broccoli__lightbox-inner::after {
+      display: block;
+      clear: both;
+      content: ' ';
+      height: 10px;
+      overflow: hidden; }
 
-.broccoli--progress {
+.broccoli__progress {
   position: fixed;
   top: 0;
   left: 0;
@@ -421,30 +482,29 @@
   height: 100%;
   z-index: 11000;
   text-align: center; }
-  .broccoli--progress-inner {
+  .broccoli__progress-inner {
     position: absolute;
     left: 0;
     top: 50%;
     width: 100%;
     height: 180px; }
-  .broccoli--progress-inner2 {
+  .broccoli__progress-inner2 {
     position: absolute;
     left: 0;
     top: -50%;
     width: 100%;
     height: 180px; }
-
-.broccoli--progress-comment {
-  color: #999;
-  background-color: #eee;
-  padding: 0.5em 1em;
-  margin: 0 auto;
-  display: inline-block;
-  font-size: 70%;
-  text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap; }
+  .broccoli__progress-comment {
+    color: #999;
+    background-color: #eee;
+    padding: 0.5em 1em;
+    margin: 0 auto;
+    display: inline-block;
+    font-size: 70%;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; }
 
 .broccoli--module-info-preview {
   position: fixed;
@@ -491,10 +551,15 @@
   margin: 10px 0; }
   .broccoli--module-info-content-pics ul {
     margin: 1em 0;
-    padding: 0; }
+    padding: 0;
+    overflow: auto;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap; }
     .broccoli--module-info-content-pics ul li {
       list-style-type: none;
-      margin: 1em 0;
+      margin: 1em;
       padding: 0; }
       .broccoli--module-info-content-pics ul li img {
         width: auto;
@@ -619,6 +684,51 @@
       min-width: 27px;
       height: 27px;
       min-height: 27px; }
+
+.broccoli__module-readme {
+  color: #333;
+  text-align: left; }
+  .broccoli__module-readme img {
+    max-width: 100%; }
+  .broccoli__module-readme h1 {
+    font-size: small;
+    font-weight: bold;
+    color: #999;
+    text-align: left;
+    background: transparent; }
+  .broccoli__module-readme h2 {
+    font-size: 146%;
+    font-weight: bold;
+    color: #000;
+    border-bottom: 1px solid #333;
+    padding: 0.3em 0.5em;
+    margin: 2em 0 0.5em 0;
+    text-align: left;
+    background: transparent; }
+  .broccoli__module-readme h3 {
+    font-size: 123%;
+    font-weight: bold;
+    color: #000;
+    border: none;
+    padding: 0;
+    margin: 1em 0 0.5em 0;
+    text-align: left;
+    background: transparent; }
+  .broccoli__module-readme h4 {
+    font-size: 110%;
+    font-weight: bold;
+    color: #000;
+    border: none;
+    padding: 0;
+    margin: 1em 0 0.5em 0;
+    text-align: left;
+    background: transparent; }
+  .broccoli__module-readme p, .broccoli__module-readme ul, .broccoli__module-readme ol, .broccoli__module-readme blockquote, .broccoli__module-readme pre {
+    margin-top: 1em;
+    margin-bottom: 1em; }
+  .broccoli__module-readme li p, .broccoli__module-readme li ul, .broccoli__module-readme li ol, .broccoli__module-readme li blockquote, .broccoli__module-readme li pre {
+    margin-top: 0.2em;
+    margin-bottom: 0.2em; }
 
 .broccoli__inline-error-message {
   border: none;

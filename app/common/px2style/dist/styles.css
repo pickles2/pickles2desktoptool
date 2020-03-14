@@ -104,6 +104,7 @@
   display: block;
   width: 100%; }
 
+.px2-a:before,
 .px2-link.px2-link--burette:before {
   content: ' ';
   width: 0;

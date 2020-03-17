@@ -226,8 +226,9 @@ module.exports = function(contApp, px, $){
 		px2style.modal({
 			title: 'エラーレポート一覧',
 			body: $body,
+			width: 880,
 			buttons: [
-				$('<button class="px2-btn px2-btn--primary">')
+				$('<button class="px2-btn">')
 					.text('OK')
 					.on('click', function(){
 						_this.closeErrorReports();

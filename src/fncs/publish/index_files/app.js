@@ -248,10 +248,11 @@ window.contApp = new (function(main, $){
 			}
 		})();
 
-		main.dialog({
-			'title': 'パブリッシュ',
-			'body': $body,
-			'buttons':[
+		px2style.modal({
+			title: 'パブリッシュ',
+			body: $body,
+			width: 1024,
+			buttons: [
 				$('<button>')
 					.text('パブリッシュを実行する')
 					.attr({'type':'submit'})
@@ -290,7 +291,7 @@ window.contApp = new (function(main, $){
 						var keep_cache = ( $body.find('input[name=keep_cache]:checked').val() ? 1 : 0 );
 
 						// パブリッシュ条件入力ダイアログを閉じる
-						main.closeDialog();
+						px2style.closeModal();
 
 						_pj.appdata.get().publishOption = _pj.appdata.get().publishOption || {};
 						_pj.appdata.get().publishOption.last = {
@@ -351,11 +352,13 @@ window.contApp = new (function(main, $){
 							}
 						);
 					}),
+			],
+			buttonsSecondary: [
 				$('<button>')
 					.text(main.lb.get('ui_label.cancel'))
 					.addClass('px2-btn')
 					.on('click', function(){
-						main.closeDialog();
+						px2style.closeModal();
 						_pj.updateGitStatus();
 					})
 			]

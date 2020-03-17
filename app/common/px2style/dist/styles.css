@@ -247,10 +247,37 @@
     padding: 10px 0;
     margin: 20px auto;
     width: calc(100% - 40px);
-    max-width: 400px;
+    max-width: 520px;
     height: auto;
     max-height: calc(100% - 40px);
-    overflow: auto; }
+    overflow: auto;
+    font-size: medium; }
+    .px2-modal__dialog h1 {
+      font-size: 124%;
+      margin: 0;
+      font-weight: bold; }
+    .px2-modal__dialog h2 {
+      font-size: 124%;
+      margin: 2em 0 0.5em 0;
+      font-weight: bold; }
+    .px2-modal__dialog h3 {
+      font-size: 112%;
+      margin: 1em 0 0.5em 0;
+      font-weight: bold; }
+    .px2-modal__dialog h4 {
+      font-size: 104%;
+      margin: 1em 0 0.5em 0;
+      font-weight: bold; }
+    .px2-modal__dialog h5 {
+      font-size: 100%;
+      margin: 1em 0 0.5em 0;
+      font-weight: bold; }
+    .px2-modal__dialog h6 {
+      font-size: 100%;
+      margin: 1em 0 0.5em 0;
+      font-weight: bold; }
+    .px2-modal__dialog h2 {
+      border-bottom: 1px solid var(--px2-main-color); }
   .px2-modal__header {
     border-bottom: 1px solid var(--px2-main-color);
     padding: 0 20px;
@@ -264,8 +291,7 @@
     -ms-flex-positive: 1;
         flex-grow: 1; }
   .px2-modal__title {
-    font-weight: bold;
-    font-size: large; }
+    font-weight: bold; }
   .px2-modal__footer {
     border-top: 1px solid var(--px2-main-color);
     margin: 10px 0 0 0;

@@ -10035,13 +10035,13 @@ module.exports = function(Px2style){
 			if(options.form){
 				tpl += '<form>';
 			}
-			tpl += ' <div class="px2-modal__dialog">';
+			tpl += ' <article class="px2-modal__dialog">';
 			tpl += '  <div class="px2-modal__header">';
-			tpl += '      <div class="px2-modal__title"></div>';
+			tpl += '      <h1 class="px2-modal__title"></h1>';
 			tpl += '  </div>';
 			tpl += '  <div class="px2-modal__body"><div class="px2-modal__body-inner"></div></div>';
 			tpl += '  <div class="px2-modal__footer"><div class="px2-modal__footer-primary"></div><div class="px2-modal__footer-secondary"></div></div>';
-			tpl += ' </div>';
+			tpl += ' </article>';
 			if(options.form){
 				tpl += '</form>';
 			}

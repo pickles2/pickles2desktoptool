@@ -46,7 +46,7 @@ window.contApp = new (function(){
 				$('.tpl_entry_script').text( pj.get('entry_script') );
 				$('.tpl_external_preview_server_origin').text( px2dtLDA_pj.getExtendedData('external_preview_server_origin')||'' );
 				$('.tpl_external_app_server_origin').text( px2dtLDA_pj.getExtendedData('external_app_server_origin')||'' );
-				$('address.center').text( main.packageJson.pickles2.credit );
+				$('address.center').text( main.packageJson.extra.credit );
 				it.next(arg);
 			} ,
 			function(it, arg){

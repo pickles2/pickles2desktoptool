@@ -42,7 +42,7 @@
 		 * ポート番号を取得
 		 */
 		this.getPort = function(){
-			var port = px.packageJson.pickles2.network.appserver.port;
+			var port = px.packageJson.extra.network.appserver.port;
 			var db = px.getDb();
 			if( db.network && db.network.preview && db.network.appserver.port ){
 				port = db.network.appserver.port;

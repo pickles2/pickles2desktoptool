@@ -33,7 +33,7 @@ new (function($, window){
 
 	// data
 	var _path_data_dir = (function(){
-		var rtn = (process.env.HOME||process.env.LOCALAPPDATA) + '/'+_packageJson.pickles2.dataDirName;
+		var rtn = (process.env.HOME||process.env.LOCALAPPDATA) + '/'+_packageJson.extra.dataDirName;
 		var tmp_path_data_dir = localStorage.getItem("realpath_data_dir");
 		if( tmp_path_data_dir && _utils79.is_dir(tmp_path_data_dir) ){
 			return tmp_path_data_dir;
@@ -195,10 +195,10 @@ new (function($, window){
 						main.px2dtLDA.db.apps.texteditor = main.px2dtLDA.db.apps.texteditor || '';
 						main.px2dtLDA.db.apps.texteditorForDir = main.px2dtLDA.db.apps.texteditorForDir || '';
 						main.px2dtLDA.db.network.preview = main.px2dtLDA.db.network.preview || {};
-						main.px2dtLDA.db.network.preview.port = main.px2dtLDA.db.network.preview.port || _packageJson.pickles2.network.preview.port;
+						main.px2dtLDA.db.network.preview.port = main.px2dtLDA.db.network.preview.port || _packageJson.extra.network.preview.port;
 						main.px2dtLDA.db.network.preview.accessRestriction = main.px2dtLDA.db.network.preview.accessRestriction || "loopback";
 						main.px2dtLDA.db.network.appserver = main.px2dtLDA.db.network.appserver || {};
-						main.px2dtLDA.db.network.appserver.port = main.px2dtLDA.db.network.appserver.port || _packageJson.pickles2.network.appserver.port;
+						main.px2dtLDA.db.network.appserver.port = main.px2dtLDA.db.network.appserver.port || _packageJson.extra.network.appserver.port;
 
 						main.px2dtLDA.db.extra = main.px2dtLDA.db.extra || {};
 						main.px2dtLDA.db.extra.px2dt = main.px2dtLDA.db.extra.px2dt || {};
@@ -331,9 +331,9 @@ new (function($, window){
 					$('head').append( $('<style>')
 						.html(
 							'.px2-header__global-menu ul li a:hover,'
-							+'.px2-header__global-menu ul li a.current{color: '+_packageJson.pickles2.colors.defaultKeyColor+';}'
-							+'.px2-header__shoulder-menu button {border-color-left: '+_packageJson.pickles2.colors.defaultKeyColor+';}'
-							+'.px2-header__shoulder-menu ul li a.current {background-color: '+_packageJson.pickles2.colors.defaultKeyColor+';}'
+							+'.px2-header__global-menu ul li a.current{color: '+_packageJson.extra.colors.defaultKeyColor+';}'
+							+'.px2-header__shoulder-menu button {border-color-left: '+_packageJson.extra.colors.defaultKeyColor+';}'
+							+'.px2-header__shoulder-menu ul li a.current {background-color: '+_packageJson.extra.colors.defaultKeyColor+';}'
 						)
 					);
 					it1.next();
@@ -1036,7 +1036,7 @@ new (function($, window){
 			$cont.html( $('script#template-selectProject-page').html() );
 			$cont.find('.cont_top_footer')
 				.html('')
-				.append( $('<p>').text(_packageJson.pickles2.credit) )
+				.append( $('<p>').text(_packageJson.extra.credit) )
 				.append( $('<p>').text('version: ' + _this.getVersion()) )
 			;
 			_this.statusbar.set([], []);
@@ -1346,8 +1346,8 @@ new (function($, window){
 				$shoulderMenu = $('.px2-header__shoulder-menu');
 
 				$header.css({
-					'border-bottom-color': _packageJson.pickles2.colors.defaultKeyColor,
-					'color': _packageJson.pickles2.colors.defaultKeyColor
+					'border-bottom-color': _packageJson.extra.colors.defaultKeyColor,
+					'color': _packageJson.extra.colors.defaultKeyColor
 				});
 				$header.find('.px2-header__px2logo a')
 					.html(function(){
@@ -1355,7 +1355,7 @@ new (function($, window){
 						return src;
 					})
 					.find('path')
-					.attr({'fill':_packageJson.pickles2.colors.defaultKeyColor})
+					.attr({'fill':_packageJson.extra.colors.defaultKeyColor})
 				;
 
 				it.next(arg);

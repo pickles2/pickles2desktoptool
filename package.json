@@ -69,7 +69,7 @@
     "webpack": "^4.39.2",
     "webpack-stream": "^5.2.1"
   },
-  "pickles2": {
+  "extra": {
     "network": {
       "preview": {
         "port": 58080

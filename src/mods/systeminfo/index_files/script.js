@@ -19,10 +19,10 @@
 				// ボタンアクション設定： フィードバック送信
 				$('.cont_support-page-link button')
 					.on('click', function(){
-						main.utils.openURL( main.packageJson.pickles2.forum.url );
+						main.utils.openURL( main.packageJson.extra.forum.url );
 						return false;
 					})
-					.text(main.packageJson.pickles2.forum.title + ' ページへ、フィードバックを投稿してください。')
+					.text(main.packageJson.extra.forum.title + ' ページへ、フィードバックを投稿してください。')
 				;
 
 				// --------------------------------------

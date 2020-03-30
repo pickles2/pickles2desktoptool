@@ -168,6 +168,9 @@ new (function($, window){
 	// WASABI API Client
 	this.wasabiClient = null;
 
+	// Subwindows
+	var subWindows = [];
+
 	/**
 	 * アプリケーションの初期化
 	 */
@@ -719,6 +722,7 @@ new (function($, window){
 	 */
 	this.deselectProject = function(){
 		main.watcher.stop(); // ファイル監視の停止
+		_this.closeAllSubWindows(); // サブウィンドウをすべて閉じる
 		_selectedProject = null;
 		_pj = null;
 		return true;
@@ -862,7 +866,26 @@ new (function($, window){
 	 * ヘルプページを開く
 	 */
 	this.openHelp = function(){
-		main.utils.openURL( 'http://pickles2.pxt.jp/manual/' );
+		main.utils.openURL( 'https://pickles2.pxt.jp/manual/' );
+		return;
+	}
+
+	/**
+	 * 新しいサブウィンドウでURLを開く
+	 */
+	this.openInNewSubWindow = function(url){
+		var newWin = window.open(url);
+		subWindows.push(newWin);
+		return;
+	}
+
+	/**
+	 * サブウィンドウをすべて閉じる
+	 */
+	this.closeAllSubWindows = function(){
+		for(var idx in subWindows){
+			subWindows[idx].close();
+		}
 		return;
 	}
 
@@ -1040,6 +1063,7 @@ new (function($, window){
 				.append( $('<p>').text('version: ' + _this.getVersion()) )
 			;
 			_this.statusbar.set([], []);
+			_this.closeAllSubWindows(); // サブウィンドウをすべて閉じる
 
 			this.getProjectList(function(list){
 				if( list.length ){

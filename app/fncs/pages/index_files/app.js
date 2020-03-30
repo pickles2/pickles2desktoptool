@@ -4435,6 +4435,23 @@ module.exports = function(app, px, pj, $elms, contentsComment, wasabiComment){
 						)
 					;
 				}
+
+				$dropdownMenu
+					.append( $('<li>')
+						.append( $('<a>')
+							.text( 'サブウィンドウで編集' )
+							.attr({
+								'data-path': prop.pageInfo.path ,
+								'href':'javascript:;'
+							})
+							.on('click', function(){
+								main.openInNewSubWindow('../../mods/editor/index.html?page_path='+$(this).attr('data-path'));
+								return false;
+							})
+						)
+					)
+				;
+
 				if( contProcType != 'html.gui' ){
 					$dropdownMenu
 						.append( $('<li>')

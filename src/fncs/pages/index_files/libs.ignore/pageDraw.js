@@ -249,12 +249,13 @@ module.exports = function(app, px, pj, $elms, contentsComment, wasabiComment){
 				$dropdownMenu
 					.append( $('<li>')
 						.append( $('<a>')
-							.text( 'サブウィンドウで編集' )
+							.text( 'サブウィンドウで編集する' )
 							.attr({
 								'data-path': prop.pageInfo.path ,
 								'href':'javascript:;'
 							})
 							.on('click', function(){
+								$bs3btn.find('.dropdown-toggle').click();
 								main.openInNewSubWindow('../../mods/editor/index.html?page_path='+$(this).attr('data-path'));
 								return false;
 							})

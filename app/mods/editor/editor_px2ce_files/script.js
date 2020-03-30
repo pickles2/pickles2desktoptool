@@ -19750,6 +19750,15 @@ window.contApp = new (function( px ){
 	function init(){
 		it79.fnc({}, [
 			function(it1, arg){
+				if( window.opener && window.opener.main ){
+					// サブウィンドウで開いた場合に、
+					// 位置とサイズを opener と同じにする。
+					window.moveTo(window.opener.screenX, window.opener.screenY);
+					window.resizeTo(window.opener.outerWidth, window.opener.outerHeight);
+				}
+				it1.next(arg);
+			},
+			function(it1, arg){
 				px.cancelDrop( window );
 				fitWindowSize(function(){
 					it1.next(arg);
@@ -19814,6 +19823,10 @@ window.contApp = new (function( px ){
 							},
 							'clipboard': px.clipboard,
 							'complete': function(){
+								if( window.opener && window.opener.main ){
+									window.close();
+									return;
+								}
 								window.parent.contApp.closeEditor();
 							},
 							'onClickContentsLink': function( url, data ){

@@ -19852,7 +19852,7 @@ window.contApp = new (function( px ){
 								}
 							},
 							'onMessage': function( message ){
-								px.message(message);
+								window.px2style.flashMessage(message);
 							}
 						},
 						function(){

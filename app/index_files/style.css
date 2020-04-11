@@ -39,23 +39,6 @@
     font-weight: bold; }
 
 /**
- * px.message()
- */
-.theme_ui_px_message {
-  position: fixed;
-  top: 120px;
-  left: 15%;
-  right: 15%;
-  height: auto;
-  width: auto;
-  z-index: 20000; }
-
-@media all and (max-width: 820px) {
-  .theme_ui_px_message {
-    left: 5%;
-    right: 5%; } }
-
-/**
  * px.watcher
  */
 .theme_ui_px_live_report {

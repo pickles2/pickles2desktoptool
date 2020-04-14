@@ -10119,6 +10119,14 @@ module.exports = function(Px2style){
 			});
 			onWindowResize();
 
+			tabkeyControl($modal);
+
+			$(window).on('keydown.px2-modal', function(e){
+				if( e.keyCode == 27 ){ // ESC
+					_this.closeModal(function(){});
+				}
+			});
+
 			callback();
 		});
 
@@ -10134,6 +10142,7 @@ module.exports = function(Px2style){
 			$modal.remove();
 		} catch (e) {}
 		$(window).off('resize.px2-modal');
+		$(window).off('keydown.px2-modal');
 		callback();
 		return;
 	}
@@ -10142,7 +10151,7 @@ module.exports = function(Px2style){
 	 * Window Resize Event
 	 */
 	function onWindowResize(){
-		console.log('---- resize.px2-modal ----');
+		// console.log('---- resize.px2-modal ----');
 		try {
 			// if( $target.get(0).tagName.toLowerCase() != 'body' ){
 			// 	$modal.css({
@@ -10157,6 +10166,36 @@ module.exports = function(Px2style){
 		} catch (e) {}
 	}
 
+	/**
+	 * タブキーの操作を制御する
+	 */
+	function tabkeyControl($target){
+
+		var $tabTargets = $target.find('a, input, textarea, select, button');
+		var $start = $tabTargets.eq(0);
+		var $end = $tabTargets.eq(-1);
+		$start
+			.on('keydown', function(e){
+				if (e.keyCode == 9 && e.originalEvent.shiftKey) {
+					$end.focus();
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+				}
+			})
+		;
+		$end
+			.on('keydown', function(e){
+				if (e.keyCode == 9 && !e.originalEvent.shiftKey) {
+					$start.focus();
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+				}
+			})
+		;
+		$start.focus();
+	}
 }
 
 },{"jquery":1}],5:[function(require,module,exports){

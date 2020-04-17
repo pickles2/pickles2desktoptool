@@ -12,23 +12,6 @@ window.contApp = new (function( px ){
 
 	var _param = px.utils.parseUriParam( window.location.href );
 
-	function resizeEvent(){
-		clearTimeout(resizeTimer);
-		resizeTimer = setTimeout(function(){
-			fitWindowSize(function(){
-				if(pickles2ContentsEditor.redraw){
-					pickles2ContentsEditor.redraw();
-				}
-			});
-		}, 500);
-		return;
-	}
-	function fitWindowSize(callback){
-		callback = callback||function(){};
-		callback();
-		return;
-	}
-
 	function init(){
 		it79.fnc({}, [
 			function(it1, arg){
@@ -157,7 +140,12 @@ window.contApp = new (function( px ){
 		init();
 	})
 	$(window).resize(function(){
-		resizeEvent();
+		clearTimeout(resizeTimer);
+		resizeTimer = setTimeout(function(){
+			if(pickles2ContentsEditor.redraw){
+				pickles2ContentsEditor.redraw();
+			}
+		}, 500);
 	});
 
 })( window.parent.main || window.opener.main );

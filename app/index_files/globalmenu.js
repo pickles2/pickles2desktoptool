@@ -19,25 +19,25 @@ module.exports = function(main){
 		"href":"javascript:main.subapp();"
 	});
 	_menu.push({
-		"label":main.lb.get('menu.sitemap'),
+		"label":main.lb.get('menu.sitemaps'),
 		"cond":"pxStandby",
 		"area":"mainmenu",
-		"app":"fncs/sitemap/index.html",
-		"href": "javascript:main.subapp('fncs/sitemap/index.html');"
+		"app":"fncs/sitemaps/index.html",
+		"href": "javascript:main.subapp('fncs/sitemaps/index.html');"
 	});
 	_menu.push({
-		"label":main.lb.get('menu.theme'),
+		"label":main.lb.get('menu.themes'),
 		"cond":"pxStandby",
 		"area":"mainmenu",
-		"app":"fncs/theme/index.html",
-		"href": "javascript:main.subapp('fncs/theme/index.html');"
+		"app":"fncs/themes/index.html",
+		"href": "javascript:main.subapp('fncs/themes/index.html');"
 	});
 	_menu.push({
-		"label":main.lb.get('menu.pages'),
+		"label":main.lb.get('menu.contents'),
 		"cond":"pxStandby",
 		"area":"mainmenu",
-		"app":"fncs/pages/index.html",
-		"href": "javascript:main.subapp('fncs/pages/index.html');"
+		"app":"fncs/contents/index.html",
+		"href": "javascript:main.subapp('fncs/contents/index.html');"
 	});
 	_menu.push({
 		"label":main.lb.get('menu.publish'),
@@ -84,10 +84,10 @@ module.exports = function(main){
 		}
 	});
 	_menu.push({
-		"label":main.lb.get('menu.module'),
+		"label":main.lb.get('menu.modules'),
 		"cond":"pxStandby",
 		"area":"shoulder",
-		"app":"fncs/module/index.html",
+		"app":"fncs/modules/index.html",
 		"click": function(){
 			main.subapp($(this).data('app'));
 		}

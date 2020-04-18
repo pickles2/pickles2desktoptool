@@ -3566,7 +3566,7 @@ window.contApp = new (function(){
 		listThemeCollection(function(themeCollection){
 
 			var html = main.utils.bindEjs(
-				main.fs.readFileSync('app/fncs/theme/index_files/templates/list.html').toString(),
+				main.fs.readFileSync('app/fncs/themes/index_files/templates/list.html').toString(),
 				{
 					'themePluginList': themePluginList,
 					'themeCollection': themeCollection,
@@ -3636,7 +3636,7 @@ window.contApp = new (function(){
 			function(it1, arg){
 				// テンプレート描画
 				var html = main.utils.bindEjs(
-					main.fs.readFileSync('app/fncs/theme/index_files/templates/theme-home.html').toString(),
+					main.fs.readFileSync('app/fncs/themes/index_files/templates/theme-home.html').toString(),
 					{
 						'themeId': themeId,
 						'layouts': arg.layouts,
@@ -3684,7 +3684,7 @@ window.contApp = new (function(){
 		listThemeCollection(function(themeCollection){
 
 			var html = main.utils.bindEjs(
-				main.fs.readFileSync('app/fncs/theme/index_files/templates/form-theme.html').toString(),
+				main.fs.readFileSync('app/fncs/themes/index_files/templates/form-theme.html').toString(),
 				{
 					'themeId': theme_id,
 					'themePluginList': themePluginList,
@@ -3799,7 +3799,7 @@ window.contApp = new (function(){
 	 */
 	this.deleteTheme = function(theme_id){
 		var html = main.utils.bindEjs(
-			main.fs.readFileSync('app/fncs/theme/index_files/templates/form-theme-delete.html').toString(),
+			main.fs.readFileSync('app/fncs/themes/index_files/templates/form-theme-delete.html').toString(),
 			{
 				'themeId': theme_id
 			}
@@ -3848,7 +3848,7 @@ window.contApp = new (function(){
 			return;
 		}
 		var html = main.utils.bindEjs(
-			main.fs.readFileSync('app/fncs/theme/index_files/templates/form-layout.html').toString(),
+			main.fs.readFileSync('app/fncs/themes/index_files/templates/form-layout.html').toString(),
 			{
 				'themeId': theme_id,
 				'layoutId': layout_id
@@ -3963,7 +3963,7 @@ window.contApp = new (function(){
 	 */
 	this.deleteLayout = function(theme_id, layout_id){
 		var html = main.utils.bindEjs(
-			main.fs.readFileSync('app/fncs/theme/index_files/templates/form-layout-delete.html').toString(),
+			main.fs.readFileSync('app/fncs/themes/index_files/templates/form-layout-delete.html').toString(),
 			{
 				'themeId': theme_id,
 				'layoutId': layout_id
@@ -4020,7 +4020,7 @@ window.contApp = new (function(){
 		realpathThemeCollectionDir = pj.get('path')+'/'+pj.get('home_dir')+'/themes/';
 
 		var html = main.utils.bindEjs(
-			main.fs.readFileSync('app/fncs/theme/index_files/templates/not-enough-api-version.html').toString(),
+			main.fs.readFileSync('app/fncs/themes/index_files/templates/not-enough-api-version.html').toString(),
 			{'errors': errors}
 		);
 		$('.contents').html( html );

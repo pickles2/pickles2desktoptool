@@ -1,9 +1,9 @@
 ,en,ja,zh,zh-TW
 welcome,Welcome,ようこそ,Welcome,Welcome
 menu.home,HOME,ホーム,HOME,HOME
-menu.sitemap,Sitemap,サイトマップ,网站地图,網站地圖
-menu.theme,Theme,テーマ,主题,主題
-menu.pages,Contents,コンテンツ,內容,內容
+menu.sitemaps,Sitemap,サイトマップ,网站地图,網站地圖
+menu.themes,Theme,テーマ,主题,主題
+menu.contents,Contents,コンテンツ,內容,內容
 menu.publish,Publish,パブリッシュ,发布,發布
 menu.dashboard,Dashboard,ダッシュボード,控制版面,控制版面
 menu.externalTools,External Tools,外部アプリケーション,,
@@ -20,7 +20,7 @@ menu.desktoptoolConfig,"Application Config","アプリケーション設定",桌
 menu.composer,Composer,Composerを操作する,Composer,Composer
 menu.git,Git,Gitを操作する,Git,Git
 menu.moveContents,Move Contents,コンテンツを移動する,移动内容,移動內容
-menu.module,Edit Modules,モジュールを編集する,,
+menu.modules,Edit Modules,モジュールを編集する,,
 menu.tool,"Tools",ツール,,
 menu.styleguideGenerator,"Style Guide Generator",スタイルガイド生成,,
 menu.mkContentFilesByList,Make Content Files by list,コンテンツファイルを一括作成,,

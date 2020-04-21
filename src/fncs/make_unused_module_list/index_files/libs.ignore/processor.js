@@ -1,10 +1,10 @@
 /**
  * processor.js
  */
-module.exports = function(app, px, pj, pathHomeDir, pathLogFileName, $progressMessage, $progress, $pre){
+module.exports = function(app, px, pj, pathHomeDir, $progressMessage, $progress, $pre){
 
-	this.run = function(target_path, script_source_processor, script_instance_processor, is_dryrun, callback){
-		// console.log(script_source_processor, script_instance_processor);
+	this.run = function(target_path, script_instance_processor, is_dryrun, callback){
+		// console.log(script_instance_processor);
 
 		$progressMessage.html('実行中...');
 		$progress.html('計算中...');
@@ -20,21 +20,6 @@ module.exports = function(app, px, pj, pathHomeDir, pathLogFileName, $progressMe
 		var currentExtension = '';
 		var pathCurrentContent = null;
 
-
-		// HTMLソース加工
-		function srcProcessor( src, type, next ){
-			var supply = {
-				// supplying libs
-				'cheerio': px.cheerio,
-				'iterate79': px.it79
-			};
-			try {
-				eval(script_source_processor.toString());
-			} catch (e) {
-				console.log('eval ERROR');
-				next(src);
-			}
-		}
 
 		// 任意の項目を数える
 		function count( key ){
@@ -52,10 +37,7 @@ module.exports = function(app, px, pj, pathHomeDir, pathLogFileName, $progressMe
 
 		// 実行ログをファイル出力する
 		function log(msg){
-			try {
-				px.fs.mkdirSync(pathHomeDir+'/logs/');
-			} catch (e) {}
-			px.fs.appendFileSync( pathHomeDir+'/logs/'+pathLogFileName, msg+"\n", 'utf-8');
+			console.log(msg);
 			return true;
 		}
 
@@ -65,9 +47,6 @@ module.exports = function(app, px, pj, pathHomeDir, pathLogFileName, $progressMe
 		log('');
 		log('## Target path');
 		log('`'+target_path+'`');
-		log('');
-		log('## Source Processor Eval Code');
-		log('```'+"\n"+script_source_processor.toString()+"\n"+'```');
 		log('');
 		log('## Instance Processor Eval Code');
 		log('```'+"\n"+script_instance_processor.toString()+"\n"+'```');
@@ -236,26 +215,12 @@ module.exports = function(app, px, pj, pathHomeDir, pathLogFileName, $progressMe
 														it2.next(arg2);
 														return;
 													}
-													srcProcessor( src, procType, function(after){
-														if( is_dryrun ){
-															// dryrun で実行されていたら、加工結果を保存しない
-															$pre.text( $pre.text() + ' -> done' );
-															$pre.text( $pre.text() + "\n" );
-															log('-> done');
-															it2.next(arg2);
-															return;
-														}
 
-														px.fs.writeFile( _contentsPath, after, {}, function(err){
-															if(err){
-																console.error( err );
-															}
-															$pre.text( $pre.text() + ' -> done' );
-															$pre.text( $pre.text() + "\n" );
-															log('-> done');
-															it2.next(arg2);
-														} );
-													} );
+													$pre.text( $pre.text() + ' -> done' );
+													$pre.text( $pre.text() + "\n" );
+													log('-> done');
+													it2.next(arg2);
+
 													return;
 												});
 											});

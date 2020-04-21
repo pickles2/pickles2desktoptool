@@ -39,26 +39,7 @@
 		<!-- ************************** app templates ************************** -->
 		<script id="template-main-form" type="text/template">
 			<div class="cont_wrap">
-				<ul>
-					<li>この処理は、たくさんのファイルに一度に変更を加えます。</li>
-					<li>すべてのファイルを 実行の前に状態をコミットし、実行後にもコミットすることを強くお勧めします。</li>
-					<li><code>console.log()</code> に送った情報は、 デベロッパーツール 上で確認することができます。</li>
-				</ul>
 				<form action="javascript:;" method="get">
-					<h2>パス</h2>
-					<p><input type="text" name="target_path" value="/*" class="form-control" /></p>
-					<h2>ソース加工スクリプト</h2>
-					<p><select name="snippet_for_script_source_processor" class="form-control">
-						<option value="">サンプルコードを選択してください (注意! - 現在のコードは消去されます)</option>
-					</select></p>
-					<pre><code>function srcProcessor( src, type, next ){
-	var supply = {
-		// supplying libs
-		'cheerio': require('cheerio'),
-		'iterate79': require('iterate79')
-	};
-<textarea name="script_source_processor" class="form-control" rows="12">// next() に加工後の src を渡して、次の処理へ進む。
-next(src);</textarea>}</code></pre>
 					<h2>インスタンス加工スクリプト</h2>
 					<p><select name="snippet_for_script_instance_processor" class="form-control">
 						<option value="">サンプルコードを選択してください (注意! - 現在のコードは消去されます)</option>
@@ -81,62 +62,6 @@ editor.done();</textarea>}</code></pre>
 				<div class="cont_progress-bar progress"><div class="progress-bar progress-bar-striped active" style="width: 0px;"></div></div>
 				<pre class="cont_console"></pre>
 			</div>
-		</script>
-
-		<!-- ************************** snippets for source processor ************************** -->
-		<script class="snippet-source-processor" title="なにもしない" type="text/template">
-// next() に加工後の src を渡して、次の処理へ進む。
-next(src);
-		</script>
-		<script class="snippet-source-processor" title="クラス dom-selector が含まれる箇所をカウントする" type="text/template">
-// console.log(type, src);
-
-var $ = supply.cheerio.load(src, {decodeEntities: false});
-var $elms = $('.dom-selector');
-if( $elms.length ){
-	count('クラス dom-selector が含まれる回数'); // カウントする
-	countFile(); // ファイル単位でカウントする
-}
-
-next(src);
-		</script>
-		<script class="snippet-source-processor" title="文字列 a が含まれる箇所をカウントする" type="text/template">
-if( src.match('a') ){
-	count('文字列 a が含まれる回数'); // カウントする
-	countFile(); // ファイル単位でカウントする
-}
-
-// next() に加工後の src を渡して、次の処理へ進む。
-next(src);
-		</script>
-		<script class="snippet-source-processor" title="文字列の単純置換" type="text/template">
-var before = 'mojimoji';
-var after = 'mohimohi';
-
-var tmpAry = src.split(before);
-src = tmpAry.join(after);
-next(src);
-		</script>
-		<script class="snippet-source-processor" title="文字列の正規表現による置換" type="text/template">
-var before = /(mo)ji(mo)ji/g;
-var after = '$1hi$2hi';
-
-src = src.replace(before, after);
-next(src);
-		</script>
-		<script class="snippet-source-processor" title="テキストをDOM置換する" type="text/template">
-// console.log(type, src);
-
-// ここに加工するコードを書く
-var $ = supply.cheerio.load(src, {decodeEntities: false});
-$('.dom-selector')
-	.css({
-		'border': '1px solid #000'
-	})
-;
-src = $.html();
-
-next(src);
 		</script>
 
 		<!-- ************************** snippets for instance processor ************************** -->

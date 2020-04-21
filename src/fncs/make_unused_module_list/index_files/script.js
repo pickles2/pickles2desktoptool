@@ -9,10 +9,9 @@ window.contApp = new (function(px){
 		$progress,
 		$progressMessage;
 
-	var $snippet_for_script_source_processor;
 	var $snippet_for_script_instance_processor;
 	var CodeMirrorInstans = {};
-	var pathHomeDir, pathLogFileName;
+	var pathHomeDir;
 
 	var _cancelRequest = false;
 	var Processor = require('../../../fncs/make_unused_module_list/index_files/libs.ignore/processor.js');
@@ -65,14 +64,6 @@ window.contApp = new (function(px){
 					$btn = $cont.find('button');
 					$pre = $('<pre>');
 
-					$snippet_for_script_source_processor = $('select[name=snippet_for_script_source_processor]')
-						.on('change', function(){
-							var val = $(this).val();
-							$(this).val('');
-							$cont.find('form').find('textarea[name=script_source_processor]').val(val);
-							CodeMirrorInstans['source_processor'].setValue(val);
-						})
-					;
 					$snippet_for_script_instance_processor = $('select[name=snippet_for_script_instance_processor]')
 						.on('change', function(){
 							var val = $(this).val();
@@ -82,13 +73,6 @@ window.contApp = new (function(px){
 						})
 					;
 
-					CodeMirrorInstans['source_processor'] = window.textEditor.attachTextEditor(
-						$cont.find('form').find('textarea[name=script_source_processor]').get(0),
-						'js',
-						{
-							save: function(){}
-						}
-					);
 					CodeMirrorInstans['instance_processor'] = window.textEditor.attachTextEditor(
 						$cont.find('form').find('textarea[name=script_instance_processor]').get(0),
 						'js',
@@ -97,14 +81,6 @@ window.contApp = new (function(px){
 						}
 					);
 
-
-					$('.snippet-source-processor').each(function(e){
-						var $this = $(this);
-						$snippet_for_script_source_processor.append( $('<option>')
-							.attr({'value': px.utils79.trim($this.html())})
-							.text($this.attr('title'))
-						);
-					});
 
 					$('.snippet-instance-processor').each(function(e){
 						var $this = $(this);
@@ -118,8 +94,7 @@ window.contApp = new (function(px){
 						.on('click', function(){
 							var btn = this;
 							var $form = $cont.find('form');
-							var target_path = $form.find('input[name=target_path]').val();
-							var script_source_processor = $form.find('textarea[name=script_source_processor]').val();
+							var target_path = '/*';
 							var script_instance_processor = $form.find('textarea[name=script_instance_processor]').val();
 							var is_dryrun = ( $form.find('input[name=is_dryrun]:checked').val()=='dryrun' ? true : false );
 
@@ -127,7 +102,6 @@ window.contApp = new (function(px){
 
 							$pre.text('');
 							$(btn).attr('disabled', 'disabled');
-							CodeMirrorInstans['source_processor'].setOption("readonly", "nocursor");
 							CodeMirrorInstans['instance_processor'].setOption("readonly", "nocursor");
 							$form.find('input,select,textarea').attr('disabled', 'disabled');
 							var $dialogBody = $(document.getElementById('template-modal-content').innerHTML);
@@ -141,7 +115,6 @@ window.contApp = new (function(px){
 							var $btnOk = $('<button class="px2-btn px2-btn--primary">').text('OK').click(function(){
 								px.closeDialog();
 								$(btn).removeAttr('disabled').focus();
-								CodeMirrorInstans['source_processor'].setOption("readonly", false);
 								CodeMirrorInstans['instance_processor'].setOption("readonly", false);
 								$form.find('input,select,textarea').removeAttr('disabled', 'disabled');
 							}).attr({'disabled':'disabled'});
@@ -150,48 +123,18 @@ window.contApp = new (function(px){
 								_cancelRequest = true;
 							});
 
-							pathLogFileName = (function(){
-								var date = new Date;
-								var filename = '';
-								filename += 'contents_processor_log-';
-								filename += px.php.str_pad(date.getFullYear(), 4, '0', 'STR_PAD_LEFT');
-								filename += px.php.str_pad((date.getMonth()+1), 2, '0', 'STR_PAD_LEFT');
-								filename += px.php.str_pad(date.getDate(), 2, '0', 'STR_PAD_LEFT');
-								filename += '-';
-								filename += px.php.str_pad(date.getHours(), 2, '0', 'STR_PAD_LEFT');
-								filename += px.php.str_pad(date.getMinutes(), 2, '0', 'STR_PAD_LEFT');
-								filename += px.php.str_pad(date.getSeconds(), 2, '0', 'STR_PAD_LEFT');
-								filename2 = '';
-								var i = 0;
-								while( !px.utils79.is_file(pathHomeDir+'/'+filename+filename2+'.log') ){
-									if( px.utils79.is_file(pathHomeDir+'/'+filename+filename2+'.log') ){
-										i ++;
-										filename2 = '('+i+')';
-										continue;
-									}
-									break;
-								}
-								return filename+filename2+'.log';
-							})();
-
-							var $btnOpenLogFile = $('<button class="px2-btn">').text('ログファイルを開く').click(function(){
-								px.openInTextEditor(pathHomeDir+'/logs/'+pathLogFileName);
-							});
-
 							px.dialog({
 								"title": "一括加工",
 								"body": $dialogBody,
 								"buttons": [
 									$btnCancel,
-									$btnOpenLogFile,
 									$btnOk
 								]
 							});
 
-							var processor = new Processor(_this, px, pj, pathHomeDir, pathLogFileName, $progressMessage, $progress, $pre);
+							var processor = new Processor(_this, px, pj, pathHomeDir, $progressMessage, $progress, $pre);
 							processor.run(
 								target_path,
-								script_source_processor,
 								script_instance_processor,
 								is_dryrun,
 								function(){
@@ -219,7 +162,6 @@ window.contApp = new (function(px){
 				},
 				function(it1, data){
 					$(window).scrollTop(0);
-					$('form input[name=target_path]').focus();
 					it1.next(data);
 				}
 			]

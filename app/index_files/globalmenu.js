@@ -196,6 +196,15 @@ module.exports = function(main){
 				}
 			},
 			{
+				"label":main.lb.get('menu.mkUnusedModuleList'),
+				"cond":"pxStandby",
+				"area":"shoulder",
+				"app":"fncs/make_unused_module_list/index.html",
+				"click": function(){
+					main.subapp($(this).data('app'));
+				}
+			},
+			{
 				"label":main.lb.get('menu.updateGuiContents'),
 				"cond":"pxStandby",
 				"area":"shoulder",

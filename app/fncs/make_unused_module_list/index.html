@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8" />
-		<title>コンテンツを一括加工 - Pickles 2</title>
+		<title>Make Unused Module List - Pickles 2</title>
 
 		<meta name="viewport" content="width=device-width" />
 		<meta name="keywords" content="" />
@@ -40,17 +40,10 @@
 		<script id="template-main-form" type="text/template">
 			<div class="cont_wrap">
 				<form action="javascript:;" method="get">
-					<h2>インスタンス加工スクリプト</h2>
-					<p><select name="snippet_for_script_instance_processor" class="form-control">
-						<option value="">サンプルコードを選択してください (注意! - 現在のコードは消去されます)</option>
-					</select></p>
-					<pre><code>function( editor ){
-<textarea name="script_instance_processor" class="form-control" rows="12">// editor.done() を呼び出して、次の処理へ進む。
-editor.done();</textarea>}</code></pre>
+
 					<div class="cont_start-btn">
 						<div class="container">
-							<p><label title="実際にファイルに影響せず、スクリプトを実行してみたいとき、オンにします。"><input type="checkbox" name="is_dryrun" value="dryrun" /> Dry Run</label></p>
-							<p><button class="px2-btn px2-btn--primary px2-btn--block">すべてのコンテンツを一括加工する</button></p>
+							<p><button class="px2-btn px2-btn--primary px2-btn--block">未使用モジュールを検索する</button></p>
 						</div>
 					</div>
 				</form>
@@ -64,134 +57,10 @@ editor.done();</textarea>}</code></pre>
 			</div>
 		</script>
 
-		<!-- ************************** snippets for instance processor ************************** -->
-		<script class="snippet-instance-processor" title="なにもしない" type="text/template">
-// editor.done() を呼び出して、次の処理へ進む。
-editor.done();
-		</script>
-		<script class="snippet-instance-processor" title="フィールドの値をテキスト置換する" type="text/template">
-var it79 = editor.supply.iterate79;
-var broccoli = editor.getBroccoli();
-var instance = editor.getInstance();
-
-broccoli.getModule(instance.modId, instance.subModName, function(mod){
-
-	it79.ary(
-		mod.fields,
-		function(it1, row, fieldName){
-			// console.log(fieldName);
-			// console.log(row);
-			if( row.fieldType == 'input' ){
-				switch(row.type){
-					case 'html':
-						srcProcessor(instance.fields[fieldName], 'html', function(afterData){
-							instance.fields[fieldName] = afterData;
-							it1.next();
-						});
-						break;
-					case 'markdown':
-						srcProcessor(instance.fields[fieldName], 'md', function(afterData){
-							instance.fields[fieldName] = afterData;
-							it1.next();
-						});
-						break;
-					case 'text':
-						srcProcessor(instance.fields[fieldName], 'txt', function(afterData){
-							instance.fields[fieldName] = afterData;
-							it1.next();
-						});
-						break;
-					case 'multitext':
-						var ext = (instance.fields[fieldName].editor=='markdown'?'md':instance.fields[fieldName].editor);
-						srcProcessor(instance.fields[fieldName].src, ext, function(afterData){
-							instance.fields[fieldName].src = afterData;
-							it1.next();
-						});
-						break;
-					default:
-						it1.next();
-						return;
-				}
-				return;
-			}else if( row.fieldType == 'module' ){
-				it1.next();
-				return;
-			}else if( row.fieldType == 'loop' ){
-				it1.next();
-				return;
-			}
-
-			it1.next();
-			return;
-		},
-		function(){
-			// 加工後のインスタンスデータで更新する
-			editor.setInstance(instance);
-
-			// editor.done() を呼び出して、次の処理へ進む。
-			editor.done();
-		}
-	);
-
-});
-		</script>
-		<script class="snippet-instance-processor" title="リソースの値を加工する" type="text/template">
-var resourceDb = editor.resourceMgr.getResourceDb();
-
-for(var resKey in resourceDb){
-	var resInfo = editor.resourceMgr.getResourceInfo(resKey);
-
-	// ここでリソース情報 (resInfo) を加工する
-	console.log( resInfo );
-
-	editor.resourceMgr.setResourceInfo(resKey, resInfo);
-}
-
-// editor.done() を呼び出して、次の処理へ進む。
-editor.done();
-		</script>
-		<script class="snippet-instance-processor" title="指定モジュールが使われている数をカウントする" type="text/template">
-var targetModuleName = 'local:dev/mod';
-var instance = editor.getInstance();
-
-if( instance.modId.match(targetModuleName) && !instance.subModName ){
-	count('モジュール '+instance.modId+' が使われている件数'); // 該当するモジュールが使われている件数 をカウントする
-	countFile(); // ファイル単位でカウントする
-}
-
-// editor.done() を呼び出して、次の処理へ進む。
-editor.done();
-		</script>
-		<script class="snippet-instance-processor" title="指定モジュールを他のモジュールに置き換える" type="text/template">
-var targetModuleName = 'local:dev/mod';
-var newModuleName = 'local:dev/mod';
-var instance = editor.getInstance();
-
-if( instance.modId == targetModuleName && !instance.subModName ){
-	count('モジュール '+instance.modId+' が使われている件数'); // 該当するモジュールが使われている件数 をカウントする
-	countFile(); // ファイル単位でカウントする
-
-	instance.modId = newModuleName; // モジュール名の置き換え
-
-	/*
-	// モジュールのデータ形式が変わる場合
-	instance.fields.fieldname = {
-		"src": instance.fields.fieldname
-	};
-	*/
-
-	// 加工後のインスタンスデータで更新する
-	editor.setInstance(instance);
-}
-
-// editor.done() を呼び出して、次の処理へ進む。
-editor.done();
-		</script>
-
 	</head>
 	<body>
 		<div class="container">
-			<h1>コンテンツを一括加工</h1>
+			<h1>未使用のモジュール一覧</h1>
 		</div>
 		<div class="container">
 			<div class="contents">

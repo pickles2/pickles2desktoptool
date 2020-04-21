@@ -1,8 +1,8 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-window.px = window.parent.px;
-window.contApp = new (function(px){
+window.main = window.parent.main;
+window.contApp = new (function(main){
 	var _this = this;
-	var pj = px.getCurrentProject();
+	var pj = main.getCurrentProject();
 	this.pj = pj;
 	var $cont,
 		$btn,
@@ -10,8 +10,6 @@ window.contApp = new (function(px){
 		$progress,
 		$progressMessage;
 
-	var $snippet_for_script_instance_processor;
-	var CodeMirrorInstans = {};
 	var pathHomeDir;
 
 	var _cancelRequest = false;
@@ -21,7 +19,7 @@ window.contApp = new (function(px){
 	 * initialize
 	 */
 	function init(){
-		px.it79.fnc(
+		main.it79.fnc(
 			{},
 			[
 				function(it1, data){
@@ -37,8 +35,8 @@ window.contApp = new (function(px){
 							},
 							function( errors ){
 								// API設定が不十分な場合のエラー処理
-								var html = px.utils.bindEjs(
-									px.fs.readFileSync('app/common/templates/broccoli-html-editor-php-is-not-available.html').toString(),
+								var html = main.utils.bindEjs(
+									main.fs.readFileSync('app/common/templates/broccoli-html-editor-php-is-not-available.html').toString(),
 									{errors: errors}
 								);
 								$('.contents').html( html );
@@ -65,45 +63,17 @@ window.contApp = new (function(px){
 					$btn = $cont.find('button');
 					$pre = $('<pre>');
 
-					$snippet_for_script_instance_processor = $('select[name=snippet_for_script_instance_processor]')
-						.on('change', function(){
-							var val = $(this).val();
-							$(this).val('');
-							$cont.find('form').find('textarea[name=script_instance_processor]').val(val);
-							CodeMirrorInstans['instance_processor'].setValue(val);
-						})
-					;
-
-					CodeMirrorInstans['instance_processor'] = window.textEditor.attachTextEditor(
-						$cont.find('form').find('textarea[name=script_instance_processor]').get(0),
-						'js',
-						{
-							save: function(){}
-						}
-					);
-
-
-					$('.snippet-instance-processor').each(function(e){
-						var $this = $(this);
-						$snippet_for_script_instance_processor.append( $('<option>')
-							.attr({'value': px.utils79.trim($this.html())})
-							.text($this.attr('title'))
-						);
-					});
 
 					$btn
 						.on('click', function(){
 							var btn = this;
 							var $form = $cont.find('form');
 							var target_path = '/*';
-							var script_instance_processor = $form.find('textarea[name=script_instance_processor]').val();
-							var is_dryrun = ( $form.find('input[name=is_dryrun]:checked').val()=='dryrun' ? true : false );
 
 							_cancelRequest = false;
 
 							$pre.text('');
 							$(btn).attr('disabled', 'disabled');
-							CodeMirrorInstans['instance_processor'].setOption("readonly", "nocursor");
 							$form.find('input,select,textarea').attr('disabled', 'disabled');
 							var $dialogBody = $(document.getElementById('template-modal-content').innerHTML);
 							$pre = $dialogBody.find('pre');
@@ -114,9 +84,8 @@ window.contApp = new (function(px){
 							$progressMessage.html('準備中...');
 
 							var $btnOk = $('<button class="px2-btn px2-btn--primary">').text('OK').click(function(){
-								px.closeDialog();
+								main.closeDialog();
 								$(btn).removeAttr('disabled').focus();
-								CodeMirrorInstans['instance_processor'].setOption("readonly", false);
 								$form.find('input,select,textarea').removeAttr('disabled', 'disabled');
 							}).attr({'disabled':'disabled'});
 
@@ -124,8 +93,8 @@ window.contApp = new (function(px){
 								_cancelRequest = true;
 							});
 
-							px.dialog({
-								"title": "一括加工",
+							main.dialog({
+								"title": "モジュールを検索",
 								"body": $dialogBody,
 								"buttons": [
 									$btnCancel,
@@ -133,11 +102,9 @@ window.contApp = new (function(px){
 								]
 							});
 
-							var processor = new Processor(_this, px, pj, pathHomeDir, $progressMessage, $progress, $pre);
+							var processor = new Processor(_this, main, pj, pathHomeDir, $progressMessage, $progress, $pre);
 							processor.run(
 								target_path,
-								script_instance_processor,
-								is_dryrun,
 								function(){
 									$progressMessage.html('completed!');
 									$progress.css({"width": '100%'}).removeClass('progress-bar-striped');
@@ -184,23 +151,22 @@ window.contApp = new (function(px){
 		init();
 	});
 
-})(window.px);
+})(window.main);
 
 },{"../../../fncs/make_unused_module_list/index_files/libs.ignore/processor.js":2}],2:[function(require,module,exports){
 /**
  * processor.js
  */
-module.exports = function(app, px, pj, pathHomeDir, $progressMessage, $progress, $pre){
+module.exports = function(app, main, pj, pathHomeDir, $progressMessage, $progress, $pre){
 
-	this.run = function(target_path, script_instance_processor, is_dryrun, callback){
-		// console.log(script_instance_processor);
+	this.run = function(target_path, callback){
 
 		$progressMessage.html('実行中...');
 		$progress.html('計算中...');
 
 		var pageList = pj.site.getSitemap();
 		var fileProgressCounter = 0;
-		var pageListFullCount = px.utils79.count(pageList);
+		var pageListFullCount = main.utils79.count(pageList);
 		$progress.html(fileProgressCounter+'/'+pageListFullCount);
 
 		var counter = {};
@@ -237,17 +203,11 @@ module.exports = function(app, px, pj, pathHomeDir, $progressMessage, $progress,
 		log('## Target path');
 		log('`'+target_path+'`');
 		log('');
-		log('## Instance Processor Eval Code');
-		log('```'+"\n"+script_instance_processor.toString()+"\n"+'```');
-		log('');
-		log('## Is Dry Run');
-		log('`'+JSON.stringify(is_dryrun)+'`');
-		log('');
 		log('-----------------------------------');
 		log('## Log by pages');
 
 
-		px.it79.ary(
+		main.it79.ary(
 			pageList ,
 			function( it1, sitemapRow, pagePath ){
 
@@ -275,13 +235,13 @@ module.exports = function(app, px, pj, pathHomeDir, $progressMessage, $progress,
 
 					log("\n"+'---- page('+fileProgressCounter+'/'+pageListFullCount+'): '+pagePath); // コンテンツの加工処理開始 (を、ログファイルに記録)
 
-					px.it79.fnc(
+					main.it79.fnc(
 						{"pageInfo": sitemapRow},
 						[
 							function(it2, arg2){
 								// 対象外のパスだったらここまで
 								// console.log(arg2.pageInfo.content);
-								var regx = px.utils79.regexp_quote(target_path);
+								var regx = main.utils79.regexp_quote(target_path);
 								regx = regx.split('\\*').join('([\\s\\S]*)');
 								regx = '^'+regx+'$';
 								// console.log(regx);
@@ -351,23 +311,22 @@ module.exports = function(app, px, pj, pathHomeDir, $progressMessage, $progress,
 												broccoliProcessor
 													.each(
 														function( editor ){
-															// console.log(data);
-															// next();
-															try {
-																eval(script_instance_processor.toString());
-															} catch (e) {
-																console.error('eval ERROR', e);
-																log('eval ERROR');
-																editor.done();
+															var targetModuleName = /[\s\S]*/;
+															var instance = editor.getInstance();
+
+															if( instance.modId.match(targetModuleName) && !instance.subModName ){
+																count('モジュール '+instance.modId+' が使われている件数');
+																countFile();
 															}
+															editor.done();
 														}
 													)
-													[(is_dryrun ? 'dryrun' : 'run')](function(logs){
+													['dryrun'](function(logs){
 														// console.log(arg2.pageInfo.path, logs);
 														// console.log('replace done!');
 														$pre.text( $pre.text() + ' -> done' );
 														$pre.text( $pre.text() + "\n" );
-														if(px.utils79.count(logs)){
+														if(main.utils79.count(logs)){
 															log(JSON.stringify(logs,null,4));
 														}
 														log('-> done');
@@ -392,10 +351,10 @@ module.exports = function(app, px, pj, pathHomeDir, $progressMessage, $progress,
 											}
 											pj.px2proj.get_path_controot(function(contRoot){
 												pj.px2proj.get_path_docroot(function(docRoot){
-													var _contentsPath = px.path.resolve(docRoot + contRoot + pathCurrentContent);
+													var _contentsPath = main.path.resolve(docRoot + contRoot + pathCurrentContent);
 													var src = '';
 													try {
-														src = px.fs.readFileSync( _contentsPath );
+														src = main.fs.readFileSync( _contentsPath );
 														src = src.toString();
 													} catch (e) {
 														$pre.text( $pre.text() + ' -> ERROR' );
@@ -429,15 +388,15 @@ module.exports = function(app, px, pj, pathHomeDir, $progressMessage, $progress,
 
 			} ,
 			function(){
-				px.message( '完了しました。' );
+				main.message( '完了しました。' );
 				console.log('----------------------------------- completed -----------------------------------');
 				console.log('result: count()', counter);
-				console.log('result: countFile()', px.utils79.count(fileCounter), fileCounter);
+				console.log('result: countFile()', main.utils79.count(fileCounter), fileCounter);
 				log('');
 				log('----------------------------------- completed -----------------------------------');
 				log(new Date());
 				log('result: count() - '+JSON.stringify(counter,null,4));
-				log('result: countFile() - '+px.utils79.count(fileCounter)+' - '+JSON.stringify(fileCounter,null,4));
+				log('result: countFile() - '+main.utils79.count(fileCounter)+' - '+JSON.stringify(fileCounter,null,4));
 				callback();
 			}
 		);

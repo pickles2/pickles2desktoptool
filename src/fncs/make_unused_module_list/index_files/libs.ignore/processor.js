@@ -1,17 +1,16 @@
 /**
  * processor.js
  */
-module.exports = function(app, px, pj, pathHomeDir, $progressMessage, $progress, $pre){
+module.exports = function(app, main, pj, pathHomeDir, $progressMessage, $progress, $pre){
 
-	this.run = function(target_path, script_instance_processor, is_dryrun, callback){
-		// console.log(script_instance_processor);
+	this.run = function(target_path, callback){
 
 		$progressMessage.html('実行中...');
 		$progress.html('計算中...');
 
 		var pageList = pj.site.getSitemap();
 		var fileProgressCounter = 0;
-		var pageListFullCount = px.utils79.count(pageList);
+		var pageListFullCount = main.utils79.count(pageList);
 		$progress.html(fileProgressCounter+'/'+pageListFullCount);
 
 		var counter = {};
@@ -48,17 +47,11 @@ module.exports = function(app, px, pj, pathHomeDir, $progressMessage, $progress,
 		log('## Target path');
 		log('`'+target_path+'`');
 		log('');
-		log('## Instance Processor Eval Code');
-		log('```'+"\n"+script_instance_processor.toString()+"\n"+'```');
-		log('');
-		log('## Is Dry Run');
-		log('`'+JSON.stringify(is_dryrun)+'`');
-		log('');
 		log('-----------------------------------');
 		log('## Log by pages');
 
 
-		px.it79.ary(
+		main.it79.ary(
 			pageList ,
 			function( it1, sitemapRow, pagePath ){
 
@@ -86,13 +79,13 @@ module.exports = function(app, px, pj, pathHomeDir, $progressMessage, $progress,
 
 					log("\n"+'---- page('+fileProgressCounter+'/'+pageListFullCount+'): '+pagePath); // コンテンツの加工処理開始 (を、ログファイルに記録)
 
-					px.it79.fnc(
+					main.it79.fnc(
 						{"pageInfo": sitemapRow},
 						[
 							function(it2, arg2){
 								// 対象外のパスだったらここまで
 								// console.log(arg2.pageInfo.content);
-								var regx = px.utils79.regexp_quote(target_path);
+								var regx = main.utils79.regexp_quote(target_path);
 								regx = regx.split('\\*').join('([\\s\\S]*)');
 								regx = '^'+regx+'$';
 								// console.log(regx);
@@ -162,23 +155,22 @@ module.exports = function(app, px, pj, pathHomeDir, $progressMessage, $progress,
 												broccoliProcessor
 													.each(
 														function( editor ){
-															// console.log(data);
-															// next();
-															try {
-																eval(script_instance_processor.toString());
-															} catch (e) {
-																console.error('eval ERROR', e);
-																log('eval ERROR');
-																editor.done();
+															var targetModuleName = /[\s\S]*/;
+															var instance = editor.getInstance();
+
+															if( instance.modId.match(targetModuleName) && !instance.subModName ){
+																count('モジュール '+instance.modId+' が使われている件数');
+																countFile();
 															}
+															editor.done();
 														}
 													)
-													[(is_dryrun ? 'dryrun' : 'run')](function(logs){
+													['dryrun'](function(logs){
 														// console.log(arg2.pageInfo.path, logs);
 														// console.log('replace done!');
 														$pre.text( $pre.text() + ' -> done' );
 														$pre.text( $pre.text() + "\n" );
-														if(px.utils79.count(logs)){
+														if(main.utils79.count(logs)){
 															log(JSON.stringify(logs,null,4));
 														}
 														log('-> done');
@@ -203,10 +195,10 @@ module.exports = function(app, px, pj, pathHomeDir, $progressMessage, $progress,
 											}
 											pj.px2proj.get_path_controot(function(contRoot){
 												pj.px2proj.get_path_docroot(function(docRoot){
-													var _contentsPath = px.path.resolve(docRoot + contRoot + pathCurrentContent);
+													var _contentsPath = main.path.resolve(docRoot + contRoot + pathCurrentContent);
 													var src = '';
 													try {
-														src = px.fs.readFileSync( _contentsPath );
+														src = main.fs.readFileSync( _contentsPath );
 														src = src.toString();
 													} catch (e) {
 														$pre.text( $pre.text() + ' -> ERROR' );
@@ -240,15 +232,15 @@ module.exports = function(app, px, pj, pathHomeDir, $progressMessage, $progress,
 
 			} ,
 			function(){
-				px.message( '完了しました。' );
+				main.message( '完了しました。' );
 				console.log('----------------------------------- completed -----------------------------------');
 				console.log('result: count()', counter);
-				console.log('result: countFile()', px.utils79.count(fileCounter), fileCounter);
+				console.log('result: countFile()', main.utils79.count(fileCounter), fileCounter);
 				log('');
 				log('----------------------------------- completed -----------------------------------');
 				log(new Date());
 				log('result: count() - '+JSON.stringify(counter,null,4));
-				log('result: countFile() - '+px.utils79.count(fileCounter)+' - '+JSON.stringify(fileCounter,null,4));
+				log('result: countFile() - '+main.utils79.count(fileCounter)+' - '+JSON.stringify(fileCounter,null,4));
 				callback();
 			}
 		);

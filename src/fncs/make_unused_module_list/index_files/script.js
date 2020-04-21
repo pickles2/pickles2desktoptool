@@ -1,7 +1,7 @@
-window.px = window.parent.px;
-window.contApp = new (function(px){
+window.main = window.parent.main;
+window.contApp = new (function(main){
 	var _this = this;
-	var pj = px.getCurrentProject();
+	var pj = main.getCurrentProject();
 	this.pj = pj;
 	var $cont,
 		$btn,
@@ -9,8 +9,6 @@ window.contApp = new (function(px){
 		$progress,
 		$progressMessage;
 
-	var $snippet_for_script_instance_processor;
-	var CodeMirrorInstans = {};
 	var pathHomeDir;
 
 	var _cancelRequest = false;
@@ -20,7 +18,7 @@ window.contApp = new (function(px){
 	 * initialize
 	 */
 	function init(){
-		px.it79.fnc(
+		main.it79.fnc(
 			{},
 			[
 				function(it1, data){
@@ -36,8 +34,8 @@ window.contApp = new (function(px){
 							},
 							function( errors ){
 								// API設定が不十分な場合のエラー処理
-								var html = px.utils.bindEjs(
-									px.fs.readFileSync('app/common/templates/broccoli-html-editor-php-is-not-available.html').toString(),
+								var html = main.utils.bindEjs(
+									main.fs.readFileSync('app/common/templates/broccoli-html-editor-php-is-not-available.html').toString(),
 									{errors: errors}
 								);
 								$('.contents').html( html );
@@ -64,45 +62,17 @@ window.contApp = new (function(px){
 					$btn = $cont.find('button');
 					$pre = $('<pre>');
 
-					$snippet_for_script_instance_processor = $('select[name=snippet_for_script_instance_processor]')
-						.on('change', function(){
-							var val = $(this).val();
-							$(this).val('');
-							$cont.find('form').find('textarea[name=script_instance_processor]').val(val);
-							CodeMirrorInstans['instance_processor'].setValue(val);
-						})
-					;
-
-					CodeMirrorInstans['instance_processor'] = window.textEditor.attachTextEditor(
-						$cont.find('form').find('textarea[name=script_instance_processor]').get(0),
-						'js',
-						{
-							save: function(){}
-						}
-					);
-
-
-					$('.snippet-instance-processor').each(function(e){
-						var $this = $(this);
-						$snippet_for_script_instance_processor.append( $('<option>')
-							.attr({'value': px.utils79.trim($this.html())})
-							.text($this.attr('title'))
-						);
-					});
 
 					$btn
 						.on('click', function(){
 							var btn = this;
 							var $form = $cont.find('form');
 							var target_path = '/*';
-							var script_instance_processor = $form.find('textarea[name=script_instance_processor]').val();
-							var is_dryrun = ( $form.find('input[name=is_dryrun]:checked').val()=='dryrun' ? true : false );
 
 							_cancelRequest = false;
 
 							$pre.text('');
 							$(btn).attr('disabled', 'disabled');
-							CodeMirrorInstans['instance_processor'].setOption("readonly", "nocursor");
 							$form.find('input,select,textarea').attr('disabled', 'disabled');
 							var $dialogBody = $(document.getElementById('template-modal-content').innerHTML);
 							$pre = $dialogBody.find('pre');
@@ -113,9 +83,8 @@ window.contApp = new (function(px){
 							$progressMessage.html('準備中...');
 
 							var $btnOk = $('<button class="px2-btn px2-btn--primary">').text('OK').click(function(){
-								px.closeDialog();
+								main.closeDialog();
 								$(btn).removeAttr('disabled').focus();
-								CodeMirrorInstans['instance_processor'].setOption("readonly", false);
 								$form.find('input,select,textarea').removeAttr('disabled', 'disabled');
 							}).attr({'disabled':'disabled'});
 
@@ -123,8 +92,8 @@ window.contApp = new (function(px){
 								_cancelRequest = true;
 							});
 
-							px.dialog({
-								"title": "一括加工",
+							main.dialog({
+								"title": "モジュールを検索",
 								"body": $dialogBody,
 								"buttons": [
 									$btnCancel,
@@ -132,11 +101,9 @@ window.contApp = new (function(px){
 								]
 							});
 
-							var processor = new Processor(_this, px, pj, pathHomeDir, $progressMessage, $progress, $pre);
+							var processor = new Processor(_this, main, pj, pathHomeDir, $progressMessage, $progress, $pre);
 							processor.run(
 								target_path,
-								script_instance_processor,
-								is_dryrun,
 								function(){
 									$progressMessage.html('completed!');
 									$progress.css({"width": '100%'}).removeClass('progress-bar-striped');
@@ -183,4 +150,4 @@ window.contApp = new (function(px){
 		init();
 	});
 
-})(window.px);
+})(window.main);

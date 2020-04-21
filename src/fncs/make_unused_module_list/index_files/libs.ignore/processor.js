@@ -225,7 +225,6 @@ module.exports = function(app, main, pj, pathHomeDir, $progressMessage, $progres
 			function(){
 				getAllModuleList(function(definedModuleList){
 
-					main.message( '完了しました。検索結果は console に出力されています。デベロッパーツールを確認してください。' );
 					console.log('----------------------------------- completed -----------------------------------');
 					console.log('result: count()', counter);
 					console.log('result: countFile()', main.utils79.count(fileCounter), fileCounter);
@@ -241,7 +240,9 @@ module.exports = function(app, main, pj, pathHomeDir, $progressMessage, $progres
 					$pre.text( $pre.text() + '検索結果は console に出力されています。デベロッパーツールを確認してください。' );
 					$pre.text( $pre.text() + "\n" );
 
-					if(definedModuleList){
+					if(!definedModuleList){
+						console.error('[ERROR] 定義済みモジュール一覧の取得に失敗しました。');
+					}else{
 						for(var modId in definedModuleList){
 							var modInfo = definedModuleList[modId];
 							if(modInfo.isSystemModule){
@@ -258,6 +259,8 @@ module.exports = function(app, main, pj, pathHomeDir, $progressMessage, $progres
 						}
 					}
 
+					main.message( '完了しました。検索結果は console に出力されています。デベロッパーツールを確認してください。' );
+
 					callback();
 
 				});
@@ -273,43 +276,61 @@ module.exports = function(app, main, pj, pathHomeDir, $progressMessage, $progres
 	 * 定義されているモジュールの一覧を取得する
 	 */
 	function getAllModuleList(callback){
-		pj.px2dthelperGetAll('/', {}, function(px2all){
-			var page_path = '/';
-			var realpathDataDir = px2all.realpath_homedir+'_sys/ram/data/';
-			var gpiOptions = {
-				'api': 'broccoliBridge',
-				'forBroccoli': {
-					'api': 'getAllModuleList',
-					'options': {
-						'lang': 'ja'
-					}
-				},
-				'page_path': page_path
-			};
+		var definedModuleList = false;
 
-			var tmpFileName = '__tmp_'+main.utils79.md5( Date.now() )+'.json';
-			main.fs.writeFileSync( realpathDataDir+tmpFileName, JSON.stringify(gpiOptions) );
-			var PxCommand = 'PX=px2dthelper.px2ce.gpi&appMode=desktop&data_filename='+encodeURIComponent(tmpFileName);
-			pj.px2proj.query(
-				pj.getConcretePath(page_path)+'?'+PxCommand, {
-					"output": "json",
-					"complete": function(data, code){
-						main.fs.unlinkSync( realpathDataDir+tmpFileName );
-
-						var definedModuleList = false;
-						try{
-							definedModuleList = JSON.parse(data);
-						}catch(e){
-							console.error(e);
+		if( pj.getGuiEngineName() == 'broccoli-html-editor-php' ){
+			// --------------------------------------
+			// PHP版Broccoliを利用しているプロジェクトの場合
+			pj.px2dthelperGetAll('/', {}, function(px2all){
+				var page_path = '/';
+				var realpathDataDir = px2all.realpath_homedir+'_sys/ram/data/';
+				var gpiOptions = {
+					'api': 'broccoliBridge',
+					'forBroccoli': {
+						'api': 'getAllModuleList',
+						'options': {
+							'lang': 'ja'
 						}
+					},
+					'page_path': page_path
+				};
 
-						callback( definedModuleList );
+				var tmpFileName = '__tmp_'+main.utils79.md5( Date.now() )+'.json';
+				main.fs.writeFileSync( realpathDataDir+tmpFileName, JSON.stringify(gpiOptions) );
+				var PxCommand = 'PX=px2dthelper.px2ce.gpi&appMode=desktop&data_filename='+encodeURIComponent(tmpFileName);
+				pj.px2proj.query(
+					pj.getConcretePath(page_path)+'?'+PxCommand, {
+						"output": "json",
+						"complete": function(data, code){
+							main.fs.unlinkSync( realpathDataDir+tmpFileName );
 
-						return;
+							try{
+								definedModuleList = JSON.parse(data);
+							}catch(e){
+								console.error(e);
+							}
+
+							callback( definedModuleList );
+
+							return;
+						}
 					}
-				}
-			);
-		});
+				);
+			});
+			return;
+		}else{
+			// --------------------------------------
+			// 内蔵JS版Broccoliを利用しているプロジェクトの場合
+			pj.createPickles2ContentsEditorServer( '/', {}, function(px2ce){
+				px2ce.createBroccoli(function(broccoli){
+					broccoli.getAllModuleList(function(result){
+						definedModuleList = result;
+						callback( definedModuleList );
+					});
+				});
+			} );
+			return;
+		}
 
 	}
 

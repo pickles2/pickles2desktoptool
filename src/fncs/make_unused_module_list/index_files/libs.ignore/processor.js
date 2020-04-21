@@ -19,6 +19,7 @@ module.exports = function(app, main, pj, pathHomeDir, $progressMessage, $progres
 		var currentExtension = '';
 		var pathCurrentContent = null;
 
+		var moduleIdCounter = [];
 
 		// 任意の項目を数える
 		function count( key ){
@@ -161,6 +162,10 @@ module.exports = function(app, main, pj, pathHomeDir, $progressMessage, $progres
 															if( instance.modId.match(targetModuleName) && !instance.subModName ){
 																count('モジュール '+instance.modId+' が使われている件数');
 																countFile();
+																if( !moduleIdCounter[instance.modId] ){
+																	moduleIdCounter[instance.modId] = 0;
+																}
+																moduleIdCounter[instance.modId] ++;
 															}
 															editor.done();
 														}
@@ -195,24 +200,10 @@ module.exports = function(app, main, pj, pathHomeDir, $progressMessage, $progres
 											}
 											pj.px2proj.get_path_controot(function(contRoot){
 												pj.px2proj.get_path_docroot(function(docRoot){
-													var _contentsPath = main.path.resolve(docRoot + contRoot + pathCurrentContent);
-													var src = '';
-													try {
-														src = main.fs.readFileSync( _contentsPath );
-														src = src.toString();
-													} catch (e) {
-														$pre.text( $pre.text() + ' -> ERROR' );
-														$pre.text( $pre.text() + "\n" );
-														log('-> ERROR');
-														it2.next(arg2);
-														return;
-													}
-
-													$pre.text( $pre.text() + ' -> done' );
+													$pre.text( $pre.text() + ' -> SKIP' );
 													$pre.text( $pre.text() + "\n" );
-													log('-> done');
+													log('-> SKIP');
 													it2.next(arg2);
-
 													return;
 												});
 											});
@@ -232,18 +223,93 @@ module.exports = function(app, main, pj, pathHomeDir, $progressMessage, $progres
 
 			} ,
 			function(){
-				main.message( '完了しました。' );
-				console.log('----------------------------------- completed -----------------------------------');
-				console.log('result: count()', counter);
-				console.log('result: countFile()', main.utils79.count(fileCounter), fileCounter);
-				log('');
-				log('----------------------------------- completed -----------------------------------');
-				log(new Date());
-				log('result: count() - '+JSON.stringify(counter,null,4));
-				log('result: countFile() - '+main.utils79.count(fileCounter)+' - '+JSON.stringify(fileCounter,null,4));
-				callback();
+				getAllModuleList(function(definedModuleList){
+
+					main.message( '完了しました。検索結果は console に出力されています。デベロッパーツールを確認してください。' );
+					console.log('----------------------------------- completed -----------------------------------');
+					console.log('result: count()', counter);
+					console.log('result: countFile()', main.utils79.count(fileCounter), fileCounter);
+					console.log('result: moduleIdCounter', moduleIdCounter);
+					log('');
+					log('----------------------------------- completed -----------------------------------');
+					log(new Date());
+					log('result: count() - '+JSON.stringify(counter,null,4));
+					log('result: countFile() - '+main.utils79.count(fileCounter)+' - '+JSON.stringify(fileCounter,null,4));
+					log('');
+
+					$pre.text( $pre.text() + '完了しました。' + "\n" );
+					$pre.text( $pre.text() + '検索結果は console に出力されています。デベロッパーツールを確認してください。' );
+					$pre.text( $pre.text() + "\n" );
+
+					if(definedModuleList){
+						for(var modId in definedModuleList){
+							var modInfo = definedModuleList[modId];
+							if(modInfo.isSystemModule){
+								// システムモジュールはカウントしない
+								continue;
+							}
+							if(modInfo.isClipModule){
+								// クリップモジュールはカウントしない
+								continue;
+							}
+							if(!moduleIdCounter[modId]){
+								log(modId + ' は使われていません。');
+							}
+						}
+					}
+
+					callback();
+
+				});
+
+
 			}
 		);
+
+	}
+
+
+	/**
+	 * 定義されているモジュールの一覧を取得する
+	 */
+	function getAllModuleList(callback){
+		pj.px2dthelperGetAll('/', {}, function(px2all){
+			var page_path = '/';
+			var realpathDataDir = px2all.realpath_homedir+'_sys/ram/data/';
+			var gpiOptions = {
+				'api': 'broccoliBridge',
+				'forBroccoli': {
+					'api': 'getAllModuleList',
+					'options': {
+						'lang': 'ja'
+					}
+				},
+				'page_path': page_path
+			};
+
+			var tmpFileName = '__tmp_'+main.utils79.md5( Date.now() )+'.json';
+			main.fs.writeFileSync( realpathDataDir+tmpFileName, JSON.stringify(gpiOptions) );
+			var PxCommand = 'PX=px2dthelper.px2ce.gpi&appMode=desktop&data_filename='+encodeURIComponent(tmpFileName);
+			pj.px2proj.query(
+				pj.getConcretePath(page_path)+'?'+PxCommand, {
+					"output": "json",
+					"complete": function(data, code){
+						main.fs.unlinkSync( realpathDataDir+tmpFileName );
+
+						var definedModuleList = false;
+						try{
+							definedModuleList = JSON.parse(data);
+						}catch(e){
+							console.error(e);
+						}
+
+						callback( definedModuleList );
+
+						return;
+					}
+				}
+			);
+		});
 
 	}
 

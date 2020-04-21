@@ -146,10 +146,10 @@ window.contApp = new (function( main ){
 				it1.next(arg);
 			},
 			function(it1, arg){
-				contentsComment = new (require('../../../fncs/pages/index_files/libs.ignore/contentsComment.js'))(_this, px, _pj);
-				wasabiComment = new (require('../../../fncs/pages/index_files/libs.ignore/wasabi.js'))(_this, px, _pj);
-				pageDraw = new (require('../../../fncs/pages/index_files/libs.ignore/pageDraw.js'))(_this, px, _pj, $elms, contentsComment, wasabiComment);
-				pageSearch = new (require('../../../fncs/pages/index_files/libs.ignore/pageSearch.js'))(_this, px, _pj, $elms);
+				contentsComment = new (require('../../../fncs/contents/index_files/libs.ignore/contentsComment.js'))(_this, px, _pj);
+				wasabiComment = new (require('../../../fncs/contents/index_files/libs.ignore/wasabi.js'))(_this, px, _pj);
+				pageDraw = new (require('../../../fncs/contents/index_files/libs.ignore/pageDraw.js'))(_this, px, _pj, $elms, contentsComment, wasabiComment);
+				pageSearch = new (require('../../../fncs/contents/index_files/libs.ignore/pageSearch.js'))(_this, px, _pj, $elms);
 				it1.next(arg);
 			},
 			function(it1, arg){

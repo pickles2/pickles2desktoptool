@@ -279,6 +279,64 @@ window.contApp = new (function(){
 	}
 
 	/**
+	 * プロジェクトを削除する
+	 */
+	this.deleteProject = function(){
+		var pj = main.getCurrentProject();
+		var projectId = pj.projectId;
+		var projectName = pj.projectInfo.name;
+		// console.log(pj);
+
+		var $body = $('<div>')
+			.append( '<p>このプロジェクトを削除してよろしいですか？</p>' )
+			.append( $('<table class="px2-table">')
+				.append(
+					$('<tr>')
+						.append( $('<th>').append('プロジェクト名'))
+						.append( $('<td>').append(pj.projectInfo.name))
+				)
+				.append(
+					$('<tr>')
+						.append( $('<th>').append('パス'))
+						.append( $('<td>').append(pj.projectInfo.path))
+				)
+			)
+			.append( '<p>プロジェクトを削除しても、ファイルの実体は消えません。手動で削除してください。</p>' )
+		;
+		main.px2style.modal(
+			{
+				'title': 'プロジェクトを削除',
+				'body': $body,
+				'buttons': [
+					$('<button class="px2-btn px2-btn--danger">')
+						.text('削除する')
+						.on('click', function(e){
+							main.deleteProject(
+								projectId,
+								function(){
+									main.px2style.closeModal();
+									main.message('プロジェクト "' + projectName + '" を削除しました。');
+									main.subapp();
+								}
+							);
+						})
+				],
+				'buttonsSecondary': [
+					$('<button class="px2-btn">')
+						.text('キャンセル')
+						.on('click', function(e){
+							main.px2style.closeModal();
+						})
+				],
+				'onclose': function(){}
+			},
+			function(){}
+		);
+
+		return;
+	}
+
+	/**
 	 * イベント
 	 */
 	$(function(){

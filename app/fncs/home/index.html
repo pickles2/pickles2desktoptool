@@ -94,11 +94,18 @@
 
 					</div>
 				</div><!-- /.row -->
-				<p><button class="px2-btn" onclick="px.deselectProject(); px.subapp(); return false;">ダッシュボードへ戻る</button></p>
-				<p><button class="px2-btn" onclick="px.healthCheck(); return false;">診断ツール</button></p>
-				<p><button class="px2-btn px2-btn--danger" onclick="if(confirm('このプロジェクトを削除してよろしいですか？')){px.deleteProject( px.getCurrentProject().projectId, function(){px.subapp();} );} return false;">このプロジェクトを削除</button></p>
-				<hr />
-				<address class="center">---</address>
+				<div class="cont-footer-menu">
+					<div>
+						<div><button class="px2-btn" onclick="px.healthCheck(); return false;">診断ツール</button></div>
+					</div>
+					<div>
+						<div><button class="px2-btn" onclick="px.deselectProject(); px.subapp(); return false;">ダッシュボードへ戻る</button></div>
+						<div><button class="px2-btn px2-btn--danger" onclick="contApp.deleteProject(); return false;">このプロジェクトを削除</button></div>
+					</div>
+				</div>
+				<footer class="cont-footer">
+					<address class="center">---</address>
+				</footer>
 
 			</div>
 		</div>

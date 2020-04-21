@@ -61,3 +61,17 @@
     color: #155724; }
   .contents .cont-theme-home-set-default p {
     margin: 0; }
+
+.contents .cont-footer-menu > div {
+  text-align: center;
+  margin: 2em 0;
+  display: flex;
+  justify-content: space-between;
+  align-content: center; }
+
+@media all and (max-width: 680px) {
+  .contents .cont-footer-menu > div {
+    display: block;
+    margin: 0; }
+    .contents .cont-footer-menu > div > div {
+      margin: 2em 0; } }

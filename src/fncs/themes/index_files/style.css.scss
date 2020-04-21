@@ -75,4 +75,23 @@
 			margin: 0;
 		}
 	}
+
+	.cont-footer-menu {
+		> div {
+			text-align: center;
+			margin: 2em 0;
+			display: flex;
+			justify-content: space-between;
+			align-content: center;
+		}
+		@media all and (max-width:680px){
+			> div {
+				display: block;
+				margin: 0;
+				> div {
+					margin: 2em 0;
+				}
+			}
+		}
+	}
 }

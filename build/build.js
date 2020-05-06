@@ -246,20 +246,7 @@ nw.build().then(function () {
 						'./build/'+appName+'/osx64/'+appName+'.app'
 					],
 					function(itPjSign, row, idx){
-						var proc = require('child_process').spawn(
-							'codesign',
-							[
-								'--deep',
-								// '--options=runtime',
-								'--timestamp',
-								// '--check-notarization',
-								'--force',
-								'--sign', APPLE_IDENTITY,
-								row
-							],
-							{}
-						);
-						proc.on('close', function(){
+						appleCodesign(row, function(){
 							writeLog('done! - ['+idx+'] '+row);
 							itPjSign.next(param);
 						});
@@ -293,23 +280,42 @@ nw.build().then(function () {
 
 						writeLog('[platform: '+platformName+'] Zipping...');
 						process.chdir(__dirname + '/'+appName+'/'+platformName+'/');
-						var proc = require('child_process').spawn(
-							'zip',
-							[
-								'-q', '-y', '-r',
-								'../../dist/'+zipFileName, '.'
-							],
-							{}
-						);
+						var proc;
+						if( platformName == 'osx64' ){
+							proc = require('child_process').spawn(
+								'ditto',
+								[
+									'-ck', '--rsrc', '--sequesterRsrc',
+									'.', '../../dist/'+zipFileName
+								],
+								{}
+							);
+						}else{
+							proc = require('child_process').spawn(
+								'zip',
+								[
+									'-q', '-y', '-r',
+									'../../dist/'+zipFileName, '.'
+								],
+								{}
+							);
+						}
 						proc.on('close', function(){
 							writeLog('success. - '+'./build/dist/'+zipFileName);
 							process.chdir(__dirname);
 
 							if( platformName == 'osx64' ){
-								notarizeMacOsBuild(
+								// ZIPにもサインする
+								appleCodesign(
 									__dirname + '/dist/' + zipFileName,
 									function(){
-										it2.next();
+										// 公証へ提出
+										appleNotarizeMacOsBuild(
+											__dirname + '/dist/' + zipFileName,
+											function(){
+												it2.next();
+											}
+										);
 									}
 								);
 								return;
@@ -353,8 +359,37 @@ nw.build().then(function () {
 	console.error(error);
 });
 
-// Apple の公証に提出する
-function notarizeMacOsBuild(realpathZip, callback){
+
+
+
+// Apple: mac版に署名を埋め込む
+function appleCodesign(realpathTarget, callback){
+	callback = callback || function(){};
+
+	var proc = require('child_process').spawn(
+		'codesign',
+		[
+			'--force',
+			'--verify',
+			'--verbose',
+			'--deep',
+			'--options', 'runtime',
+			'--timestamp',
+			'--entitlements', __dirname+'/apple_entitlements.plist',
+			// '--check-notarization',
+			'--sign', APPLE_IDENTITY,
+			realpathTarget
+		],
+		{}
+	);
+	proc.on('close', function(){
+		callback();
+	});
+	return;
+}
+
+// Apple: Apple の公証に提出する
+function appleNotarizeMacOsBuild(realpathZip, callback){
 	callback = callback || function(){};
 
 	// macOS版 を Notarize
@@ -369,11 +404,11 @@ function notarizeMacOsBuild(realpathZip, callback){
 		[
 			'altool',
 			'--notarize-app',
+			'-t', 'osx',
 			'--primary-bundle-id', codesignJson.primary_bundle_id,
 			'--username', codesignJson.apple_developer_account,
 			'--password', codesignJson.apple_developer_password,
-			'--file',
-			realpathZip
+			'--file', realpathZip
 		],
 		{}
 	);

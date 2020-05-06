@@ -373,7 +373,9 @@ function appleCodesign(realpathTarget, callback){
 			'--verify',
 			'--verbose',
 			'--deep',
-			'--options', 'runtime',
+			// '--options', 'runtime',
+				// ↑2020-05-06 これを有効にすると、アプリ起動後にウィンドウが立ち上がらなかった。
+				// (このとき、 nwjs は v44.4)
 			'--timestamp',
 			'--entitlements', __dirname+'/apple_entitlements.plist',
 			// '--check-notarization',

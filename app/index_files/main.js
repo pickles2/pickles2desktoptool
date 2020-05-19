@@ -343,14 +343,11 @@ new (function($, window){
 					return;
 				},
 				function(it1){
-					// setup "node-php-bin"
+					// setup PHP command line environment
 					$('.splash__message p').text('PHPラッパーをロードしています...');
-					main.NodePhpBin = require('node-php-bin');
+					main.NodePhpBin = require('./index_files/node-php-bin/node-php-bin.js');
 					main.nodePhpBinOptions = {
 						// パスが通った php コマンドで初期化
-						// ※ 2018-03-26 @tomk79
-						// 　macOS の ElCapitan 以降、 openssl と libxml2 が利用できない環境があり、
-						// 　node-php-bin 内蔵の php の利用を一時中断することになった。
 						'bin': 'php' ,
 						'ini': null
 					};

@@ -81,11 +81,11 @@ $ sh build/staple_apple_notarize_info.sh build/dist/Pickles2-{$version}-osx64.zi
 ### node and npm version
 
 - node v12.16.3
-- npm@ v6.14.4
+- npm v6.14.4
 
 Mac で Windows 版をビルドするにあたり、次の環境が必要です。
 
-- wine@2.0
+- wine v2.0
 
 
 ## 更新履歴 - Change log

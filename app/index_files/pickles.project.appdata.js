@@ -1,8 +1,8 @@
 /**
- * px.project.appdata
+ * main.project.appdata
  */
-module.exports = function( px, pj, callbackOnStandby ) {
-	global.__defineGetter__('__LINE__', function () { return (new Error()).stack.split('\n')[2].split(':').reverse()[1]; }); var var_dump = function(val){ console.log(val); };
+module.exports = function( main, pj, callbackOnStandby ) {
+	// global.__defineGetter__('__LINE__', function () { return (new Error()).stack.split('\n')[2].split(':').reverse()[1]; }); var var_dump = function(val){ console.log(val); };
 
 	var _this = this;
 	var pathAppDataDir;
@@ -12,15 +12,15 @@ module.exports = function( px, pj, callbackOnStandby ) {
 	function init(){
 		new Promise(function(rlv){rlv();})
 			.then(function(){ return new Promise(function(rlv, rjt){
-				pathAppDataDir = require('path').resolve(px.px2dtLDA.getAppDataDir('px2dt'))+'/';
-				if( !px.utils79.is_dir(pathAppDataDir) ){
+				pathAppDataDir = require('path').resolve(main.px2dtLDA.getAppDataDir('px2dt'))+'/';
+				if( !main.utils79.is_dir(pathAppDataDir) ){
 					console.error('AppData Directory is NOT exists.', pathAppDataDir);
 					callbackOnStandby();
 					return;
 				}
 
-				if( px.utils79.is_file(pathAppDataDir+'/'+pj.projectInfo.id+'.json') ){
-					let json = px.fs.readFileSync(pathAppDataDir+'/'+pj.projectInfo.id+'.json').toString();
+				if( main.utils79.is_file(pathAppDataDir+'/'+pj.projectInfo.id+'.json') ){
+					let json = main.fs.readFileSync(pathAppDataDir+'/'+pj.projectInfo.id+'.json').toString();
 					appData = JSON.parse(json);
 				}
 				rlv();
@@ -42,6 +42,9 @@ module.exports = function( px, pj, callbackOnStandby ) {
 	this.get = function(){
 		return appData;
 	}
+	this.load = function(){
+		return appData;
+	}
 
 	/**
 	 * 変更を保存する
@@ -49,9 +52,57 @@ module.exports = function( px, pj, callbackOnStandby ) {
 	this.save = function(callback){
 		callback = callback || function(){};
 		var jsonSrc = JSON.stringify( appData, null, "\t" );
-		px.fs.writeFileSync(pathAppDataDir+'/'+pj.projectInfo.id+'.json', jsonSrc);
+		main.fs.writeFileSync(pathAppDataDir+'/'+pj.projectInfo.id+'.json', jsonSrc);
 		callback();
 	}
+
+
+	/**
+	 * カスタムデータファイルを読み取る
+	 */
+	this.readCustomDataFile = function( key, callback ){
+		callback = callback || function(){};
+		if( !main.utils79.is_dir(pathAppDataDir) ){
+			callback(false);
+		}
+		var rtn = false;
+		try{
+			if( main.utils79.is_file(pathAppDataDir + 'pj/'+pj.projectInfo.id+'/'+key+'.txt') ){
+				rtn = main.fs.readFileSync( pathAppDataDir + 'pj/'+pj.projectInfo.id+'/'+key+'.txt' ).toString();
+			}
+		}catch(e){
+			console.error(e);
+		}
+		callback(rtn);
+		return;
+	}
+
+	/**
+	 * カスタムデータファイルを保存する
+	 */
+	this.writeCustomDataFile = function( key, val, callback ){
+		callback = callback || function(){};
+		if( !main.utils79.is_dir(pathAppDataDir) ){
+			callback(false);
+		}
+		try{
+			if( !main.utils79.is_dir(pathAppDataDir + 'pj/') ){
+				main.fs.mkdirSync(pathAppDataDir + 'pj/');
+			}
+			if( !main.utils79.is_dir(pathAppDataDir + 'pj/'+pj.projectInfo.id+'/') ){
+				main.fs.mkdirSync(pathAppDataDir + 'pj/'+pj.projectInfo.id+'/');
+			}
+			main.fs.writeFileSync(
+				pathAppDataDir + 'pj/'+pj.projectInfo.id+'/'+key+'.txt',
+				val
+			);
+		}catch(e){
+			console.error(e);
+		}
+		callback(true);
+		return;
+	}
+
 
 	init();
 };

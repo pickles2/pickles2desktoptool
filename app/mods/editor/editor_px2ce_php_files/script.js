@@ -19718,7 +19718,8 @@ module.exports = exports['default'];
 },{"./util/assertString":98}],102:[function(require,module,exports){
 window.px = window.parent.main || window.opener.main;
 window.main = window.parent.main || window.opener.main;
-window.contApp = new (function( px ){
+window.contApp = new (function( main ){
+	var px = main;
 	var _this = this;
 	var it79 = require('iterate79');
 	var utils79 = require('utils79');
@@ -19868,7 +19869,22 @@ window.contApp = new (function( px ){
 							// broccoliは、バックグラウンドで様々なデータ通信を行います。
 							// GPIは、これらのデータ通信を行うための汎用的なAPIです。
 
-							// console.log('=-----=-----=', input);
+							var realpathBroccoliUserStorageBaseDir = main.px2dtLDA.getAppDataDir('px2dt');
+
+							if( input.api == "broccoliBridge" && input.forBroccoli && input.forBroccoli.api == "saveUserData" ){
+								// userStorageの保存要求に対する対応
+								console.log('userStorage の保存リクエストを受けました', input.forBroccoli.options, realpathBroccoliUserStorageBaseDir);
+								try{
+									_pj.appdata.writeCustomDataFile('broccoli-userstorage-modPaletteCondition', input.forBroccoli.options.modPaletteCondition, function(result){
+										callback(result);
+									});
+								}catch(e){
+									console.error(e);
+									callback(false);
+								}
+								return;
+							}
+
 							// var testTimestamp = (new Date()).getTime();
 							var tmpFileName = '__tmp_'+utils79.md5( Date.now() )+'.json';
 							px.fs.writeFileSync( realpathDataDir+tmpFileName, JSON.stringify(input) );
@@ -19877,14 +19893,42 @@ window.contApp = new (function( px ){
 								{
 									complete: function(rtn){
 										// console.log('--- returned(millisec)', (new Date()).getTime() - testTimestamp);
-										try{
-											rtn = JSON.parse(rtn);
-										}catch(e){
-											console.error('Failed to parse JSON String -> ' + rtn);
-										}
-										px.fs.unlinkSync( realpathDataDir+tmpFileName );
-										_pj.updateGitStatus(function(){});
-										callback( rtn );
+										new Promise(function(rlv){rlv();})
+											.then(function(){ return new Promise(function(rlv, rjt){
+												try{
+													rtn = JSON.parse(rtn);
+												}catch(e){
+													console.error('Failed to parse JSON String -> ' + rtn);
+												}
+												rlv();
+											}); })
+											.then(function(){ return new Promise(function(rlv, rjt){
+												if( input.api == "broccoliBridge" && input.forBroccoli && input.forBroccoli.api == "getBootupInfomations" ){
+													// userStorageの情報を付加して返す。
+													rtn.userData = rtn.userData || {};
+													rtn.userData.modPaletteCondition = '{}';
+													try{
+														_pj.appdata.readCustomDataFile('broccoli-userstorage-modPaletteCondition', function(result){
+															rtn.userData.modPaletteCondition = result;
+															rlv();
+														});
+													}catch(e){
+														console.error(e);
+														rlv();
+													}
+													return;
+												}
+												rlv();
+											}); })
+											.then(function(){ return new Promise(function(rlv, rjt){
+												px.fs.unlinkSync( realpathDataDir+tmpFileName );
+												_pj.updateGitStatus(function(){});
+												rlv();
+											}); })
+											.then(function(){ return new Promise(function(rlv, rjt){
+												callback( rtn );
+											}); })
+										;
 									}
 								}
 							);

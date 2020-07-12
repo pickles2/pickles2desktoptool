@@ -1,4 +1,16 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+/**
+ * px2style/index.js
+ */
+module.exports = function(){
+}
+
+require('./src/modal/_modal.js')(module.exports);
+require('./src/notice/_notice.js')(module.exports);
+require('./src/styles/_loading.js')(module.exports);
+require('./src/header/_header.js')(module.exports);
+
+},{"./src/header/_header.js":4,"./src/modal/_modal.js":5,"./src/notice/_notice.js":6,"./src/styles/_loading.js":7}],2:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v3.5.1
  * https://jquery.com/
@@ -10872,17 +10884,13 @@ if ( typeof noGlobal === "undefined" ) {
 return jQuery;
 } );
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 (function(){
-    var Px2style = function(){};
+    var Px2style = require('../index.js');
     var px2style = window.px2style = new Px2style;
-    var modal = require('./modal/_modal.js')(Px2style);
-    var notice = require('./notice/_notice.js')(Px2style);
-    var loading = require('./styles/_loading.js')(Px2style);
-    var header = require('./header/_header.js')(Px2style);
 })();
 
-},{"./header/_header.js":3,"./modal/_modal.js":4,"./notice/_notice.js":5,"./styles/_loading.js":6}],3:[function(require,module,exports){
+},{"../index.js":1}],4:[function(require,module,exports){
 /**
  * header.js
  */
@@ -11058,7 +11066,7 @@ module.exports = function(Px2style){
 	}
 }
 
-},{"jquery":1}],4:[function(require,module,exports){
+},{"jquery":2}],5:[function(require,module,exports){
 /**
  * modal.js
  */
@@ -11269,7 +11277,7 @@ module.exports = function(Px2style){
 	}
 }
 
-},{"jquery":1}],5:[function(require,module,exports){
+},{"jquery":2}],6:[function(require,module,exports){
 /**
  * notice.js
  */
@@ -11360,7 +11368,7 @@ module.exports = function(Px2style){
 	}
 }
 
-},{"jquery":1}],6:[function(require,module,exports){
+},{"jquery":2}],7:[function(require,module,exports){
 /**
  * loading.js
  */
@@ -11458,4 +11466,4 @@ module.exports = function(Px2style){
 
 }
 
-},{"jquery":1}]},{},[2])
+},{"jquery":2}]},{},[3])

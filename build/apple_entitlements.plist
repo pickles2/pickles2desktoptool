@@ -2,14 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
     <dict>
-        <!--
-        2020-05-06 これを有効にすると、アプリ起動直後に異常終了するようになった。
-        (このとき、 nwjs は v44.4)
-        - - - - -
         <key>com.apple.security.app-sandbox</key>
         <true/>
-        -->
         <key>com.apple.security.network.client</key>
         <true/>
+        <key>CFBundlePackageType</key>
+        <string>APPL</string>
     </dict>
 </plist>

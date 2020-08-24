@@ -26,7 +26,7 @@
 			opt.buttons[i] = $btnElm;
 		}
 
-		var $dialogButtons = $('<div class="dialog-buttons center">').append(opt.buttons);
+		var $dialogButtons = $('<div class="dialog-buttons px2-text-align-center">').append(opt.buttons);
 
 		$dialog = $('<div>')
 			.addClass('contents')

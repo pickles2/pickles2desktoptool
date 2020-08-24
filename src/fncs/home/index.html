@@ -20,7 +20,7 @@
 		<link rel="stylesheet" href="../../common/px2style/dist/styles.css" charset="utf-8" />
 		<script src="../../common/px2style/dist/scripts.js" charset="utf-8"></script>
 
-		<!-- normalize & FESS -->
+		<!-- normalize -->
 		<link rel="stylesheet" href="../../common/styles/contents.css" type="text/css" />
 
 		<!-- Local Resources -->
@@ -48,48 +48,56 @@
 
 						<h2>Project Information</h2>
 						<div class="px2-responsive">
-							<table class="px2-table" style="width:100%; table-layout: fixed;">
-								<colgroup><col width="30%" /><col width="70%" /></colgroup>
-								<tr>
-									<th>Project Name</th>
-									<td class="tpl_name selectable">...</td>
-								</tr>
-								<tr>
-									<th>Path</th>
-									<td class="tpl_path selectable">...</td>
-								</tr>
-								<tr>
-									<th>Home Directory</th>
-									<td class="tpl_home_dir selectable">...</td>
-								</tr>
-								<tr>
-									<th>Entry Script</th>
-									<td class="tpl_entry_script selectable">...</td>
-								</tr>
-							</table>
+							<div class="px2-p">
+								<table class="px2-table" style="width:100%; table-layout: fixed;">
+									<colgroup><col width="30%" /><col width="70%" /></colgroup>
+									<tr>
+										<th>Project Name</th>
+										<td class="tpl_name selectable">...</td>
+									</tr>
+									<tr>
+										<th>Path</th>
+										<td class="tpl_path selectable">...</td>
+									</tr>
+									<tr>
+										<th>Home Directory</th>
+										<td class="tpl_home_dir selectable">...</td>
+									</tr>
+									<tr>
+										<th>Entry Script</th>
+										<td class="tpl_entry_script selectable">...</td>
+									</tr>
+								</table>
+							</div>
 						</div>
 						<h3>Optional</h3>
 						<div class="px2-responsive">
-							<table class="px2-table" style="width:100%; table-layout: fixed;">
-								<colgroup><col width="30%" /><col width="70%" /></colgroup>
-								<tr>
-									<th>External Preview Server Origin</th>
-									<td class="tpl_external_preview_server_origin selectable">...</td>
-								</tr>
-								<tr>
-									<th>External App Server Origin</th>
-									<td class="tpl_external_app_server_origin selectable">...</td>
-								</tr>
-							</table>
+							<div class="px2-p">
+								<table class="px2-table" style="width:100%; table-layout: fixed;">
+									<colgroup><col width="30%" /><col width="70%" /></colgroup>
+									<tr>
+										<th>External Preview Server Origin</th>
+										<td class="tpl_external_preview_server_origin selectable">...</td>
+									</tr>
+									<tr>
+										<th>External App Server Origin</th>
+										<td class="tpl_external_app_server_origin selectable">...</td>
+									</tr>
+								</table>
+							</div>
 						</div>
-						<p><button class="px2-btn" onclick="main.getCurrentProject().editProjectIndividualConfig(function(){main.subapp();}); return false;">プロジェクト個人設定を編集する</button></p>
+						<p class="px2-text-align-center">
+							<button class="px2-btn" onclick="main.getCurrentProject().editProjectIndividualConfig(function(){main.subapp();}); return false;">プロジェクト個人設定を編集する</button>
+						</p>
 
 
 						<h2>Project Status</h2>
 						<div class="px2-responsive">
-							<table class="px2-table tpl_status_table" style="width:100%; table-layout: fixed;">
-								<colgroup><col width="30%" /><col width="70%" /></colgroup>
-							</table>
+							<div class="px2-p">
+								<table class="px2-table tpl_status_table" style="width:100%; table-layout: fixed;">
+									<colgroup><col width="30%" /><col width="70%" /></colgroup>
+								</table>
+							</div>
 						</div>
 
 					</div>
@@ -104,7 +112,7 @@
 					</div>
 				</div>
 				<footer class="cont-footer">
-					<address class="center">---</address>
+					<address class="px2-text-align-center">---</address>
 				</footer>
 
 			</div>

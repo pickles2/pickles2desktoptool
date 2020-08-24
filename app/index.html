@@ -17,7 +17,7 @@
 		<!-- Pickles 2 - Git UI -->
 		<link rel="stylesheet" href="./common/px2dtGitUi/px2dtGitUi.css" type="text/css" />
 
-		<!-- normalize & FESS -->
+		<!-- normalize -->
 		<link rel="stylesheet" href="./common/styles/contents.css" type="text/css" />
 
 		<!-- Pickles 2 Style -->
@@ -35,8 +35,8 @@
 
 		<script id="template-selectProject-page" type="text/template">
 			<div class="cont_top_jumbotron">
-				<p class="center"><img src="./index_files/images/logo_2017.svg" style="width:50%; max-height:120px;" alt="Pickles 2" /></p>
-				<p class="center">Desktop Tool</p>
+				<p class="px2-text-align-center"><img src="./index_files/images/logo_2017.svg" style="width:50%; max-height:120px;" alt="Pickles 2" /></p>
+				<p class="px2-text-align-center">Desktop Tool</p>
 			<!-- /.cont_top_jumbotron --></div>
 			<div class="container">
 				<div class="row">
@@ -56,7 +56,8 @@
 						<h2>新規プロジェクト</h2>
 						<div class="cont_project_form px2-p">
 							<form action="javascript:;" onsubmit="cont_createProject(this);return false;" class="inline">
-								<table class="px2-table form_elements" style="width:100%;">
+								<div class="px2-p">
+								<table class="px2-table" style="width:100%;">
 									<colgroup><col width="30%" /><col width="70%" /></colgroup>
 									<tr>
 										<th>Project Name <span class="must">Required</span></th>
@@ -77,7 +78,8 @@
 										</td>
 									</tr>
 								</table>
-								<p class="center"><button class="px2-btn px2-btn--primary px2-btn--block">新規プロジェクト作成</button></p>
+								</div>
+								<p class="px2-text-align-center"><button class="px2-btn px2-btn--primary px2-btn--block">新規プロジェクト作成</button></p>
 							</form>
 						</div>
 					</div>
@@ -98,7 +100,7 @@
 					<h2>アップデートの確認 - Checking for update</h2>
 					<p><label><input type="checkbox" name="checkForUpdate" value="1" /> 起動時に自動的にチェックする</label></p>
 					<h2>コマンドのパス - Command path</h2>
-					<table class="px2-table form_elements" style="width:100%;">
+					<table class="px2-table" style="width:100%;">
 						<colgroup><col width="30%" /><col width="70%" /></colgroup>
 						<tr>
 							<th>php</th>
@@ -180,7 +182,7 @@
 
 				</div>
 				<div class="px2-p">
-					<p style="text-align: center;">これらの設定は、アプリケーションの再起動後に反映されます。</p>
+					<p class="px2-text-align-center">これらの設定は、アプリケーションの再起動後に反映されます。</p>
 				</div>
 			</form>
 		</script>
@@ -188,7 +190,7 @@
 		<script id="template-editProjectIndividualConfig" type="text/template">
 			<div class="px2-p">
 				<form action="javascript:;" class="inline">
-					<table class="form_elements" style="width:100%;">
+					<table class="px2-table" style="width:100%;">
 						<colgroup><col width="30%" /><col width="70%" /></colgroup>
 						<tr>
 							<th>Project Name <span class="must">Required</span></th>
@@ -227,7 +229,7 @@
 						</tr>
 					</table>
 					<h2>Optional</h2>
-					<table class="form_elements" style="width:100%;">
+					<table class="px2-table" style="width:100%;">
 						<colgroup><col width="30%" /><col width="70%" /></colgroup>
 						<tr>
 							<th>External Preview Server Origin</th>

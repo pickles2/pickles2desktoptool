@@ -25,7 +25,7 @@
 		<link rel="stylesheet" href="../../common/px2style/dist/styles.css" charset="utf-8" />
 		<script src="../../common/px2style/dist/scripts.js" charset="utf-8"></script>
 
-		<!-- normalize & FESS -->
+		<!-- normalize -->
 		<link rel="stylesheet" href="../../common/styles/contents.css" type="text/css" />
 
 		<!-- Local Resources -->
@@ -37,14 +37,14 @@
 		<!-- ========== templates ========== -->
 		<script id="template-scenes" type="text/template">
 			<div class="cont_scene" id="cont_before_publish">
-				<div class="unit center">
+				<div class="px2-p px2-text-align-center">
 					<p>パブリッシュは実行されていません。</p>
 					<p>次のボタンを押して、パブリッシュを実行します。</p>
 					<p><button class="px2-btn px2-btn--primary" onclick="contApp.publish(); return false;">パブリッシュする</button></p>
 				</div>
 			</div>
 			<div class="cont_scene" id="cont_after_publish-zero_files">
-				<div class="unit center">
+				<div class="px2-p px2-text-align-center">
 					<p>パブリッシュを実行しましたが、何も出力されませんでした。</p>
 					<p>パブリッシュ対象範囲に何も含まれていない可能性があります。</p>
 					<p>次のボタンを押し、パブリッシュ範囲の設定を変えてもう一度パブリッシュを実行してみてください。</p>
@@ -53,8 +53,8 @@
 			</div>
 			<div class="cont_scene" id="cont_before_publish-progress">
 				<div class="cont_canvas">
-					<div class="unit cont_progress">
-						<div class="center">
+					<div class="px2-p cont_progress">
+						<div class="px2-text-align-center">
 							<p>パブリッシュしています。</p>
 							<p>そのまましばらくお待ちください...</p>
 							<div class="cont_progress-phase"></div>
@@ -119,9 +119,9 @@
 					<h2>復旧方法</h2>
 					<p>ロックファイル <code>./px-files/_sys/ram/publish/applock.txt</code> を手動で<a href="javascript:contApp.open_publish_tmp_dir();">削除します</a>。</p>
 
-					<ul class="notes">
-						<li class="notes-li">※ただし、バックグラウンドでプロセスが進行中ではないか、事前に確認してください。</li>
-						<li class="notes-li">※<code>applock.txt</code> をテキストファイルで開くと、このファイルを生成したプロセスの <strong>プロセスID</strong> と <strong>最終アクセス日時</strong> が記載されています。この情報が手がかりになるはずです。</li>
+					<ul class="px2-note-list">
+						<li>ただし、バックグラウンドでプロセスが進行中ではないか、事前に確認してください。</li>
+						<li><code>applock.txt</code> をテキストファイルで開くと、このファイルを生成したプロセスの <strong>プロセスID</strong> と <strong>最終アクセス日時</strong> が記載されています。この情報が手がかりになるはずです。</li>
 					</ul>
 
 				</div>

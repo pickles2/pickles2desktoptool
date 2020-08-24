@@ -189,6 +189,27 @@
   .px2-ordered-list li {
     list-style-type: decimal; }
 
+.px2-note-list,
+.px2-note-list > ul {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  padding-left: 1.5em; }
+  .px2-note-list > ul > li,
+  .px2-note-list > li,
+  .px2-note-list > ul > ul > li,
+  .px2-note-list > ul > li {
+    list-style-type: none;
+    color: #999;
+    font-size: 86%;
+    position: relative; }
+    .px2-note-list > ul > li::before,
+    .px2-note-list > li::before,
+    .px2-note-list > ul > ul > li::before,
+    .px2-note-list > ul > li::before {
+      content: "※";
+      position: absolute;
+      left: -1.5em; }
+
 .px2-table {
   border: none;
   border-collapse: collapse;

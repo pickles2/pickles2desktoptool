@@ -1,7 +1,7 @@
 /**
  * Files and Folders: mkfile.js
  */
-module.exports = function(contApp, px, _pj, $){
+module.exports = function(contApp, main, _pj, $){
 	this.mkfile = function(current_dir, callback){
 		var $body = $('<div>').html( $('#template-mkfile').html() );
 		$body.find('.cont_current_dir').text(current_dir);
@@ -31,11 +31,18 @@ module.exports = function(contApp, px, _pj, $){
 					var filename = $body.find('[name=filename]').val();
 					if( !filename ){ return; }
 					var pageInfoAll;
+					var pxExternalPath;
 
-					px.it79.fnc({}, [
+					main.it79.fnc({}, [
+						function(it1){
+							contApp.parsePx2FilePath(current_dir+filename, function(_pxExternalPath, _path_type){
+								pxExternalPath = _pxExternalPath;
+								it1.next();
+							});
+						},
 						function(it1){
 							_pj.execPx2(
-								current_dir+filename+'?PX=px2dthelper.get.all',
+								pxExternalPath+'?PX=px2dthelper.get.all',
 								{
 									complete: function(resources){
 										try{
@@ -43,7 +50,6 @@ module.exports = function(contApp, px, _pj, $){
 										}catch(e){
 											console.error('Failed to parse JSON "client_resources".', e);
 										}
-										// console.log(resources);
 										pageInfoAll = resources;
 										it1.next();
 									}
@@ -55,8 +61,8 @@ module.exports = function(contApp, px, _pj, $){
 							if( filename.match(/\.html?$/i) && $body.find('[name=is_guieditor]:checked').val() ){
 								// GUI編集モードが有効
 								var realpath_data_dir = pageInfoAll.realpath_data_dir;
-								px.fsEx.mkdirpSync( realpath_data_dir );
-								px.fs.writeFileSync( realpath_data_dir+'data.json', '{}' );
+								main.fsEx.mkdirpSync( realpath_data_dir );
+								main.fs.writeFileSync( realpath_data_dir+'data.json', '{}' );
 							}
 							it1.next();
 						},

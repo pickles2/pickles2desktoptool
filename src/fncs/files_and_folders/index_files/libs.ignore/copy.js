@@ -5,7 +5,15 @@ module.exports = function(contApp, px, _pj, $){
 	this.copy = function(copyFrom, callback){
 		var is_file;
 		var pageInfoAll;
+		var pxExternalPathFrom;
+		var pxExternalPathTo;
 		px.it79.fnc({}, [
+			function(it1){
+				contApp.parsePx2FilePath(copyFrom, function(_pxExternalPath, _path_type){
+					pxExternalPathFrom = _pxExternalPath;
+					it1.next();
+				});
+			},
 			function(it1){
 				is_file = px.utils79.is_file( _pj.get('path')+copyFrom );
 				it1.next();
@@ -16,7 +24,7 @@ module.exports = function(contApp, px, _pj, $){
 					return;
 				}
 				_pj.execPx2(
-					copyFrom+'?PX=px2dthelper.get.all',
+					pxExternalPathFrom+'?PX=px2dthelper.get.all',
 					{
 						complete: function(resources){
 							try{
@@ -24,7 +32,7 @@ module.exports = function(contApp, px, _pj, $){
 							}catch(e){
 								console.error('Failed to parse JSON "client_resources".', e);
 							}
-							console.log(resources);
+							// console.log(resources);
 							pageInfoAll = resources;
 							it1.next();
 						}
@@ -59,22 +67,28 @@ module.exports = function(contApp, px, _pj, $){
 							if( copyTo == copyFrom ){ return; }
 
 							px.it79.fnc({}, [
+								function(it1){
+									contApp.parsePx2FilePath(copyTo, function(_pxExternalPath, _path_type){
+										pxExternalPathTo = _pxExternalPath;
+										it1.next();
+									});
+								},
 								function(it2){
 									if( is_file && $body.find('[name=is_copy_files_too]:checked').val() ){
 										// リソースも一緒に複製する
 										_pj.execPx2(
-											copyTo+'?PX=px2dthelper.get.all',
+											pxExternalPathTo+'?PX=px2dthelper.get.all',
 											{
-												complete: function(resources){
+												complete: function(pageInfoAllTo){
 													try{
-														resources = JSON.parse(resources);
+														pageInfoAllTo = JSON.parse(pageInfoAllTo);
 													}catch(e){
 														console.error('Failed to parse JSON "client_resources".', e);
 													}
-													// console.log(resources);
+													// console.log(pageInfoAllTo);
 
 													var realpath_files_from = pageInfoAll.realpath_files;
-													var realpath_files_to = resources.realpath_files;
+													var realpath_files_to = pageInfoAllTo.realpath_files;
 													if(px.utils79.is_dir(realpath_files_from)){
 														px.fsEx.copySync( realpath_files_from, realpath_files_to );
 													}

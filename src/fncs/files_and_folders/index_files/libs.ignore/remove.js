@@ -5,7 +5,14 @@ module.exports = function(contApp, px, _pj, $){
 	this.remove = function(target_item, callback){
 		var is_file;
 		var pageInfoAll;
+		var pxExternalPath;
 		px.it79.fnc({}, [
+			function(it1){
+				contApp.parsePx2FilePath(target_item, function(_pxExternalPath, _path_type){
+					pxExternalPath = _pxExternalPath;
+					it1.next();
+				});
+			},
 			function(it1){
 				is_file = px.utils79.is_file( _pj.get('path')+target_item );
 				it1.next();
@@ -16,7 +23,7 @@ module.exports = function(contApp, px, _pj, $){
 					return;
 				}
 				_pj.execPx2(
-					target_item+'?PX=px2dthelper.get.all',
+					pxExternalPath+'?PX=px2dthelper.get.all',
 					{
 						complete: function(resources){
 							try{

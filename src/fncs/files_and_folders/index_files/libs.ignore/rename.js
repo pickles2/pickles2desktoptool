@@ -33,7 +33,7 @@ module.exports = function(contApp, px, _pj, $){
 							try{
 								resources = JSON.parse(resources);
 							}catch(e){
-								console.error('Failed to parse JSON "client_resources".', e);
+								console.error('Failed to parse JSON "pageInfoAll".', e);
 							}
 							console.log(resources);
 							pageInfoAllFrom = resources;
@@ -88,7 +88,7 @@ module.exports = function(contApp, px, _pj, $){
 													try{
 														pageInfoAllTo = JSON.parse(pageInfoAllTo);
 													}catch(e){
-														console.error('Failed to parse JSON "client_resources".', e);
+														console.error('Failed to parse JSON "pageInfoAll".', e);
 													}
 													// console.log(pageInfoAllTo);
 

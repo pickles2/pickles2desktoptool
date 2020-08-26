@@ -65,7 +65,7 @@ module.exports = function(contApp, main, _pj, $){
 												try{
 													resources = JSON.parse(resources);
 												}catch(e){
-													console.error('Failed to parse JSON "client_resources".', e);
+													console.error('Failed to parse JSON "pageInfoAll".', e);
 												}
 												pageInfoAll = resources;
 												it2.next();

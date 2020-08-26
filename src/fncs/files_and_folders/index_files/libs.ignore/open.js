@@ -14,8 +14,8 @@ module.exports = function(contApp, px, _pj, $){
 			case 'html':
 			case 'htm':
 				px.preview.serverStandby( function(result){
-					contApp.parsePx2FilePath(fileinfo.path, function(pxExternalPath, path_type){
-						if(path_type == 'contents'){
+					contApp.parsePx2FilePath(fileinfo.path, function(pxExternalPath, pathType){
+						if(pathType == 'contents'){
 							contApp.openEditor( pxExternalPath );
 						}else{
 							px.openInTextEditor( realpath );

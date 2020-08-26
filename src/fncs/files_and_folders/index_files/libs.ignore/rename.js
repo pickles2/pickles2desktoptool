@@ -7,10 +7,13 @@ module.exports = function(contApp, px, _pj, $){
 		var pageInfoAllFrom;
 		var pxExternalPathFrom;
 		var pxExternalPathTo;
+		var pathTypeFrom;
+		var pathTypeTo;
 		px.it79.fnc({}, [
 			function(it1){
-				contApp.parsePx2FilePath(renameFrom, function(_pxExternalPath, _path_type){
+				contApp.parsePx2FilePath(renameFrom, function(_pxExternalPath, _pathType){
 					pxExternalPathFrom = _pxExternalPath;
+					pathTypeFrom = _pathType;
 					it1.next();
 				});
 			},
@@ -44,7 +47,7 @@ module.exports = function(contApp, px, _pj, $){
 				var $body = $('<div>').html( $('#template-rename').html() );
 				$body.find('.cont_target_item').text(renameFrom);
 				$body.find('[name=rename_to]').val(renameFrom);
-				if(is_file){
+				if(pathTypeFrom == 'contents' && is_file){
 					$body.find('.cont_contents_option').show();
 				}
 				px2style.modal({
@@ -68,13 +71,15 @@ module.exports = function(contApp, px, _pj, $){
 
 							px.it79.fnc({}, [
 								function(it1){
-									contApp.parsePx2FilePath(renameTo, function(_pxExternalPath, _path_type){
+									contApp.parsePx2FilePath(renameTo, function(_pxExternalPath, _pathType){
 										pxExternalPathTo = _pxExternalPath;
+										pathTypeTo = _pathType;
 										it1.next();
 									});
 								},
 								function(it2){
-									if( is_file && $body.find('[name=is_rename_files_too]:checked').val() ){
+									if( pathTypeFrom == 'contents' && pathTypeTo == 'contents' && is_file && $body.find('[name=is_rename_files_too]:checked').val() ){
+										// --------------------------------------
 										// リソースも一緒に移動する
 										_pj.execPx2(
 											pxExternalPathTo+'?PX=px2dthelper.get.all',

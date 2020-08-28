@@ -24,7 +24,7 @@ module.exports = function(contApp, main, _pj, $){
 				$body.find('.cont_current_dir').text(current_dir);
 				$body.find('[name=filename]').on('change keyup', function(){
 					var filename = $body.find('[name=filename]').val();
-					if( pathType_before == 'contents' && filename.match(/\.html?$/i) ){
+					if( pxExternalPath_before && pathType_before == 'contents' && filename.match(/\.html?$/i) ){
 						$body.find('.cont_html_ext_option').show();
 					}else{
 						$body.find('.cont_html_ext_option').hide();
@@ -52,12 +52,17 @@ module.exports = function(contApp, main, _pj, $){
 							main.it79.fnc({}, [
 								function(it2){
 									contApp.parsePx2FilePath(current_dir+filename, function(_pxExternalPath, _pathType){
+										// console.log(_pxExternalPath, _pathType);
 										pxExternalPath = _pxExternalPath;
 										pathType = _pathType;
 										it2.next();
 									});
 								},
 								function(it2){
+									if( !pxExternalPath ){
+										it2.next();
+										return;
+									}
 									_pj.execPx2(
 										pxExternalPath+'?PX=px2dthelper.get.all',
 										{

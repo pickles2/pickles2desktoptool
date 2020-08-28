@@ -188,10 +188,20 @@ window.contApp = new (function( main ){
 				pageInfoAll.realpath_docroot = normalizePath(pageInfoAll.realpath_docroot);
 				if( realpath_file.indexOf(pageInfoAll.realpath_docroot) === 0 ){
 					pxExternalPath = realpath_file.replace(pageInfoAll.realpath_docroot, '/');
+					pxExternalPath = pxExternalPath.split(/[\/]{1,}/).join('/');
+				}else{
+					pxExternalPath = false;
+					it1.next();
+					return;
 				}
 				pageInfoAll.path_controot = normalizePath(pageInfoAll.path_controot);
 				if( pxExternalPath.indexOf(pageInfoAll.path_controot) === 0 ){
 					pxExternalPath = pxExternalPath.replace(pageInfoAll.path_controot, '/');
+					pxExternalPath = pxExternalPath.split(/[\/]{1,}/).join('/');
+				}else{
+					pxExternalPath = false;
+					it1.next();
+					return;
 				}
 				pxExternalPath = normalizePath(require('path').resolve('/', pxExternalPath));
 				it1.next();
@@ -208,7 +218,7 @@ window.contApp = new (function( main ){
 					path_type = 'theme_collection';
 				}else if( realpath_target.indexOf(realpath_homedir) === 0 ){
 					path_type = 'home_dir';
-				}else if( realpath_target.indexOf(realpath_docroot) === 0 ){
+				}else if( realpath_target.indexOf(realpath_docroot) === 0 && pxExternalPath ){
 					path_type = 'contents';
 				}
 				it1.next();

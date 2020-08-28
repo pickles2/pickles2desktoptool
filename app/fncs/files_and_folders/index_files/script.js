@@ -560,10 +560,20 @@ window.contApp = new (function( main ){
 				pageInfoAll.realpath_docroot = normalizePath(pageInfoAll.realpath_docroot);
 				if( realpath_file.indexOf(pageInfoAll.realpath_docroot) === 0 ){
 					pxExternalPath = realpath_file.replace(pageInfoAll.realpath_docroot, '/');
+					pxExternalPath = pxExternalPath.split(/[\/]{1,}/).join('/');
+				}else{
+					pxExternalPath = false;
+					it1.next();
+					return;
 				}
 				pageInfoAll.path_controot = normalizePath(pageInfoAll.path_controot);
 				if( pxExternalPath.indexOf(pageInfoAll.path_controot) === 0 ){
 					pxExternalPath = pxExternalPath.replace(pageInfoAll.path_controot, '/');
+					pxExternalPath = pxExternalPath.split(/[\/]{1,}/).join('/');
+				}else{
+					pxExternalPath = false;
+					it1.next();
+					return;
 				}
 				pxExternalPath = normalizePath(require('path').resolve('/', pxExternalPath));
 				it1.next();
@@ -580,7 +590,7 @@ window.contApp = new (function( main ){
 					path_type = 'theme_collection';
 				}else if( realpath_target.indexOf(realpath_homedir) === 0 ){
 					path_type = 'home_dir';
-				}else if( realpath_target.indexOf(realpath_docroot) === 0 ){
+				}else if( realpath_target.indexOf(realpath_docroot) === 0 && pxExternalPath ){
 					path_type = 'contents';
 				}
 				it1.next();
@@ -647,7 +657,7 @@ module.exports = function(contApp, px, _pj, $){
 				it1.next();
 			},
 			function(it1){
-				if(!is_file){
+				if(!is_file || pxExternalPathFrom === false){
 					it1.next();
 					return;
 				}
@@ -703,7 +713,7 @@ module.exports = function(contApp, px, _pj, $){
 									});
 								},
 								function(it2){
-									if( pathTypeFrom == 'contents' && pathTypeTo == 'contents' && is_file && $body.find('[name=is_copy_files_too]:checked').val() ){
+									if( pathTypeFrom == 'contents' && pathTypeTo == 'contents' && pxExternalPathFrom && pxExternalPathTo && is_file && $body.find('[name=is_copy_files_too]:checked').val() ){
 										// --------------------------------------
 										// リソースも一緒に複製する
 										_pj.execPx2(
@@ -819,7 +829,7 @@ module.exports = function(contApp, main, _pj, $){
 				$body.find('.cont_current_dir').text(current_dir);
 				$body.find('[name=filename]').on('change keyup', function(){
 					var filename = $body.find('[name=filename]').val();
-					if( pathType_before == 'contents' && filename.match(/\.html?$/i) ){
+					if( pxExternalPath_before && pathType_before == 'contents' && filename.match(/\.html?$/i) ){
 						$body.find('.cont_html_ext_option').show();
 					}else{
 						$body.find('.cont_html_ext_option').hide();
@@ -847,12 +857,17 @@ module.exports = function(contApp, main, _pj, $){
 							main.it79.fnc({}, [
 								function(it2){
 									contApp.parsePx2FilePath(current_dir+filename, function(_pxExternalPath, _pathType){
+										// console.log(_pxExternalPath, _pathType);
 										pxExternalPath = _pxExternalPath;
 										pathType = _pathType;
 										it2.next();
 									});
 								},
 								function(it2){
+									if( !pxExternalPath ){
+										it2.next();
+										return;
+									}
 									_pj.execPx2(
 										pxExternalPath+'?PX=px2dthelper.get.all',
 										{
@@ -914,7 +929,7 @@ module.exports = function(contApp, px, _pj, $){
 			case 'htm':
 				px.preview.serverStandby( function(result){
 					contApp.parsePx2FilePath(fileinfo.path, function(pxExternalPath, pathType){
-						if(pathType == 'contents'){
+						if(pxExternalPath && pathType == 'contents'){
 							contApp.openEditor( pxExternalPath );
 						}else{
 							px.openInTextEditor( realpath );
@@ -973,7 +988,7 @@ module.exports = function(contApp, main, _pj, $){
 				it1.next();
 			},
 			function(it1){
-				if(!is_file || pathType !== 'contents'){
+				if(!is_file || pxExternalPath === false || pathType !== 'contents'){
 					it1.next();
 					return;
 				}
@@ -1018,7 +1033,7 @@ module.exports = function(contApp, main, _pj, $){
 
 							main.it79.fnc({}, [
 								function(it2){
-									if( is_file && pathType == 'contents' && $body.find('[name=is_remove_files_too]:checked').val() ){
+									if( is_file && pxExternalPath && pathType == 'contents' && $body.find('[name=is_remove_files_too]:checked').val() ){
 										// --------------------------------------
 										// リソースも一緒に削除する
 										var realpath_files = pageInfoAll.realpath_files;
@@ -1070,7 +1085,7 @@ module.exports = function(contApp, px, _pj, $){
 				it1.next();
 			},
 			function(it1){
-				if(!is_file){
+				if(!is_file || pxExternalPathFrom === false){
 					it1.next();
 					return;
 				}
@@ -1126,7 +1141,7 @@ module.exports = function(contApp, px, _pj, $){
 									});
 								},
 								function(it2){
-									if( pathTypeFrom == 'contents' && pathTypeTo == 'contents' && is_file && $body.find('[name=is_rename_files_too]:checked').val() ){
+									if( pathTypeFrom == 'contents' && pathTypeTo == 'contents' && pxExternalPathFrom && pxExternalPathTo && is_file && $body.find('[name=is_rename_files_too]:checked').val() ){
 										// --------------------------------------
 										// リソースも一緒に移動する
 										_pj.execPx2(

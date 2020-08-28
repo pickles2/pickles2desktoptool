@@ -20,7 +20,7 @@ module.exports = function(contApp, main, _pj, $){
 				it1.next();
 			},
 			function(it1){
-				if(!is_file || pathType !== 'contents'){
+				if(!is_file || pxExternalPath === false || pathType !== 'contents'){
 					it1.next();
 					return;
 				}
@@ -65,7 +65,7 @@ module.exports = function(contApp, main, _pj, $){
 
 							main.it79.fnc({}, [
 								function(it2){
-									if( is_file && pathType == 'contents' && $body.find('[name=is_remove_files_too]:checked').val() ){
+									if( is_file && pxExternalPath && pathType == 'contents' && $body.find('[name=is_remove_files_too]:checked').val() ){
 										// --------------------------------------
 										// リソースも一緒に削除する
 										var realpath_files = pageInfoAll.realpath_files;

@@ -22,7 +22,7 @@ module.exports = function(contApp, px, _pj, $){
 				it1.next();
 			},
 			function(it1){
-				if(!is_file){
+				if(!is_file || pxExternalPathFrom === false){
 					it1.next();
 					return;
 				}
@@ -78,7 +78,7 @@ module.exports = function(contApp, px, _pj, $){
 									});
 								},
 								function(it2){
-									if( pathTypeFrom == 'contents' && pathTypeTo == 'contents' && is_file && $body.find('[name=is_rename_files_too]:checked').val() ){
+									if( pathTypeFrom == 'contents' && pathTypeTo == 'contents' && pxExternalPathFrom && pxExternalPathTo && is_file && $body.find('[name=is_rename_files_too]:checked').val() ){
 										// --------------------------------------
 										// リソースも一緒に移動する
 										_pj.execPx2(

@@ -73,6 +73,13 @@ module.exports = function(contApp, main, $){
 
 		new Promise(function(rlv){rlv();})
 			.then(function(){ return new Promise(function(rlv, rjt){
+				main.px2style.loading({}, function(){
+					main.px2style.loadingMessage('ブランチを切り替えています。');					
+					rlv();
+				});
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
 				pj.git().parser.git(['status'], function(result){
 					console.log(result);
 					var status = result;
@@ -98,6 +105,7 @@ module.exports = function(contApp, main, $){
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
+				main.px2style.closeLoading();
 				main.message('ブランチを切り替えました。');
 				main.subapp();
 				rlv();

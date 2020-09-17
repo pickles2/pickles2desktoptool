@@ -8,13 +8,6 @@
     width: 100%;
     height: 100%;
     overflow: auto; }
-  .pickles2-module-editor__modal {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto; }
   .pickles2-module-editor__title {
     display: block;
     margin: 0;
@@ -106,7 +99,13 @@
     .pickles2-module-editor__module-edit__layout__content {
       position: absolute;
       width: 100%;
-      height: 100%; }
+      height: 100%;
+      display: flex;
+      flex-direction: column; }
+      .pickles2-module-editor__module-edit__layout__content h2:first-child {
+        margin-top: 0; }
+      .pickles2-module-editor__module-edit__layout__content textarea {
+        flex-grow: 1; }
   .pickles2-module-editor__module-edit__preview {
     height: 400px;
     display: flex; }

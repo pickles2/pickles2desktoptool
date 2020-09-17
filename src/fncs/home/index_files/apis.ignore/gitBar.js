@@ -90,6 +90,7 @@ module.exports = function(contApp, main, $){
 						+ status.notStaged.modified.length
 						+ status.notStaged.untracked.length;
 					if( changes ){
+						main.px2style.closeLoading();
 						alert('コミットされていない変更があります。コミットするか、変更を破棄してから再度実行してください。');
 						return;
 					}

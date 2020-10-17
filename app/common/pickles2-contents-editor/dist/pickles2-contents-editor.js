@@ -4434,21 +4434,27 @@ exports.cache = {
 
 },{}],18:[function(require,module,exports){
 module.exports={
-  "_from": "ejs@^2.6.2",
+  "_args": [
+    [
+      "ejs@2.7.4",
+      "/Users/tomk79/mydoc_TomK/projs/pickles2/pickles2/node-pickles2-contents-editor"
+    ]
+  ],
+  "_from": "ejs@2.7.4",
   "_id": "ejs@2.7.4",
   "_inBundle": false,
   "_integrity": "sha512-7vmuyh5+kuUyJKePhQfRQBhXV5Ce+RnaeeQArKu1EAMpL3WbgMt5WG6uQZpEVvYSSsxMXRKOewtDk9RaTKXRlA==",
   "_location": "/ejs",
   "_phantomChildren": {},
   "_requested": {
-    "type": "range",
+    "type": "version",
     "registry": true,
-    "raw": "ejs@^2.6.2",
+    "raw": "ejs@2.7.4",
     "name": "ejs",
     "escapedName": "ejs",
-    "rawSpec": "^2.6.2",
+    "rawSpec": "2.7.4",
     "saveSpec": null,
-    "fetchSpec": "^2.6.2"
+    "fetchSpec": "2.7.4"
   },
   "_requiredBy": [
     "/",
@@ -4456,8 +4462,7 @@ module.exports={
     "/langbank"
   ],
   "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.7.4.tgz",
-  "_shasum": "48661287573dcc53e366c7a1ae52c3a120eec9ba",
-  "_spec": "ejs@^2.6.2",
+  "_spec": "2.7.4",
   "_where": "/Users/tomk79/mydoc_TomK/projs/pickles2/pickles2/node-pickles2-contents-editor",
   "author": {
     "name": "Matthew Eernisse",
@@ -4467,9 +4472,7 @@ module.exports={
   "bugs": {
     "url": "https://github.com/mde/ejs/issues"
   },
-  "bundleDependencies": false,
   "dependencies": {},
-  "deprecated": false,
   "description": "Embedded JavaScript templates",
   "devDependencies": {
     "browserify": "^13.1.1",
@@ -24131,22 +24134,31 @@ module.exports = function(px2ce){
 				btns.push({
 					"label": 'クリップJSONを出力',
 					"click": function(){
-						broccoli.selectedInstanceToJsonString(function(jsonStr){
-							if(!jsonStr){
-								alert('インスタンスを選択してください。');
-								return;
-							}
-							var a = document.createElement('a');
-							var blob = new Blob(
-								[jsonStr],
-								{
-									"type": "application/json"
+						px2style.loading();
+						try{
+							broccoli.selectedInstanceToJsonString(function(jsonStr){
+								if(!jsonStr){
+									alert('インスタンスを選択してください。');
+									px2style.closeLoading();
+									return;
 								}
-							);
-							a.href = window.URL.createObjectURL(blob);
-							a.download = 'clip-'+dateformat(new Date(), 'yyyy-mm-dd-HH-MM-ss')+'.json';
-							a.click();
-						});
+								var a = document.createElement('a');
+								var blob = new Blob(
+									[jsonStr],
+									{
+										"type": "application/json"
+									}
+								);
+								a.href = window.URL.createObjectURL(blob);
+								a.download = 'clip-'+dateformat(new Date(), 'yyyy-mm-dd-HH-MM-ss')+'.json';
+								a.click();
+								px2style.closeLoading();
+							});
+						}catch(e){
+							console.error(e);
+							alert('ERROR');
+							px2style.closeLoading();
+						}
 					}
 				});
 

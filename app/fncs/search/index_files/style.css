@@ -1,0 +1,9 @@
+.container {
+  display: flex; }
+
+.contents {
+  display: flex;
+  width: 100%; }
+  .contents #cont-pickles2-code-search {
+    flex-grow: 1;
+    align-self: stretch; }

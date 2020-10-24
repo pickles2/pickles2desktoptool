@@ -7699,7 +7699,8 @@
     -ms-flex-positive: 1;
         flex-grow: 1;
     overflow: auto;
-    margin: 1em 0; }
+    margin: 1em 0;
+    word-break: break-all; }
     .pickles2-code-search__results > ul {
       padding: 0; }
     .pickles2-code-search__results > ul > li {

@@ -280,7 +280,7 @@ eval("module.exports = \"<div class=\\\"progress\\\">\\n\\t<div class=\\\"progre
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-eval("module.exports = \"<li>\\n\\t<div><strong class=\\\"selectable\\\">{{ path|e }}</strong> ({{ highlights|length }})</div>\\n\\n\\t<div class=\\\"pickles2-code-search__highlight-list\\\">\\n\\t\\t<ul>\\n\\t\\t\\t{% for highlight in highlights %}\\n\\t\\t\\t\\t<li>{{ highlight }}</li>\\n\\t\\t\\t{% endfor %}\\n\\t\\t</ul>\\n\\t</div>\\n\\n\\t<ul class=\\\"px2-horizontal-list\\\">\\n\\t{% for toolId, tool in tools %}\\n\\t\\t<li><a href=\\\"javascript:;\\\" data-path=\\\"{{ path|e }}\\\" data-tool-id=\\\"{{ toolId|e }}\\\" class=\\\"px2-a\\\">{{ tool.label }}</a></li>\\n\\t{% endfor %}\\n\\t</ul>\\n</li>\\n\";\n\n//# sourceURL=webpack:///./src/resources/templates/result.html?");
+eval("module.exports = \"<li>\\n\\t<div><strong class=\\\"selectable\\\">{{ path|e }}</strong></div>\\n\\n\\t<div class=\\\"pickles2-code-search__highlight-list\\\">\\n\\t\\t<ul>\\n\\t\\t\\t{% for highlight in highlights %}\\n\\t\\t\\t\\t<li>{{ highlight }}</li>\\n\\t\\t\\t{% endfor %}\\n\\t\\t</ul>\\n\\t</div>\\n\\n\\t<ul class=\\\"px2-horizontal-list\\\">\\n\\t{% for toolId, tool in tools %}\\n\\t\\t<li><a href=\\\"javascript:;\\\" data-path=\\\"{{ path|e }}\\\" data-tool-id=\\\"{{ toolId|e }}\\\" class=\\\"px2-a\\\">{{ tool.label }}</a></li>\\n\\t{% endfor %}\\n\\t</ul>\\n</li>\\n\";\n\n//# sourceURL=webpack:///./src/resources/templates/result.html?");
 
 /***/ }),
 

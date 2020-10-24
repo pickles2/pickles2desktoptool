@@ -57,7 +57,7 @@ window.contApp = new (function(main, $){
 									'new': [
 										{
 											'path': _this.getPath(file) ,
-											'file': file ,
+											'highlights': result.highlights ,
 										}
 									]
 								});

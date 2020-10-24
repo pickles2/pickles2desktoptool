@@ -33,7 +33,7 @@ window.contApp = new (function(main, $){
 					}
 
 					var searchInDirOptions = decideTargets( searchOptions );
-					console.log(searchInDirOptions);
+					// console.log(searchInDirOptions);
 
 					// 検索を実施
 					SinD = new main.SearchInDir(
@@ -52,7 +52,7 @@ window.contApp = new (function(main, $){
 								});
 							},
 							'match': function( file, result ){
-								console.log(file, result);
+								// console.log(file, result);
 								pickles2CodeSearch.update({
 									'new': [
 										{
@@ -78,7 +78,27 @@ window.contApp = new (function(main, $){
 					console.log('abort -----');
 					SinD.cancel();
 					callback();
-				}
+				},
+				'tools': [
+					{
+						'label': 'テキストエディタで開く',
+						'open': function(path){
+							main.openInTextEditor( pj.get('path') + path );
+						}
+					},
+					{
+						'label': 'フォルダを開く',
+						'open': function(path){
+							main.utils.openURL( main.php.dirname( pj.get('path') + path ) );
+						}
+					},
+					{
+						'label': '関連付けられたアプリケーションで開く',
+						'open': function(path){
+							main.utils.openURL( pj.get('path') + path );
+						}
+					}
+				]
 			},
 			function(){
 				console.log('ready.');
@@ -87,13 +107,6 @@ window.contApp = new (function(main, $){
 
 
 	}
-
-	/**
-	 * イベント
-	 */
-	$(window).on('load', function(){
-		init();
-	});
 
 
 
@@ -188,6 +201,13 @@ window.contApp = new (function(main, $){
 		file = file.replace( new RegExp('^'+main.php.preg_quote(pj.get('path'))), '' );
 		return file;
 	}
+
+	/**
+	 * onload
+	 */
+	$(window).on('load', function(){
+		init();
+	});
 
 })(main, $);
 

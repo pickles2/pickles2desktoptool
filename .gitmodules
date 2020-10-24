@@ -34,3 +34,6 @@
 [submodule "submodules/gitui79.js"]
 	path = submodules/gitui79.js
 	url = https://github.com/tomk79/gitui79.js.git
+[submodule "submodules/pickles2-code-search"]
+	path = submodules/pickles2-code-search
+	url = https://github.com/tomk79/pickles2-code-search.git

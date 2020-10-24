@@ -55,6 +55,11 @@ gulp.task("client-libs:node-git-parser", function() {
 		.pipe(gulp.dest( './app/common/gitparse79/dist/' ))
 	;
 });
+gulp.task("client-libs:pickles2-code-search", function() {
+	return gulp.src(["submodules/pickles2-code-search/dist/**/*"])
+		.pipe(gulp.dest( './app/common/pickles2-code-search/dist/' ))
+	;
+});
 gulp.task("client-libs:ace-builds", function() {
 	return gulp.src(["submodules/ace-builds/src-noconflict/**/*"])
 		.pipe(gulp.dest( './app/common/ace-builds/src-noconflict/' ))
@@ -158,6 +163,7 @@ let _tasks = gulp.parallel(
 	"client-libs:remote-finder",
 	"client-libs:gitui79.js",
 	"client-libs:node-git-parser",
+	"client-libs:pickles2-code-search",
 	"client-libs:ace-builds",
 	
 	'.html',

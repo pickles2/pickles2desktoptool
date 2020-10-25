@@ -5,9 +5,6 @@ window.contApp = new (function(main, $){
 
 	var pickles2CodeSearch;
 	var SinD;
-	var hitCount = 0;
-	var targetCount = 0;
-
 	var publicCacheDir = pj.getConfig().public_cache_dir || '/caches/';
 
 	/**
@@ -17,8 +14,6 @@ window.contApp = new (function(main, $){
 		pickles2CodeSearch = new Pickles2CodeSearch(
 			document.getElementById('cont-pickles2-code-search')
 		);
-		console.log(document.getElementById('cont-pickles2-code-search'));
-
 		pickles2CodeSearch.init(
 			{
 				'start': function(keyword, searchOptions, callback){
@@ -70,13 +65,14 @@ window.contApp = new (function(main, $){
 							}
 						}
 					);
-					return false;
+					return;
 
 				},
 				'abort': function(callback){
 					console.log('abort -----');
 					SinD.cancel();
 					callback();
+					return;
 				},
 				'tools': [
 					{

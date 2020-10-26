@@ -33,12 +33,6 @@ window.contApp = new (function(main, $){
 					SinD = new main.SearchInDir(
 						searchInDirOptions['target'],
 						{
-							'keyword': keyword ,
-							'filter': searchInDirOptions.filter,
-							'ignore': searchInDirOptions.ignore,
-							'allowRegExp': searchInDirOptions.allowRegExp,
-							'ignoreCase': searchInDirOptions.ignoreCase,
-							'matchFileName': searchInDirOptions.matchFileName,
 							'progress': function( done, total ){
 								pickles2CodeSearch.update({
 									'total': total,
@@ -58,11 +52,22 @@ window.contApp = new (function(main, $){
 							} ,
 							'error': function( file, error ){
 								console.error(file, error);
-							} ,
-							'complete': function(){
-								pickles2CodeSearch.finished();
-								SinD = null;
-							}
+							},
+						}
+					);
+					SinD.start(
+						keyword,
+						{
+							'filter': searchInDirOptions.filter,
+							'ignore': searchInDirOptions.ignore,
+							'allowRegExp': searchInDirOptions.allowRegExp,
+							'ignoreCase': searchInDirOptions.ignoreCase,
+							'matchFileName': searchInDirOptions.matchFileName,
+						},
+						function(){
+							pickles2CodeSearch.finished();
+							SinD = null;
+							return;
 						}
 					);
 					return;

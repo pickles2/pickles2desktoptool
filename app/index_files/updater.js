@@ -2,11 +2,12 @@ module.exports = function( main, $ ) {
 	var _this = this;
 
 	var installToSlashApplicationsDirectoryAnswered = false;
+	var installToSlashApplicationsDirectoryAnswer = false;
 	var updateStatus = null;
 	var gui = main.nw;
 	var NwUpdater = require('node-webkit-updater');
 	var upd = new NwUpdater(main.packageJson);
-	var appFileName = 'Pickles2';
+	var appFileName = main.packageJson.name;
 	var copyPath = gui.App.argv[0];
 	var execPath = gui.App.argv[1];
 
@@ -27,15 +28,22 @@ module.exports = function( main, $ ) {
 			return true;
 		}
 
+		if( installToSlashApplicationsDirectoryAnswer ){
+			return true;
+		}
+
 		if( main.getPlatform() == 'mac' && !installToSlashApplicationsDirectoryAnswered ){
 			var appPath = upd.getAppPath();
-			if( appPath.match(/\/[a-zA-Z0-9\_\-]+\.app$/) && !appPath.match(/^\/Applications\//) && main.utils79.is_dir('/Applications/' + appFileName + '.app') ){
-				installToSlashApplicationsDirectoryAnswered = true;
-				if( confirm('Applications フォルダにインストールしますか？') ){
-					copyPath = copyPath || '/Applications/' + appFileName + '.app';
-					execPath = execPath || '/Applications/' + appFileName + '.app';
-					// console.log( copyPath, execPath );
-					return true;
+			if( appPath.match(/\/[a-zA-Z0-9\_\-]+\.app$/) && !appPath.match( /^\/Applications\// ) && main.utils79.is_dir('/Applications/' + appFileName + '.app') ){
+				if( appPath.match( /^\/private\/var\// ) ){
+					installToSlashApplicationsDirectoryAnswered = true;
+					installToSlashApplicationsDirectoryAnswer = confirm('Applications フォルダにインストールします。'+"\n"+'続けますか？');
+					if( confirm(installToSlashApplicationsDirectoryAnswer) ){
+						copyPath = copyPath || '/Applications/' + appFileName + '.app';
+						execPath = execPath || '/Applications/' + appFileName + '.app';
+						// console.log( copyPath, execPath );
+						return true;
+					}
 				}
 			}
 		}

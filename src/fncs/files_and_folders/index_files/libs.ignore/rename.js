@@ -4,28 +4,39 @@
 module.exports = function(contApp, px, _pj, $){
 	this.rename = function(renameFrom, callback){
 		var is_file;
-		var pageInfoAll;
+		var pageInfoAllFrom;
+		var pxExternalPathFrom;
+		var pxExternalPathTo;
+		var pathTypeFrom;
+		var pathTypeTo;
 		px.it79.fnc({}, [
+			function(it1){
+				contApp.parsePx2FilePath(renameFrom, function(_pxExternalPath, _pathType){
+					pxExternalPathFrom = _pxExternalPath;
+					pathTypeFrom = _pathType;
+					it1.next();
+				});
+			},
 			function(it1){
 				is_file = px.utils79.is_file( _pj.get('path')+renameFrom );
 				it1.next();
 			},
 			function(it1){
-				if(!is_file){
+				if(!is_file || pxExternalPathFrom === false){
 					it1.next();
 					return;
 				}
 				_pj.execPx2(
-					renameFrom+'?PX=px2dthelper.get.all',
+					pxExternalPathFrom+'?PX=px2dthelper.get.all',
 					{
 						complete: function(resources){
 							try{
 								resources = JSON.parse(resources);
 							}catch(e){
-								console.error('Failed to parse JSON "client_resources".', e);
+								console.error('Failed to parse JSON "pageInfoAll".', e);
 							}
 							console.log(resources);
-							pageInfoAll = resources;
+							pageInfoAllFrom = resources;
 							it1.next();
 						}
 					}
@@ -36,7 +47,7 @@ module.exports = function(contApp, px, _pj, $){
 				var $body = $('<div>').html( $('#template-rename').html() );
 				$body.find('.cont_target_item').text(renameFrom);
 				$body.find('[name=rename_to]').val(renameFrom);
-				if(is_file){
+				if(pathTypeFrom == 'contents' && is_file){
 					$body.find('.cont_contents_option').show();
 				}
 				px2style.modal({
@@ -59,22 +70,30 @@ module.exports = function(contApp, px, _pj, $){
 							if( renameTo == renameFrom ){ return; }
 
 							px.it79.fnc({}, [
+								function(it1){
+									contApp.parsePx2FilePath(renameTo, function(_pxExternalPath, _pathType){
+										pxExternalPathTo = _pxExternalPath;
+										pathTypeTo = _pathType;
+										it1.next();
+									});
+								},
 								function(it2){
-									if( is_file && $body.find('[name=is_rename_files_too]:checked').val() ){
+									if( pathTypeFrom == 'contents' && pathTypeTo == 'contents' && pxExternalPathFrom && pxExternalPathTo && is_file && $body.find('[name=is_rename_files_too]:checked').val() ){
+										// --------------------------------------
 										// リソースも一緒に移動する
 										_pj.execPx2(
-											renameTo+'?PX=px2dthelper.get.all',
+											pxExternalPathTo+'?PX=px2dthelper.get.all',
 											{
-												complete: function(resources){
+												complete: function(pageInfoAllTo){
 													try{
-														resources = JSON.parse(resources);
+														pageInfoAllTo = JSON.parse(pageInfoAllTo);
 													}catch(e){
-														console.error('Failed to parse JSON "client_resources".', e);
+														console.error('Failed to parse JSON "pageInfoAll".', e);
 													}
-													// console.log(resources);
+													// console.log(pageInfoAllTo);
 
-													var realpath_files_from = pageInfoAll.realpath_files;
-													var realpath_files_to = resources.realpath_files;
+													var realpath_files_from = pageInfoAllFrom.realpath_files;
+													var realpath_files_to = pageInfoAllTo.realpath_files;
 													if(px.utils79.is_dir(realpath_files_from)){
 														px.fsEx.renameSync( realpath_files_from, realpath_files_to );
 													}

@@ -1,10 +1,14 @@
-module.exports = function( px, $ ) {
+module.exports = function( main, $ ) {
 	var _this = this;
 
+	var installToSlashApplicationsDirectoryAnswered = false;
 	var updateStatus = null;
-	var gui = px.nw;
+	var gui = main.nw;
 	var NwUpdater = require('node-webkit-updater');
-	var upd = new NwUpdater(px.packageJson);
+	var upd = new NwUpdater(main.packageJson);
+	var appFileName = 'Pickles2';
+	var copyPath = gui.App.argv[0];
+	var execPath = gui.App.argv[1];
 
 	/**
 	 * 状態を確認する
@@ -22,6 +26,20 @@ module.exports = function( px, $ ) {
 		if(gui.App.argv.length == 2) {
 			return true;
 		}
+
+		if( main.getPlatform() == 'mac' && !installToSlashApplicationsDirectoryAnswered ){
+			var appPath = upd.getAppPath();
+			if( appPath.match(/\/[a-zA-Z0-9\_\-]+\.app$/) && !appPath.match(/^\/Applications\//) && main.utils79.is_dir('/Applications/' + appFileName + '.app') ){
+				installToSlashApplicationsDirectoryAnswered = true;
+				if( confirm('Applications フォルダにインストールしますか？') ){
+					copyPath = copyPath || '/Applications/' + appFileName + '.app';
+					execPath = execPath || '/Applications/' + appFileName + '.app';
+					// console.log( copyPath, execPath );
+					return true;
+				}
+			}
+		}
+
 		return false;
 	}
 
@@ -38,7 +56,7 @@ module.exports = function( px, $ ) {
 				alert('お使いのアプリケーションは最新版です。');
 
 			} else {
-				if( !confirm('新しいバージョンが見つかりました。'+"\n"+'・最新バージョン: '+manifest.version+"\n"+'・お使いのバージョン: '+px.packageJson.version+"\n"+'更新しますか？') ){
+				if( !confirm('新しいバージョンが見つかりました。'+"\n"+'・最新バージョン: '+manifest.version+"\n"+'・お使いのバージョン: '+main.packageJson.version+"\n"+'更新しますか？') ){
 					return;
 				}
 				if( !confirm('アプリケーションの更新には、数分かかることがあります。'+"\n"+'更新中には作業は行なえません。'+"\n"+'いますぐ更新しますか？') ){
@@ -51,14 +69,14 @@ module.exports = function( px, $ ) {
 		};
 
 		console.info('アプリケーションの更新を確認します。');
-		console.log(px.packageJson);
+		console.log(main.packageJson);
 		upd.checkNewVersion(function(error, newVersionExists, manifest) {
 			if( error ){
 				console.error(error);
 			}else if( !newVersionExists ){
 				console.info('お使いのアプリケーションは最新版です。');
 			}else{
-				console.info('新しいバージョンが見つかりました。'+"\n"+'・最新バージョン: '+manifest.version+"\n"+'・お使いのバージョン: '+px.packageJson.version);
+				console.info('新しいバージョンが見つかりました。'+"\n"+'・最新バージョン: '+manifest.version+"\n"+'・お使いのバージョン: '+main.packageJson.version);
 			}
 			console.log(manifest);
 
@@ -82,7 +100,7 @@ module.exports = function( px, $ ) {
 		}
 
 		// show progress bar
-		px.progress.start({
+		main.progress.start({
 			"blindness": true,
 			"showProgressBar": true
 		});
@@ -90,7 +108,7 @@ module.exports = function( px, $ ) {
 		updateStatus = 'downloading';
 		console.info('インストーラーをダウンロードしています...。');
 		console.log(manifest);
-		px.progress.message('インストーラーをダウンロードしています...。');
+		main.progress.message('インストーラーをダウンロードしています...。');
 
 		// 最新版のZIPアーカイブをダウンロード
 		upd.download(function(error, filename) {
@@ -104,7 +122,7 @@ module.exports = function( px, $ ) {
 			updateStatus = 'unpacking';
 			console.info('インストーラーアーカイブを展開しています...。');
 			console.log(filename);
-			px.progress.message('インストーラーアーカイブを展開しています...。');
+			main.progress.message('インストーラーアーカイブを展開しています...。');
 
 			// ZIPを展開
 			upd.unpack(filename, function(error, newAppPath) {
@@ -117,10 +135,10 @@ module.exports = function( px, $ ) {
 
 				updateStatus = 'booting_installer';
 				console.info('インストールの準備が整いました。インストーラーを起動します。');
-				px.progress.message('インストールの準備が整いました。インストーラーを起動します。');
+				main.progress.message('インストールの準備が整いました。インストーラーを起動します。');
 				setTimeout(function(){
 					upd.runInstaller(newAppPath, [upd.getAppPath(), upd.getAppExec()],{});
-					px.exit();
+					main.exit();
 					return;
 				}, 3000);
 
@@ -139,8 +157,9 @@ module.exports = function( px, $ ) {
 		var $body = $('body');
 
 		updateStatus = 'installing';
-		var copyPath = gui.App.argv[0];
-		var execPath = gui.App.argv[1];
+		// var copyPath = gui.App.argv[0];
+		// var execPath = gui.App.argv[1];
+
 		if(!copyPath || !execPath){
 			console.error('インストール先 または 再起動プログラム のパスがセットされていません。');
 			if( !confirm('インストール先 または 再起動プログラム のパスがセットされていません。続行しますか？') ){
@@ -148,13 +167,13 @@ module.exports = function( px, $ ) {
 			}
 		}
 
-		px.it79.fnc({},
+		main.it79.fnc({},
 			[
 				function(it1){
 					console.log('Starting installation...');
 					$body.html( $('#template-installer-mode').html() );
-					$body.find('.installer-mode__appname').text(px.packageJson.window.title);
-					$body.find('.installer-mode__version').text(px.packageJson.version);
+					$body.find('.installer-mode__appname').text(main.packageJson.window.title);
+					$body.find('.installer-mode__version').text(main.packageJson.version);
 					$body.find('.installer-mode__progress-msg').text('インストールしています...。');
 
 					setTimeout(function(){
@@ -171,7 +190,11 @@ module.exports = function( px, $ ) {
 					// Replace old app, Run updated app from original location
 					// 本来 node-webkit-updater の作法では upd.install() を使うが、
 					// これが mac でうまく動作しなかったため、 fsEx.copy() に置き換えた。
-					px.fsEx.copy(upd.getAppPath(), copyPath, {"overwrite": true}, function(err) {
+					var method = main.fsEx.copy;
+					if( !main.fsEx.existsSync( copyPath ) ){
+						method = main.fsEx.move;
+					}
+					method(upd.getAppPath(), copyPath, {"overwrite": true}, function(err) {
 						console.log('Copy application files done.');
 
 						if (err) {
@@ -206,7 +229,7 @@ module.exports = function( px, $ ) {
 						upd.run(execPath, []);
 					}
 
-					px.exit();
+					main.exit();
 				}
 			]
 		);

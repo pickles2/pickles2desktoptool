@@ -362,13 +362,13 @@ module.exports = function(app, px, pj, $elms, contentsComment, wasabiComment){
 								} catch (e) {
 								}
 
-								var $tbl = $('<table class="def">')
+								var $tbl = $('<table class="px2-table">')
 									.css({'width': '100%'})
 								;
 								for(var idx in pageInfo){
 									var $row = $('<tr>');
 									$row.append( $('<th>').text(idx) );
-									$row.append( $('<td class="selectable">').text(pageInfo[idx]) );
+									$row.append( $('<td>').text(pageInfo[idx]) );
 									// $row.append( $('<td>').text(typeof(pageInfo[idx])) );
 									$tbl.append($row);
 								}

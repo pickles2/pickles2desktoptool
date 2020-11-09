@@ -41,6 +41,7 @@ module.exports = function(fncCallGit){
 			case 'branch':
 			case 'checkout':
 			case 'log':
+			case 'diff':
 			case 'show':
 			case 'remote':
 			case 'push':
@@ -65,6 +66,7 @@ module.exports.prototype.commit = require('./parsers/commit.js');
 module.exports.prototype.branch = require('./parsers/branch.js');
 module.exports.prototype.checkout = require('./parsers/checkout.js');
 module.exports.prototype.log = require('./parsers/log.js');
+module.exports.prototype.diff = require('./parsers/diff.js');
 module.exports.prototype.show = require('./parsers/show.js');
 module.exports.prototype.remote = require('./parsers/remote.js');
 module.exports.prototype.push = require('./parsers/push.js');
@@ -95,7 +97,7 @@ module.exports.prototype.parseCmdAry = function(cmdAry){
 	return rtn;
 }
 
-},{"./parsers/add.js":2,"./parsers/branch.js":3,"./parsers/checkout.js":4,"./parsers/commit.js":5,"./parsers/config.js":6,"./parsers/init.js":7,"./parsers/log.js":8,"./parsers/pull.js":9,"./parsers/push.js":10,"./parsers/remote.js":11,"./parsers/show.js":12,"./parsers/status.js":13}],2:[function(require,module,exports){
+},{"./parsers/add.js":2,"./parsers/branch.js":3,"./parsers/checkout.js":4,"./parsers/commit.js":5,"./parsers/config.js":6,"./parsers/diff.js":7,"./parsers/init.js":8,"./parsers/log.js":9,"./parsers/pull.js":10,"./parsers/push.js":11,"./parsers/remote.js":12,"./parsers/show.js":13,"./parsers/status.js":14}],2:[function(require,module,exports){
 /**
  * git add
  */
@@ -125,6 +127,12 @@ module.exports = function(cmdAry, result, callback){
 },{}],3:[function(require,module,exports){
 /**
  * git branch
+ * 
+ * 【対応できているオプション】
+ * 
+ * - ブランチを削除する: `--delete`, `-d`, `-D`
+ * - リモートブランチをリストする: `--remote`, `-r`
+ * - ローカルとリモートの両方のブランチをリストする: `--all`, `-a`
  */
 module.exports = function(cmdAry, result, callback){
 	callback = callback || function(){}
@@ -133,7 +141,10 @@ module.exports = function(cmdAry, result, callback){
 
 	var parsedCmd = this.parseCmdAry(cmdAry);
 
-	if( parsedCmd.options.delete || parsedCmd.options.D ){
+	if( parsedCmd.options.delete || parsedCmd.options.d || parsedCmd.options.D ){
+		// --------------------
+		// ブランチを削除する
+
 		result.result = false;
 		// console.log(lines);
 		lines.forEach(function(line){
@@ -151,6 +162,27 @@ module.exports = function(cmdAry, result, callback){
 		});
 
 	}else{
+		// --------------------
+		// ブランチリストを取得する
+		var isLocal = true;
+		var isRemote = false;
+
+		if( parsedCmd.options.remote || parsedCmd.options.r ){
+			isLocal = false;
+			isRemote = true;
+		}
+		if( parsedCmd.options.all || parsedCmd.options.a ){
+			isLocal = true;
+			isRemote = true;
+		}
+
+		if(isLocal){
+			result.localBranches = [];
+		}
+		if(isRemote){
+			result.remoteBranches = [];
+		}
+
 		lines.forEach(function(line){
 			if( !line.length ){
 				return;
@@ -158,13 +190,30 @@ module.exports = function(cmdAry, result, callback){
 
 			if( line.match(/^(\*?)[\s]*([\S]*)$/g) ){
 				var branchName = RegExp.$2;
+
+				if( !isLocal && isRemote ){
+					branchName = 'remotes/' + branchName;
+				}
+
 				result.branches.push(branchName);
 				if( RegExp.$1 ){
 					result.currentBranchName = branchName;
 				}
+
+				var remoteBranchName = null;
+				if( isRemote && branchName.match(/^remotes\//) ){
+					remoteBranchName = branchName.replace(/^remotes\//, '');
+				}
+				if( isLocal && remoteBranchName === null){
+					result.localBranches.push(branchName);
+				}
+				if( isRemote && remoteBranchName !== null){
+					result.remoteBranches.push(remoteBranchName);
+				}
 			}
 
 		});
+
 	}
 
 	callback(result);
@@ -245,6 +294,80 @@ module.exports = function(cmdAry, result, callback){
 
 },{}],7:[function(require,module,exports){
 /**
+ * git diff
+ */
+module.exports = function(cmdAry, result, callback){
+	callback = callback || function(){}
+	var _this = this;
+	var lines = result.stdout.split(/\r\n|\r|\n/g);
+	var phase = null;
+    result.diff = null;
+    var tmpLog = {},
+		tmpLogs = [];
+	// console.log(lines);
+
+	var parsedCmd = this.parseCmdAry(cmdAry);
+	// console.log(parsedCmd);
+
+	if( parsedCmd.options.pretty ){
+		// TODO: 未対応
+	}else if( parsedCmd.options.stat ){
+		// TODO: 未対応
+	}else{
+		lines.forEach(function(line){
+
+			if( line.match(/^commit\ ([0-9a-fA-F]+)$/) ){
+				if( tmpLog.commit ){
+					tmpLogs.push(tmpLog);
+				}
+				tmpLog = {};
+				tmpLog.commit = RegExp.$1;
+				tmpLog.stdout = [];
+				tmpLog.stdout.push(line);
+				phase = 'log_header';
+				return;
+			}
+			try{
+				if(!tmpLog.stdout){tmpLog.stdout = [];}
+				tmpLog.stdout.push(line);
+			}catch(e){}
+			return;
+		});
+
+		var fres = {};
+		fres.code = 0;
+		fres.stdout = 'commit 000000000000000000'+"\n"
+			+"\n"
+			+"    temporary diff\n"
+			+"\n"
+			+tmpLog.stdout.join("\n");
+		fres.errors = [];
+		var showCmd = [];
+		showCmd.push('show');
+		if( parsedCmd.options['name-status'] ){
+			showCmd.push('--name-status');
+		}
+		showCmd.push('000000000000000000');
+
+		_this.show(
+			showCmd,
+			fres,
+			function(res){
+				delete(res.code);
+				delete(res.stdout);
+				delete(res.errors);
+				result.diff = res.files;
+			}
+		);
+
+	}
+
+	// console.log(result);
+	callback(result);
+}
+
+},{}],8:[function(require,module,exports){
+/**
  * git init
  */
 module.exports = function(cmdAry, result, callback){
@@ -253,7 +376,7 @@ module.exports = function(cmdAry, result, callback){
 	callback(result);
 }
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /**
  * git log
  */
@@ -300,8 +423,16 @@ module.exports = function(cmdAry, result, callback){
 			fres.code = 0;
 			fres.stdout = logStdout.stdout.join("\n");
 			fres.errors = [];
+
+			var showCmd = [];
+			showCmd.push('show');
+			if( parsedCmd.options['name-status'] ){
+				showCmd.push('--name-status');
+			}
+			showCmd.push(logStdout.commit);
+
 			_this.show(
-				['show', logStdout.commit],
+				showCmd,
 				fres,
 				function(res){
 					delete(res.code);
@@ -317,7 +448,7 @@ module.exports = function(cmdAry, result, callback){
 	callback(result);
 }
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /**
  * git pull
  */
@@ -370,7 +501,7 @@ module.exports = function(cmdAry, result, callback){
 	callback(result);
 }
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /**
  * git push
  */
@@ -433,7 +564,7 @@ module.exports = function(cmdAry, result, callback){
 	callback(result);
 }
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /**
  * git remote
  */
@@ -565,7 +696,7 @@ function parseLogFiles(lines){
 	return rtn;
 }
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /**
  * git show
  */
@@ -623,7 +754,11 @@ module.exports = function(cmdAry, result, callback){
 			}else if(phase == 'log_commit_files'){
 				if( !line.length ){
 					phase = null;
-					result.files = parseLogFiles(tmpLines);
+					if( parsedCmd.options['name-status'] ){
+						result.files = parseLogFilesNameStatus(tmpLines);
+					}else{
+						result.files = parseLogFiles(tmpLines);
+					}
 					return;
 				}
 				tmpLines.push(line);
@@ -712,7 +847,53 @@ function parseLogFiles(lines){
 	return rtn;
 }
 
-},{}],13:[function(require,module,exports){
+/**
+ * ファイルのdiff部分を解析 (`--name-status` オプションが有効な場合)
+ */
+function parseLogFilesNameStatus(lines){
+	var rtn = [];
+	// console.log(lines);
+
+	lines.forEach(function(line){
+		var tmpFileDiff = {};
+		if( line.match(/^(M|A|D)\t([\s\S]+)$/) ){
+			var tmpTypeInitial = RegExp.$1;
+			var tmpFilePath = RegExp.$2;
+
+			tmpFileDiff.filenameBefore = tmpFilePath;
+			tmpFileDiff.filename = tmpFilePath;
+			switch(tmpTypeInitial){
+				case 'A': tmpFileDiff.type = 'added'; break;
+				case 'M': tmpFileDiff.type = 'changed'; break;
+				case 'D': tmpFileDiff.type = 'deleted'; break;
+			}
+			tmpFileDiff.isRenamed = false;
+			tmpFileDiff.similarity = false;
+
+			rtn.push(tmpFileDiff);
+			return;
+
+		}else if( line.match(/^(R)([0-9]+)\t([^\t]+)\t([^\t]+)$/) ){
+			var tmpTypeInitial = RegExp.$1;
+			var tmpSimilarity = RegExp.$2;
+			var tmpFilePathBefore = RegExp.$3;
+			var tmpFilePath = RegExp.$4;
+
+			tmpFileDiff.filenameBefore = tmpFilePathBefore;
+			tmpFileDiff.filename = tmpFilePath;
+			tmpFileDiff.type = 'changed';
+			tmpFileDiff.isRenamed = true;
+			tmpFileDiff.similarity = tmpSimilarity.replace(/^0/, '') + '%';
+
+			rtn.push(tmpFileDiff);
+			return;
+		}
+	});
+
+	return rtn;
+}
+
+},{}],14:[function(require,module,exports){
 /**
  * git status
  */
@@ -788,7 +969,7 @@ module.exports = function(cmdAry, result, callback){
 
 }
 
-},{"iterate79":26}],14:[function(require,module,exports){
+},{"iterate79":27}],15:[function(require,module,exports){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 ;(function (exports) {
@@ -914,7 +1095,7 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	exports.fromByteArray = uint8ToBase64
 }(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -2025,7 +2206,7 @@ function assert (test, message) {
   if (!test) throw new Error(message || 'Failed assertion')
 }
 
-},{"base64-js":14,"ieee754":23}],16:[function(require,module,exports){
+},{"base64-js":15,"ieee754":24}],17:[function(require,module,exports){
 var Buffer = require('buffer').Buffer;
 var intSize = 4;
 var zeroBuffer = new Buffer(intSize); zeroBuffer.fill(0);
@@ -2062,7 +2243,7 @@ function hash(buf, fn, hashSize, bigEndian) {
 
 module.exports = { hash: hash };
 
-},{"buffer":15}],17:[function(require,module,exports){
+},{"buffer":16}],18:[function(require,module,exports){
 var Buffer = require('buffer').Buffer
 var sha = require('./sha')
 var sha256 = require('./sha256')
@@ -2161,7 +2342,7 @@ each(['createCredentials'
   }
 })
 
-},{"./md5":18,"./rng":19,"./sha":20,"./sha256":21,"buffer":15}],18:[function(require,module,exports){
+},{"./md5":19,"./rng":20,"./sha":21,"./sha256":22,"buffer":16}],19:[function(require,module,exports){
 /*
  * A JavaScript implementation of the RSA Data Security, Inc. MD5 Message
  * Digest Algorithm, as defined in RFC 1321.
@@ -2326,7 +2507,7 @@ module.exports = function md5(buf) {
   return helpers.hash(buf, core_md5, 16);
 };
 
-},{"./helpers":16}],19:[function(require,module,exports){
+},{"./helpers":17}],20:[function(require,module,exports){
 // Original code adapted from Robert Kieffer.
 // details at https://github.com/broofa/node-uuid
 (function() {
@@ -2359,7 +2540,7 @@ module.exports = function md5(buf) {
 
 }())
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /*
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-1, as defined
  * in FIPS PUB 180-1
@@ -2462,7 +2643,7 @@ module.exports = function sha1(buf) {
   return helpers.hash(buf, core_sha1, 20, true);
 };
 
-},{"./helpers":16}],21:[function(require,module,exports){
+},{"./helpers":17}],22:[function(require,module,exports){
 
 /**
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-256, as defined
@@ -2543,7 +2724,7 @@ module.exports = function sha256(buf) {
   return helpers.hash(buf, core_sha256, 32, true);
 };
 
-},{"./helpers":16}],22:[function(require,module,exports){
+},{"./helpers":17}],23:[function(require,module,exports){
 (function (process,global){
 /*!
  * @overview es6-promise - a tiny implementation of Promises/A+.
@@ -3700,7 +3881,7 @@ return Promise;
 })));
 //# sourceMappingURL=es6-promise.map
 }).call(this,require("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"pBGvAp":28}],23:[function(require,module,exports){
+},{"pBGvAp":29}],24:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1
@@ -3786,7 +3967,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 /**
  * node-iterate79/ary.js
  */
@@ -3868,7 +4049,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 })(module);
 
-},{"es6-promise":22}],25:[function(require,module,exports){
+},{"es6-promise":23}],26:[function(require,module,exports){
 /**
  * node-iterate79/fnc.js
  */
@@ -3952,7 +4133,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 })(module);
 
-},{"es6-promise":22}],26:[function(require,module,exports){
+},{"es6-promise":23}],27:[function(require,module,exports){
 /**
  * node-iterate79
  */
@@ -3976,7 +4157,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 })(module);
 
-},{"./ary.js":24,"./fnc.js":25,"./queue.js":27}],27:[function(require,module,exports){
+},{"./ary.js":25,"./fnc.js":26,"./queue.js":28}],28:[function(require,module,exports){
 /**
  * node-iterate79/queue.js
  */
@@ -4162,7 +4343,7 @@ module.exports = function(_options){
 
 }
 
-},{"crypto":17,"es6-promise":22}],28:[function(require,module,exports){
+},{"crypto":18,"es6-promise":23}],29:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -4227,7 +4408,7 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 window.GitParse79 = require('../libs/main.js');
 
-},{"../libs/main.js":1}]},{},[29])
+},{"../libs/main.js":1}]},{},[30])

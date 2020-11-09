@@ -1,7 +1,11 @@
 @charset "utf-8";
-@import "./fess.css";
 @import "./filter.css";
 
+html,
+body {
+  font-size: medium;
+  font-family: Meiryo, "Hiragino Kaku Gothic ProN", Verdana, sans-serif;
+}
 body{
 	background-color: #fff;
 	color: #333;
@@ -197,6 +201,25 @@ ul.listview{
 .clearfix {
 	/* clearfix(for IE6,7) (IE8以降不要) */
 	zoom: 1;
+}
+
+
+/**
+ * 必須項目
+ */
+.must {
+	color: #f00;
+	font-weight: bold;
+	display: inline;
+	white-space: nowrap;
+	margin-left: 0.5em;
+	margin-right: 0.5em;
+
+    border: 1px solid #f63;
+    background-color: #fdd;
+    padding: 0.2em 0.8em;
+    font-size: 90%;
+    border-radius: 1.2em; 
 }
 
 /**

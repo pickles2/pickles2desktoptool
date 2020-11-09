@@ -26,8 +26,16 @@
     line-height: 0;
     clear: both; }
 
+.pickles2-contents-editor--broccoli-canvas-frame {
+  overflow: auto;
+  width: 100%;
+  height: 100%; }
+
 .pickles2-contents-editor--broccoli-canvas {
-  overflow: auto; }
+  overflow: auto;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto; }
 
 .pickles2-contents-editor--broccoli-palette {
   overflow: auto; }

@@ -12,6 +12,9 @@
     .contents .cont-theme-list__unit-thumb img {
       width: 60px;
       height: 60px; }
+  .contents .cont-theme-list__unit-body {
+    display: flex;
+    align-items: center; }
 
 .contents .cont-layout-menu {
   border: none;

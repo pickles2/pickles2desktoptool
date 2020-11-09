@@ -3992,7 +3992,7 @@ window.contApp = new (function( main ){
 		var $workspaceContainer = $('.cont_workspace_container');
 		$workspaceContainer
 			.css({
-				'height': $(window).innerHeight() - $('.container').outerHeight() - ( $elms.commentView.is(':visible') ? $elms.commentView.outerHeight() + 10 : 0 ) - ( $elms.wasabiView.is(':visible') ? $elms.wasabiView.outerHeight() + 10 : 0 ) - $elms.workspaceSearch.outerHeight() - heightBreadcrumb - 20,
+				'height': $(window).innerHeight() - $('.container-fluid').eq(0).outerHeight() - ( $elms.commentView.is(':visible') ? $elms.commentView.outerHeight() + 10 : 0 ) - ( $elms.wasabiView.is(':visible') ? $elms.wasabiView.outerHeight() + 10 : 0 ) - $elms.workspaceSearch.outerHeight() - heightBreadcrumb - 20,
 				'margin-top': 10
 			})
 		;
@@ -4552,13 +4552,13 @@ module.exports = function(app, px, pj, $elms, contentsComment, wasabiComment){
 								} catch (e) {
 								}
 
-								var $tbl = $('<table class="def">')
+								var $tbl = $('<table class="px2-table">')
 									.css({'width': '100%'})
 								;
 								for(var idx in pageInfo){
 									var $row = $('<tr>');
 									$row.append( $('<th>').text(idx) );
-									$row.append( $('<td class="selectable">').text(pageInfo[idx]) );
+									$row.append( $('<td>').text(pageInfo[idx]) );
 									// $row.append( $('<td>').text(typeof(pageInfo[idx])) );
 									$tbl.append($row);
 								}

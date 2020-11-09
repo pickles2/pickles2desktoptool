@@ -5,6 +5,8 @@ module.exports = function(contApp, main, $){
 	var _this = this;
 	var $elm;
 	var pj = main.getCurrentProject();
+	var currentBranchName;
+	var $select = $('<select>');
 
 	/**
 	 * レポート表示の初期化
@@ -31,12 +33,13 @@ module.exports = function(contApp, main, $){
 				pj.git().parser.git(['branch'], function(result){
 					// console.log(result);
 					branches = result;
+					currentBranchName = branches.currentBranchName;
 					rlv();
 				});
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
-				var $select = $('<select>').on('change', function(){
+				$select.on('change', function(){
 					var newBranchName = $(this).val();
 					gitCheckout(newBranchName);
 				});
@@ -44,7 +47,7 @@ module.exports = function(contApp, main, $){
 					$select.append( $('<option>')
 						.val(branches.branches[i])
 						.text(branches.branches[i])
-						.attr({'selected': (branches.branches[i] == branches.currentBranchName ? 'selected' : false)})
+						.attr({'selected': (branches.branches[i] == currentBranchName ? 'selected' : false)})
 					);
 				}
 				$elm.html( '' );
@@ -73,6 +76,21 @@ module.exports = function(contApp, main, $){
 
 		new Promise(function(rlv){rlv();})
 			.then(function(){ return new Promise(function(rlv, rjt){
+				if( !confirm(currentBranchName + 'ブランチから、' + newBranchName + ' ブランチに、切り替えますか？') ){
+					$select.val(currentBranchName);
+					return;
+				}
+				rlv();
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
+				main.px2style.loading({}, function(){
+					main.px2style.loadingMessage('ブランチを切り替えています。');					
+					rlv();
+				});
+				return;
+			}); })
+			.then(function(){ return new Promise(function(rlv, rjt){
 				pj.git().parser.git(['status'], function(result){
 					console.log(result);
 					var status = result;
@@ -83,6 +101,8 @@ module.exports = function(contApp, main, $){
 						+ status.notStaged.modified.length
 						+ status.notStaged.untracked.length;
 					if( changes ){
+						main.px2style.closeLoading();
+						$select.val(currentBranchName);
 						alert('コミットされていない変更があります。コミットするか、変更を破棄してから再度実行してください。');
 						return;
 					}
@@ -98,6 +118,7 @@ module.exports = function(contApp, main, $){
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
+				main.px2style.closeLoading();
 				main.message('ブランチを切り替えました。');
 				main.subapp();
 				rlv();

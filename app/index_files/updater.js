@@ -38,7 +38,7 @@ module.exports = function( main, $ ) {
 				if( appPath.match( /^\/private\/var\// ) ){
 					installToSlashApplicationsDirectoryAnswered = true;
 					installToSlashApplicationsDirectoryAnswer = confirm('Applications フォルダにインストールします。'+"\n"+'続けますか？');
-					if( confirm(installToSlashApplicationsDirectoryAnswer) ){
+					if( installToSlashApplicationsDirectoryAnswer ){
 						copyPath = copyPath || '/Applications/' + appFileName + '.app';
 						execPath = execPath || '/Applications/' + appFileName + '.app';
 						// console.log( copyPath, execPath );

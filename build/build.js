@@ -257,6 +257,21 @@ nw.build().then(function () {
 				);
 			},
 			function(itPj, param){
+				// macOS 版に /Applications へのシンボリックリンクを追加する
+				var proc = require('child_process').spawn(
+					'ln',
+					[
+						'-s', '/Applications',
+						__dirname + '/'+appName+'/osx64/Applications'
+					],
+					{}
+				);
+				proc.on('close', function(){
+					itPj.next(param);
+				});
+
+			},
+			function(itPj, param){
 				// ZIP Apps.
 				it79.ary(
 					platforms,

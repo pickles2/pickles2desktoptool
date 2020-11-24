@@ -1,7 +1,8 @@
 /**
  * processor.js
  */
-module.exports = function(app, main, pj, pathHomeDir, $progressMessage, $progress, $pre){
+module.exports = function(app, main, pj, pathHomeDir, $progressMessage, $progress, $pre, $result){
+	var $ = require('jquery');
 
 	this.run = function(target_path, callback){
 
@@ -37,6 +38,8 @@ module.exports = function(app, main, pj, pathHomeDir, $progressMessage, $progres
 
 		// 実行ログをファイル出力する
 		function log(msg){
+			var $msg = $('<div>').append(msg);
+			$result.append($msg);
 			console.log(msg);
 			return true;
 		}
@@ -236,8 +239,7 @@ module.exports = function(app, main, pj, pathHomeDir, $progressMessage, $progres
 					log('result: countFile() - '+main.utils79.count(fileCounter)+' - '+JSON.stringify(fileCounter,null,4));
 					log('');
 
-					$pre.text( $pre.text() + '完了しました。' + "\n" );
-					$pre.text( $pre.text() + '検索結果は console に出力されています。デベロッパーツールを確認してください。' );
+					$pre.text( $pre.text() + '検索を完了しました。' + "\n" );
 					$pre.text( $pre.text() + "\n" );
 
 					if(!definedModuleList){
@@ -259,7 +261,7 @@ module.exports = function(app, main, pj, pathHomeDir, $progressMessage, $progres
 						}
 					}
 
-					main.message( '完了しました。検索結果は console に出力されています。デベロッパーツールを確認してください。' );
+					main.message( '検索を完了しました。' );
 
 					callback();
 

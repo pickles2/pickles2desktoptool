@@ -7,7 +7,8 @@ window.contApp = new (function(main){
 		$btn,
 		$pre,
 		$progress,
-		$progressMessage;
+		$progressMessage,
+		$result;
 
 	var pathHomeDir;
 
@@ -61,6 +62,7 @@ window.contApp = new (function(main){
 					$cont.html(html);
 					$btn = $cont.find('button');
 					$pre = $('<pre>');
+					$result = $cont.find('.cont-result');
 
 
 					$btn
@@ -101,7 +103,9 @@ window.contApp = new (function(main){
 								]
 							});
 
-							var processor = new Processor(_this, main, pj, pathHomeDir, $progressMessage, $progress, $pre);
+							$result.html('');
+
+							var processor = new Processor(_this, main, pj, pathHomeDir, $progressMessage, $progress, $pre, $result);
 							processor.run(
 								target_path,
 								function(){

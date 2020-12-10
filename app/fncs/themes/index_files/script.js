@@ -3453,6 +3453,17 @@ window.contApp = new (function(){
 	var $elms = {'editor': $('<div>')};
 	var realpathDefaultThumb = 'data:image/png;base64,'+main.fs.readFileSync( main.path.resolve( './app/common/images/no-image.png' ) ).toString('base64');
 
+
+	/* ----------------------------------------------------------------------------
+		TODO: この実装を、 外部のパッケージ `pickles2/pickles2-theme-editor` に移管する。
+		https://github.com/pickles2/pickles2-theme-editor
+		
+		- `pickles2-theme-editor`自体は、 px2dthelper を仲介し、PXコマンドによって呼び出すようにしたい。
+		- `px2dthelper` が古いプロジェクトについては、旧来通り、 babycorn 独自の実装のテーマ編集画面を提供する。
+
+	---------------------------------------------------------------------------- */
+
+
 	function init( callback ){
 		it79.fnc({}, [
 			function(it1, arg){

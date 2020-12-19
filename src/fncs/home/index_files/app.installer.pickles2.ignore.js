@@ -56,8 +56,7 @@ module.exports = function(main, contApp, $){
 				'create-project',
 				'--no-interaction',
 				'pickles2/preset-get-start-pickles2',
-				'./',
-				'2.0.*'
+				'./'
 			],
 			{
 				'cdName': 'default', // この時点で composer.json は存在しないので、ルートディレクトリは `composer` ではなく `default`。

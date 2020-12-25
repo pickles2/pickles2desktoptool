@@ -4434,27 +4434,21 @@ exports.cache = {
 
 },{}],18:[function(require,module,exports){
 module.exports={
-  "_args": [
-    [
-      "ejs@2.7.4",
-      "/Users/tomk79/mydoc_TomK/projs/pickles2/pickles2/node-pickles2-contents-editor"
-    ]
-  ],
-  "_from": "ejs@2.7.4",
+  "_from": "ejs@^2.6.2",
   "_id": "ejs@2.7.4",
   "_inBundle": false,
   "_integrity": "sha512-7vmuyh5+kuUyJKePhQfRQBhXV5Ce+RnaeeQArKu1EAMpL3WbgMt5WG6uQZpEVvYSSsxMXRKOewtDk9RaTKXRlA==",
   "_location": "/ejs",
   "_phantomChildren": {},
   "_requested": {
-    "type": "version",
+    "type": "range",
     "registry": true,
-    "raw": "ejs@2.7.4",
+    "raw": "ejs@^2.6.2",
     "name": "ejs",
     "escapedName": "ejs",
-    "rawSpec": "2.7.4",
+    "rawSpec": "^2.6.2",
     "saveSpec": null,
-    "fetchSpec": "2.7.4"
+    "fetchSpec": "^2.6.2"
   },
   "_requiredBy": [
     "/",
@@ -4462,7 +4456,8 @@ module.exports={
     "/langbank"
   ],
   "_resolved": "https://registry.npmjs.org/ejs/-/ejs-2.7.4.tgz",
-  "_spec": "2.7.4",
+  "_shasum": "48661287573dcc53e366c7a1ae52c3a120eec9ba",
+  "_spec": "ejs@^2.6.2",
   "_where": "/Users/tomk79/mydoc_TomK/projs/pickles2/pickles2/node-pickles2-contents-editor",
   "author": {
     "name": "Matthew Eernisse",
@@ -4472,7 +4467,9 @@ module.exports={
   "bugs": {
     "url": "https://github.com/mde/ejs/issues"
   },
+  "bundleDependencies": false,
   "dependencies": {},
+  "deprecated": false,
   "description": "Embedded JavaScript templates",
   "devDependencies": {
     "browserify": "^13.1.1",
@@ -24574,6 +24571,8 @@ module.exports = function(px2ce){
 	var it79 = require('iterate79');
 	var $canvas = $(px2ce.getElmCanvas());
 	var page_path = px2ce.page_path;
+	var current_tab = 'html';
+	var droppedFileList = [];
 	var px2conf = {},
 		pagesByLayout = [];
 		useWrapMode = true;
@@ -24781,6 +24780,8 @@ module.exports = function(px2ce){
 				$elmEditor = $canvas.find('.pickles2-contents-editor--default-editor');
 				$elmBtns = $canvas.find('.pickles2-contents-editor--default-btns');
 
+				$elmEditor.on('drop', onFileDropped); // ファイルドロップへの対応
+
 				$elmTabs = $canvas.find('.pickles2-contents-editor--default-switch-tab [data-pickles2-contents-editor-switch]');
 				$elmTabs
 					.on('click', function(){
@@ -24789,6 +24790,7 @@ module.exports = function(px2ce){
 						$this.attr({'disabled': 'disabled'});
 						var tabFor = $this.attr('data-pickles2-contents-editor-switch');
 						// console.log(tabFor);
+						current_tab = tabFor;
 						$canvas.find('.pickles2-contents-editor--default-editor-body-html').hide();
 						$canvas.find('.pickles2-contents-editor--default-editor-body-css').hide();
 						$canvas.find('.pickles2-contents-editor--default-editor-body-js').hide();
@@ -24961,6 +24963,100 @@ module.exports = function(px2ce){
 	}
 
 	/**
+	 * ファイルドロップイベントハンドラ
+	 */
+	function onFileDropped(e){
+		// console.log(e);
+		// console.log(current_tab, px2conf);
+		e.stopPropagation();
+		e.preventDefault();
+		var event = e.originalEvent;
+		var fileInfo = event.dataTransfer.files[0];
+		// console.log(fileInfo);
+		var dataUri;
+		var path_resource;
+
+		function readSelectedLocalFile(fileInfo, callback){
+			var reader = new FileReader();
+			reader.onload = function(evt) {
+				callback( evt.target.result );
+			}
+			reader.readAsDataURL(fileInfo);
+		}
+
+		it79.fnc({}, [
+			function(it1){
+				// mod.filename
+				readSelectedLocalFile(fileInfo, function(_dataUri){
+					dataUri = _dataUri;
+					// console.log(dataUri);
+					it1.next();
+				});
+			},
+			function(it1){
+				px2ce.gpiBridge(
+					{
+						'api': 'getPathResources',
+						'page_path': page_path
+					},
+					function(result){
+						// console.log(result);
+						var path = require('path');
+						var tmpPathControot = px2conf.path_controot;
+						tmpPathControot = tmpPathControot.replace(/\/+$/, '')+page_path;
+						tmpPathControot = tmpPathControot.replace(/[^\/]*$/, '');
+						var relative_path = path.relative(tmpPathControot, result);
+						path_resource = relative_path;
+						it1.next();
+					}
+				);
+			},
+			function(it1){
+				var fileName = fileInfo.name;
+				var uploadFileName = './'+path_resource+'/'+fileName;
+				var insertString = '';
+
+				// 開いているタブの種類に応じて、
+				// 挿入する文字列を出し分ける。
+				switch(current_tab){
+					case 'css':
+						insertString = 'url("'+uploadFileName+'")';
+						break;
+					case 'js':
+						insertString = '"'+uploadFileName+'"';
+						break;
+					case 'html':
+					default:
+						if( fileInfo.type.match(/^image\//) ){
+							insertString = '<img src="'+uploadFileName+'" alt="" />'+"\n";
+						}else{
+							insertString = '<a href="'+uploadFileName+'" download="'+fileName+'">'+fileName+'</a>'+"\n";
+						}
+						break;
+				}
+
+				// 文字列を挿入する
+				if( editorLib == 'ace' ){
+					// AceEditorの処理
+					$elmTextareas[current_tab].insert(insertString);
+				}else{
+					console.error('AceEditor以外のファイル挿入機能は未開発です。'); // TODO: 実装する
+				}
+
+				// アップロードファイルを一時記憶
+				// ファイルは、次回保存時に保存されます。
+				droppedFileList.push({
+					'name': fileName,
+					'type': fileInfo.type,
+					'size': fileInfo.size,
+					'base64': dataUri,
+				});
+				it1.next();
+			}
+		]);
+	}
+
+	/**
 	 * window.resize イベントハンドラ
 	 */
 	function windowResized( callback ){
@@ -25071,7 +25167,31 @@ module.exports = function(px2ce){
 			},
 			function(result){
 				// console.log(result);
-				callback(result);
+				// console.log(droppedFileList);
+
+				it79.ary(
+					droppedFileList,
+					function(itAry1, row, idx){
+						// console.log(itAry1, row, idx);
+						px2ce.gpiBridge(
+							{
+								'api': 'savePageResources',
+								'page_path': page_path,
+								'filename': row.name,
+								'base64': row.base64
+							},
+							function(result){
+								// console.log(result);
+								itAry1.next();
+							}
+						);
+					},
+					function(){
+						droppedFileList = []; // アップロードしたら忘れて良い。
+						callback(result);
+					}
+				);
+
 			}
 		);
 	}
@@ -25079,7 +25199,7 @@ module.exports = function(px2ce){
 
 }
 
-},{"../../apis/postMessenger.js":122,"../../apis/toolbar.js":123,"iterate79":23,"jquery":24}],126:[function(require,module,exports){
+},{"../../apis/postMessenger.js":122,"../../apis/toolbar.js":123,"iterate79":23,"jquery":24,"path":27}],126:[function(require,module,exports){
 /**
  * not_exists.js
  */

@@ -927,9 +927,13 @@ module.exports = function(contApp, px, _pj, $){
 		switch( fileinfo.ext ){
 			case 'html':
 			case 'htm':
+			case 'md':
 				px.preview.serverStandby( function(result){
 					contApp.parsePx2FilePath(fileinfo.path, function(pxExternalPath, pathType){
 						if(pxExternalPath && pathType == 'contents'){
+							if( pxExternalPath.match(/\.html?\.[a-zA-Z0-9\_\-]+$/) ){
+								pxExternalPath = pxExternalPath.replace(/\.[a-zA-Z0-9\_\-]+$/, '');
+							}
 							contApp.openEditor( pxExternalPath );
 						}else{
 							px.openInTextEditor( realpath );
@@ -944,7 +948,6 @@ module.exports = function(contApp, px, _pj, $){
 			case 'php':
 			case 'inc':
 			case 'txt':
-			case 'md':
 			case 'css':
 			case 'scss':
 			case 'js':

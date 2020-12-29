@@ -12,20 +12,32 @@ window.contApp = new (function(){
 		multithemePluginOptions;
 	var $elms = {'editor': $('<div>')};
 	var realpathDefaultThumb = 'data:image/png;base64,'+main.fs.readFileSync( main.path.resolve( './app/common/images/no-image.png' ) ).toString('base64');
-
-
-	/* ----------------------------------------------------------------------------
-		TODO: この実装を、 外部のパッケージ `pickles2/pickles2-theme-editor` に移管する。
-		https://github.com/pickles2/pickles2-theme-editor
-		
-		- `pickles2-theme-editor`自体は、 px2dthelper を仲介し、PXコマンドによって呼び出すようにしたい。
-		- `px2dthelper` が古いプロジェクトについては、旧来通り、 babycorn 独自の実装のテーマ編集画面を提供する。
-
-	---------------------------------------------------------------------------- */
+	var libPx2ThemeEditor = require('../../../fncs/themes/index_files/lib-px2-theme-editor.ignore.js');
 
 
 	function init( callback ){
 		it79.fnc({}, [
+			function(it1, arg){
+				// --------------------------------------
+				// pickles2/lib-px2-theme-editor の利用条件をチェック
+				pj.checkPxCmdVersion(
+					{
+						px2dthelperVersion: '>=2.0.10' // TODO: バージョン番号が発行されたら更新すること
+					},
+					function(){
+						// API設定OK
+						var editor = new libPx2ThemeEditor(main);
+						console.log(editor);
+						editor.init( callback );
+						return;
+					},
+					function( errors ){
+						// APIが古い場合は、旧来の内蔵の機能を提供
+						it1.next(arg);
+						return;
+					}
+				);
+			},
 			function(it1, arg){
 				// --------------------------------------
 				// 依存APIのバージョンを確認
@@ -67,7 +79,7 @@ window.contApp = new (function(){
 					);
 					return;
 				}
-				it1.next();
+				it1.next(arg);
 			},
 			function(it1, arg){
 				// --------------------------------------

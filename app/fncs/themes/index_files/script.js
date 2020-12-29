@@ -3462,7 +3462,7 @@ window.contApp = new (function(){
 				// pickles2/lib-px2-theme-editor の利用条件をチェック
 				pj.checkPxCmdVersion(
 					{
-						px2dthelperVersion: '>=2.0.10' // TODO: バージョン番号が発行されたら更新すること
+						px2dthelperVersion: '>=2.0.17'
 					},
 					function(){
 						// API設定OK

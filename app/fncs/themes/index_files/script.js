@@ -3466,7 +3466,7 @@ window.contApp = new (function(){
 					},
 					function(){
 						// API設定OK
-						var editor = new libPx2ThemeEditor(main);
+						var editor = new libPx2ThemeEditor(main, $elms);
 						console.log(editor);
 						editor.init( callback );
 						return;
@@ -4156,7 +4156,8 @@ window.contApp = new (function(){
 
 	/**
 	 * エディター画面を閉じる
-	 * 単に閉じるだけです。編集内容の保存などの処理は、editor.html 側に委ねます。
+	 * 単に閉じるだけです。編集内容の保存などの処理は、`editor.html` 側に委ねます。
+	 * このメソッドは、 `editor.html` 側からコールされることがあります。
 	 */
 	this.closeEditor = function(){
 		$elms.editor.remove();
@@ -4252,14 +4253,19 @@ window.contApp = new (function(){
 /**
  * lib-px2-theme-editor.js
  */
-module.exports = function(main){
+module.exports = function(main, $elms){
 	const it79 = require('iterate79');
+	var _this = this;
 	var pj = main.getCurrentProject();
 	var utils79 = main.utils79;
 	var pickles2ThemeEditor;
 	var realpathDataDir;
+	var realpathThemeCollectionDir;
 	var px2all;
 
+	/**
+	 * 画面を初期化
+	 */
 	this.init = function( callback ){
 
 		it79.fnc({}, [
@@ -4267,6 +4273,7 @@ module.exports = function(main){
 				pj.px2dthelperGetAll('/', {}, function(result){
 					px2all = result;
 					realpathDataDir = px2all.realpath_homedir+'_sys/ram/data/';
+					realpathThemeCollectionDir = px2all.realpath_theme_collection_dir;
 					it1.next();
 				});
 			},
@@ -4363,13 +4370,25 @@ module.exports = function(main){
 							return;
 						},
 						'themeLayoutEditor': function(themeId, layoutId){
-							alert('themeLayoutEditor: '+themeId+'/'+layoutId);
+							_this.openEditor(themeId, layoutId);
+							return;
 						},
 						'openInFinder': function(path){
-							alert('openInFinder: '+path);
+							var url = realpathThemeCollectionDir;
+							if(path){
+								url += path;
+							}
+							main.fsEx.mkdirsSync( url );
+							main.utils.openURL( url );
+							pj.updateGitStatus();
 						},
 						'openInTextEditor': function(path){
-							alert('openInTextEditor: '+path);
+							var url = realpathThemeCollectionDir;
+							if(path){
+								url += path;
+							}
+							main.openInTextEditor( url );
+							pj.updateGitStatus();
 						}
 					},
 					function(){
@@ -4380,12 +4399,111 @@ module.exports = function(main){
 
 			} ,
 			function(it1){
+
+				$(window).on('resize', function(){
+					console.log('window.resized');
+					$elms.editor
+						.css({
+							'height': $(window).innerHeight() - 0
+						})
+					;
+				});
+
 				console.log('Theme Editor: Standby.');
 				callback();
 			}
 		]);
 
 	}
+
+	/**
+	 * エディター画面を開く
+	 */
+	this.openEditor = function( themeId, layoutId ){
+		var realpathLayout = realpathThemeCollectionDir+themeId+'/'+layoutId+'.html';
+		if( !main.utils79.is_file( realpathLayout ) ){
+			alert('ERROR: Layout '+themeId + '/' + layoutId + ' is NOT exists.');
+			return;
+		}
+
+		main.preview.serverStandby( function(result){
+			if(result === false){
+				main.message('プレビューサーバーの起動に失敗しました。');
+				return;
+			}
+
+			window.contApp.closeEditor();//一旦閉じる
+
+			// プログレスモード表示
+			main.progress.start({
+				'blindness':true,
+				'showProgressBar': true
+			});
+
+			$elms.editor = $('<div>')
+				.css({
+					'position':'fixed',
+					'top':0,
+					'left':0 ,
+					'z-index': '1000',
+					'width':'100%',
+					'height':$(window).height()
+				})
+				.append(
+					$('<iframe>')
+						//↓エディタ自体は別のHTMLで実装
+						.attr( 'src', '../../mods/editor/index.html'
+							+'?theme_id='+encodeURIComponent( themeId )
+							+'&layout_id='+encodeURIComponent( layoutId )
+						)
+						.css({
+							'border':'0px none',
+							'width':'100%',
+							'height':'100%'
+						})
+				)
+				.append(
+					$('<a>')
+						.html('&times;')
+						.attr('href', 'javascript:;')
+						.on( 'click', function(){
+							window.contApp.closeEditor();
+						} )
+						.css({
+							'position':'absolute',
+							'bottom':5,
+							'right':5,
+							'font-size':'18px',
+							'color':'#333',
+							'background-color':'#eee',
+							'border-radius':'0.5em',
+							'border':'1px solid #333',
+							'text-align':'center',
+							'opacity':0.4,
+							'width':'1.5em',
+							'height':'1.5em',
+							'text-decoration': 'none'
+						})
+						.hover(function(){
+							$(this).animate({
+								'opacity':1
+							});
+						}, function(){
+							$(this).animate({
+								'opacity':0.4
+							});
+						})
+				)
+			;
+			$('body')
+				.append($elms.editor)
+				.css({'overflow':'hidden'})
+			;
+		} );
+
+		// main.progress.close();
+		return;
+	} // openEditor()
 
 }
 

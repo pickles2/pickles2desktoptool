@@ -26,7 +26,7 @@ window.contApp = new (function(){
 					},
 					function(){
 						// API設定OK
-						var editor = new libPx2ThemeEditor(main);
+						var editor = new libPx2ThemeEditor(main, $elms);
 						console.log(editor);
 						editor.init( callback );
 						return;
@@ -716,7 +716,8 @@ window.contApp = new (function(){
 
 	/**
 	 * エディター画面を閉じる
-	 * 単に閉じるだけです。編集内容の保存などの処理は、editor.html 側に委ねます。
+	 * 単に閉じるだけです。編集内容の保存などの処理は、`editor.html` 側に委ねます。
+	 * このメソッドは、 `editor.html` 側からコールされることがあります。
 	 */
 	this.closeEditor = function(){
 		$elms.editor.remove();

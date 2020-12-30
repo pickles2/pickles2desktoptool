@@ -19987,7 +19987,7 @@ window.contApp = new (function( main ){
 	$(function(){
 		init();
 	})
-	$(window).resize(function(){
+	$(window).on('resize', function(){
 		resizeEvent();
 	});
 

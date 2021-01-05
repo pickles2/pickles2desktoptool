@@ -96,6 +96,7 @@ Mac で Windows 版をビルドするにあたり、次の環境が必要です�
 - プロジェクトの初期セットアップ時に、 `pickles2/preset-get-start-pickles2` の最新版をインストールするようになった。(修正前には、 `2.0.*` が指定されていた)
 - ファイルとフォルダ機能で、 Markdownモードのコンテンツを直接開くようになった。
 - 新しいテーマエディタに対応した。(`pickles2/px2-px2dthelper` v2.0.17 以上が必要)
+- 新しい Custom Console Extensions 機能に対応した。
 
 ### Pickles 2 v2.0.0-beta.27 (2020年11月19日)
 

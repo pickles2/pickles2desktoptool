@@ -325,6 +325,15 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 							_config = false;
 							_px2DTConfig = false;
 						}
+
+						status.customConsoleExtensions = false;
+						try{
+							if( pjInfo.custom_console_extensions ){
+								status.customConsoleExtensions = pjInfo.custom_console_extensions;
+							}
+						}catch(e){
+						}
+
 					} catch (e) {
 						console.error('FAILED to getting data from "/?PX=px2dthelper.get.all"');
 					}
@@ -840,7 +849,8 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 	 *
 	 * 設定できる値は、以下です。
 	 * - legacy = 旧GUI編集 (このオプションは 2.0.0-beta.17 で廃止されました)
-	 * - broccoli-html-editor = 新エンジン broccoli (default)
+	 * - broccoli-html-editor = NodeJS版 内蔵 Broccoliエンジン (default)
+	 * - broccoli-html-editor-php = PHP版 Broccoliエンジン (Pickles 2 v2.0.0-beta.20 で追加されました)
 	 */
 	this.getGuiEngineName = function(){
 		var engineName = 'broccoli-html-editor';

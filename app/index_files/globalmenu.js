@@ -234,6 +234,13 @@ module.exports = function(main){
 		]
 	});
 	_menu.push({
+		"label":main.lb.get('menu.customConsoleExtensions'),
+		"cond":"customConsoleExtensionsExists",
+		"area":"shoulder",
+		"submenu": [
+		]
+	});
+	_menu.push({
 		"label":main.lb.get('menu.externalTools'),
 		"cond":"homeDirExists",
 		"area":"shoulder",
@@ -397,7 +404,7 @@ module.exports = function(main){
 		var cpj = main.getCurrentProject();
 		var cpj_s = null;
 		if( cpj !== null ){
-			cpj_s = cpj.status()
+			cpj_s = cpj.status();
 		}
 		var menuList = [];
 		if(_menuList){
@@ -421,6 +428,10 @@ module.exports = function(main){
 				}
 			}else if( menuList[i].cond == 'pxStandby' ){
 				if( cpj === null || !cpj_s.isPxStandby ){
+					continue;
+				}
+			}else if( menuList[i].cond == 'customConsoleExtensionsExists' ){
+				if( cpj === null || !cpj_s.isPxStandby || !cpj_s.customConsoleExtensions ){
 					continue;
 				}
 			}else if( menuList[i].cond != 'always' ){
@@ -461,7 +472,31 @@ module.exports = function(main){
 			if( menuList[i].submenu ){
 				var $ul = $( '<ul>' );
 				$li.append( $ul );
-				this.drawGlobalMenu($shoulderMenu, _current_app, menuList[i].submenu, $ul);
+				if( menuList[i].cond == 'customConsoleExtensionsExists' && cpj_s.customConsoleExtensions ){
+					// Custom Console Extensions サブメニューの処理
+					var $cceLi = $('<li>');
+					for(var cce_id in cpj_s.customConsoleExtensions){
+						var cceInfo = cpj_s.customConsoleExtensions[cce_id];
+						var appPath = 'fncs/custom_console_extensions/index.html?cce_id='+encodeURIComponent(cce_id);
+						$cceLi.append(
+							$('<a>')
+								.text(cceInfo.label)
+								.attr({
+									"href":"javascript:;",
+									"data-name": appPath
+								})
+								.data('app', appPath)
+								.addClass( ( _current_app==appPath ? 'current' : '' ) )
+								.on('click', function(){
+									main.subapp($(this).data('app'));
+								})
+						);
+						$ul.append($cceLi);
+					}
+				}else{
+					// サブメニュー一般の処理
+					this.drawGlobalMenu($shoulderMenu, _current_app, menuList[i].submenu, $ul);
+				}
 			}
 		}
 		return;

@@ -22,6 +22,7 @@ menu.git,Git,Gitを操作する,Git,Git
 menu.moveContents,Move Contents,コンテンツを移動する,移动内容,移動內容
 menu.modules,Edit Modules,モジュールを編集する,,
 menu.tool,"Tools",ツール,,
+menu.customConsoleExtensions,"Custom Console Extensions","拡張機能",,
 menu.styleguideGenerator,"Style Guide Generator",スタイルガイド生成,,
 menu.mkContentFilesByList,Make Content Files by list,コンテンツファイルを一括作成,,
 menu.mkContentFileList,Make Content File list,コンテンツファイルリスト作成,,

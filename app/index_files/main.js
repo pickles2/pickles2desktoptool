@@ -281,6 +281,15 @@ new (function($, window){
 					return;
 				},
 				function(it1){
+					// Custom Console Extensions Watcher をロード
+					$('.splash__message p').text('Custom Console Extensions Watcher をロード...');
+					var CceWatcher = require('./index_files/pickles.cceWatcher.js');
+					main.cceWatcher = new CceWatcher( px );
+					main.cceWatcher.start();
+					it1.next();
+					return;
+				},
+				function(it1){
 					// db.json の読み込み
 					$('.splash__message p').text('データを読み込んでいます...');
 					main.load(function(){

@@ -1,12 +1,11 @@
 /**
- * px.watcher
+ * main.watcher
  */
-module.exports = function( px ){
+module.exports = function( main ){
 	var _this = this;
 	var _pj;
 	var _watcher;
-	var $ = px.$;
-	this.px = px;
+	var $ = main.$;
 
 	var liveStatus = {
 		'making_sitemap_cache': false,
@@ -26,33 +25,33 @@ module.exports = function( px ){
 	 */
 	this.start = function(pj){
 		_pj = pj;
-		_targetPath = px.path.resolve(pj.get('path'));
-		_pathHomedir = px.path.resolve(pj.get('path')+'/'+pj.get('home_dir'));
+		_targetPath = main.path.resolve(pj.get('path'));
+		_pathHomedir = main.path.resolve(pj.get('path')+'/'+pj.get('home_dir'));
 		this.stop();
 
-		if( !px.utils.isDirectory( _targetPath ) ){
+		if( !main.utils.isDirectory( _targetPath ) ){
 			// ディレクトリが存在しないなら、監視は行わない。
 			console.log('対象ディレクトリが存在しないため、 fs.watch を起動しません。', _targetPath);
 			return;
 		}
 
 		// console.log(pj.get('path'));
-		_watcher = px.fs.watch(
+		_watcher = main.fs.watch(
 			_targetPath,
 			{
 				"recursive": true
 			},
 			function(event, filename) {
 				var fileInfo = {};
-				fileInfo.realpath = px.path.resolve(_targetPath+'/'+filename);
+				fileInfo.realpath = main.path.resolve(_targetPath+'/'+filename);
 				// console.log(event + ' - ' + fileInfo.realpath);
 				updateStatus(fileInfo);
 			}
 		);
 
 		// 初期状態を確認
-		updateStatus({'realpath': px.path.resolve(_pathHomedir+'/_sys/ram/caches/sitemaps/making_sitemap_cache.lock.txt')});
-		updateStatus({'realpath': px.path.resolve(_pathHomedir+'/_sys/ram/publish/applock.txt')});
+		updateStatus({'realpath': main.path.resolve(_pathHomedir+'/_sys/ram/caches/sitemaps/making_sitemap_cache.lock.txt')});
+		updateStatus({'realpath': main.path.resolve(_pathHomedir+'/_sys/ram/publish/applock.txt')});
 
 		return;
 	}
@@ -81,15 +80,15 @@ module.exports = function( px ){
 
 		// console.info(fileInfo);
 		switch( fileInfo.realpath ){
-			case px.path.resolve( _pathHomedir+'/_sys/ram/caches/sitemaps/making_sitemap_cache.lock.txt' ):
-				if( px.utils79.is_file(fileInfo.realpath) ){
+			case main.path.resolve( _pathHomedir+'/_sys/ram/caches/sitemaps/making_sitemap_cache.lock.txt' ):
+				if( main.utils79.is_file(fileInfo.realpath) ){
 					liveStatus.making_sitemap_cache = true;
 				}else{
 					liveStatus.making_sitemap_cache = false;
 				}
 				break;
-			case px.path.resolve( _pathHomedir+'/_sys/ram/publish/applock.txt' ):
-				if( px.utils79.is_file(fileInfo.realpath) ){
+			case main.path.resolve( _pathHomedir+'/_sys/ram/publish/applock.txt' ):
+				if( main.utils79.is_file(fileInfo.realpath) ){
 					liveStatus.publishing = true;
 				}else{
 					liveStatus.publishing = false;

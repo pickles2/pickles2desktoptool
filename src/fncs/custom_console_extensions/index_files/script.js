@@ -10,7 +10,6 @@ window.contApp = new (function(){
 	var cceInfo;
 	var px2dthelperCceAgent;
 
-
 	/**
 	 * 画面を初期化する
 	 */
@@ -104,18 +103,39 @@ window.contApp = new (function(){
 			},
 			function(it1){
 
+				var watchDir = main.cceWatcher.getWatchDir();
+				// console.log('watchDir:', watchDir);
+
+				if(!main.utils.isDirectory(watchDir+'async/'+pj.projectInfo.id+'/')){
+					main.fs.mkdirSync(watchDir+'async/'+pj.projectInfo.id+'/');
+				}
+				if(!main.utils.isDirectory(watchDir+'broadcast/'+pj.projectInfo.id+'/')){
+					main.fs.mkdirSync(watchDir+'broadcast/'+pj.projectInfo.id+'/');
+				}
+
 				px2dthelperCceAgent = new Px2dthelperCceAgent({
 					'elm': $('.contents').get(0),
 					'lang': main.getDb().language,
+					'appMode': 'desktop',
 					'gpiBridge': function(input, callback){
 						// GPI(General Purpose Interface) Bridge
 
-						// var testTimestamp = (new Date()).getTime();
+						var getParam = '';
+						getParam += 'PX=px2dthelper.custom_console_extensions.'+customConsoleExtensionId+'.gpi'
+							+'&request='+encodeURIComponent( JSON.stringify(input) )
+							+'&appMode=desktop'
+							+'&asyncMethod=file'
+							+'&asyncDir='+watchDir+'async/'+pj.projectInfo.id+'/'
+							+'&broadcastMethod=file'
+							+'&broadcastDir='+watchDir+'broadcast/'+pj.projectInfo.id+'/';
+						console.log(getParam);
+
+						var testTimestamp = (new Date()).getTime();
 						// var tmpFileName = '__tmp_'+utils79.md5( Date.now() )+'.json';
 						// main.fs.writeFileSync( realpathDataDir+tmpFileName, JSON.stringify(input) );
 
 						pj.execPx2(
-							'/?PX=px2dthelper.custom_console.extensions.'+customConsoleExtensionId+'.gpi&request='+encodeURIComponent( JSON.stringify(input) ),
+							'/?'+getParam,
 							{
 								complete: function(rtn){
 									console.log('--- returned(millisec)', (new Date()).getTime() - testTimestamp);

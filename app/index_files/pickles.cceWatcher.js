@@ -3,7 +3,6 @@
  */
 module.exports = function( main ){
 	var _this = this;
-	var _pj;
 	var _watcher;
 	var $ = main.$;
 	var _targetPath;
@@ -21,8 +20,12 @@ module.exports = function( main ){
 	 * ファイル監視を開始する
 	 */
 	this.start = function(){
+		this.stop();
+
 		var pathAppDataDir = require('path').resolve(main.px2dtLDA.getAppDataDir('px2dt'))+'/';
-		// console.log(pathAppDataDir);
+		console.log(pathAppDataDir);
+		main.fsEx.removeSync(pathAppDataDir + '/customConsoleExtensions/');
+		console.log(pathAppDataDir + '/customConsoleExtensions/');
 		var tmpDirs = [
 			'/customConsoleExtensions/',
 			'/customConsoleExtensions/watcher/',
@@ -30,15 +33,11 @@ module.exports = function( main ){
 			'/customConsoleExtensions/watcher/broadcast/',
 		];
 		for(var idx in tmpDirs){
-			if( !main.utils.isDirectory(pathAppDataDir + tmpDirs[idx]) ){
-				main.fs.mkdirSync(pathAppDataDir + tmpDirs[idx]);
-			}
+			main.fsEx.mkdirSync(pathAppDataDir + tmpDirs[idx]);
 		}
 
 		_targetPath = main.path.resolve(pathAppDataDir + '/customConsoleExtensions/watcher/');
 		console.log(_targetPath);
-
-		this.stop();
 
 		if( !main.utils.isDirectory( _targetPath ) ){
 			// ディレクトリが存在しないなら、監視は行わない。
@@ -53,10 +52,31 @@ module.exports = function( main ){
 				"recursive": true
 			},
 			function(event, filename) {
-				console.log(event, filename);
+				// console.log('=-=-=-=-=', event, filename);
+				if( !filename.match(/^(async|broadcast)[\/\\]([a-zA-Z0-9\_\-]+)[\/\\]([\s\S]+\.json)$/) ){
+					return;
+				}
+				var eventType = RegExp.$1;
+				var projectId = RegExp.$2;
+				// console.log('* ', eventType, projectId);
+
 				var fileInfo = {};
 				fileInfo.realpath = main.path.resolve(_targetPath+'/'+filename);
 				// console.log(event + ' - ' + fileInfo.realpath);
+				if( !fileInfo.realpath || !main.utils.isFile(fileInfo.realpath) ){
+					return;
+				}
+
+				var pj = main.getCurrentProject();
+				// console.log('current pj:', pj.projectInfo);
+				var fileBin = main.fs.readFileSync(fileInfo.realpath).toString();
+				var fileJson = JSON.parse(fileBin);
+				if(eventType == 'broadcast'){
+					main.fsEx.removeSync(fileInfo.realpath);
+				}
+				if( pj && pj.projectInfo.id == projectId ){
+					pj.recieveCceEvents(eventType, fileJson);
+				}
 			}
 		);
 

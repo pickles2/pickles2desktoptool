@@ -1056,6 +1056,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 
 		return rtn;
 	}
+
 	/**
 	 * px2cdのカスタムフィールドインクルードパスオプションを生成する (backend)
 	 */
@@ -1311,7 +1312,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 			directory_index.push( 'index.html' );
 		}
 		return directory_index;
-	}// get_directory_index()
+	} // get_directory_index()
 
 	/**
 	 * directory_index のいずれかにマッチするためのpregパターン式を得る。
@@ -1326,7 +1327,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 		}
 		var $rtn = '(?:'+$directory_index.join( '|' )+')';
 		return $rtn;
-	}//get_directory_index_preg_pattern()
+	} // get_directory_index_preg_pattern()
 
 
 	/**
@@ -1337,7 +1338,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 	this.get_directory_index_primary = function(){
 		var $directory_index = this.get_directory_index();
 		return $directory_index[0];
-	}//get_directory_index_primary()
+	} // get_directory_index_primary()
 
 
 	/**
@@ -1385,7 +1386,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 		}
 		$rtn[$path] = 'direct';// <- default
 		return $rtn[$path];
-	}//get_path_proc_type();
+	} // get_path_proc_type();
 
 
 	/**
@@ -1547,6 +1548,13 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 	this.editProjectIndividualConfig = function(callback){
 		var individualConfig = require('./pickles.project.individualConfig.js');
 		individualConfig(main, this, callback);
+	}
+
+	/**
+	 * Custom Console Extensions: サーバーサイドからの非同期イベントを受信する
+	 */
+	this.recieveCceEvents = function(eventType, content){
+		console.log(eventType, content);
 	}
 
 	/**

@@ -3446,15 +3446,24 @@ window.contApp = new (function(){
 	var pj = main.getCurrentProject();
 	var getParams = (new URL(document.location)).searchParams;
 	var customConsoleExtensionId;
+	var px2dthelperCceAgent;
 	var $elm;
 	var cceInfo;
-	var px2dthelperCceAgent;
+	var px2all,
+		realpathDataDir;
 
 	/**
 	 * 画面を初期化する
 	 */
 	function init( callback ){
 		it79.fnc({}, [
+			function(it1){
+				pj.px2dthelperGetAll('/', {}, function(res){
+					px2all = res;
+					realpathDataDir = px2all.realpath_homedir+'_sys/ram/data/';
+					it1.next();
+				});
+			},
 			function(it1){
 				customConsoleExtensionId = getParams.get('cce_id');
 				$elm = $('.contents');
@@ -3571,14 +3580,17 @@ window.contApp = new (function(){
 						// console.log(getParam);
 
 						var testTimestamp = (new Date()).getTime();
-						// var tmpFileName = '__tmp_'+utils79.md5( Date.now() )+'.json';
-						// main.fs.writeFileSync( realpathDataDir+tmpFileName, JSON.stringify(input) );
+						var tmpFileName = '__tmp_'+main.utils79.md5( Date.now() )+'.json';
+						// console.log('=-=-=-=-=-=-=-=', realpathDataDir+tmpFileName, getParam);
+						main.fs.writeFileSync( realpathDataDir+tmpFileName, getParam );
 
 						pj.execPx2(
-							'/?'+getParam,
+							'/?' + getParam,
 							{
-								complete: function(rtn){
-									console.log('--- returned(millisec)', (new Date()).getTime() - testTimestamp);
+								'method': 'post',
+								'bodyFile': tmpFileName,
+								'complete': function(rtn){
+									// console.log('--- returned(millisec)', (new Date()).getTime() - testTimestamp);
 									new Promise(function(rlv){rlv();})
 										.then(function(){ return new Promise(function(rlv, rjt){
 											try{
@@ -3589,8 +3601,7 @@ window.contApp = new (function(){
 											rlv();
 										}); })
 										.then(function(){ return new Promise(function(rlv, rjt){
-											// main.fs.unlinkSync( realpathDataDir+tmpFileName );
-											// pj.updateGitStatus(function(){});
+											main.fs.unlinkSync( realpathDataDir+tmpFileName );
 											rlv();
 										}); })
 										.then(function(){ return new Promise(function(rlv, rjt){

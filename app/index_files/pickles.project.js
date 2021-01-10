@@ -608,15 +608,25 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 			opts.complete(false);
 			return this;
 		}
+		var queryOptions = {
+			"output": "json",
+			"userAgent": "Mozilla/5.0",
+			"complete": function(data, code){
+				opts.complete(data);
+			}
+		};
+		if( opts.method ){
+			queryOptions.method = opts.method;
+		}
+		if( opts.body ){
+			queryOptions.body = opts.body;
+		}
+		if( opts.bodyFile ){
+			queryOptions.bodyFile = opts.bodyFile;
+		}
 		_px2proj.query(
 			cmd,
-			{
-				"output": "json",
-				"userAgent": "Mozilla/5.0",
-				"complete": function(data, code){
-					opts.complete(data);
-				}
-			}
+			queryOptions
 		);
 		return this;
 	}
@@ -1559,31 +1569,44 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 			// --------------------
 			// Async
 
-			var watchDir = main.cceWatcher.getWatchDir();
-			// console.log('watchDir:', watchDir);
+			_this.px2dthelperGetAll('/', {}, function(px2all){
+				var realpathDataDir = px2all.realpath_homedir+'_sys/ram/data/';
+				var watchDir = main.cceWatcher.getWatchDir();
+				// console.log('watchDir:', watchDir);
 
-			var getParam = '';
-			getParam += 'PX=px2dthelper.custom_console_extensions_async_run'
-				+'&appMode=desktop'
-				+'&asyncMethod=file'
-				+'&asyncDir='+watchDir+'async/'+_this.projectInfo.id+'/'
-				+'&broadcastMethod=file'
-				+'&broadcastDir='+watchDir+'broadcast/'+_this.projectInfo.id+'/';
-			// console.log(getParam);
+				var getParam = '';
+				getParam += 'PX=px2dthelper.custom_console_extensions_async_run'
+					+'&appMode=desktop'
+					+'&asyncMethod=file'
+					+'&asyncDir='+watchDir+'async/'+_this.projectInfo.id+'/'
+					+'&broadcastMethod=file'
+					+'&broadcastDir='+watchDir+'broadcast/'+_this.projectInfo.id+'/';
+				// console.log(getParam);
 
-			_this.execPx2(
-				'/?'+getParam,
-				{
-					complete: function(rtn){
-						// console.log(rtn);
+				var testTimestamp = (new Date()).getTime();
+				var tmpFileName = '__tmp_'+main.utils79.md5( Date.now() )+'.json';
+				// console.log('=-=-=-=-=-=-=-=', realpathDataDir+tmpFileName, getParam);
+				main.fs.writeFileSync( realpathDataDir+tmpFileName, getParam );
+
+				_this.execPx2(
+					'/?'+getParam,
+					{
+						'method': 'post',
+						'bodyFile': tmpFileName,
+						'complete': function(rtn){
+							// console.log('--- returned(millisec)', (new Date()).getTime() - testTimestamp);
+							// console.log(rtn);
+							main.fsEx.unlinkSync( realpathDataDir+tmpFileName );
+						}
 					}
-				}
-			);
+				);
+			});
 
 		}else if( eventType == 'broadcast' ){
 			// --------------------
 			// Broadcast
-			console.log('Broadcast:', content);
+			console.log('*** Broadcast:', content);
+
 		}
 	}
 

@@ -1554,7 +1554,37 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 	 * Custom Console Extensions: サーバーサイドからの非同期イベントを受信する
 	 */
 	this.recieveCceEvents = function(eventType, content){
-		console.log(eventType, content);
+		// console.log(eventType, content);
+		if( eventType == 'async' ){
+			// --------------------
+			// Async
+
+			var watchDir = main.cceWatcher.getWatchDir();
+			// console.log('watchDir:', watchDir);
+
+			var getParam = '';
+			getParam += 'PX=px2dthelper.custom_console_extensions_async_run'
+				+'&appMode=desktop'
+				+'&asyncMethod=file'
+				+'&asyncDir='+watchDir+'async/'+_this.projectInfo.id+'/'
+				+'&broadcastMethod=file'
+				+'&broadcastDir='+watchDir+'broadcast/'+_this.projectInfo.id+'/';
+			// console.log(getParam);
+
+			_this.execPx2(
+				'/?'+getParam,
+				{
+					complete: function(rtn){
+						// console.log(rtn);
+					}
+				}
+			);
+
+		}else if( eventType == 'broadcast' ){
+			// --------------------
+			// Broadcast
+			console.log('Broadcast:', content);
+		}
 	}
 
 	/**

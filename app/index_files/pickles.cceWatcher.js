@@ -23,9 +23,9 @@ module.exports = function( main ){
 		this.stop();
 
 		var pathAppDataDir = require('path').resolve(main.px2dtLDA.getAppDataDir('px2dt'))+'/';
-		console.log(pathAppDataDir);
+		// console.log(pathAppDataDir);
 		main.fsEx.removeSync(pathAppDataDir + '/customConsoleExtensions/');
-		console.log(pathAppDataDir + '/customConsoleExtensions/');
+		// console.log(pathAppDataDir + '/customConsoleExtensions/');
 		var tmpDirs = [
 			'/customConsoleExtensions/',
 			'/customConsoleExtensions/watcher/',
@@ -37,7 +37,7 @@ module.exports = function( main ){
 		}
 
 		_targetPath = main.path.resolve(pathAppDataDir + '/customConsoleExtensions/watcher/');
-		console.log(_targetPath);
+		// console.log(_targetPath);
 
 		if( !main.utils.isDirectory( _targetPath ) ){
 			// ディレクトリが存在しないなら、監視は行わない。

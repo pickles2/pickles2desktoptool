@@ -128,7 +128,7 @@ window.contApp = new (function(){
 							+'&asyncDir='+watchDir+'async/'+pj.projectInfo.id+'/'
 							+'&broadcastMethod=file'
 							+'&broadcastDir='+watchDir+'broadcast/'+pj.projectInfo.id+'/';
-						console.log(getParam);
+						// console.log(getParam);
 
 						var testTimestamp = (new Date()).getTime();
 						// var tmpFileName = '__tmp_'+utils79.md5( Date.now() )+'.json';

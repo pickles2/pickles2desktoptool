@@ -3614,6 +3614,9 @@ window.contApp = new (function(){
 						return;
 					}
 				});
+				pj.onCceBroadcast(function(message){
+					px2dthelperCceAgent.putBroadcastMessage(message);
+				});
 				it1.next();
 
 			} ,

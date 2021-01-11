@@ -14,6 +14,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 	var _projectStatus = null;
 	var _px2package = {};
 	var _gitStatus = null;
+	var _cceBroadcastCallback = function( message ){}
 
 	this.appdata = null;
 	this.px2proj = null;
@@ -1606,8 +1607,12 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 			// --------------------
 			// Broadcast
 			console.log('*** Broadcast:', content);
-
+			_cceBroadcastCallback( content );
 		}
+		return;
+	}
+	this.onCceBroadcast = function(callback){
+		_cceBroadcastCallback = callback;
 	}
 
 	/**

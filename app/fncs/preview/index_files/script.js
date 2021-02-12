@@ -55,7 +55,7 @@ window.px = window.parent.px;
 			})
 		;
 	}
-	$(window).load(function(){
+	$(window).on('load', function(){
 		$preview = $('.cont_preview_frame');
 		$preview_frame = $preview.find('iframe');
 

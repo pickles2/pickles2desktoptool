@@ -115,7 +115,7 @@ window.contApp = new (function( px ){
 		return rtn;
 	}
 
-	$(window).load(function(){
+	$(window).on('load', function(){
 		init();
 	});
 

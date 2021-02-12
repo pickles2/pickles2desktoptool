@@ -22,7 +22,7 @@ module.exports = function(contApp, px, $){
 		$canvas = $scene.find('.cont_canvas');
 		$results = $canvas.find('.cont_results');
 		$canvas
-			.height( $(window).height() - $('.container').eq(0).height() - $scene.find('.cont_buttons').height() - 20 )
+			.height( $(window).height() - $('.theme-h1-container').eq(0).height() - $scene.find('.cont_buttons').height() - 20 )
 		;
 
 

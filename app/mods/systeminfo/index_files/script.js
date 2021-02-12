@@ -5,7 +5,7 @@
 	var applicationInfoCollector = new (require('../../../mods/systeminfo/index_files/libs.ignore/application.js'))(window.main);
 	var tableTemplate;
 
-	$(window).load( function(){
+	$(window).on('load', function(){
 		main.it79.fnc({}, [
 			function(it1, arg){
 				console.log('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= System Info =-=-=-=-=-=');

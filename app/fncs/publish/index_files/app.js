@@ -430,10 +430,10 @@ window.contApp = new (function(main, $){
 
 	function windowResized(){
 		$('.contents')
-			.height( $(window).height() - $('.container').eq(0).height() - 10 )
+			.height( $(window).height() - $('.theme-h1-container').eq(0).height() - 10 )
 		;
 		$('.cont_canvas')
-			.height( $(window).height() - $('.container').eq(0).height() - $cont.find('.cont_buttons').eq(0).height() - 20 )
+			.height( $(window).height() - $('.theme-h1-container').eq(0).height() - $cont.find('.cont_buttons').eq(0).height() - 20 )
 		;
 	}
 
@@ -575,7 +575,7 @@ module.exports = function(contApp, px, $){
 		$canvas = $scene.find('.cont_canvas');
 		$results = $canvas.find('.cont_results');
 		$canvas
-			.height( $(window).height() - $('.container').eq(0).height() - $scene.find('.cont_buttons').height() - 20 )
+			.height( $(window).height() - $('.theme-h1-container').eq(0).height() - $scene.find('.cont_buttons').height() - 20 )
 		;
 
 

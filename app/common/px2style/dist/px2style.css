@@ -12,6 +12,7 @@
   padding: 0.5em 2em;
   font-size: 1em;
   font-weight: normal;
+  font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
   line-height: 1;
   text-decoration: none;
   text-align: center;
@@ -285,7 +286,8 @@
   -ms-flex-pack: center;
       justify-content: center;
   -ms-flex-align: center;
-      align-items: center; }
+      align-items: center;
+  font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif; }
   .px2-modal > form {
     margin: 0;
     padding: 0;
@@ -299,6 +301,27 @@
         justify-content: center;
     -ms-flex-align: center;
         align-items: center; }
+  .px2-modal__close {
+    position: absolute;
+    right: -0.5em;
+    top: -0.5em;
+    width: 1.4em;
+    height: 1.4em; }
+    .px2-modal__close button {
+      position: absolute;
+      left: 0;
+      right: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+      border-radius: 50%;
+      border: 1px solid #999;
+      background-color: #eee;
+      color: #999; }
+      .px2-modal__close button::before {
+        content: "×"; }
   .px2-modal__dialog {
     position: relative;
     top: 0;
@@ -317,7 +340,7 @@
     max-width: 520px;
     height: auto;
     max-height: calc(100% - 40px);
-    overflow: auto;
+    overflow: visible;
     font-size: medium; }
     .px2-modal__dialog h1 {
       font-size: 124%;
@@ -580,7 +603,8 @@
   overflow: auto; }
 
 .px2-header {
-  height: 45px; }
+  height: 45px;
+  font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif; }
   .px2-header__inner {
     display: -ms-flexbox;
     display: flex;
@@ -985,3 +1009,186 @@ select.px2-input {
   .px2-input-group > :last-child.px2-btn {
     border-right-width: 1px;
     border-radius: 0 .25rem .25rem 0 / 0 .25rem .25rem 0; }
+
+.px2-grid {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  margin: 1em -0.5rem 0 -0.5rem;
+  box-sizing: border-box; }
+  .px2-grid__col-1of1 {
+    margin: 0 0.5rem 1em 0.5rem;
+    box-sizing: border-box;
+    width: calc( 100% - 1rem); }
+  .px2-grid__col-1of2 {
+    margin: 0 0.5rem 1em 0.5rem;
+    box-sizing: border-box;
+    width: calc( 50% - 1rem); }
+  .px2-grid__col-1of3 {
+    margin: 0 0.5rem 1em 0.5rem;
+    box-sizing: border-box;
+    width: calc( 33.33% - 1rem); }
+  .px2-grid__col-2of3 {
+    margin: 0 0.5rem 1em 0.5rem;
+    box-sizing: border-box;
+    width: calc( 66.66% - 1rem); }
+  .px2-grid__col-1of4 {
+    margin: 0 0.5rem 1em 0.5rem;
+    box-sizing: border-box;
+    width: calc( 25% - 1rem); }
+  .px2-grid__col-1of5 {
+    margin: 0 0.5rem 1em 0.5rem;
+    box-sizing: border-box;
+    width: calc( 20% - 1rem); }
+  .px2-grid__col-2of5 {
+    margin: 0 0.5rem 1em 0.5rem;
+    box-sizing: border-box;
+    width: calc( 40% - 1rem); }
+  .px2-grid__col-3of5 {
+    margin: 0 0.5rem 1em 0.5rem;
+    box-sizing: border-box;
+    width: calc( 60% - 1rem); }
+  .px2-grid__col-4of5 {
+    margin: 0 0.5rem 1em 0.5rem;
+    box-sizing: border-box;
+    width: calc( 80% - 1rem); }
+  .px2-grid__col-1of6 {
+    margin: 0 0.5rem 1em 0.5rem;
+    box-sizing: border-box;
+    width: calc( 16.66% - 1rem); }
+  @media all and (max-width: 768px) {
+    .px2-grid__col-1of5, .px2-grid__col-2of5, .px2-grid__col-3of5, .px2-grid__col-4of5, .px2-grid__col-1of6 {
+      width: calc( 33.33% - 1rem); } }
+  @media all and (max-width: 660px) {
+    .px2-grid__col-1of4, .px2-grid__col-3of4, .px2-grid__col-1of5, .px2-grid__col-2of5, .px2-grid__col-3of5, .px2-grid__col-4of5, .px2-grid__col-1of6 {
+      width: calc( 50% - 1rem); } }
+  @media all and (max-width: 544px) {
+    .px2-grid__col-1of3, .px2-grid__col-2of3, .px2-grid__col-1of4, .px2-grid__col-3of4, .px2-grid__col-1of5, .px2-grid__col-2of5, .px2-grid__col-3of5, .px2-grid__col-4of5, .px2-grid__col-1of6 {
+      width: calc( 50% - 1rem); } }
+  @media all and (max-width: 440px) {
+    .px2-grid__col-1of2, .px2-grid__col-1of3, .px2-grid__col-2of3, .px2-grid__col-1of4, .px2-grid__col-3of4, .px2-grid__col-1of5, .px2-grid__col-2of5, .px2-grid__col-3of5, .px2-grid__col-4of5, .px2-grid__col-1of6 {
+      width: calc( 100% - 1rem); } }
+  @media all and (min-width: 993px) {
+    .px2-grid__col-lg-1of1 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 100% - 1rem); }
+    .px2-grid__col-lg-1of2 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 50% - 1rem); }
+    .px2-grid__col-lg-1of3 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 33.33% - 1rem); }
+    .px2-grid__col-lg-2of3 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 66.66% - 1rem); }
+    .px2-grid__col-lg-1of4 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 25% - 1rem); }
+    .px2-grid__col-lg-1of5 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 20% - 1rem); }
+    .px2-grid__col-lg-2of5 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 40% - 1rem); }
+    .px2-grid__col-lg-3of5 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 60% - 1rem); }
+    .px2-grid__col-lg-4of5 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 80% - 1rem); }
+    .px2-grid__col-lg-1of6 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 16.66% - 1rem); } }
+  @media all and (min-width: 769px) and (max-width: 992px) {
+    .px2-grid__col-md-1of1 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 100% - 1rem); }
+    .px2-grid__col-md-1of2 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 50% - 1rem); }
+    .px2-grid__col-md-1of3 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 33.33% - 1rem); }
+    .px2-grid__col-md-2of3 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 66.66% - 1rem); }
+    .px2-grid__col-md-1of4 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 25% - 1rem); }
+    .px2-grid__col-md-1of5 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 20% - 1rem); }
+    .px2-grid__col-md-2of5 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 40% - 1rem); }
+    .px2-grid__col-md-3of5 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 60% - 1rem); }
+    .px2-grid__col-md-4of5 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 80% - 1rem); }
+    .px2-grid__col-md-1of6 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 16.66% - 1rem); } }
+  @media all and (max-width: 768px) {
+    .px2-grid__col-sm-1of1 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 100% - 1rem); }
+    .px2-grid__col-sm-1of2 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 50% - 1rem); }
+    .px2-grid__col-sm-1of3 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 33.33% - 1rem); }
+    .px2-grid__col-sm-2of3 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 66.66% - 1rem); }
+    .px2-grid__col-sm-1of4 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 25% - 1rem); }
+    .px2-grid__col-sm-1of5 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 20% - 1rem); }
+    .px2-grid__col-sm-2of5 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 40% - 1rem); }
+    .px2-grid__col-sm-3of5 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 60% - 1rem); }
+    .px2-grid__col-sm-4of5 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 80% - 1rem); }
+    .px2-grid__col-sm-1of6 {
+      margin: 0 0.5rem 1em 0.5rem;
+      box-sizing: border-box;
+      width: calc( 16.66% - 1rem); } }

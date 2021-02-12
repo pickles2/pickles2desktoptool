@@ -60,6 +60,10 @@ window.contApp = new (function(){
 				);
 			},
 			function(it1){
+				$('h1').text(cceInfo.label);
+				it1.next();
+			},
+			function(it1){
 				// クライアントリソースをロード
 				pj.execPx2(
 					'/?PX=px2dthelper.custom_console_extensions.'+customConsoleExtensionId+'.client_resources',

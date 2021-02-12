@@ -92,6 +92,7 @@ a:hover {
     .theme-h1-container__heading h1 {
       margin: 0;
       padding: 0;
+      font-size: 28px;
       font-weight: normal; }
     @media all and (max-width: calc(1170px + 57px + 57px)) {
       .theme-h1-container__heading {
@@ -102,9 +103,10 @@ a:hover {
         width: calc(100% - 15px - 15px);
         margin: 0 auto; }
         .theme-h1-container__heading h1 {
-          font-size: 18px; } }
+          font-size: 24px; } }
 
 .theme-main-container {
+  box-sizing: border-box;
   max-width: 1170px;
   width: calc(100% - 57px - 57px);
   margin: 0 auto; }

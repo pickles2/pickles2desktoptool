@@ -5475,6 +5475,10 @@ module.exports = function(app, px, pj){
 				$canvas.append( '<div>Status: <span class="cont-wasabi-status"></span></div>' );
 
 				$wasabiView.html('').append($canvas);
+				if( !wasabiPageStatusInfo ){
+					rlv();
+					return;
+				}
 				$wasabiView.find('.cont-wasabi-assignee').text( wasabiPageStatusInfo.assignee.name );
 				$wasabiView.find('.cont-wasabi-status').text( wasabiPageStatusInfo.status );
 

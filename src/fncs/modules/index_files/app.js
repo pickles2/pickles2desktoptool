@@ -205,7 +205,7 @@ window.contApp = new (function( main ){
 	 */
 	function onWindowResize(){
 		$content.css({
-			'height': $(window).height() - $('.container').eq(0).height() - 10
+			'height': $(window).innerHeight() - $('.theme-h1-container').eq(0).height() - 10
 		});
 	}
 

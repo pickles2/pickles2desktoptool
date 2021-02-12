@@ -14,9 +14,12 @@
 		<!-- D3.js -->
 		<script src="../../common/d3js/d3.js"></script>
 
-		<!-- Bootstrap -->
-		<link rel="stylesheet" href="../../common/bootstrap/css/bootstrap.min.css" />
-		<script src="../../common/bootstrap/js/bootstrap.min.js"></script>
+		<!-- Popper.js -->
+		<script src="../../common/popper/popper.min.js"></script>
+
+		<!-- Bootstrap4 -->
+		<link rel="stylesheet" href="../../common/bootstrap4/css/bootstrap.min.css" />
+		<script src="../../common/bootstrap4/js/bootstrap.min.js"></script>
 
 		<!-- Pickles 2 Style -->
 		<link rel="stylesheet" href="../../common/px2style/dist/styles.css" charset="utf-8" />
@@ -70,11 +73,7 @@
 					</div>
 				</div>
 				<div class="cont_buttons">
-					<div class="btn-group btn-group-justified" role="group">
-						<div class="btn-group" role="group">
-							<button class="px2-btn px2-btn--block" onclick="contApp.cancel(); return false;">キャンセル</button>
-						</div>
-					</div>
+					<button class="px2-btn px2-btn--block" onclick="contApp.cancel(); return false;">キャンセル</button>
 				</div>
 			</div>
 			<div class="cont_scene" id="cont_after_publish">
@@ -92,11 +91,7 @@
 					</div>
 				</div>
 				<div class="cont_buttons">
-					<div class="btn-group btn-group-justified" role="group">
-						<div class="btn-group" role="group">
-							<button class="px2-btn px2-btn--block" onclick="contApp.publish(); return false;">もう一度パブリッシュする</button>
-						</div>
-					</div>
+					<button class="px2-btn px2-btn--block" onclick="contApp.publish(); return false;">もう一度パブリッシュする</button>
 				</div>
 			</div>
 			<div class="cont_scene" id="cont_on_publish">
@@ -149,7 +144,9 @@
 	</head>
 	<body>
 		<div class="theme-h1-container">
-			<h1>パブリッシュ</h1>
+			<div class="theme-h1-container__heading">
+				<h1>パブリッシュ</h1>
+			</div>
 		</div>
 		<div class="theme-main-container">
 			<div class="contents">

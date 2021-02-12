@@ -82,19 +82,39 @@ a:hover {
  * テーマ
  */
 .theme-h1-container {
-  max-width: 1170px;
-  width: calc(100% - 40px);
-  margin: 0 auto;
-  padding: 1em 0 0.5em; }
-  .theme-h1-container h1 {
-    margin: 0;
-    padding: 0;
-    font-weight: normal; }
+  box-sizing: border-box; }
+  .theme-h1-container__heading {
+    max-width: 1170px;
+    width: calc(100% - 57px - 57px);
+    margin: 0 auto;
+    padding: 1em 0 0.5em; }
+    .theme-h1-container__heading h1 {
+      margin: 0;
+      padding: 0;
+      font-weight: normal; }
+    @media all and (max-width: calc(1170px + 57px + 57px)) {
+      .theme-h1-container__heading {
+        width: calc(100% - 57px - 15px);
+        margin: 0 auto 0 57px; } }
+    @media all and (max-width: 768px) {
+      .theme-h1-container__heading {
+        width: calc(100% - 15px - 15px);
+        margin: 0 auto; }
+        .theme-h1-container__heading h1 {
+          font-size: 18px; } }
 
 .theme-main-container {
   max-width: 1170px;
-  width: calc(100% - 40px);
+  width: calc(100% - 57px - 57px);
   margin: 0 auto; }
+  @media all and (max-width: calc(1170px + 57px + 57px)) {
+    .theme-main-container {
+      width: calc(100% - 57px - 15px);
+      margin: 0 auto 0 57px; } }
+  @media all and (max-width: 768px) {
+    .theme-main-container {
+      width: calc(100% - 15px - 15px);
+      margin: 0 auto; } }
 
 /**
  * ダイアログボックス

@@ -97,6 +97,7 @@ a:hover{
 	&__heading {
 		max-width: 1170px;
 		width: calc(100% - 57px - 57px);
+		box-sizing: border-box;
 		margin: 0 auto;
 		padding: 1em 0 0.5em;
 		h1{
@@ -128,6 +129,53 @@ a:hover{
 	@media all and (max-width: 768px) {
 		width: calc(100% - 15px - 15px);
 		margin: 0 auto;
+	}
+}
+
+/**
+ * コンテンツ領域をウィンドウにフィットさせる
+ */
+body.theme-content-fit-to-window {
+	display: flex;
+	flex-direction: column;
+
+	.theme-h1-container {
+		flex-grow: 0;
+		&__heading {
+			max-width: 100% !important;
+			width: calc(100% - 30px);
+			margin: 0 auto !important;
+		}
+	}
+	.theme-main-container {
+		flex-grow: 2;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+
+		max-width: 100% !important;
+		width: 100%;
+		margin: 0 auto !important;
+
+		.contents {
+			flex-grow: 2;
+			overflow: auto;
+
+			display: flex;
+			flex-direction: column;
+			> * {
+				flex-grow: 1;
+			}
+		}
+	}
+}
+
+/**
+ * 見出しエリアを非表示にする
+ */
+body.theme-hide-h1-container {
+	.theme-h1-container {
+		display: none;
 	}
 }
 

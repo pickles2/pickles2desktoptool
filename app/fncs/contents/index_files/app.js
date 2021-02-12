@@ -3992,7 +3992,7 @@ window.contApp = new (function( main ){
 		var $workspaceContainer = $('.cont_workspace_container');
 		$workspaceContainer
 			.css({
-				'height': $(window).innerHeight() - $('.container-fluid').eq(0).outerHeight() - ( $elms.commentView.is(':visible') ? $elms.commentView.outerHeight() + 10 : 0 ) - ( $elms.wasabiView.is(':visible') ? $elms.wasabiView.outerHeight() + 10 : 0 ) - $elms.workspaceSearch.outerHeight() - heightBreadcrumb - 20,
+				'height': $(window).innerHeight() - $('.theme-h1-container').eq(0).outerHeight() - ( $elms.commentView.is(':visible') ? $elms.commentView.outerHeight() + 10 : 0 ) - ( $elms.wasabiView.is(':visible') ? $elms.wasabiView.outerHeight() + 10 : 0 ) - $elms.workspaceSearch.outerHeight() - heightBreadcrumb - 20,
 				'margin-top': 10
 			})
 		;
@@ -4010,7 +4010,7 @@ window.contApp = new (function( main ){
 	}
 
 	// 初期化処理開始
-	$(function(){
+	$(window).on('load', function(){
 		init();
 		$(window).on('resize', function(){
 			onWindowResize();

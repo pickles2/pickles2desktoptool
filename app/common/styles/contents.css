@@ -90,8 +90,18 @@ a:hover {
   /* 7 */ }
 
 /**
-  * テーマ
-  */
+ * テーマ
+ */
+.theme-h1-container {
+  max-width: 1170px;
+  width: calc(100% - 40px);
+  margin: 0 auto;
+  padding: 1em 0 0.5em; }
+  .theme-h1-container h1 {
+    margin: 0;
+    padding: 0;
+    font-weight: bold; }
+
 .theme-main-container {
   max-width: 1170px;
   width: calc(100% - 40px);

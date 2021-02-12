@@ -429,10 +429,10 @@ window.contApp = new (function(main, $){
 
 	function windowResized(){
 		$('.contents')
-			.height( $(window).innerHeight() - $('.theme-h1-container').eq(0).height() - 10 )
+			.height( $(window).innerHeight() - $('.theme-h1-container').eq(0).height() - 20 - 15 )
 		;
 		$('.cont_canvas')
-			.height( $(window).innerHeight() - $('.theme-h1-container').eq(0).height() - $cont.find('.cont_buttons').eq(0).height() - 30 )
+			.height( $(window).innerHeight() - $('.theme-h1-container').eq(0).height() - $cont.find('.cont_buttons').eq(0).height() - 30 - 15 )
 		;
 	}
 

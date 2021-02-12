@@ -7,7 +7,7 @@ body {
   font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
 }
 body{
-	background-color: #fff;
+	background-color: #fefefe;
 	color: #333;
 }
 body,
@@ -94,6 +94,10 @@ a:hover{
  */
 .theme-h1-container {
 	box-sizing: border-box;
+	box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.1);
+	background-color: #fff;
+	position: relative;
+	z-index: 901;
 
 	&__heading {
 		max-width: 1170px;
@@ -122,17 +126,24 @@ a:hover{
 }
 .theme-main-container {
 	box-sizing: border-box;
+	border-top: 1px solid #eee;
+	padding-top: 15px;
+	position: relative;
+	z-index: 900;
 
-	max-width: 1170px;
-	width: calc(100% - 57px - 57px);
-	margin: 0 auto;
-	@media all and (max-width: calc(1170px + 57px + 57px)) {
-		width: calc(100% - 57px - 15px);
-		margin: 0 auto 0 57px;
-	}
-	@media all and (max-width: 768px) {
-		width: calc(100% - 15px - 15px);
+	.contents {
+		max-width: 1170px;
+		width: calc(100% - 57px - 57px);
 		margin: 0 auto;
+
+		@media all and (max-width: calc(1170px + 57px + 57px)) {
+			width: calc(100% - 57px - 15px);
+			margin: 0 auto 0 57px;
+		}
+		@media all and (max-width: 768px) {
+			width: calc(100% - 15px - 15px);
+			margin: 0 auto;
+		}
 	}
 }
 
@@ -160,8 +171,13 @@ body.theme-content-fit-to-window {
 		max-width: 100% !important;
 		width: 100%;
 		margin: 0 auto !important;
+		padding-top: 0;
 
 		.contents {
+			max-width: 100% !important;
+			width: 100%;
+			margin: 0 auto !important;
+
 			flex-grow: 2;
 			overflow: auto;
 

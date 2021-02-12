@@ -59,7 +59,7 @@ window.contApp = new (function( px ){
 	function windowResize(){
 		$('.CodeMirror')
 			.css({
-				'height':$(window).height() - $('.container').outerHeight() - $('.cont_btn_save').parent().outerHeight() - 10
+				'height':$(window).height() - $('.theme-h1-container').outerHeight() - $('.cont_btn_save').parent().outerHeight() - 10 - 15
 			})
 		;
 	}

@@ -100,6 +100,16 @@ a:hover{
 }
 
 
+ /**
+  * テーマ
+  */
+.theme-main-container {
+	max-width: 1170px;
+	width: calc(100% - 40px);
+	margin: 0 auto;
+}
+
+
 /**
  * ダイアログボックス
  */
@@ -119,7 +129,7 @@ a:hover{
 }
 
 /**
- コード
+ * コード
  */
 .contents pre{
 	background: #fafafa;

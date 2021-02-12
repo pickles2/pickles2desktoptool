@@ -4946,7 +4946,7 @@ window.contApp = new (function(px){
 			}
 
 			px.csv.parse(csvStr, function(err, data){
-				var $tbl = $('<table>').addClass('def').css({'width':'100%'});
+				var $tbl = $('<table>').addClass('px2-table').css({'width':'100%'});
 				for(var idx in data){
 					var $tr = $('<tr>');
 					for(var idx2 in data[idx]){

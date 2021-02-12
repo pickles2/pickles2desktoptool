@@ -23,14 +23,15 @@
 		<script src="../../common/bootstrap/js/bootstrap.min.js"></script>
 
 		<!-- Pickles 2 Style -->
-		<link rel="stylesheet" href="../../common/px2style/dist/styles.css" charset="utf-8" />
-		<script src="../../common/px2style/dist/scripts.js" charset="utf-8"></script>
+		<link rel="stylesheet" href="../../common/px2style/dist/px2style.css" charset="utf-8" />
+		<script src="../../common/px2style/dist/px2style.js" charset="utf-8"></script>
 
 		<!-- textEditor -->
 		<script src="../../common/scripts/textEditor.js" type="text/javascript"></script>
 
 		<!-- normalize -->
 		<link rel="stylesheet" href="../../common/styles/contents.css" type="text/css" />
+		<script src="../../common/styles/contents.js"></script>
 
 		<!-- Local Resources -->
 		<link rel="stylesheet" href="./index_files/style.css" type="text/css" />
@@ -43,7 +44,7 @@
 				これは影響範囲が大きい機能です。<strong>実行前に、コミットしておくことを強くおすすめします</strong>。<br />
 			</p>
 			<form action="javascript:;" method="post" class="cont_main_form">
-				<table class="form_elements">
+				<table class="px2-table">
 					<thead>
 						<tr>
 							<th>入力項目名</th>
@@ -54,7 +55,7 @@
 						<tr>
 							<th>移動するコンテンツ</th>
 							<td>
-								<ul class="form_elements-notes">
+								<ul class="px2-note-list">
 									<li>一度に複数のコンテンツを移動できます。1行につき、新旧1対のコンテンツを定義したCSVファイルを選択してください。</li>
 									<li>各行ごとに、A列に現パス、B列に移動先のパスを指定します。</li>
 									<li>各コンテンツのリソースフォルダ(<code>*_files</code>)は、コンテンツとともに自動的に移動されます。記述する必要はありません。</li>
@@ -66,20 +67,17 @@
 					</tbody>
 				</table>
 				<div class="cont_table_preview"></div>
-				<div class="unit form_buttons">
-					<ul>
-						<li class="form_buttons-submit"><button type="submit" class="px2-btn px2-btn--primary" disabled="disabled">移動を実行する</button></li>
-					</ul>
+				<div class="p">
+					<p class="px2-text-align-center"><button type="submit" class="px2-btn px2-btn--primary" disabled="disabled">移動を実行する</button></p>
 				</div><!-- /.form_buttons -->
 			</form>
 
 		</script>
 	</head>
 	<body>
-		<div class="container">
+		<div class="theme-main-container">
 			<h1>コンテンツを移動</h1>
-		</div>
-		<div class="container">
+
 			<div class="contents">
 				<p>...</p>
 			</div>

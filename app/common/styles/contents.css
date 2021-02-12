@@ -3,7 +3,7 @@
 html,
 body {
   font-size: medium;
-  font-family: Meiryo, "Hiragino Kaku Gothic ProN", Verdana, sans-serif; }
+  font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif; }
 
 body {
   background-color: #fff;
@@ -12,8 +12,9 @@ body {
 body,
 input,
 textarea,
-button {
-  font-family: "Hiragino Sans", "ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","Meiryo","メイリオ", "YuGothic", "Yu Gothic", "游ゴシック体", "游ゴシック", sans-serif, system-ui; }
+button,
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif; }
 
 textarea,
 input,
@@ -38,18 +39,6 @@ a {
 
 a:hover {
   color: #666; }
-
-.contents a.icon {
-  position: relative;
-  padding-left: 0.8em; }
-
-.contents a.icon:before {
-  content: "　";
-  background: url("./fess_res/icon.svg") 0 0 no-repeat transparent;
-  position: absolute;
-  top: 0.4em;
-  left: 0;
-  background-size: 0.6em 0.6em; }
 
 .contents .input-group-btn .px2-btn {
   font-size: 12px;
@@ -100,7 +89,7 @@ a:hover {
   .theme-h1-container h1 {
     margin: 0;
     padding: 0;
-    font-weight: bold; }
+    font-weight: normal; }
 
 .theme-main-container {
   max-width: 1170px;

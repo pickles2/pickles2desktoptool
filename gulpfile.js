@@ -84,6 +84,33 @@ gulp.task('.js', function(){
 	;
 });
 
+// Webpack: common/styles/contents.js を処理
+gulp.task("webpack:common/styles/contents.js", function() {
+	return webpackStream({
+		mode: 'production',
+		entry: "./src/common/styles/contents.webpack.js",
+		output: {
+			filename: "contents.js"
+		},
+		module:{
+			rules:[
+				{
+					test:/\.html$/,
+					use:['html-loader']
+				},
+				{
+					test: /\.(jpg|png)$/,
+					use: ['url-loader']
+				}
+			]
+		}
+	}, webpack)
+		.pipe(plumber())
+		.pipe(gulp.dest( './app/common/styles/' ))
+		.pipe(concat('contents.js'))
+	;
+});
+
 // Webpack: home を処理
 gulp.task("webpack:home", function() {
 	return webpackStream({
@@ -168,6 +195,7 @@ let _tasks = gulp.parallel(
 	
 	'.html',
 	'.js',
+	'webpack:common/styles/contents.js',
 	'webpack:home',
 	'.css',
 	'.css.scss'

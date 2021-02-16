@@ -335,3 +335,77 @@ ul.listview {
 /**
  * Darkmode
  */
+body.px2-darkmode {
+  background-color: #030303;
+  color: #ccc;
+  /**
+	 * テーマ
+	 */
+  /**
+	 * ダイアログボックス
+	 */
+  /**
+	 * コード
+	 */
+  /**
+	 * リストビュー
+	 */
+  /**
+	 * スクロールバー
+	 */
+  /**
+	 * Bootstrap 拡張
+	 */ }
+  body.px2-darkmode a {
+    color: #fff; }
+  body.px2-darkmode a:hover {
+    color: #999; }
+  body.px2-darkmode .theme-h1-container {
+    box-shadow: 0 0 15px 5px rgba(100, 100, 100, 0.1);
+    background-color: #000; }
+  body.px2-darkmode .theme-main-container {
+    border-color: #111; }
+  body.px2-darkmode .dialog_box {
+    background-color: #000;
+    border: 1px solid #222;
+    box-shadow: 5px 10px 10px rgba(100, 100, 100, 0.2); }
+  body.px2-darkmode .contents pre {
+    background: #050505;
+    border-color: #0f0f0f; }
+  body.px2-darkmode ul.listview {
+    border-color: #666;
+    box-shadow: 1px 2px 5px rgba(100, 100, 100, 0.1); }
+    body.px2-darkmode ul.listview li {
+      border-color: #666;
+      background-color: #010101; }
+      body.px2-darkmode ul.listview li > a {
+        background-color: #010101; }
+        body.px2-darkmode ul.listview li > a:hover {
+          background-color: #060606; }
+        body.px2-darkmode ul.listview li > a.current {
+          background-color: #00a0e6;
+          color: #fff; }
+      body.px2-darkmode ul.listview li ul {
+        border-color: #222; }
+        body.px2-darkmode ul.listview li ul li {
+          border-color: #222; }
+  body.px2-darkmode ::-webkit-scrollbar {
+    /* 1 */
+    background-color: #0c0c0c; }
+  body.px2-darkmode ::-webkit-scrollbar-button {
+    /* 2 */ }
+  body.px2-darkmode ::-webkit-scrollbar-track {
+    /* 3 */ }
+  body.px2-darkmode ::-webkit-scrollbar-track-piece {
+    /* 4 */ }
+  body.px2-darkmode ::-webkit-scrollbar-thumb {
+    /* 5 */
+    background-color: #333;
+    border-color: #000; }
+  body.px2-darkmode ::-webkit-scrollbar-corner {
+    /* 6 */ }
+  body.px2-darkmode ::-webkit-resizer {
+    /* 7 */ }
+  body.px2-darkmode .list-group-item {
+    background-color: #222;
+    border-color: #666; }

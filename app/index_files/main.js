@@ -180,7 +180,7 @@ new (function($, window){
 				function(it1){
 					let isLightMode = _this.isLightMode();
 					if( !isLightMode ){
-						$('body').addClass('px2-darkmode');
+						// $('body').addClass('px2-darkmode');
 					}
 					it1.next();
 				},

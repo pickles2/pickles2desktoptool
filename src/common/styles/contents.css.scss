@@ -1,5 +1,4 @@
 @charset "utf-8";
-@import "./filter.css";
 
 html,
 body {
@@ -381,3 +380,9 @@ ul.listview{
 .tooltip[role=tooltip]{
 	word-wrap: break-word;
 }
+
+/**
+ * Darkmode
+ */
+// TODO: 開発中
+// @import "./_css/_darkmode";

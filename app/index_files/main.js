@@ -178,6 +178,13 @@ new (function($, window){
 		_it79.fnc({},
 			[
 				function(it1){
+					let isLightMode = _this.isLightMode();
+					if( !isLightMode ){
+						$('body').addClass('px2-darkmode');
+					}
+					it1.next();
+				},
+				function(it1){
 					// updater: Installer Mode
 					if( updater.isInstallerMode() ) {
 						updater.doAsInstallerMode();
@@ -1191,6 +1198,19 @@ new (function($, window){
 			} )
 		;
 		return $elm;
+	}
+
+	/**
+	 * ブラウザ(OS)のライトモード/ダークモードを判定
+	 */
+	this.isLightMode = function(){
+		let isLightMode = true;
+		try{
+			isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches;
+		}catch(e){
+			console.error('[ERROR] Failed to check Browser Light Mode.', e);
+		}
+		return isLightMode;
 	}
 
 	/**

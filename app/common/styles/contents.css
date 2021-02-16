@@ -1,5 +1,4 @@
 @charset "UTF-8";
-@import url(./filter.css);
 html,
 body {
   font-size: medium;
@@ -332,3 +331,7 @@ ul.listview {
  */
 .tooltip[role=tooltip] {
   word-wrap: break-word; }
+
+/**
+ * Darkmode
+ */

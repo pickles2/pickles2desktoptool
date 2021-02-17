@@ -17,6 +17,7 @@
 		if( !px.getDb().apps.texteditor ){ px.getDb().apps.texteditor = null; }
 		if( !px.getDb().apps.texteditorForDir ){ px.getDb().apps.texteditorForDir = null; }
 		if( !px.getDb().language ){ px.getDb().language = 'ja'; }
+		if( !px.getDb().appearance ){ px.getDb().appearance = null; }
 		if( !px.getDb().extra.px2dt.checkForUpdate ){ px.getDb().extra.px2dt.checkForUpdate = 'autoCheck'; }
 
 		$tpl.find('[name=php]').val( px.getDb().commands.php );
@@ -28,6 +29,7 @@
 		$tpl.find('[name=apps_texteditor_for_dir]').val( px.getDb().apps.texteditorForDir );
 		$tpl.find('[name=apps_git_client]').val( px.getDb().apps.gitClient );
 		$tpl.find('[name=language]').val( px.getDb().language );
+		$tpl.find('[name=appearance]').val( px.getDb().appearance );
 		$tpl.find('[name=checkForUpdate]').attr( {"checked": (px.getDb().extra.px2dt.checkForUpdate=='autoCheck' ? 'checked' : null)} );
 		$tpl.find('[name=data_directory]').val( px.getDataDir() );
 
@@ -100,6 +102,7 @@
 						px.getDb().apps.texteditorForDir = $tpl.find('[name=apps_texteditor_for_dir]').val();
 						px.getDb().apps.gitClient = $tpl.find('[name=apps_git_client]').val();
 						px.getDb().language = $tpl.find('[name=language]').val();
+						px.getDb().appearance = $tpl.find('[name=appearance]').val();
 						px.getDb().extra.px2dt.checkForUpdate = ($tpl.find('[name=checkForUpdate]:checked').val() ? 'autoCheck' : 'none');
 						px.save(function(){
 							updateGitUserConfig(function(){

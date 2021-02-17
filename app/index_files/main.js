@@ -178,13 +178,6 @@ new (function($, window){
 		_it79.fnc({},
 			[
 				function(it1){
-					let isLightMode = _this.isLightMode();
-					if( !isLightMode ){
-						// $('body').addClass('px2-darkmode');
-					}
-					it1.next();
-				},
-				function(it1){
 					// updater: Installer Mode
 					if( updater.isInstallerMode() ) {
 						updater.doAsInstallerMode();
@@ -202,6 +195,7 @@ new (function($, window){
 						main.px2dtLDA.db.commands.php = main.px2dtLDA.db.commands.php || '';
 						main.px2dtLDA.db.commands.git = main.px2dtLDA.db.commands.git || '';
 						main.px2dtLDA.db.language = main.px2dtLDA.db.language || 'ja';
+						main.px2dtLDA.db.appearance = main.px2dtLDA.db.appearance || null;
 						main.px2dtLDA.db.apps.texteditor = main.px2dtLDA.db.apps.texteditor || '';
 						main.px2dtLDA.db.apps.texteditorForDir = main.px2dtLDA.db.apps.texteditorForDir || '';
 						main.px2dtLDA.db.network.preview = main.px2dtLDA.db.network.preview || {};
@@ -218,6 +212,16 @@ new (function($, window){
 							it1.next();
 						});
 					});
+				},
+				function(it1){
+					let isLightMode = _this.isLightMode();
+					if( !isLightMode ){
+						// $('body').addClass('px2-darkmode');
+					}
+					if( main.px2dtLDA.db.appearance == 'dark' ){
+						$('body').addClass('px2-darkmode');
+					}
+					it1.next();
 				},
 				function(it1){
 					// Command Queue をセットアップ

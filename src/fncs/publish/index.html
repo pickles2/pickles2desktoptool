@@ -124,20 +124,24 @@
 			<div>
 				<!-- <h2>パブリッシュ対象範囲</h2> -->
 				<div class="cont_form_pattern">
-					<select name="cont_form_pattern">
+					<select name="cont_form_pattern" class="px2-input">
 					</select>
 				</div>
-				<div class="form-group">
-					<label for="path_region">パブリッシュ対象範囲</label>
-					<textarea class="form-control" id="path_region" name="path_region" placeholder="/" rows="5">/</textarea>
-					<span class="help-block">パブリッシュ対象のディレクトリパスを指定してください。スラッシュから始まるパスで指定します。1行1ディレクトリで複数件指定できます。</span>
+				<div>
+					<label for="path_region">パブリッシュ対象範囲：</label>
+					<textarea class="px2-input px2-input--block" id="path_region" name="path_region" placeholder="/" rows="3">/</textarea>
+					<p>パブリッシュ対象のディレクトリパスを指定してください。スラッシュから始まるパスで指定します。1行1ディレクトリで複数件指定できます。</p>
 
-					<label for="paths_ignore">パブリッシュ対象外範囲</label>
-					<textarea class="form-control" id="paths_ignore" name="paths_ignore" placeholder="/path/ignore/1/
-/path/ignore/2/" rows="5"></textarea>
-					<span class="help-block">パブリッシュ対象外にするディレクトリパスを指定してください。スラッシュから始まるパスで指定します。1行1ディレクトリで複数件指定できます。</span>
+					<div>
+						<label for="paths_ignore">パブリッシュ対象外範囲：</label>
+						<textarea class="px2-input px2-input--block" id="paths_ignore" name="paths_ignore" placeholder="/path/ignore/1/
+/path/ignore/2/" rows="3"></textarea>
+						<p>パブリッシュ対象外にするディレクトリパスを指定してください。スラッシュから始まるパスで指定します。1行1ディレクトリで複数件指定できます。</p>
+					</div>
 
-					<label><input type="checkbox" name="keep_cache" value="1" /> キャッシュを消去しない</label>
+					<div>
+						<label><input type="checkbox" name="keep_cache" value="1" /> キャッシュを消去しない</label>
+					</div>
 				</div>
 			</div>
 		</script>

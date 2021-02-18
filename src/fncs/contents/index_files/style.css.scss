@@ -31,6 +31,10 @@
 		font-weight: bold;
 		font-size: x-small;
 	}
+	.px2-darkmode & {
+		background: #222;
+		border-color: #444;
+	}
 }
 .cont-wasabi-view{
 	overflow: auto;
@@ -58,20 +62,31 @@
 		font-weight: bold;
 		font-size: x-small;
 	}
+	.px2-darkmode & {
+		background: #222;
+		border-color: #444;
+	}
 }
 
+/**
+ * ページ情報欄
+ */
 .cont_page_info{
 	border: 1px solid #000;
 	padding: 10px;
 	margin: 0 5px 10px 5px;
 	background: #f9f9f9;
 	min-height: 2em;
-}
-.cont_page_info-prop{
-	float:left;
-}
-.cont_page_info-btn{
-	float:right;
+	&-prop{
+		float:left;
+	}
+	&-btn{
+		float:right;
+	}
+	.px2-darkmode & {
+		border: 1px solid #666;
+		background: #1f1f1f;
+	}
 }
 
 /**

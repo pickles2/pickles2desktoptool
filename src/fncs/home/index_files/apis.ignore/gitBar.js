@@ -39,6 +39,7 @@ module.exports = function(contApp, main, $){
 				return;
 			}); })
 			.then(function(){ return new Promise(function(rlv, rjt){
+				$select.addClass('px2-input');
 				$select.on('change', function(){
 					var newBranchName = $(this).val();
 					gitCheckout(newBranchName);

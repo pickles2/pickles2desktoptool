@@ -111,6 +111,12 @@
   .cont_top_footer a {
     color: #333;
     text-decoration: underline; }
+  .px2-darkmode .cont_top_footer {
+    border-top-color: #444;
+    background-color: #090909;
+    color: #999; }
+    .px2-darkmode .cont_top_footer a {
+      color: #ccc; }
 
 .cont_project-list-filter {
   position: relative; }
@@ -155,3 +161,11 @@
     position: relative;
     flex-grow: 1;
     width: 100%; }
+
+.px2-darkmode {
+  /**
+ * status bar
+ */ }
+  .px2-darkmode .theme-statusbar {
+    background-color: #060606;
+    border-top-color: #444; }

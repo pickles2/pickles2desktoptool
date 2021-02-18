@@ -3,17 +3,21 @@ body.px2-darkmode{
 	color: #ccc;
 
 	a{
-		color: #fff;
+		color: #ddd;
 	}
 	a:hover{
-		color: #999;
+		color: #fff;
+	}
+
+	pre {
+		color: #ccc;
 	}
 
 	/**
 	 * テーマ
 	 */
 	.theme-h1-container {
-		box-shadow: 0 0 15px 5px rgba(100, 100, 100, 0.1);
+		box-shadow: 0 0 15px 5px rgba(255, 255, 255, 0.1);
 		background-color: #000;
 	}
 
@@ -28,7 +32,7 @@ body.px2-darkmode{
 	.dialog_box{
 		background-color:#000;
 		border:1px solid #222;
-		box-shadow: 5px 10px 10px rgba(100, 100, 100, 0.2);
+		box-shadow: 5px 10px 10px rgba(255, 255, 255, 0.2);
 	}
 
 	/**
@@ -44,7 +48,7 @@ body.px2-darkmode{
 	 */
 	ul.listview{
 		border-color: #666;
-		box-shadow: 1px 2px 5px rgba(100, 100, 100, 0.1);
+		box-shadow: 1px 2px 5px rgba(255, 255, 255, 0.1);
 
 		li{
 			border-color: #666;
@@ -105,5 +109,11 @@ body.px2-darkmode{
 	.list-group-item {
 		background-color: #222;
 		border-color: #666;
+	}
+	.dropdown-menu{
+		background-color: #333;
+		a:hover {
+			background-color: #444;
+		}
 	}
 }

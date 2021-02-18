@@ -44,7 +44,7 @@
 						<h1>プロジェクトを選択してください</h1>
 						<div class="px2-p cont_project-list-filter">
 							<form action="javascript:;" method="get">
-								<input type="text" name="cont_project-list-filter__keyword" class="form-control" placeholder="Filter..." />
+								<input type="text" name="cont_project-list-filter__keyword" class="px2-input px2-input--block" placeholder="Filter..." />
 								<button class="cont_project-list-filter__clear" type="button">×</button>
 							</form>
 						</div>
@@ -64,7 +64,7 @@
 										<td>
 											<p>他のプロジェクトと区別できる表示名を入力してください。日本語やその他のマルチバイト文字も使えます。</p>
 											<div class="error_name"></div>
-											<div class="overflow:hidden;"><input type="text" name="pj_name" value="" placeholder="Your Project Name" class="form-control" /></div>
+											<div class="overflow:hidden;"><input type="text" name="pj_name" value="" placeholder="Your Project Name" class="px2-input px2-input--block" /></div>
 										</td>
 									</tr>
 									<tr>
@@ -91,14 +91,14 @@
 			<form action="javascript:;" method="post">
 				<div class="px2-p">
 					<h2>言語 - Language</h2>
-					<p><select name="language" class="form-control">
+					<p><select name="language" class="px2-input px2-input--block">
 						<option value="ja">Japanese - 日本語</option>
 						<option value="en">English</option>
 						<option value="zh">Chinese - 中文 简体</option>
 						<option value="zh-TW">Chinese - 中文 繁体</option>
 					</select></p>
 					<h2>アピアランス - Appearance</h2>
-					<p><select name="appearance" class="form-control">
+					<p><select name="appearance" class="px2-input px2-input--block">
 						<option value="">Light Mode - ライトモード</option>
 						<option value="dark">Dark Mode - ダークモード</option>
 					</select></p>
@@ -110,7 +110,7 @@
 						<tr>
 							<th>php</th>
 							<td>
-								<div><input type="text" name="php" value="" placeholder="php" style="width:60%; min-width: 5em;" class="form-control" />
+								<div><input type="text" name="php" value="" placeholder="php" style="width:60%; min-width: 5em;" class="px2-input px2-input--block" />
 								<input type="file" name="php__file" /><a href="javascript:;" class="php__file">ファイルを選択</a></div>
 								<div class="php__status"></div>
 							</td>
@@ -118,7 +118,7 @@
 						<tr>
 							<th>git</th>
 							<td>
-								<div><input type="text" name="git" value="" placeholder="git" style="width:60%; min-width: 5em;" class="form-control" />
+								<div><input type="text" name="git" value="" placeholder="git" style="width:60%; min-width: 5em;" class="px2-input px2-input--block" />
 								<input type="file" name="git__file" /><a href="javascript:;" class="git__file">ファイルを選択</a></div>
 								<div class="git__status"></div>
 							</td>
@@ -129,15 +129,15 @@
 						<colgroup><col width="30%" /><col width="70%" /></colgroup>
 						<tr>
 							<th>プレビュー用ポート番号</th>
-							<td><input type="number" name="network_preview_port" value="" placeholder="" style="width:25%; min-width: 6em;" class="form-control" /></td>
+							<td><input type="number" name="network_preview_port" value="" placeholder="" style="width:25%; min-width: 6em;" class="px2-input px2-input--block" /></td>
 						</tr>
 						<tr>
 							<th>パブリッシュプレビューサーバー用ポート番号</th>
-							<td><input type="number" name="network_appserver_port" value="" placeholder="" style="width:25%; min-width: 6em;" class="form-control" /></td>
+							<td><input type="number" name="network_appserver_port" value="" placeholder="" style="width:25%; min-width: 6em;" class="px2-input px2-input--block" /></td>
 						</tr>
 						<tr>
 							<th>アクセス制限</th>
-							<td><select name="network_preview_access_restriction" class="form-control">
+							<td><select name="network_preview_access_restriction" class="px2-input px2-input--block">
 								<option value="loopback">ネットワークからのアクセスを拒否 (127.0.0.1 のみ許可)</option>
 								<option value="off">制限しない</option>
 							</select></td>
@@ -148,7 +148,7 @@
 						<colgroup><col width="30%" /><col width="70%" /></colgroup>
 						<tr>
 							<th>外部テキストエディタ</th>
-							<td><input type="text" name="apps_texteditor" value="" placeholder="" style="width:60%;" class="form-control" />
+							<td><input type="text" name="apps_texteditor" value="" placeholder="" style="width:60%;" class="px2-input px2-input--block" />
 								<input type="file" name="apps_texteditor__file" /><a href="javascript:;" class="apps_texteditor__file">ファイルを選択</a>
 								<div>
 									外部アプリケーションのパスを設定してください。<br />
@@ -159,7 +159,7 @@
 						</tr>
 						<tr>
 							<th>外部テキストエディタ(ディレクトリを開く)</th>
-							<td><input type="text" name="apps_texteditor_for_dir" value="" placeholder="" style="width:60%;" class="form-control" />
+							<td><input type="text" name="apps_texteditor_for_dir" value="" placeholder="" style="width:60%;" class="px2-input px2-input--block" />
 								<input type="file" name="apps_texteditor_for_dir__file" /><a href="javascript:;" class="apps_texteditor_for_dir__file">ファイルを選択</a>
 								<div>
 									外部アプリケーションのパスを設定してください。<br />
@@ -170,7 +170,7 @@
 						</tr>
 						<tr>
 							<th>外部 Git クライアント</th>
-							<td><input type="text" name="apps_git_client" value="" placeholder="" style="width:60%;" class="form-control" />
+							<td><input type="text" name="apps_git_client" value="" placeholder="" style="width:60%;" class="px2-input px2-input--block" />
 								<input type="file" name="apps_git_client__file" /><a href="javascript:;" class="apps_git_client__file">ファイルを選択</a>
 								<div>
 									外部アプリケーションのパスを設定してください。<br />
@@ -182,7 +182,7 @@
 					</table>
 
 					<h2>データディレクトリ - Data Directory</h2>
-					<div><input type="text" name="data_directory" value="" placeholder="" style="width:60%; min-width: 5em;" class="form-control" />
+					<div><input type="text" name="data_directory" value="" placeholder="" style="width:60%; min-width: 5em;" class="px2-input px2-input--block" />
 					<input type="file" name="data_directory__file" nwdirectory /><a href="javascript:;" class="data_directory__file">フォルダを選択</a></div>
 
 				</div>
@@ -202,7 +202,7 @@
 							<td>
 								<p>他のプロジェクトと区別できる表示名を入力してください。日本語やその他のマルチバイト文字も使えます。</p>
 								<div class="error_name"></div>
-								<div class="overflow:hidden;"><input type="text" name="pj_name" value="" placeholder="Your Project Name" class="form-control" /></div>
+								<div class="overflow:hidden;"><input type="text" name="pj_name" value="" placeholder="Your Project Name" class="px2-input px2-input--block" /></div>
 							</td>
 						</tr>
 						<tr>
@@ -222,14 +222,14 @@
 							<th>Home Directory</th>
 							<td>
 								<div class="error_home_dir"></div>
-								<div class="overflow:hidden;"><input type="text" name="pj_home_dir" value="" placeholder="px-files/" class="form-control" /></div>
+								<div class="overflow:hidden;"><input type="text" name="pj_home_dir" value="" placeholder="px-files/" class="px2-input px2-input--block" /></div>
 							</td>
 						</tr>
 						<tr>
 							<th>Entry Script</th>
 							<td>
 								<div class="error_entry_script"></div>
-								<div class="overflow:hidden;"><input type="text" name="pj_entry_script" value="" placeholder=".px_execute.php" class="form-control" /></div>
+								<div class="overflow:hidden;"><input type="text" name="pj_entry_script" value="" placeholder=".px_execute.php" class="px2-input px2-input--block" /></div>
 							</td>
 						</tr>
 					</table>
@@ -241,7 +241,7 @@
 							<td>
 								<p>プレビュー用に外部のウェブサーバーアプリケーションを使用する場合、そのURLを入力してください。空欄にした場合は、内蔵のウェブサーバーを使用します。</p>
 								<div class="error_external_preview_server_origin"></div>
-								<div class="overflow:hidden;"><input type="text" name="pj_external_preview_server_origin" value="" placeholder="eg. http://localhost:8080" class="form-control" /></div>
+								<div class="overflow:hidden;"><input type="text" name="pj_external_preview_server_origin" value="" placeholder="eg. http://localhost:8080" class="px2-input px2-input--block" /></div>
 							</td>
 						</tr>
 						<tr>
@@ -249,7 +249,7 @@
 							<td>
 								<p>パブリッシュされた最終的な成果をプレビューするために、外部のウェブサーバーアプリケーションを使用する場合、そのURLを入力してください。空欄にした場合は、内蔵のウェブサーバーを使用します。</p>
 								<div class="error_external_app_server_origin"></div>
-								<div class="overflow:hidden;"><input type="text" name="pj_external_app_server_origin" value="" placeholder="eg. http://localhost:8081" class="form-control" /></div>
+								<div class="overflow:hidden;"><input type="text" name="pj_external_app_server_origin" value="" placeholder="eg. http://localhost:8081" class="px2-input px2-input--block" /></div>
 							</td>
 						</tr>
 					</table>

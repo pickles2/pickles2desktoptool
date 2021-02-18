@@ -25,10 +25,6 @@ pre,
 *:focus {
   outline: none; }
 
-textarea {
-  width: 100%;
-  height: 12em; }
-
 img, svg {
   max-width: 100%; }
 
@@ -357,24 +353,26 @@ body.px2-darkmode {
 	 * Bootstrap 拡張
 	 */ }
   body.px2-darkmode a {
-    color: #fff; }
+    color: #ddd; }
   body.px2-darkmode a:hover {
-    color: #999; }
+    color: #fff; }
+  body.px2-darkmode pre {
+    color: #ccc; }
   body.px2-darkmode .theme-h1-container {
-    box-shadow: 0 0 15px 5px rgba(100, 100, 100, 0.1);
+    box-shadow: 0 0 15px 5px rgba(255, 255, 255, 0.1);
     background-color: #000; }
   body.px2-darkmode .theme-main-container {
     border-color: #111; }
   body.px2-darkmode .dialog_box {
     background-color: #000;
     border: 1px solid #222;
-    box-shadow: 5px 10px 10px rgba(100, 100, 100, 0.2); }
+    box-shadow: 5px 10px 10px rgba(255, 255, 255, 0.2); }
   body.px2-darkmode .contents pre {
     background: #050505;
     border-color: #0f0f0f; }
   body.px2-darkmode ul.listview {
     border-color: #666;
-    box-shadow: 1px 2px 5px rgba(100, 100, 100, 0.1); }
+    box-shadow: 1px 2px 5px rgba(255, 255, 255, 0.1); }
     body.px2-darkmode ul.listview li {
       border-color: #666;
       background-color: #010101; }
@@ -409,3 +407,7 @@ body.px2-darkmode {
   body.px2-darkmode .list-group-item {
     background-color: #222;
     border-color: #666; }
+  body.px2-darkmode .dropdown-menu {
+    background-color: #333; }
+    body.px2-darkmode .dropdown-menu a:hover {
+      background-color: #444; }

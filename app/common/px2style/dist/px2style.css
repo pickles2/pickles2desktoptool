@@ -977,6 +977,24 @@ select.px2-input {
   select.px2-input[disabled] {
     color: #8e959c;
     background-color: #eee; }
+  input[type=text].px2-input--block,
+  input[type=password].px2-input--block,
+  input[type=number].px2-input--block,
+  input[type=search].px2-input--block,
+  input[type=tel].px2-input--block,
+  input[type=url].px2-input--block,
+  input[type=email].px2-input--block,
+  input[type=datetime].px2-input--block,
+  input[type=date].px2-input--block,
+  input[type=month].px2-input--block,
+  input[type=week].px2-input--block,
+  input[type=time].px2-input--block,
+  input[type=color].px2-input--block,
+  input[type=datetime-local].px2-input--block,
+  textarea.px2-input--block,
+  select.px2-input--block {
+    display: block;
+    width: 100%; }
 
 .px2-input-group {
   display: -ms-inline-flexbox;
@@ -1238,6 +1256,43 @@ select.px2-input {
     border-color: #999;
     border-top-color: transparent;
     border-bottom-color: transparent; }
+  .px2-darkmode.px2-header__shoulder-menu > button,
+  .px2-darkmode .px2-header__shoulder-menu > button {
+    background: #060606; }
+  .px2-darkmode.px2-header__shoulder-menu > ul,
+  .px2-darkmode .px2-header__shoulder-menu > ul {
+    background-color: #555;
+    border-color: #222; }
+    .px2-darkmode.px2-header__shoulder-menu > ul li,
+    .px2-darkmode .px2-header__shoulder-menu > ul li {
+      border-bottom-color: #333; }
+      .px2-darkmode.px2-header__shoulder-menu > ul li a,
+      .px2-darkmode .px2-header__shoulder-menu > ul li a {
+        color: #ccc;
+        background-color: #555; }
+        .px2-darkmode.px2-header__shoulder-menu > ul li a:hover,
+        .px2-darkmode .px2-header__shoulder-menu > ul li a:hover {
+          background-color: #444;
+          color: #eee; }
+        .px2-darkmode.px2-header__shoulder-menu > ul li a.current,
+        .px2-darkmode .px2-header__shoulder-menu > ul li a.current {
+          color: #eee; }
+    .px2-darkmode.px2-header__shoulder-menu > ul li.px2-header__shoulder-menu-group > a::after,
+    .px2-darkmode .px2-header__shoulder-menu > ul li.px2-header__shoulder-menu-group > a::after {
+      border-color: #eee;
+      border-top-color: transparent;
+      border-bottom-color: transparent; }
+    .px2-darkmode.px2-header__shoulder-menu > ul li.px2-header__shoulder-menu-group ul li a,
+    .px2-darkmode .px2-header__shoulder-menu > ul li.px2-header__shoulder-menu-group ul li a {
+      background-color: #333;
+      color: #ddd; }
+      .px2-darkmode.px2-header__shoulder-menu > ul li.px2-header__shoulder-menu-group ul li a:hover,
+      .px2-darkmode .px2-header__shoulder-menu > ul li.px2-header__shoulder-menu-group ul li a:hover {
+        background-color: #444;
+        color: #eee; }
+      .px2-darkmode.px2-header__shoulder-menu > ul li.px2-header__shoulder-menu-group ul li a.current,
+      .px2-darkmode .px2-header__shoulder-menu > ul li.px2-header__shoulder-menu-group ul li a.current {
+        color: #eee; }
 
 .px2-darkmode.px2-modal,
 .px2-darkmode .px2-modal {
@@ -1261,7 +1316,7 @@ select.px2-input {
   .px2-darkmode.px2-btn:focus, .px2-darkmode.px2-btn:hover,
   .px2-darkmode .px2-btn:focus,
   .px2-darkmode .px2-btn:hover {
-    color: #999;
+    color: #eee;
     background-color: #0c0c0c; }
   .px2-darkmode.px2-btn:focus,
   .px2-darkmode .px2-btn:focus {
@@ -1300,6 +1355,7 @@ select.px2-input {
   .px2-darkmode.px2-btn.px2-btn--secondary:focus, .px2-darkmode.px2-btn.px2-btn--secondary:hover,
   .px2-darkmode .px2-btn.px2-btn--secondary:focus,
   .px2-darkmode .px2-btn.px2-btn--secondary:hover {
+    color: #eee;
     background-color: #0c0c0c; }
   .px2-darkmode.px2-btn.px2-btn--secondary:hover,
   .px2-darkmode .px2-btn.px2-btn--secondary:hover {

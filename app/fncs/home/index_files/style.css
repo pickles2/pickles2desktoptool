@@ -13,45 +13,45 @@
   .contents button.cont_mainmenu {
     height: auto; } }
 
-.contents .cont_readme_content {
+.cont_readme_content {
   margin: 1em 0 2.5em;
   border: 1px solid #f0f0f0;
   background: #fefefe;
   padding: 1em;
   border-radius: 3px;
   font-size: small; }
-  .contents .cont_readme_content h1 {
+  .cont_readme_content h1 {
     font-size: 200%;
     font-weight: bold; }
-  .contents .cont_readme_content h2 {
+  .cont_readme_content h2 {
     font-size: 170%;
     font-weight: bold; }
-  .contents .cont_readme_content h3 {
+  .cont_readme_content h3 {
     font-size: 130%;
     font-weight: bold; }
-  .contents .cont_readme_content h4 {
+  .cont_readme_content h4 {
     font-size: 110%;
     font-weight: bold; }
-  .contents .cont_readme_content h5 {
+  .cont_readme_content h5 {
     font-size: 105%;
     font-weight: bold; }
-  .contents .cont_readme_content h6 {
+  .cont_readme_content h6 {
     font-size: 100%;
     font-weight: bold; }
-  .contents .cont_readme_content table {
+  .cont_readme_content table {
     border-collapse: collapse; }
-    .contents .cont_readme_content table th,
-    .contents .cont_readme_content table td {
+    .cont_readme_content table th,
+    .cont_readme_content table td {
       border: 1px solid #eee;
       padding: 10px;
       overflow: visible;
       white-space: normal;
       background: #fff; }
-    .contents .cont_readme_content table th {
+    .cont_readme_content table th {
       background: #f7f7f7;
       font-weight: bold;
       text-align: center; }
-  .contents .cont_readme_content-no_readme {
+  .cont_readme_content-no_readme {
     text-align: center;
     color: #999;
     padding: 3em; }
@@ -126,3 +126,32 @@
   border-top: 1px solid #ddd;
   padding: 1em;
   background-color: #f9f9f9; }
+
+/**
+ * Darkmode
+ */
+.px2-darkmode .cont_readme_content {
+  border-color: #0f0f0f;
+  background: #393939; }
+  .px2-darkmode .cont_readme_content table th,
+  .px2-darkmode .cont_readme_content table td {
+    border-color: #444;
+    background: #333; }
+  .px2-darkmode .cont_readme_content table th {
+    background: #3d3d3d; }
+  .px2-darkmode .cont_readme_content-no_readme {
+    color: #666; }
+
+.px2-darkmode .cont-git-bar {
+  border-top-color: #444;
+  border-bottom-color: #444;
+  background-color: #222; }
+
+.px2-darkmode .cont-wasabi-bar {
+  border-top-color: #444;
+  border-bottom-color: #444;
+  background-color: #222; }
+
+.px2-darkmode .cont-footer {
+  border-top-color: #444;
+  background-color: #393939; }

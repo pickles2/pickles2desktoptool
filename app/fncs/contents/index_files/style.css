@@ -29,6 +29,9 @@
   .cont_comment_view h6 {
     font-weight: bold;
     font-size: x-small; }
+  .px2-darkmode .cont_comment_view {
+    background: #222;
+    border-color: #444; }
 
 .cont-wasabi-view {
   overflow: auto;
@@ -54,19 +57,26 @@
   .cont-wasabi-view h6 {
     font-weight: bold;
     font-size: x-small; }
+  .px2-darkmode .cont-wasabi-view {
+    background: #222;
+    border-color: #444; }
 
+/**
+ * ページ情報欄
+ */
 .cont_page_info {
   border: 1px solid #000;
   padding: 10px;
   margin: 0 5px 10px 5px;
   background: #f9f9f9;
   min-height: 2em; }
-
-.cont_page_info-prop {
-  float: left; }
-
-.cont_page_info-btn {
-  float: right; }
+  .cont_page_info-prop {
+    float: left; }
+  .cont_page_info-btn {
+    float: right; }
+  .px2-darkmode .cont_page_info {
+    border: 1px solid #666;
+    background: #1f1f1f; }
 
 /**
  * サイトマップの編集者コメント欄

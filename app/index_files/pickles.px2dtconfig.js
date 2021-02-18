@@ -106,6 +106,10 @@
 						px.getDb().extra.px2dt.checkForUpdate = ($tpl.find('[name=checkForUpdate]:checked').val() ? 'autoCheck' : 'none');
 						px.save(function(){
 							updateGitUserConfig(function(){
+								$('body').removeClass('px2-darkmode');
+								if( px.getDb().appearance == 'dark' ){
+									$('body').addClass('px2-darkmode');
+								}
 								px.closeDialog();
 							});
 						});

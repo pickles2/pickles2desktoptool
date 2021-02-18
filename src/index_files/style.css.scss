@@ -135,6 +135,14 @@ body{
 		color: #333;
 		text-decoration: underline;
 	}
+	.px2-darkmode & {
+		border-top-color: #444;
+		background-color: #090909;
+		color: #999;
+		a{
+			color: #ccc;
+		}
+	}
 }
 
 .cont_project-list-filter{
@@ -157,3 +165,6 @@ body{
 
 // CmdQueue Terminal
 @import "./style.css.ignore/_commandQueue.css.scss";
+
+// Dark Mode
+@import "./style.css.ignore/_darkmode.css.scss";

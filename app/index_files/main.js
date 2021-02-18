@@ -214,11 +214,7 @@ new (function($, window){
 					});
 				},
 				function(it1){
-					let isLightMode = _this.isLightMode();
-					if( !isLightMode ){
-						// $('body').addClass('px2-darkmode');
-					}
-					if( main.px2dtLDA.db.appearance == 'dark' ){
+					if( main.getAppearance() == 'dark' ){
 						$('body').addClass('px2-darkmode');
 					}
 					it1.next();
@@ -1207,14 +1203,22 @@ new (function($, window){
 	/**
 	 * ブラウザ(OS)のライトモード/ダークモードを判定
 	 */
-	this.isLightMode = function(){
-		let isLightMode = true;
+	this.getAppearance = function(){
+		let rtn = 'light';
+		if( main.px2dtLDA.db.appearance == 'light' || main.px2dtLDA.db.appearance == 'dark' ){
+			return main.px2dtLDA.db.appearance;
+		}
+		return 'light'; // TODO: ダークモードが開発中のため、デフォルトはライトモード。ダークモード成立後には、デフォルトはOSの標準に従うようにする。
+
 		try{
-			isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches;
+			var isOsLightMode = window.matchMedia('(prefers-color-scheme: light)').matches;
+			if( !isOsLightMode ){
+				rtn = 'dark';
+			}
 		}catch(e){
 			console.error('[ERROR] Failed to check Browser Light Mode.', e);
 		}
-		return isLightMode;
+		return rtn;
 	}
 
 	/**

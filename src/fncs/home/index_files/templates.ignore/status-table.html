@@ -6,6 +6,15 @@
 				<td><%= status[key][key2] %></td>
 			</tr>
 		<% } %>
+	<% }else if(key == 'customConsoleExtensions'){ %>
+		<tr>
+			<th><%= key %></th>
+			<% if(status[key]){ %>
+			<td>exists</td>
+			<% }else{ %>
+			<td>false</td>
+			<% } %>
+		</tr>
 	<% }else{ %>
 		<tr>
 			<th><%= key %></th>

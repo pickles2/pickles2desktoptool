@@ -131,8 +131,8 @@
  * Darkmode
  */
 .px2-darkmode .cont_readme_content {
-  border-color: #0f0f0f;
-  background: #393939; }
+  border-color: #333;
+  background: #111; }
   .px2-darkmode .cont_readme_content table th,
   .px2-darkmode .cont_readme_content table td {
     border-color: #444;

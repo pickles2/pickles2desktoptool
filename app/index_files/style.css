@@ -101,6 +101,9 @@
   background-size: cover;
   color: #00a0e6;
   padding: 3em 0.5em; }
+  .px2-darkmode .cont_top_jumbotron {
+    background-color: #333;
+    background-image: url("./images/main_darkmode.png"); }
 
 .cont_top_footer {
   text-align: center;

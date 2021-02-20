@@ -47,16 +47,16 @@ body.px2-darkmode{
 	 * リストビュー
 	 */
 	ul.listview{
-		border-color: #666;
+		border-color: #333;
 		box-shadow: 1px 2px 5px rgba(255, 255, 255, 0.1);
 
 		li{
-			border-color: #666;
-			background-color: #010101;
+			border-color: #333;
+			background-color: #0e0e0e;
 			>a{
-				background-color: #010101;
+				background-color: #0e0e0e;
 				&:hover{
-					background-color: #060606;
+					background-color: #222;
 				}
 				&.current{
 					background-color: #00a0e6;

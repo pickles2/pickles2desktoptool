@@ -371,15 +371,15 @@ body.px2-darkmode {
     background: #050505;
     border-color: #0f0f0f; }
   body.px2-darkmode ul.listview {
-    border-color: #666;
+    border-color: #333;
     box-shadow: 1px 2px 5px rgba(255, 255, 255, 0.1); }
     body.px2-darkmode ul.listview li {
-      border-color: #666;
-      background-color: #010101; }
+      border-color: #333;
+      background-color: #0e0e0e; }
       body.px2-darkmode ul.listview li > a {
-        background-color: #010101; }
+        background-color: #0e0e0e; }
         body.px2-darkmode ul.listview li > a:hover {
-          background-color: #060606; }
+          background-color: #222; }
         body.px2-darkmode ul.listview li > a.current {
           background-color: #00a0e6;
           color: #fff; }

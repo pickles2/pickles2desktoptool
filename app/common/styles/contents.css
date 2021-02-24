@@ -5,8 +5,8 @@ body {
   font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif; }
 
 body {
-  background-color: #fefefe;
-  color: #333; }
+  color: #333;
+  background-color: #f9f9f9; }
 
 body,
 input,
@@ -79,7 +79,7 @@ a:hover {
 .theme-h1-container {
   box-sizing: border-box;
   box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
+  background-color: #fdfdfd;
   position: relative;
   z-index: 901; }
   .theme-h1-container__heading {
@@ -165,7 +165,8 @@ body.theme-hide-h1-container .theme-h1-container {
  * ダイアログボックス
  */
 .dialog_box {
-  background-color: #fff;
+  color: #333;
+  background-color: #f9f9f9;
   padding: 15px;
   border: 1px solid #ddd;
   border-radius: 5px;
@@ -332,8 +333,8 @@ ul.listview {
  * Darkmode
  */
 body.px2-darkmode {
-  background-color: #0d0d0d;
   color: #ccc;
+  background-color: #242424;
   /**
 	 * テーマ
 	 */
@@ -360,11 +361,12 @@ body.px2-darkmode {
     color: #ccc; }
   body.px2-darkmode .theme-h1-container {
     box-shadow: 0 0 15px 5px rgba(255, 255, 255, 0.1);
-    background-color: #0c0c0c; }
+    background-color: #202020; }
   body.px2-darkmode .theme-main-container {
     border-color: #111; }
   body.px2-darkmode .dialog_box {
-    background-color: #000;
+    color: #ccc;
+    background-color: #242424;
     border: 1px solid #222;
     box-shadow: 5px 10px 10px rgba(255, 255, 255, 0.2); }
   body.px2-darkmode .contents pre {

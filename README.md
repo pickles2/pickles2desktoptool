@@ -90,7 +90,7 @@ Mac で Windows 版をビルドするにあたり、次の環境が必要です�
 
 ## 更新履歴 - Change log
 
-### Pickles 2 v2.0.0-beta.28 (リリース日未定)
+### Pickles 2 v2.0.0-beta.28 (2021年3月6日)
 
 - Update NW.js to v0.51.1
 - 未使用のモジュールの検索結果表示を改善した。

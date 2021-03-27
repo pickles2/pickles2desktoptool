@@ -11210,7 +11210,7 @@ module.exports = function(Px2style){
 		var objModal = new classModal(_this, $modal, options);
 		modalLayers.push(objModal);
 
-		callback();
+		callback( objModal );
 
 		return;
 	}
@@ -11220,6 +11220,7 @@ module.exports = function(Px2style){
 		this.options = options;
 		this.focusBackTo = document.activeElement;
 
+		var isClosable = true;
 		var $target = $(this.options.target);
 		$target.append($modal);
 
@@ -11255,7 +11256,19 @@ module.exports = function(Px2style){
 		onWindowResize();
 		tabkeyControl(this.$modal);
 
-
+		this.closable = function( toggle ){
+			isClosable = !!toggle;
+			var closeBtn = this.$modal.find('.px2-modal__close');
+			if( isClosable ){
+				closeBtn.css({'display':'block'});
+			}else{
+				closeBtn.css({'display':'none'});
+			}
+			return;
+		}
+		this.isClosable = function(){
+			return isClosable;
+		}
 
 		this.close = function(callback){
 			callback = callback||function(){};
@@ -11269,8 +11282,9 @@ module.exports = function(Px2style){
 				$(window).off('resize.px2-modal');
 				$(window).off('keydown.px2-modal');
 			}
-			callback();
+			callback(true);
 			this.options.onclose();
+			delete(this);
 		}
 
 	}
@@ -11282,6 +11296,11 @@ module.exports = function(Px2style){
 		// console.log('---- px2style.closeModal() ----');
 		callback = callback||function(){};
 		var lastModal = modalLayers.pop();
+		if( !lastModal.isClosable() ){
+			modalLayers.push(lastModal);
+			callback(false);
+			return;
+		}
 		lastModal.close(callback);
 		lastModal = undefined;
 		return;

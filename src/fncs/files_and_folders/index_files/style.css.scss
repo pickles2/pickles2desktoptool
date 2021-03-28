@@ -7,19 +7,26 @@ html, body{
 body{
 	display: flex;
 	flex-direction: column;
-	> .container{
+	> .theme-h1-container{
 		flex-shrink: 0;
 	}
-	> .contents{
+	> .theme-main-container{
 		display: flex;
 		flex-direction: column;
+		height: 100px;
+		flex-grow: 10;
 
-		> .container{
+		> .contents{
 			display: flex;
 			flex-direction: column;
+			height: 100px;
+			flex-grow: 10;
+
 			> #cont_finder{
 				overflow: auto;
 				z-index: 1;
+				height: 100px;
+				flex-grow: 10;
 			}
 		}
 	}

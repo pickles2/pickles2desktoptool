@@ -7,14 +7,20 @@ html, body {
 body {
   display: flex;
   flex-direction: column; }
-  body > .container {
+  body > .theme-h1-container {
     flex-shrink: 0; }
-  body > .contents {
+  body > .theme-main-container {
     display: flex;
-    flex-direction: column; }
-    body > .contents > .container {
+    flex-direction: column;
+    height: 100px;
+    flex-grow: 10; }
+    body > .theme-main-container > .contents {
       display: flex;
-      flex-direction: column; }
-      body > .contents > .container > #cont_finder {
+      flex-direction: column;
+      height: 100px;
+      flex-grow: 10; }
+      body > .theme-main-container > .contents > #cont_finder {
         overflow: auto;
-        z-index: 1; }
+        z-index: 1;
+        height: 100px;
+        flex-grow: 10; }

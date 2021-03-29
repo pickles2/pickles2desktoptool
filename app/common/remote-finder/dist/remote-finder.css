@@ -1726,27 +1726,31 @@
     margin-right: 0.5em;
     margin-right: 0;
     margin-left: 0.5em; }
-  .remote-finder__preview pre {
-    border: 1px solid #999;
-    border-radius: 5px;
-    overflow: auto;
-    padding: 1em;
-    height: 5em;
-    border: 1px solid #ddd;
-    background-color: #f7f7f7; }
-    .remote-finder__preview pre code {
+  .remote-finder__preview {
+    margin: 1em 0; }
+    .remote-finder__preview pre {
+      border: 1px solid #999;
+      border-radius: 5px;
+      overflow: auto;
+      padding: 1em;
+      height: 8em;
+      border: 1px solid #ddd;
+      background-color: #f7f7f7; }
+      .remote-finder__preview pre code {
+        display: block;
+        padding: 0;
+        margin: 0;
+        color: #d66; }
+    .remote-finder__preview img {
+      max-width: 100%;
+      max-height: 300px;
       display: block;
-      padding: 0;
-      margin: 0;
-      color: #d66; }
-  .remote-finder__preview img {
-    max-width: 100%;
-    max-height: 300px;
-    display: block;
-    margin: 5px auto; }
+      margin: 5px auto; }
   .remote-finder__preview-disabled {
     text-align: center;
-    padding: 4em 1em; }
+    padding: 4em 1em;
+    border: 3px dashed #ddd;
+    border-radius: 10px; }
   .remote-finder__dropzone {
     display: -ms-flexbox;
     display: flex;

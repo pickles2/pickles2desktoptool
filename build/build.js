@@ -202,8 +202,13 @@ var nw = new NwBuilder({
 			}
 		}
 		return rtn;
-	})(packageJson) , // use the glob format
-	version: '0.51.1',// <- version number of node-webkit
+	})(packageJson),
+	version: (function(packageJson){ // <- version number of node-webkit
+		var nwVersion = packageJson.devDependencies.nw;
+		nwVersion = nwVersion.replace(/^[^0-9]*/, '');
+		nwVersion = nwVersion.replace(/\-[\s\S]*$/, '');
+		return nwVersion;
+	})(packageJson),
 	flavor: 'sdk',
 	macIcns: './app/common/images/appicon-osx.icns',
 	// winIco: './app/common/images/appicon-win.ico',

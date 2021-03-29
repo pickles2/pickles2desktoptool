@@ -92,6 +92,7 @@ Mac で Windows 版をビルドするにあたり、次の環境が必要です�
 
 ### Pickles 2 v2.0.0-beta.29 (リリース日未定)
 
+- Update NW.js to v0.52.1
 - ファイルとフォルダ機能のUIを改善した。
 
 ### Pickles 2 v2.0.0-beta.28 (2021年3月6日)

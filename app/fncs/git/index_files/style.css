@@ -1,0 +1,21 @@
+html, body {
+  margin: 0;
+  border: 0;
+  height: 100%;
+  width: 100%; }
+
+body {
+  display: flex;
+  flex-direction: column; }
+  body > .theme-h1-container {
+    flex-shrink: 0; }
+  body > .theme-main-container {
+    display: flex;
+    flex-direction: column;
+    height: 100px;
+    flex-grow: 10; }
+    body > .theme-main-container > .contents {
+      display: flex;
+      flex-direction: column;
+      height: 100px;
+      flex-grow: 10; }

@@ -1,1 +1,33 @@
-@charset "utf-8";
+html, body{
+	margin: 0;
+	border: 0;
+	height: 100%;
+	width: 100%;
+}
+body{
+	display: flex;
+	flex-direction: column;
+	> .theme-h1-container{
+		flex-shrink: 0;
+	}
+	> .theme-main-container{
+		display: flex;
+		flex-direction: column;
+		height: 100px;
+		flex-grow: 10;
+
+		> .contents{
+			display: flex;
+			flex-direction: column;
+			height: 100px;
+			flex-grow: 10;
+
+			// > #cont_finder{
+			// 	overflow: auto;
+			// 	z-index: 1;
+			// 	height: 100px;
+			// 	flex-grow: 10;
+			// }
+		}
+	}
+}

@@ -7,10 +7,6 @@ window.contApp = new (function(){
 	var status = pj.status();
 	var $cont,
 		$btnGitInit,
-		$btnGitStatus,
-		$btnGitPull,
-		$btnGitCommit,
-		$btnGitPush,
 		$pre;
 
 	/**
@@ -18,11 +14,7 @@ window.contApp = new (function(){
 	 */
 	function init(){
 		$cont = $('.contents').html('');
-		$btnGitInit = $('<button class="btn px2-btn">');
-		$btnGitStatus = $('<button class="btn px2-btn">');
-		$btnGitPull = $('<button class="btn px2-btn">');
-		$btnGitCommit = $('<button class="btn px2-btn">');
-		$btnGitPush = $('<button class="btn px2-btn">');
+		$btnGitInit = $('<button class="px2-btn">');
 		$pre = $('<pre>');
 
 		if( !status.gitDirExists ){
@@ -30,8 +22,10 @@ window.contApp = new (function(){
 			$cont
 				.append( $($('#template-toInitialize-message').html()) )
 				.append( $btnGitInit
-					.on('click', function(){ git_init(this); } )
-					.text('gitを初期化する')
+					.on('click', function(){
+						git_init(this);
+					} )
+					.text('Gitを初期化する')
 					.css({
 						'width':'100%'
 					})

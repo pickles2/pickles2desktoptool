@@ -40,7 +40,6 @@ module.exports = function(main, contApp, $){
 				.on('click', function(){
 					// これがセットアップ完了の最後の処理
 					main.closeDialog();
-					opt.success();
 					opt.complete();
 				})
 				.attr({'disabled':'disabled'})

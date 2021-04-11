@@ -267,11 +267,6 @@ window.contApp = new (function(){
 		}
 
 		_this.installer[method].install( pj, param, {
-			"success": function(){
-			},
-			"error": function(errorMessage){
-				console.error(errorMessage);
-			},
 			"complete": function(){
 				var currentPjId = pj.projectId;
 				main.deselectProject();

@@ -88,7 +88,6 @@ module.exports = function(main, contApp, $){
 							.text('閉じる')
 							.on('click', function(){
 								main.closeDialog();
-								opt.success();
 								opt.complete();
 							});
 					}else{
@@ -232,7 +231,6 @@ module.exports = function(main, contApp, $){
 									},
 									function(it2){
 										main.progress.close();
-										opt.success();
 										opt.complete();
 										it2.next();
 									}

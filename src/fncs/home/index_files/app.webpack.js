@@ -252,7 +252,7 @@ window.contApp = new (function(){
 	}
 
 	/**
-	 * Pickles2 クリーンインストール
+	 * Pickles 2 クリーンインストール
 	 */
 	function install(form){
 		var btn = $(form).find('button');
@@ -267,14 +267,18 @@ window.contApp = new (function(){
 		}
 
 		_this.installer[method].install( pj, param, {
-			complete: function(){
-				$(btn).removeAttr('disabled');
+			"success": function(){
+			},
+			"error": function(errorMessage){
+				console.error(errorMessage);
+			},
+			"complete": function(){
 				var currentPjId = pj.projectId;
 				main.deselectProject();
 				main.selectProject( currentPjId, function(){
 					main.subapp();
 				} );
-			}
+			},
 		} );
 	}
 

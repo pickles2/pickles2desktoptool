@@ -8,7 +8,7 @@ module.exports = function(main, contApp, $){
 	this.install = function( pj, param, opt ){
 		_this.pj = pj;
 		setup_composer_create_project_dialog(param, opt);
-		return this;
+		return;
 	}
 
 	/**
@@ -88,6 +88,7 @@ module.exports = function(main, contApp, $){
 							.text('閉じる')
 							.on('click', function(){
 								main.closeDialog();
+								opt.success();
 								opt.complete();
 							});
 					}else{
@@ -200,39 +201,40 @@ module.exports = function(main, contApp, $){
 								main.progress.start({"showProgressBar":true, 'blindness':true});
 
 								main.it79.fnc({}, [
-									function(it1){
+									function(it2){
 										finalize_composerJson(finalizeOptions, function(result){
 											if( !result ){
 												alert('composer.json の初期化に失敗しました。');
 											}
-											it1.next();
+											it2.next();
 										});
 									},
-									function(it1){
+									function(it2){
 										finalize_readme(function(result){
 											if( !result ){
 												alert('README.md の初期化に失敗しました。');
 											}
-											it1.next();
+											it2.next();
 										});
 									},
-									function(it1){
+									function(it2){
 										if( !finalizeOptions.git_init ){
 											// Gitリポジトリの初期化をスキップする場合
-											it1.next();
+											it2.next();
 											return;
 										}
 										finalize_git_init(finalizeOptions, function(result){
 											if( !result ){
 												alert('Gitの初期化に失敗しました。');
 											}
-											it1.next();
+											it2.next();
 										});
 									},
-									function(it1){
+									function(it2){
 										main.progress.close();
+										opt.success();
 										opt.complete();
-										it1.next();
+										it2.next();
 									}
 								]);
 							})

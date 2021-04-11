@@ -40,6 +40,7 @@ module.exports = function(main, contApp, $){
 				.on('click', function(){
 					// これがセットアップ完了の最後の処理
 					main.closeDialog();
+					opt.success();
 					opt.complete();
 				})
 				.attr({'disabled':'disabled'})
@@ -75,6 +76,7 @@ module.exports = function(main, contApp, $){
 							$pre.text(stdout);
 						},
 						'stderr': function(message){
+							console.error('git clone Error:', message);
 							var errMsg = '';
 							for(var idx in message.data){
 								errMsg += message.data[idx];
@@ -92,9 +94,15 @@ module.exports = function(main, contApp, $){
 
 			} ,
 			function(it, prop){
+				if( pj.get_realpath_composer_root() === false ){
+					$msg.text('composer.json がありません。依存パッケージを解決できません。');
+					it.next(prop);
+					return;
+				}
+
 				main.commandQueue.server.setCurrentDir('composer', pj.get_realpath_composer_root());
 				main.commandQueue.server.setCurrentDir('git', pj.get_realpath_git_root());
-				$msg.text('composer により依存パッケージをセットアップしています。この処理はしばらく時間がかかります。');
+				$msg.text('Composer により依存パッケージをセットアップしています。この処理はしばらく時間がかかります。');
 
 				main.commandQueue.client.addQueueItem(
 					[
@@ -129,7 +137,7 @@ module.exports = function(main, contApp, $){
 							main.log('composer install Error: '+ errMsg);
 						},
 						'close': function(message){
-							$msg.text('Pickles のセットアップが完了しました。');
+							$msg.text('Pickles 2 のセットアップが完了しました。');
 							it.next(prop);
 							return;
 						}
@@ -142,7 +150,7 @@ module.exports = function(main, contApp, $){
 			}
 		]).start({param: param});
 
-		return this;
+		return;
 	}
 
 };

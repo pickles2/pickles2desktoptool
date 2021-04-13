@@ -11153,6 +11153,7 @@ module.exports = function(Px2style){
 				'z-index': 1000000,
 			})
 		;
+
 		var additionalClassName = this.getConfig('additionalClassName');
 		if( additionalClassName ){
 			$modal.addClass(additionalClassName);
@@ -11224,7 +11225,6 @@ module.exports = function(Px2style){
 		var $target = $(this.options.target);
 		$target.append($modal);
 
-
 		if( $target.get(0).tagName.toLowerCase() == 'body' ){
 			// body に挿入する場合は、 fixed に。
 			this.$modal.css({
@@ -11255,6 +11255,29 @@ module.exports = function(Px2style){
 
 		onWindowResize();
 		tabkeyControl(this.$modal);
+
+
+		this.lock = function(){
+			var $formElms = this.$modal.find('input,select,textarea,button');
+			$formElms.each(function(idx, elm){
+				var $elm = $(elm);
+				var isDisabled = !!$elm.attr('disabled');
+				if( !isDisabled ){
+					$elm.attr({
+						'data-px2-modal-locked': true,
+						'disabled': true
+					});
+				}
+			});
+		}
+		this.unlock = function(){
+			var $formElms = this.$modal.find('[data-px2-modal-locked]');
+			$formElms
+				.removeAttr('data-px2-modal-locked')
+				.removeAttr('disabled')
+			;
+		}
+
 
 		this.closable = function( toggle ){
 			isClosable = !!toggle;

@@ -18,18 +18,13 @@ module.exports = function( main, pj, callbackOnFinished ) {
 	$form.find('.error_external_preview_server_origin').html('');
 	$form.find('.error_external_app_server_origin').html('');
 
-	main.dialog( {
-		title: 'プロジェクト個人設定を編集',
-		body: $form ,
-		buttons: [
-			$('<button>')
-				.text(main.lb.get('ui_label.cancel'))
-				.on('click', function(){
-					main.closeDialog();
-					callbackOnFinished();
-				} ) ,
+	main.px2style.modal( {
+		"title": 'プロジェクト個人設定を編集',
+		"body": $form ,
+		"buttons": [
 			$('<button>')
 				.text('OK')
+				.addClass('px2-btn')
 				.addClass('px2-btn--primary')
 				.on('click', function(){
 					$form.find('.error_name').html('');
@@ -72,12 +67,22 @@ module.exports = function( main, pj, callbackOnFinished ) {
 					px2dtLDA_pj.setExtendedData('external_app_server_origin', (newProjectInfo.external_app_server_origin || undefined));
 
 					main.save(function(){
-						main.closeDialog();
+						main.px2style.closeModal();
 						main.message('プロジェクト情報を更新しました。');
-						callbackOnFinished();
 					});
 				} )
-		]
+		],
+		"buttonsSecondary": [
+			$('<button>')
+				.text(main.lb.get('ui_label.cancel'))
+				.addClass('px2-btn')
+				.on('click', function(){
+					main.px2style.closeModal();
+				} ) ,
+		],
+		"onclose": function(){
+			callbackOnFinished();
+		}
 	} );
 
 };

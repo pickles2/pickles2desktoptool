@@ -50,6 +50,41 @@ window.contApp = new (function(){
 				it.next(arg);
 			} ,
 			function(it, arg){
+				// Git Remote URL を取得して表示する
+				if( !status.gitDirExists ){
+					// `git init` されていない場合
+					$('.tpl_git_remote_url').text( '' );
+					it.next(arg);
+					return;
+				}
+
+				pj.git().parser.git(['remote', '-v'], function(result){
+					console.log('$ git remote -v;', result);
+					var remoteUrl = '';
+					try {
+						// まずは `origin` を探す
+						for( var idx = 0; idx < result.remotes.length; idx ++ ){
+							remoteUrl = result.remotes[idx].fetch;
+							if( result.remotes[idx].name == 'origin' ){
+								break;
+							}
+						}
+						if( !remoteUrl ){
+							// `origin` が見つかっていなければ、最初のリモートを採用
+							for( var idx = 0; idx < result.remotes.length; idx ++ ){
+								remoteUrl = result.remotes[idx].fetch;
+								break;
+							}
+						}
+					} catch(e){
+						console.error(e);
+					}
+					$('.tpl_git_remote_url').text( remoteUrl );
+					it.next(arg);
+				});
+
+			} ,
+			function(it, arg){
 				var statusTable = main.utils.bindEjs( templates['status-table'], {'status': status} );
 				$('.tpl_status_table').html( statusTable );
 				it.next(arg);

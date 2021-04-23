@@ -184,6 +184,12 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 	 */
 	this.updateGitStatus = function( callback ){
 		callback = callback || function(){};
+		if( !this.status().gitDirExists ){
+			_this.updateStatusBar(function(){
+				callback();
+			});
+			return;
+		}
 		_this.git().parser.git(['status','-uall'], function(result){
 			// console.log(result);
 			_gitStatus = result;

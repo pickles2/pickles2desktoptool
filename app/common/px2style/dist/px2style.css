@@ -226,6 +226,7 @@
   text-align: left; }
   .px2-table th,
   .px2-table td {
+    vertical-align: top;
     border: 1px solid #999999;
     background: #f9f9f9;
     padding: 10px; }
@@ -903,6 +904,7 @@ input[type=month].px2-input,
 input[type=week].px2-input,
 input[type=time].px2-input,
 input[type=color].px2-input,
+input[type=file].px2-input,
 input[type=datetime-local].px2-input,
 textarea.px2-input,
 select.px2-input {
@@ -934,6 +936,7 @@ select.px2-input {
   input[type=week].px2-input:focus,
   input[type=time].px2-input:focus,
   input[type=color].px2-input:focus,
+  input[type=file].px2-input:focus,
   input[type=datetime-local].px2-input:focus,
   textarea.px2-input:focus,
   select.px2-input:focus {
@@ -955,6 +958,7 @@ select.px2-input {
   input[type=week].px2-input[readonly],
   input[type=time].px2-input[readonly],
   input[type=color].px2-input[readonly],
+  input[type=file].px2-input[readonly],
   input[type=datetime-local].px2-input[readonly],
   textarea.px2-input[readonly],
   select.px2-input[readonly] {
@@ -972,6 +976,7 @@ select.px2-input {
     input[type=week].px2-input[readonly]:focus,
     input[type=time].px2-input[readonly]:focus,
     input[type=color].px2-input[readonly]:focus,
+    input[type=file].px2-input[readonly]:focus,
     input[type=datetime-local].px2-input[readonly]:focus,
     textarea.px2-input[readonly]:focus,
     select.px2-input[readonly]:focus {
@@ -990,6 +995,7 @@ select.px2-input {
   input[type=week].px2-input[disabled],
   input[type=time].px2-input[disabled],
   input[type=color].px2-input[disabled],
+  input[type=file].px2-input[disabled],
   input[type=datetime-local].px2-input[disabled],
   textarea.px2-input[disabled],
   select.px2-input[disabled] {
@@ -1008,6 +1014,7 @@ select.px2-input {
   input[type=week].px2-input--block,
   input[type=time].px2-input--block,
   input[type=color].px2-input--block,
+  input[type=file].px2-input--block,
   input[type=datetime-local].px2-input--block,
   textarea.px2-input--block,
   select.px2-input--block {
@@ -1026,6 +1033,7 @@ select.px2-input {
   input[type=week].px2-input--error,
   input[type=time].px2-input--error,
   input[type=color].px2-input--error,
+  input[type=file].px2-input--error,
   input[type=datetime-local].px2-input--error,
   textarea.px2-input--error,
   select.px2-input--error {
@@ -1083,7 +1091,7 @@ select.px2-input {
     border-collapse: collapse;
     width: 100%;
     box-sizing: border-box;
-    border: 1px solid #dee2e6;
+    border: 1px solid #999999;
     margin: 0;
     padding: 0; }
     .px2-form-input-list ul.px2-form-input-list__ul li.px2-form-input-list__li {
@@ -1093,16 +1101,19 @@ select.px2-input {
       padding: 0; }
       .px2-form-input-list ul.px2-form-input-list__ul li.px2-form-input-list__li .px2-form-input-list__label {
         display: table-cell;
-        background-color: #f9f9f9;
+        vertical-align: top;
+        background-color: #e7e7e7;
         font-weight: bold;
         padding: 0.4em 1em;
         width: 30%;
-        border: 1px solid #dee2e6; }
+        border: 1px solid #999999; }
       .px2-form-input-list ul.px2-form-input-list__ul li.px2-form-input-list__li .px2-form-input-list__input {
         display: table-cell;
+        vertical-align: top;
+        background-color: #f9f9f9;
         padding: 0.4em 1em;
         width: 70%;
-        border: 1px solid #dee2e6; }
+        border: 1px solid #999999; }
       .px2-form-input-list ul.px2-form-input-list__ul li.px2-form-input-list__li--required .px2-form-input-list__label::after {
         content: "*";
         color: #e11;
@@ -1519,6 +1530,7 @@ select.px2-input {
   .px2-darkmode input[type=week].px2-input,
   .px2-darkmode input[type=time].px2-input,
   .px2-darkmode input[type=color].px2-input,
+  .px2-darkmode input[type=file].px2-input,
   .px2-darkmode input[type=datetime-local].px2-input,
   .px2-darkmode textarea.px2-input,
   .px2-darkmode select.px2-input {
@@ -1538,6 +1550,7 @@ select.px2-input {
     .px2-darkmode input[type=week].px2-input:focus,
     .px2-darkmode input[type=time].px2-input:focus,
     .px2-darkmode input[type=color].px2-input:focus,
+    .px2-darkmode input[type=file].px2-input:focus,
     .px2-darkmode input[type=datetime-local].px2-input:focus,
     .px2-darkmode textarea.px2-input:focus,
     .px2-darkmode select.px2-input:focus {
@@ -1558,6 +1571,7 @@ select.px2-input {
     .px2-darkmode input[type=week].px2-input[readonly],
     .px2-darkmode input[type=time].px2-input[readonly],
     .px2-darkmode input[type=color].px2-input[readonly],
+    .px2-darkmode input[type=file].px2-input[readonly],
     .px2-darkmode input[type=datetime-local].px2-input[readonly],
     .px2-darkmode textarea.px2-input[readonly],
     .px2-darkmode select.px2-input[readonly] {
@@ -1576,6 +1590,7 @@ select.px2-input {
       .px2-darkmode input[type=week].px2-input[readonly]:focus,
       .px2-darkmode input[type=time].px2-input[readonly]:focus,
       .px2-darkmode input[type=color].px2-input[readonly]:focus,
+      .px2-darkmode input[type=file].px2-input[readonly]:focus,
       .px2-darkmode input[type=datetime-local].px2-input[readonly]:focus,
       .px2-darkmode textarea.px2-input[readonly]:focus,
       .px2-darkmode select.px2-input[readonly]:focus {
@@ -1594,6 +1609,7 @@ select.px2-input {
     .px2-darkmode input[type=week].px2-input[disabled],
     .px2-darkmode input[type=time].px2-input[disabled],
     .px2-darkmode input[type=color].px2-input[disabled],
+    .px2-darkmode input[type=file].px2-input[disabled],
     .px2-darkmode input[type=datetime-local].px2-input[disabled],
     .px2-darkmode textarea.px2-input[disabled],
     .px2-darkmode select.px2-input[disabled] {
@@ -1612,6 +1628,7 @@ select.px2-input {
     .px2-darkmode input[type=week].px2-input--error,
     .px2-darkmode input[type=time].px2-input--error,
     .px2-darkmode input[type=color].px2-input--error,
+    .px2-darkmode input[type=file].px2-input--error,
     .px2-darkmode input[type=datetime-local].px2-input--error,
     .px2-darkmode textarea.px2-input--error,
     .px2-darkmode select.px2-input--error {
@@ -1622,3 +1639,13 @@ select.px2-input {
     color: #ccc;
     background-color: #333;
     border: 1px solid #555; }
+  .px2-darkmode .px2-form-input-list {
+    color: #ccc; }
+    .px2-darkmode .px2-form-input-list ul.px2-form-input-list__ul {
+      border: 1px solid #666; }
+      .px2-darkmode .px2-form-input-list ul.px2-form-input-list__ul li.px2-form-input-list__li .px2-form-input-list__label {
+        background-color: #191919;
+        border: 1px solid #666; }
+      .px2-darkmode .px2-form-input-list ul.px2-form-input-list__ul li.px2-form-input-list__li .px2-form-input-list__input {
+        background-color: #242424;
+        border: 1px solid #666; }

@@ -257,16 +257,16 @@
         },
         {
             "name": "tomk79/filesystem",
-            "version": "1.0.11",
+            "version": "1.0.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tomk79/filesystem.git",
-                "reference": "68b35d6d5808c46a46673bd1440aa6d09677ce3d"
+                "reference": "7cc43e524faa226f4d38d1607288fc306ad9225c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tomk79/filesystem/zipball/68b35d6d5808c46a46673bd1440aa6d09677ce3d",
-                "reference": "68b35d6d5808c46a46673bd1440aa6d09677ce3d",
+                "url": "https://api.github.com/repos/tomk79/filesystem/zipball/7cc43e524faa226f4d38d1607288fc306ad9225c",
+                "reference": "7cc43e524faa226f4d38d1607288fc306ad9225c",
                 "shasum": ""
             },
             "require": {
@@ -278,9 +278,11 @@
             },
             "type": "library",
             "autoload": {
-                "files": [
-                    "php/filesystem.php"
-                ]
+                "psr-4": {
+                    "tomk79\\": [
+                        "php"
+                    ]
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -299,9 +301,9 @@
             ],
             "support": {
                 "issues": "https://github.com/tomk79/filesystem/issues",
-                "source": "https://github.com/tomk79/filesystem/tree/1.0.11"
+                "source": "https://github.com/tomk79/filesystem/tree/1.0.12"
             },
-            "time": "2020-10-17T13:46:31+00:00"
+            "time": "2021-04-23T11:31:20+00:00"
         },
         {
             "name": "tomk79/phpgit",
@@ -354,16 +356,16 @@
         },
         {
             "name": "tomk79/request",
-            "version": "1.1.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tomk79/request.git",
-                "reference": "fb9120babe4eba8daba947d74101f677d970e85b"
+                "reference": "c42a39777a21f5cda205675cc953c92c366ab630"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tomk79/request/zipball/fb9120babe4eba8daba947d74101f677d970e85b",
-                "reference": "fb9120babe4eba8daba947d74101f677d970e85b",
+                "url": "https://api.github.com/repos/tomk79/request/zipball/c42a39777a21f5cda205675cc953c92c366ab630",
+                "reference": "c42a39777a21f5cda205675cc953c92c366ab630",
                 "shasum": ""
             },
             "require": {
@@ -376,9 +378,11 @@
             },
             "type": "library",
             "autoload": {
-                "files": [
-                    "php/request.php"
-                ]
+                "psr-4": {
+                    "tomk79\\": [
+                        "php"
+                    ]
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -393,9 +397,9 @@
             "description": "A request management utilitiy for PHP.",
             "support": {
                 "issues": "https://github.com/tomk79/request/issues",
-                "source": "https://github.com/tomk79/request/tree/1.1.0"
+                "source": "https://github.com/tomk79/request/tree/1.1.1"
             },
-            "time": "2020-06-21T05:22:44+00:00"
+            "time": "2021-04-23T11:38:19+00:00"
         }
     ],
     "packages-dev": [

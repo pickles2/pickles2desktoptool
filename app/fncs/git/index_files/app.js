@@ -36,16 +36,50 @@ window.contApp = new (function(){
 
 			var $elm = document.querySelector('.contents');
 			var gitUi79 = new GitUi79( $elm, function( cmdAry, callback ){
-				pj.git().parser.git(cmdAry, function(result){
-					// console.log(result);
-					result.stdout = (function(str){
-						str = str.replace(/((?:[a-zA-Z\-\_]+))\:\/\/([^\s\/\\]*?\:)([^\s\/\\]*)\@/gi, '$1://$2********@');
-						return str;
-					})(result.stdout);
-					pj.updateGitStatus(function(){
-						callback(result.code, result.stdout);
-					});
-				});
+
+				var cmd = JSON.parse(JSON.stringify(cmdAry));
+				cmd.unshift(main.cmd('git'));
+
+				// PHPスクリプトを実行する
+				var stdout = '';
+				var stderr = '';
+				main.commandQueue.client.addQueueItem(
+					cmd,
+					{
+						'cdName': 'default',
+						'tags': [
+							'pj-'+pj.get('id'),
+							'project-git'
+						],
+						'accept': function(queueId){
+							// console.log(queueId);
+						},
+						'open': function(message){
+						},
+						'stdout': function(message){
+							for(var idx in message.data){
+								stdout += message.data[idx];
+							}
+						},
+						'stderr': function(message){
+							for(var idx in message.data){
+								stdout += message.data[idx];
+								stderr += message.data[idx];
+								console.error(message.data[idx]);
+							}
+						},
+						'close': function(message){
+							var code = message.data;
+							// console.log(stdout, stderr, code);
+							callback(code, stdout);
+							if( cmdAry[0] == 'status' ){
+								pj.updateGitStatus(function(){});
+							}
+							return;
+						}
+					}
+				);
+
 			}, {} );
 			gitUi79.init(function(){
 				window.px2style.closeLoading();

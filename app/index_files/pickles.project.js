@@ -807,25 +807,6 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 	} // getContentFilesByPageContent
 
 	/**
-	 * コンテンツの種類(編集モード)を変更する (非同期)
-	 */
-	this.changeContentEditorMode = function( pagePath, editorModeTo, callback ){
-		callback = callback || function(){};
-		_px2proj.query(
-			this.getConcretePath(pagePath)+'?PX=px2dthelper.change_content_editor_mode&editor_mode='+editorModeTo, {
-				"output": "json",
-				"complete": function(data, code){
-					// console.log(data, code);
-					var rtn = JSON.parse(data);
-					callback(rtn);
-					return;
-				}
-			}
-		);
-		return;
-	}
-
-	/**
 	 * 具体的なパスを取得する
 	 */
 	this.getConcretePath = function(pagePath){

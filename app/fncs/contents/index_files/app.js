@@ -4878,19 +4878,28 @@ module.exports = function(app, px, pj, $elms, contentsComment, wasabiComment){
 										$('<button class="px2-btn px2-btn--primary">')
 											.text('OK')
 											.on('click', function(){
-												var val = $body.find('input[name=proc_type]:checked').val();
-												pj.changeContentEditorMode( $this.attr('data-path'), val, function(result){
-													if( !result[0] ){
-														alert('編集モードの変更に失敗しました。'+result[1]);
-														return;
+												var pagePath = $this.attr('data-path');
+												var editorModeTo = $body.find('input[name=proc_type]:checked').val();
+												pj.px2proj.query(
+													pj.getConcretePath(pagePath)+'?PX=px2dthelper.change_content_editor_mode&editor_mode='+editorModeTo, {
+														"output": "json",
+														"complete": function(data, code){
+															// console.log(data, code);
+															var result = JSON.parse(data);
+															if( !result[0] ){
+																alert('編集モードの変更に失敗しました。'+result[1]);
+																return;
+															}
+															app.loadPreview( app.getCurrentPagePath(), {"force":true}, function(){
+																_this.redraw(pj_info, {}, function(){
+																	pj.updateGitStatus();
+																	px2style.closeModal();
+																});
+															} );
+															return;
+														}
 													}
-													app.loadPreview( app.getCurrentPagePath(), {"force":true}, function(){
-														_this.redraw(pj_info, {}, function(){
-															pj.updateGitStatus();
-															px2style.closeModal();
-														});
-													} );
-												} )
+												);
 											})
 									],
 									'buttonsSecondary': [

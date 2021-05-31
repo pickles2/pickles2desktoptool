@@ -373,7 +373,7 @@ module.exports = function(app, px, pj, $elms, contentsComment, wasabiComment){
 									$tbl.append($row);
 								}
 
-								px.dialog({
+								px2style.modal({
 									title: 'ページ情報を表示',
 									body: $('<div>')
 										.append( $('<p>').text('ページ「'+pagePath+'」の情報を確認できます。'))
@@ -681,15 +681,10 @@ module.exports = function(app, px, pj, $elms, contentsComment, wasabiComment){
 									.append( $('#template-change-proctype').html() )
 								;
 								$body.find('input[name=proc_type]').val( [$this.attr('data-proc_type')] );
-								px.dialog({
+								px2style.modal({
 									'title': '編集方法を変更する',
 									'body': $body,
 									'buttons':[
-										$('<button class="px2-btn">')
-											.text(px.lb.get('ui_label.cancel'))
-											.on('click', function(){
-												px.closeDialog();
-											}),
 										$('<button class="px2-btn px2-btn--primary">')
 											.text('OK')
 											.on('click', function(){
@@ -702,11 +697,18 @@ module.exports = function(app, px, pj, $elms, contentsComment, wasabiComment){
 													app.loadPreview( app.getCurrentPagePath(), {"force":true}, function(){
 														_this.redraw(pj_info, {}, function(){
 															pj.updateGitStatus();
-															px.closeDialog();
+															px2style.closeModal();
 														});
 													} );
 												} )
 											})
+									],
+									'buttonsSecondary': [
+										$('<button class="px2-btn">')
+											.text(px.lb.get('ui_label.cancel'))
+											.on('click', function(){
+												px2style.closeModal();
+											}),
 									]
 								});
 								return false;

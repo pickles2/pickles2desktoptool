@@ -305,7 +305,7 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 				_config = false;
 				_px2DTConfig = false;
 				_this.px2dthelperGetAll('/', {'filter': false}, function(pjInfo){
-					// console.log(pjInfo);
+					// console.log('=-=-=-=-=-=', pjInfo);
 					if(pjInfo === false){
 						console.error('FAILED to getting data from "/?PX=px2dthelper.get.all"');
 						rlv();
@@ -337,6 +337,14 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 						try{
 							if( pjInfo.custom_console_extensions ){
 								status.customConsoleExtensions = pjInfo.custom_console_extensions;
+							}
+						}catch(e){
+						}
+
+						status.mainMenu = false;
+						try{
+							if( _px2DTConfig.main_menu ){
+								status.mainMenu = _px2DTConfig.main_menu;
 							}
 						}catch(e){
 						}

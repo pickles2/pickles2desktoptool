@@ -129,11 +129,41 @@ module.exports = function(main){
 				mainMenu[cpj_s.mainMenu[idx]] = true;
 			}
 		}
+		var _overwritableMenuItems = getOverwritableMenuDefinition();
 
 
-		let _overwritableMenuItems = getOverwritableMenuDefinition();
+		if( cpj_s && cpj_s.customConsoleExtensions ){
+			// Custom Console Extensions によるメニューの上書き
+			for(var cce_id in cpj_s.customConsoleExtensions){
+				if( _overwritableMenuItems[cce_id] ){
+					var cceInfo = cpj_s.customConsoleExtensions[cce_id];
+					if( !cpj_s.customConsoleExtensions[cce_id].class_name && !cpj_s.customConsoleExtensions[cce_id].client_initialize_function ){
+						cpj_s.customConsoleExtensions[cce_id] = false;
+						_overwritableMenuItems[cce_id] = false;
+						continue;
+					}
+					var appPath = 'fncs/custom_console_extensions/index.html?cce_id='+encodeURIComponent(cce_id);
+					_overwritableMenuItems[cce_id].label = cceInfo.label;
+					_overwritableMenuItems[cce_id].app = appPath;
+					_overwritableMenuItems[cce_id].attr = {
+						"data-app-path": appPath,
+					};
+					_overwritableMenuItems[cce_id].href = undefined;
+					_overwritableMenuItems[cce_id].click = function(){
+						var $this = $(this);
+						main.subapp( $this.attr('data-app-path') );
+					};
+
+					cpj_s.customConsoleExtensions[cce_id] = false;
+				}
+			}
+		}
+
 
 		function addMenuItem( menuItem, $parent ){
+			if( !menuItem ){
+				return;
+			}
 			if( menuItem.cond == 'projectSelected' ){
 				if( cpj === null ){
 					return;
@@ -158,11 +188,11 @@ module.exports = function(main){
 				return;
 			}
 
+			var attr = menuItem.attr || {};
+			attr['href'] = (menuItem.href || "javascript:;");
+			attr['data-name'] = menuItem.app;
 			var $tmpMenu = $('<a>')
-				.attr({
-					"href":(menuItem.href || "javascript:;"),
-					"data-name": menuItem.app
-				})
+				.attr(attr)
 				.text(menuItem.label)
 				.data('app', menuItem.app)
 				.addClass( ( _current_app==menuItem.app ? 'current' : '' ) )
@@ -246,6 +276,7 @@ module.exports = function(main){
 				}
 			});
 		}
+
 
 		if( cpj !== null && cpj_s.isPxStandby ){
 			addMenuItem( _overwritableMenuItems['*modules'] );
@@ -404,6 +435,9 @@ module.exports = function(main){
 			var $cceLi = $('<li>');
 			for(var cce_id in cpj_s.customConsoleExtensions){
 				var cceInfo = cpj_s.customConsoleExtensions[cce_id];
+				if( !cceInfo ){
+					 continue;
+				}
 				var appPath = 'fncs/custom_console_extensions/index.html?cce_id='+encodeURIComponent(cce_id);
 				$cceLi.append(
 					$('<a>')

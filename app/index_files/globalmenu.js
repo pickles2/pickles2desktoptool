@@ -90,15 +90,6 @@ module.exports = function(main){
 					main.subapp($(this).data('app'));
 				}
 			},
-			'*files-and-folders': {
-				"label":main.lb.get('menu.filesAndFolders'),
-				"cond":"homeDirExists",
-				"area":"shoulder",
-				"app":"fncs/files_and_folders/index.html",
-				"click": function(){
-					main.subapp($(this).data('app'));
-				}
-			},
 		};
 
 		return _overwritableMenuItems;
@@ -454,7 +445,15 @@ module.exports = function(main){
 		}
 
 		if( cpj !== null && cpj_s.homeDirExists ){
-			addMenuItem( _overwritableMenuItems['*files-and-folders'] );
+			addMenuItem( {
+				"label":main.lb.get('menu.filesAndFolders'),
+				"cond":"homeDirExists",
+				"area":"shoulder",
+				"app":"fncs/files_and_folders/index.html",
+				"click": function(){
+					main.subapp($(this).data('app'));
+				}
+			} );
 		}
 
 		// addMenuItem( {
@@ -535,6 +534,7 @@ module.exports = function(main){
 				}
 			});
 		}
+
 		addMenuItem( {
 			"label":main.lb.get('menu.help'),
 			"cond":"always",
@@ -544,6 +544,7 @@ module.exports = function(main){
 				main.openHelp();
 			}
 		});
+
 		addMenuItem( {
 			"label":main.lb.get('menu.exit'),
 			"cond":"always",

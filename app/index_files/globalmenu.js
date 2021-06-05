@@ -23,7 +23,6 @@ module.exports = function(main){
 				"id":"*home",
 				"label":main.lb.get('menu.home'),
 				"cond":"projectSelected",
-				"area":"mainmenu",
 				"app":"fncs/home/index.html",
 				"href":"javascript:main.subapp();"
 			},
@@ -31,7 +30,6 @@ module.exports = function(main){
 				"id":"*sitemaps",
 				"label":main.lb.get('menu.sitemaps'),
 				"cond":"pxStandby",
-				"area":"mainmenu",
 				"app":"fncs/sitemaps/index.html",
 				"href": "javascript:main.subapp('fncs/sitemaps/index.html');"
 			},
@@ -39,7 +37,6 @@ module.exports = function(main){
 				"id":"*themes",
 				"label":main.lb.get('menu.themes'),
 				"cond":"pxStandby",
-				"area":"mainmenu",
 				"app":"fncs/themes/index.html",
 				"href": "javascript:main.subapp('fncs/themes/index.html');"
 			},
@@ -47,7 +44,6 @@ module.exports = function(main){
 				"id":"*contents",
 				"label":main.lb.get('menu.contents'),
 				"cond":"pxStandby",
-				"area":"mainmenu",
 				"app":"fncs/contents/index.html",
 				"href": "javascript:main.subapp('fncs/contents/index.html');"
 			},
@@ -55,7 +51,6 @@ module.exports = function(main){
 				"id":"*publish",
 				"label":main.lb.get('menu.publish'),
 				"cond":"pxStandby",
-				"area":"mainmenu",
 				"app":"fncs/publish/index.html",
 				"href": "javascript:main.subapp('fncs/publish/index.html');"
 			},
@@ -63,7 +58,6 @@ module.exports = function(main){
 				"id":"*composer",
 				"label":main.lb.get('menu.composer'),
 				"cond":"composerJsonExists",
-				"area":"shoulder",
 				"app":"fncs/composer/index.html",
 				"click": function(){
 					main.subapp($(this).data('app'));
@@ -73,7 +67,6 @@ module.exports = function(main){
 				"id":"*modules",
 				"label":main.lb.get('menu.modules'),
 				"cond":"pxStandby",
-				"area":"shoulder",
 				"app":"fncs/modules/index.html",
 				"click": function(){
 					main.subapp($(this).data('app'));
@@ -83,7 +76,6 @@ module.exports = function(main){
 				"id":"*git",
 				"label":main.lb.get('menu.git'),
 				"cond":"homeDirExists",
-				"area":"shoulder",
 				"app":"fncs/git/index.html",
 				"click": function(){
 					main.subapp($(this).data('app'));
@@ -93,7 +85,6 @@ module.exports = function(main){
 				"id":"*clearcache",
 				"label":main.lb.get('menu.clearcache'),
 				"cond":"pxStandby",
-				"area":"shoulder",
 				"app":"fncs/clearcache/index.html",
 				"click": function(){
 					main.subapp($(this).data('app'));
@@ -135,27 +126,30 @@ module.exports = function(main){
 		if( cpj_s && cpj_s.customConsoleExtensions ){
 			// Custom Console Extensions によるメニューの上書き
 			for(var cce_id in cpj_s.customConsoleExtensions){
-				if( _overwritableMenuItems[cce_id] ){
-					var cceInfo = cpj_s.customConsoleExtensions[cce_id];
-					if( !cpj_s.customConsoleExtensions[cce_id].class_name && !cpj_s.customConsoleExtensions[cce_id].client_initialize_function ){
-						cpj_s.customConsoleExtensions[cce_id] = false;
-						_overwritableMenuItems[cce_id] = false;
-						continue;
-					}
-					var appPath = 'fncs/custom_console_extensions/index.html?cce_id='+encodeURIComponent(cce_id);
-					_overwritableMenuItems[cce_id].label = cceInfo.label;
-					_overwritableMenuItems[cce_id].app = appPath;
-					_overwritableMenuItems[cce_id].attr = {
-						"data-app-path": appPath,
-					};
-					_overwritableMenuItems[cce_id].href = undefined;
-					_overwritableMenuItems[cce_id].click = function(){
-						var $this = $(this);
-						main.subapp( $this.attr('data-app-path') );
-					};
-
-					cpj_s.customConsoleExtensions[cce_id] = false;
+				if( !_overwritableMenuItems[cce_id] ){
+					_overwritableMenuItems[cce_id] = {};
+					_overwritableMenuItems[cce_id].id = cce_id;
+					_overwritableMenuItems[cce_id].cond = "pxStandby";
 				}
+
+				var cceInfo = cpj_s.customConsoleExtensions[cce_id];
+				if( !cpj_s.customConsoleExtensions[cce_id] || (!cpj_s.customConsoleExtensions[cce_id].class_name && !cpj_s.customConsoleExtensions[cce_id].client_initialize_function) ){
+					cpj_s.customConsoleExtensions[cce_id] = false;
+					_overwritableMenuItems[cce_id] = false;
+					continue;
+				}
+				var appPath = 'fncs/custom_console_extensions/index.html?cce_id='+encodeURIComponent(cce_id);
+				_overwritableMenuItems[cce_id].label = cceInfo.label;
+				_overwritableMenuItems[cce_id].app = appPath;
+				_overwritableMenuItems[cce_id].attr = {
+					"data-app-path": appPath,
+				};
+				_overwritableMenuItems[cce_id].href = undefined;
+				_overwritableMenuItems[cce_id].click = function(){
+					var $this = $(this);
+					main.subapp( $this.attr('data-app-path') );
+				};
+
 			}
 		}
 
@@ -220,6 +214,13 @@ module.exports = function(main){
 
 
 
+		// mainMenu に指定されているメニューを先に表示
+		for( var menuId in mainMenu ){
+			addMenuItem( _overwritableMenuItems[menuId] );
+			_overwritableMenuItems[menuId] = false;
+		}
+
+
 
 		if( cpj !== null ){
 			addMenuItem( _overwritableMenuItems['*home'] );
@@ -236,7 +237,6 @@ module.exports = function(main){
 			addMenuItem( {
 				"label":main.lb.get('menu.dashboard'),
 				"cond":"projectSelected",
-				"area":"shoulder",
 				"app":"index.html",
 				"click": function(){
 					main.deselectProject();
@@ -248,7 +248,6 @@ module.exports = function(main){
 			addMenuItem( {
 				"label":main.lb.get('menu.openFolder'),
 				"cond":"homeDirExists",
-				"area":"shoulder",
 				"app":null,
 				"click": function(){
 					main.getCurrentProject().open();
@@ -260,7 +259,6 @@ module.exports = function(main){
 			addMenuItem( {
 				"label":main.lb.get('menu.openInBrowser'),
 				"cond":"pxStandby",
-				"area":"shoulder",
 				"app":null,
 				"click": function(){
 					main.openInBrowser();
@@ -269,7 +267,6 @@ module.exports = function(main){
 			addMenuItem( {
 				"label":main.lb.get('menu.openAppInBrowser'),
 				"cond":"pxStandby",
-				"area":"shoulder",
 				"app":null,
 				"click": function(){
 					main.openAppInBrowser();
@@ -284,7 +281,6 @@ module.exports = function(main){
 			var $li = addMenuItem( {
 				"label":main.lb.get('menu.config'),
 				"cond":"pxStandby",
-				"area":"shoulder",
 			});
 			var $ul = $( '<ul>' );
 			$li.append($ul);
@@ -292,7 +288,6 @@ module.exports = function(main){
 			addMenuItem( {
 				"label":main.lb.get('menu.projectConfig'),
 				"cond":"pxStandby",
-				"area":"shoulder",
 				"app":"fncs/config/index.html",
 				"click": function(){
 					main.subapp($(this).data('app'));
@@ -301,7 +296,6 @@ module.exports = function(main){
 			addMenuItem( {
 				"label":main.lb.get('menu.projectIndividualConfig'),
 				"cond":"pxStandby",
-				"area":"shoulder",
 				"app":null,
 				"click": function(){
 					main.getCurrentProject().editProjectIndividualConfig();
@@ -310,7 +304,6 @@ module.exports = function(main){
 			addMenuItem( {
 				"label":_appName+" "+main.lb.get('menu.desktoptoolConfig'),
 				"cond":"always",
-				"area":"shoulder",
 				"app":null,
 				"click": function(){
 					main.editPx2DTConfig();
@@ -331,7 +324,6 @@ module.exports = function(main){
 			var $li = addMenuItem( {
 				"label":main.lb.get('menu.tool'),
 				"cond":"pxStandby",
-				"area":"shoulder",
 			});
 			var $ul = $( '<ul>' );
 			$li.append($ul);
@@ -339,7 +331,6 @@ module.exports = function(main){
 			addMenuItem( {
 				"label":main.lb.get('menu.styleguideGenerator'),
 				"cond":"pxStandby",
-				"area":"shoulder",
 				"app":"fncs/styleguide_generator/index.html",
 				"click": function(){
 					main.subapp($(this).data('app'));
@@ -348,7 +339,6 @@ module.exports = function(main){
 			addMenuItem( {
 				"label":main.lb.get('menu.mkContentFilesByList'),
 				"cond":"pxStandby",
-				"area":"shoulder",
 				"app":"fncs/make_content_files_by_list/index.html",
 				"click": function(){
 					main.subapp($(this).data('app'));
@@ -357,7 +347,6 @@ module.exports = function(main){
 			addMenuItem( {
 				"label":main.lb.get('menu.mkContentFileList'),
 				"cond":"pxStandby",
-				"area":"shoulder",
 				"app":"fncs/make_content_file_list/index.html",
 				"click": function(){
 					main.subapp($(this).data('app'));
@@ -366,7 +355,6 @@ module.exports = function(main){
 			addMenuItem( {
 				"label":main.lb.get('menu.contentsProcessor'),
 				"cond":"pxStandby",
-				"area":"shoulder",
 				"app":"fncs/contents_processor/index.html",
 				"click": function(){
 					main.subapp($(this).data('app'));
@@ -375,7 +363,6 @@ module.exports = function(main){
 			addMenuItem( {
 				"label":main.lb.get('menu.moveContents'),
 				"cond":"pxStandby",
-				"area":"shoulder",
 				"app":"fncs/move_contents/index.html",
 				"click": function(){
 					main.subapp($(this).data('app'));
@@ -384,7 +371,6 @@ module.exports = function(main){
 			addMenuItem( {
 				"label":main.lb.get('menu.mkUnusedModuleList'),
 				"cond":"pxStandby",
-				"area":"shoulder",
 				"app":"fncs/make_unused_module_list/index.html",
 				"click": function(){
 					main.subapp($(this).data('app'));
@@ -393,7 +379,6 @@ module.exports = function(main){
 			addMenuItem( {
 				"label":main.lb.get('menu.updateGuiContents'),
 				"cond":"pxStandby",
-				"area":"shoulder",
 				"app":"fncs/rebuild_guiedit_contents/index.html",
 				"click": function(){
 					main.subapp($(this).data('app'));
@@ -402,7 +387,6 @@ module.exports = function(main){
 			addMenuItem( {
 				"label":main.lb.get('menu.preview'),
 				"cond":"pxStandby",
-				"area":"shoulder",
 				"app":"fncs/preview/index.html",
 				"click": function(){
 					main.subapp($(this).data('app'));
@@ -411,7 +395,6 @@ module.exports = function(main){
 			addMenuItem( {
 				"label":main.lb.get('menu.search'),
 				"cond":"pxStandby",
-				"area":"shoulder",
 				"app":"fncs/search/index.html",
 				"click": function(){
 					main.subapp($(this).data('app'));
@@ -423,7 +406,6 @@ module.exports = function(main){
 			var $li = addMenuItem( {
 				"label":main.lb.get('menu.customConsoleExtensions'),
 				"cond":"customConsoleExtensionsExists",
-				"area":"shoulder",
 				"submenu": [
 				]
 			});
@@ -437,6 +419,9 @@ module.exports = function(main){
 				var cceInfo = cpj_s.customConsoleExtensions[cce_id];
 				if( !cceInfo ){
 					 continue;
+				}
+				if( mainMenu[cce_id] ){
+					continue;
 				}
 				var appPath = 'fncs/custom_console_extensions/index.html?cce_id='+encodeURIComponent(cce_id);
 				$cceLi.append(
@@ -461,14 +446,12 @@ module.exports = function(main){
 			var $li = addMenuItem( {
 				"label":main.lb.get('menu.externalTools'),
 				"cond":"homeDirExists",
-				"area":"shoulder",
 			});
 			var $ul = $( '<ul>' );
 			$li.append($ul);
 			addMenuItem( {
 				"label":main.lb.get('menu.openInTexteditor'),
 				"cond":"homeDirExists",
-				"area":"shoulder",
 				"app":null,
 				"click": function(){
 					main.openInTextEditor( main.getCurrentProject().get('path') );
@@ -477,7 +460,6 @@ module.exports = function(main){
 			addMenuItem( {
 				"label":main.lb.get('menu.openInGitClient'),
 				"cond":"homeDirExists",
-				"area":"shoulder",
 				"app":null,
 				"click": function(){
 					main.openInGitClient( main.getCurrentProject().get('path') );
@@ -486,7 +468,6 @@ module.exports = function(main){
 			addMenuItem( {
 				"label":main.lb.get('menu.openInTerminal'),
 				"cond":"homeDirExists",
-				"area":"shoulder",
 				"app":null,
 				"click": function(){
 					main.openInTerminal( main.getCurrentProject().get('path') );
@@ -502,7 +483,6 @@ module.exports = function(main){
 			addMenuItem( {
 				"label":main.lb.get('menu.filesAndFolders'),
 				"cond":"homeDirExists",
-				"area":"shoulder",
 				"app":"fncs/files_and_folders/index.html",
 				"click": function(){
 					main.subapp($(this).data('app'));
@@ -520,7 +500,6 @@ module.exports = function(main){
 		var $li = addMenuItem( {
 			"label":main.lb.get('menu.system'),
 			"cond":"always",
-			"area":"shoulder",
 		});
 		var $ul = $( '<ul>' );
 		$li.append($ul);
@@ -528,7 +507,6 @@ module.exports = function(main){
 		addMenuItem( {
 			"label":main.lb.get('menu.systemInfo'),
 			"cond":"always",
-			"area":"shoulder",
 			"app":null,
 			"click": function(){
 				var $iframe = $('<iframe>')
@@ -549,7 +527,6 @@ module.exports = function(main){
 		addMenuItem( {
 			"label":main.lb.get('menu.developerTool'),
 			"cond":"always",
-			"area":"shoulder",
 			"app":null,
 			"click": function(){
 				// ブラウザの DevTools を開く
@@ -560,7 +537,6 @@ module.exports = function(main){
 		addMenuItem( {
 			"label":_appName+" "+main.lb.get('menu.desktoptoolConfig'),
 			"cond":"always",
-			"area":"shoulder",
 			"app":null,
 			"click": function(){
 				main.editPx2DTConfig();
@@ -569,7 +545,6 @@ module.exports = function(main){
 		addMenuItem( {
 			"label":main.lb.get('menu.commandlog'),
 			"cond":"always",
-			"area":"shoulder",
 			"app":null,
 			"click": function(){
 				main.commandQueue.show();
@@ -581,7 +556,6 @@ module.exports = function(main){
 			addMenuItem( {
 				"label":main.lb.get('menu.checkForUpdate'),
 				"cond":"always",
-				"area":"shoulder",
 				"app":null,
 				"click": function(){
 					main.updater.checkNewVersion();
@@ -592,7 +566,6 @@ module.exports = function(main){
 		addMenuItem( {
 			"label":main.lb.get('menu.help'),
 			"cond":"always",
-			"area":"shoulder",
 			"app":null,
 			"click": function(){
 				main.openHelp();
@@ -602,7 +575,6 @@ module.exports = function(main){
 		addMenuItem( {
 			"label":main.lb.get('menu.exit'),
 			"cond":"always",
-			"area":"shoulder",
 			"app":null,
 			"click": function(){
 				main.exit();

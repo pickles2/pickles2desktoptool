@@ -20,6 +20,7 @@ module.exports = function(main){
 
 		var _overwritableMenuItems = {
 			'*home': {
+				"id":"*home",
 				"label":main.lb.get('menu.home'),
 				"cond":"projectSelected",
 				"area":"mainmenu",
@@ -27,6 +28,7 @@ module.exports = function(main){
 				"href":"javascript:main.subapp();"
 			},
 			'*sitemaps': {
+				"id":"*sitemaps",
 				"label":main.lb.get('menu.sitemaps'),
 				"cond":"pxStandby",
 				"area":"mainmenu",
@@ -34,6 +36,7 @@ module.exports = function(main){
 				"href": "javascript:main.subapp('fncs/sitemaps/index.html');"
 			},
 			'*themes': {
+				"id":"*themes",
 				"label":main.lb.get('menu.themes'),
 				"cond":"pxStandby",
 				"area":"mainmenu",
@@ -41,6 +44,7 @@ module.exports = function(main){
 				"href": "javascript:main.subapp('fncs/themes/index.html');"
 			},
 			'*contents': {
+				"id":"*contents",
 				"label":main.lb.get('menu.contents'),
 				"cond":"pxStandby",
 				"area":"mainmenu",
@@ -48,6 +52,7 @@ module.exports = function(main){
 				"href": "javascript:main.subapp('fncs/contents/index.html');"
 			},
 			'*publish': {
+				"id":"*publish",
 				"label":main.lb.get('menu.publish'),
 				"cond":"pxStandby",
 				"area":"mainmenu",
@@ -55,6 +60,7 @@ module.exports = function(main){
 				"href": "javascript:main.subapp('fncs/publish/index.html');"
 			},
 			'*composer': {
+				"id":"*composer",
 				"label":main.lb.get('menu.composer'),
 				"cond":"composerJsonExists",
 				"area":"shoulder",
@@ -64,6 +70,7 @@ module.exports = function(main){
 				}
 			},
 			'*modules': {
+				"id":"*modules",
 				"label":main.lb.get('menu.modules'),
 				"cond":"pxStandby",
 				"area":"shoulder",
@@ -73,6 +80,7 @@ module.exports = function(main){
 				}
 			},
 			'*git': {
+				"id":"*git",
 				"label":main.lb.get('menu.git'),
 				"cond":"homeDirExists",
 				"area":"shoulder",
@@ -82,6 +90,7 @@ module.exports = function(main){
 				}
 			},
 			'*clearcache': {
+				"id":"*clearcache",
 				"label":main.lb.get('menu.clearcache'),
 				"cond":"pxStandby",
 				"area":"shoulder",
@@ -105,6 +114,20 @@ module.exports = function(main){
 		var cpj_s = null;
 		if( cpj !== null ){
 			cpj_s = cpj.status();
+		}
+
+		var mainMenu = {
+			'*home': true,
+			'*sitemaps': true,
+			'*themes': true,
+			'*contents': true,
+			'*publish': true,
+		};
+		if( cpj_s && cpj_s.mainMenu ){
+			mainMenu = {};
+			for( var idx in cpj_s.mainMenu ){
+				mainMenu[cpj_s.mainMenu[idx]] = true;
+			}
 		}
 
 
@@ -152,17 +175,14 @@ module.exports = function(main){
 			if( $parent ){
 				$parent.append( $li.append($tmpMenu) );
 			}else{
-				switch( menuItem.area ){
-					case 'shoulder':
-						$shoulderMenu.find('>ul').append( $li
-							.append( $tmpMenu )
-						);
-						break;
-					default:
-						$('.px2-header__global-menu > ul').append( $li
-							.append( $tmpMenu )
-						);
-						break;
+				if( menuItem.id && mainMenu[menuItem.id] ){
+					$('.px2-header__global-menu > ul').append( $li
+						.append( $tmpMenu )
+					);
+				}else{
+					$shoulderMenu.find('>ul').append( $li
+						.append( $tmpMenu )
+					);
 				}
 			}
 			return $li;

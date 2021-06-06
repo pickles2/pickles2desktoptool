@@ -1,13 +1,15 @@
 @charset "UTF-8";
 :root {
-  --px2-main-color: #00a0e6; }
+  --px2-main-color: #00a0e6;
+  --px2-text-color: #333;
+  --px2-background-color: #f9f9f9; }
 
 .px2-btn {
   display: inline-block;
   border-radius: 3px;
-  background-color: #f9f9f9;
-  color: #333;
-  border: 1px solid #333;
+  background-color: --px2-background-color;
+  color: --px2-text-color;
+  border: 1px solid --px2-text-color;
   box-shadow: 0 2px 0px rgba(0, 0, 0, 0.1);
   padding: 0.5em 2em;
   font-size: 1em;
@@ -31,8 +33,8 @@
   .px2-btn:hover {
     background-color: #f0f0f0; }
   .px2-btn:active {
-    background-color: #333;
-    color: #f9f9f9;
+    background-color: --px2-text-color;
+    color: --px2-background-color;
     box-shadow: inset 0 3px 15px rgba(0, 0, 0, 0.3);
     transform: translateY(1px); }
 
@@ -49,16 +51,16 @@
     color: #fff; }
 
 .px2-btn.px2-btn--secondary {
-  border-color: #333;
-  background: #f9f9f9;
-  color: #333; }
+  border-color: --px2-text-color;
+  background: --px2-background-color;
+  color: --px2-text-color; }
   .px2-btn.px2-btn--secondary:focus, .px2-btn.px2-btn--secondary:hover {
     background-color: #f3f3f3; }
   .px2-btn.px2-btn--secondary:hover {
     background-color: #f0f0f0; }
   .px2-btn.px2-btn--secondary:active {
-    background-color: #333;
-    color: #f9f9f9; }
+    background-color: --px2-text-color;
+    color: --px2-background-color; }
 
 .px2-btn.px2-btn--danger {
   border-color: #e86a60;
@@ -228,7 +230,7 @@
   .px2-table td {
     vertical-align: top;
     border: 1px solid #999999;
-    background: #f9f9f9;
+    background: --px2-background-color;
     padding: 10px; }
   .px2-table th {
     background: #e7e7e7; }
@@ -334,8 +336,8 @@
         flex-direction: column;
     -ms-flex-wrap: nowrap;
         flex-wrap: nowrap;
-    color: #333;
-    background-color: #f9f9f9;
+    color: --px2-text-color;
+    background-color: --px2-background-color;
     box-sizing: border-box;
     padding: 10px 0;
     margin: 20px auto;
@@ -917,8 +919,8 @@ select.px2-input {
   font-size: 1em;
   font-weight: normal;
   line-height: 1.5;
-  color: #333;
-  background-color: #f9f9f9;
+  color: --px2-text-color;
+  background-color: --px2-background-color;
   background-clip: padding-box;
   border: 1px solid #ced4da;
   border-radius: .25rem;
@@ -1054,8 +1056,8 @@ select.px2-input {
     font-size: 1rem;
     font-weight: normal;
     line-height: 1.5;
-    color: #333;
-    background-color: #f9f9f9;
+    color: --px2-text-color;
+    background-color: --px2-background-color;
     border: 1px solid #ced4da; }
   .px2-input-group > *,
   .px2-input-group > input.px2-input,
@@ -1110,7 +1112,7 @@ select.px2-input {
       .px2-form-input-list ul.px2-form-input-list__ul li.px2-form-input-list__li .px2-form-input-list__input {
         display: table-cell;
         vertical-align: top;
-        background-color: #f9f9f9;
+        background-color: --px2-background-color;
         padding: 0.4em 1em;
         width: 70%;
         border: 1px solid #999999; }

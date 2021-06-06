@@ -347,14 +347,12 @@ new (function($, window){
 				},
 				function(it1){
 					// CSS拡張
-					$('head').append( $('<style>')
+					$('#px2-appearance-base')
 						.html(
-							'.px2-header__global-menu ul li a:hover,'
-							+'.px2-header__global-menu ul li a.current{color: '+_packageJson.extra.colors.defaultKeyColor+';}'
-							+'.px2-header__shoulder-menu button {border-color-left: '+_packageJson.extra.colors.defaultKeyColor+';}'
-							+'.px2-header__shoulder-menu ul li a.current {background-color: '+_packageJson.extra.colors.defaultKeyColor+';}'
-						)
-					);
+							':root {'
+							+'--px2-main-color: '+_packageJson.extra.colors.defaultKeyColor+';'
+							+'}'
+						);
 					it1.next();
 					return;
 				},
@@ -724,6 +722,16 @@ new (function($, window){
 				main.watcher.start(_pj);
 
 				console.log( 'project "' + _pj.get('name') + '" is reloaded.' );
+
+				// アピアランスを反映する
+				var $appearance = $('#px2-appearance');
+				var status = _pj.status();
+				if( status && status.appearance && status.appearance.main_color ){
+					$appearance.html(':root {--px2-main-color:' + status.appearance.main_color + ';}');
+				}else{
+					$appearance.html('');
+				}
+
 				callback();
 			}
 		);
@@ -738,6 +746,7 @@ new (function($, window){
 		_this.closeAllSubWindows(); // サブウィンドウをすべて閉じる
 		_selectedProject = null;
 		_pj = null;
+		$('#px2-appearance').html('');
 		return true;
 	}
 

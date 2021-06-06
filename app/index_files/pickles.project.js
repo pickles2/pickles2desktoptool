@@ -349,6 +349,14 @@ module.exports = function( window, main, projectInfo, projectId, cbStandby ) {
 						}catch(e){
 						}
 
+						status.appearance = false;
+						try{
+							if( _px2DTConfig.appearance ){
+								status.appearance = _px2DTConfig.appearance;
+							}
+						}catch(e){
+						}
+
 					} catch (e) {
 						console.error('FAILED to getting data from "/?PX=px2dthelper.get.all"');
 					}

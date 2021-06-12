@@ -1,4 +1,4 @@
-# Pickles 2
+# Pickles 2 babycorn
 
 code name: babycorn
 
@@ -90,7 +90,7 @@ Mac で Windows 版をビルドするにあたり、次の環境が必要です�
 
 ## 更新履歴 - Change log
 
-### Pickles 2 v2.0.0-beta.29 (リリース日未定)
+### Pickles 2 babycorn v2.0.0-beta.29 (2021年6月12日)
 
 - Update NW.js to v0.53.1
 - ファイルとフォルダ機能のUIを改善した。
